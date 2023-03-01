@@ -100,6 +100,27 @@ class AmityCommentView: AmityView {
     func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout) {
         self.comment = comment
         
+        //kk hide reply button in sub comment
+        if comment.parentId != nil {
+            replyButton.tintColor = UIColor.red
+            replyButton.setTitleColor(UIColor.white, for: .selected)
+            replyButton.setTitleColor(UIColor.white, for: .normal)
+            replyButton.setImage(UIImage(), for: .normal)
+            replyButton.setTitleFont(UIFont.systemFont(ofSize: 0))
+            replyButton.setInsets(forContentPadding:.zero, imageTitlePadding: 0)
+            likeButton.setInsets(forContentPadding:.zero, imageTitlePadding: 0)
+            optionButton.setInsets(forContentPadding:.zero, imageTitlePadding: 0)
+        }else{
+            replyButton.tintColor = AmityColorSet.base.blend(.shade2)
+            replyButton.setTitleColor(AmityColorSet.primary, for: .selected)
+            replyButton.setTitleColor(AmityColorSet.base.blend(.shade2), for: .normal)
+            replyButton.setImage(AmityIconSet.iconReply, for: .normal)
+            replyButton.setTitleFont(AmityFontSet.captionBold)
+            replyButton.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
+            likeButton.setInsets(forContentPadding:.zero, imageTitlePadding: 4)
+        }
+        //kk end hide reply button in sub comment
+        
         if comment.isEdited {
             timeLabel.text = String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.postDetailCommentEdit.localizedString, comment.createdAt.relativeTime)
         } else {
