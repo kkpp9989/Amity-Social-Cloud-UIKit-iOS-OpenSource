@@ -14,7 +14,7 @@ public final class AmityUIKitManager {
     
     private init() { }
     
-    
+    //K
     /// Setup AmityUIKit instance. Internally it creates AmityClient instance
     /// from AmitySDK.
     ///
