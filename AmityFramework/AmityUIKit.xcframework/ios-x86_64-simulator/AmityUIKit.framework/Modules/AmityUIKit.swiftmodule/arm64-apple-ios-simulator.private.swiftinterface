@@ -1,0 +1,2453 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)
+// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name AmityUIKit
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AVFoundation
+import AVKit
+import AmitySDK
+@_exported import AmityUIKit
+import CoreLocation
+import Foundation
+import ImageIO
+import MobileCoreServices
+import Network
+import Photos
+import PhotosUI
+import QuartzCore
+import Swift
+import SystemConfiguration
+import UIKit
+import _Concurrency
+import _StringProcessing
+import os
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMyCommunityViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityMyCommunityViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityMyCommunityViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityMyCommunityViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityMyCommunityViewController : UIKit.UISearchBarDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func searchBar(_ searchBar: UIKit.UISearchBar, textDidChange searchText: Swift.String)
+  @_Concurrency.MainActor(unsafe) @objc final public func searchBarCancelButtonClicked(_ searchBar: UIKit.UISearchBar)
+  @_Concurrency.MainActor(unsafe) @objc final public func searchBarShouldBeginEditing(_ searchBar: UIKit.UISearchBar) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc final public func searchBarSearchButtonClicked(_ searchBar: UIKit.UISearchBar)
+}
+extension AmityUIKit.AmityMyCommunityViewController : AmityUIKit.AmityCommunityProfileEditorViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) final public func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFinishCreateCommunity communityId: Swift.String)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommunityHomePageViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) final public let newsFeedVC: AmityUIKit.AmityNewsfeedViewController
+  @_Concurrency.MainActor(unsafe) final public let exploreVC: AmityUIKit.AmityCommunityExplorerViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityCommunityHomePageViewController
+  @objc deinit
+}
+public protocol AmityPhotoCollectionViewCellDelegate : ObjectiveC.NSObjectProtocol {
+  func collectionViewCellWillZoomOnPhoto(_ cell: AmityUIKit.AmityPhotoCollectionViewCell)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class AmityPhotoCollectionViewCell : UIKit.UICollectionViewCell {
+  @_Concurrency.MainActor(unsafe) public var scrollView: AmityUIKit.AmityPhotoScrollView! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var imageView: UIKit.UIImageView! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var zoomEnabled: Swift.Bool
+  @_Concurrency.MainActor(unsafe) public var playImageView: UIKit.UIImageView! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) open var minimumZoomScale: CoreFoundation.CGFloat {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var maximumZoomScale: CoreFoundation.CGFloat {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
+  @objc deinit
+}
+extension AmityUIKit.AmityPhotoCollectionViewCell : UIKit.UIScrollViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func viewForZooming(in scrollView: UIKit.UIScrollView) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewWillBeginZooming(_ scrollView: UIKit.UIScrollView, with view: UIKit.UIView?)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewDidZoom(_ scrollView: UIKit.UIScrollView)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostFooterTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityCellIdentifiable, AmityUIKit.AmityPostFooterProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostFooterDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var indexPath: Foundation.IndexPath?
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityDocument : UIKit.UIDocument {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func contents(forType typeName: Swift.String) throws -> Any
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func load(fromContents contents: Any, ofType typeName: Swift.String?) throws
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(fileURL url: Foundation.URL)
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers open class AmityFilePicker : ObjectiveC.NSObject {
+  public func present(from sourceView: UIKit.UIView, files: [AmityUIKit.AmityFile])
+  public func present(from sourceView: UIKit.UIView)
+  @objc deinit
+}
+extension AmityUIKit.AmityFilePicker : UIKit.UIDocumentPickerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func documentPicker(_ controller: UIKit.UIDocumentPickerViewController, didPickDocumentsAt urls: [Foundation.URL])
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func documentPickerWasCancelled(_ controller: UIKit.UIDocumentPickerViewController)
+}
+extension AmityUIKit.AmityFilePicker : UIKit.UINavigationControllerDelegate {
+}
+#warning("#HUD")
+#warning("Need to refactor hud view to support fullscreen and handle the content inside of itself")
+public struct AmityPostTextComponent : AmityUIKit.AmityPostComposable {
+  public var post: AmityUIKit.AmityPostModel {
+    get
+  }
+  public init(post: AmityUIKit.AmityPostModel)
+  public func getComponentCount(for index: Swift.Int) -> Swift.Int
+  public func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  public func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityEditTextViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override public func didTapLeftBarButton()
+  @objc deinit
+}
+extension AmityUIKit.AmityEditTextViewController : AmityUIKit.AmityTextViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChange(_ textView: AmityUIKit.AmityTextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChangeSelection(_ textView: AmityUIKit.AmityTextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: AmityUIKit.AmityTextView, shouldChangeTextIn range: Foundation.NSRange, replacementText text: Swift.String) -> Swift.Bool
+}
+extension AmityUIKit.AmityEditTextViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityEditTextViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityEditTextViewController : AmityUIKit.AmityMentionManagerDelegate {
+  @_Concurrency.MainActor(unsafe) public func didCreateAttributedString(attributedString: Foundation.NSAttributedString)
+  @_Concurrency.MainActor(unsafe) public func didGetUsers(users: [AmityUIKit.AmityMentionUserModel])
+  @_Concurrency.MainActor(unsafe) public func didMentionsReachToMaximumLimit()
+  @_Concurrency.MainActor(unsafe) public func didCharactersReachToMaximumLimit()
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityButtonPagerTabSViewController : AmityUIKit.AmityPagerTabViewController, UIKit.UICollectionViewDelegate, UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLayoutSubviews()
+  @_Concurrency.MainActor(unsafe) public func setButtonBarHidden(hidden: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc public func collectionView(_ collectionView: UIKit.UICollectionView, didSelectItemAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+  @_Concurrency.MainActor(unsafe) @objc override public func scrollViewDidEndScrollingAnimation(_ scrollView: UIKit.UIScrollView)
+  @objc deinit
+}
+public enum AmityCommunityMemberAction {
+  case tapAvatar
+  case tapDisplayName
+  case tapOption
+  public static func == (a: AmityUIKit.AmityCommunityMemberAction, b: AmityUIKit.AmityCommunityMemberAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum AmityPostAttachmentType : Swift.CaseIterable {
+  case image
+  case video
+  case file
+  public static func == (a: AmityUIKit.AmityPostAttachmentType, b: AmityUIKit.AmityPostAttachmentType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [AmityUIKit.AmityPostAttachmentType]
+  public static var allCases: [AmityUIKit.AmityPostAttachmentType] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol AmityMessageCellProtocol : UIKit.UITableViewCell, AmityUIKit.AmityCellIdentifiable {
+  func display(message: AmityUIKit.AmityMessageModel)
+  static func height(for message: AmityUIKit.AmityMessageModel, boundingWidth: CoreFoundation.CGFloat) -> CoreFoundation.CGFloat
+}
+public enum AmityImageViewState {
+  case idle
+  case loading
+  public static func == (a: AmityUIKit.AmityImageViewState, b: AmityUIKit.AmityImageViewState) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityImageView : AmityUIKit.AmityView {
+  @_Concurrency.MainActor(unsafe) public var actionHandler: (() -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) public var state: AmityUIKit.AmityImageViewState {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var image: UIKit.UIImage? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var placeholder: UIKit.UIImage? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var contentMode: UIKit.UIView.ContentMode {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc convenience dynamic public init()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) public func setImage(withImageURL imageURL: Swift.String?, size: AmitySDK.AmityMediaSize = .small, placeholder: UIKit.UIImage? = AmityIconSet.defaultAvatar, completion: (() -> Swift.Void)? = nil)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostPreviewCommentTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostPreviewCommentProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostPreviewCommentDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var comment: AmityUIKit.AmityCommentModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var isExpanded: Swift.Bool {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel, comment: AmityUIKit.AmityCommentModel?)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostPreviewCommentTableViewCell : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) final public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+public enum AmityReactionType : Swift.String {
+  case like
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityTextField : UIKit.UITextField {
+  public enum ValueType : Swift.Int {
+    case none
+    case onlyLetters
+    case onlyNumbers
+    case phoneNumber
+    case alphaNumeric
+    case fullName
+    public init?(rawValue: Swift.Int)
+    public typealias RawValue = Swift.Int
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+  @_Concurrency.MainActor(unsafe) public var maxLength: Swift.Int
+  @_Concurrency.MainActor(unsafe) public var valueType: AmityUIKit.AmityTextField.ValueType
+  @_Concurrency.MainActor(unsafe) public var allowedCharInString: Swift.String
+  @_Concurrency.MainActor(unsafe) public func verifyFields(shouldChangeCharactersIn range: Foundation.NSRange, replacementString string: Swift.String) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public class AmityUserProfilePageSettings {
+  public init()
+  public var shouldChatButtonHide: Swift.Bool
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityUserProfilePageViewController : AmityUIKit.AmityProfileViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(withUserId userId: Swift.String, settings: AmityUIKit.AmityUserProfilePageSettings = AmityUserProfilePageSettings()) -> AmityUIKit.AmityUserProfilePageViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @objcMembers @_Concurrency.MainActor(unsafe) open class AmityImagePickerController : UIKit.UINavigationController {
+  @_Concurrency.MainActor(unsafe) weak public var imagePickerDelegate: AmityUIKit.AmityImagePickerControllerDelegate?
+  @objc @_Concurrency.MainActor(unsafe) public var settings: AmityUIKit.Settings
+  @objc @_Concurrency.MainActor(unsafe) public var doneButton: UIKit.UIBarButtonItem
+  @objc @_Concurrency.MainActor(unsafe) public var cancelButton: UIKit.UIBarButtonItem
+  @objc @_Concurrency.MainActor(unsafe) public var albumButton: UIKit.UIButton
+  @objc @_Concurrency.MainActor(unsafe) public var selectedAssets: [Photos.PHAsset] {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public var doneButtonTitle: Swift.String
+  @objc @_Concurrency.MainActor(unsafe) public init(selectedAssets: [Photos.PHAsset] = [])
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+public struct AmityCommunityCategoryModel {
+  public let name: Swift.String
+  public let categoryId: Swift.String
+}
+extension UIKit.UIColor {
+  #warning("Remove this after migrating with AmityColor")
+  #warning("Remove this after migrating with AmityColor")
+  #warning("Remove this after migrating with AmityColor")
+  #warning("Remove this after migrating with AmityColor")
+  #warning("Remove this after migrating with AmityColor")
+  #warning("Remove this after migrating with AmityColor")
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmitySearchViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmitySearchViewController
+  @objc deinit
+}
+extension AmityUIKit.AmitySearchViewController : UIKit.UITextFieldDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textFieldShouldReturn(_ textField: UIKit.UITextField) -> Swift.Bool
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityCategoryPreviewViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) final public var selectedCategoryHandler: ((AmityUIKit.AmityCommunityCategoryModel) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var selectedCategoriesHandler: (() -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var emptyHandler: ((Swift.Bool) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityCategoryPreviewViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityCategoryPreviewViewController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, sizeForItemAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGSize
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumLineSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, insetForSectionAt section: Swift.Int) -> UIKit.UIEdgeInsets
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, didSelectItemAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityCategoryPreviewViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+public class AmityPostSharingSettings {
+  public init(privateCommunity: Swift.Set<AmityUIKit.AmityPostSharingTarget> = [AmityPostSharingTarget.originFeed], publicCommunity: Swift.Set<AmityUIKit.AmityPostSharingTarget> = Set(AmityPostSharingTarget.allCases), myFeed: Swift.Set<AmityUIKit.AmityPostSharingTarget> = Set(AmityPostSharingTarget.allCases))
+  public func privateCommunityPostSharingTarget() -> Swift.Set<AmityUIKit.AmityPostSharingTarget>
+  public func publicCommunityPostSharingTarget() -> Swift.Set<AmityUIKit.AmityPostSharingTarget>
+  public func myFeedPostSharingTarget() -> Swift.Set<AmityUIKit.AmityPostSharingTarget>
+  public func userFeedPostSharingTarget() -> Swift.Set<AmityUIKit.AmityPostSharingTarget>
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMentionTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable {
+  @_Concurrency.MainActor(unsafe) public static let height: CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(with model: AmityUIKit.AmityMentionUserModel)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityUserFollowersViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(withUserId userId: Swift.String, isFollowersSelected: Swift.Bool = false) -> AmityUIKit.AmityUserFollowersViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityFollowRequestsViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make(withUserId userId: Swift.String) -> AmityUIKit.AmityFollowRequestsViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityFollowRequestsViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityFollowRequestsViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPollCreatorViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(postTarget: AmityUIKit.AmityPostTarget) -> AmityUIKit.AmityPollCreatorViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func didTapLeftBarButton()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPollCreatorViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityPollCreatorViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func numberOfSections(in tableView: UIKit.UITableView) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityPollCreatorViewController : AmityUIKit.AmityMentionManagerDelegate {
+  @_Concurrency.MainActor(unsafe) final public func didCreateAttributedString(attributedString: Foundation.NSAttributedString)
+  @_Concurrency.MainActor(unsafe) final public func didGetUsers(users: [AmityUIKit.AmityMentionUserModel])
+  @_Concurrency.MainActor(unsafe) final public func didMentionsReachToMaximumLimit()
+  @_Concurrency.MainActor(unsafe) final public func didCharactersReachToMaximumLimit()
+}
+public enum AmityAvatarShape {
+  case circle
+  case square
+  case custom(radius: CoreFoundation.CGFloat, borderWith: CoreFoundation.CGFloat, borderColor: UIKit.UIColor)
+}
+public enum AmityAvatarPosition {
+  case fullSize
+  case center
+  public static func == (a: AmityUIKit.AmityAvatarPosition, b: AmityUIKit.AmityAvatarPosition) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class AmityAvatarView : AmityUIKit.AmityImageView {
+  @_Concurrency.MainActor(unsafe) final public var avatarShape: AmityUIKit.AmityAvatarShape {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) final public var placeholderPostion: AmityUIKit.AmityAvatarPosition {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc convenience dynamic public init()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers final public class AmityUIKitManager {
+  public static func setup(apiKey: Swift.String, region: AmitySDK.AmityRegion = .global)
+  public static func setup(apiKey: Swift.String, endpoint: AmitySDK.AmityEndpoint)
+  @available(swift, deprecated: 2.8.0, message: "This method will be removed in future version. Please use `setup(apiKey:_, region:_)` method instead")
+  public static func setup(apiKey: Swift.String, httpUrl: Swift.String? = nil, socketUrl: Swift.String? = nil)
+  public static func registerDevice(withUserId userId: Swift.String, displayName: Swift.String?, authToken: Swift.String? = nil, completion: AmitySDK.AmityRequestCompletion? = nil)
+  public static func unregisterDevice()
+  public static func registerDeviceForPushNotification(_ deviceToken: Swift.String, completion: AmitySDK.AmityRequestCompletion? = nil)
+  public static func unregisterDevicePushNotification(completion: AmitySDK.AmityRequestCompletion? = nil)
+  public static func setEnvironment(_ env: [Swift.String : Any])
+  public static var client: AmitySDK.AmityClient {
+    get
+  }
+  public static var feedUISettings: AmityUIKit.AmityFeedUISettings {
+    get
+  }
+  public static func set(theme: AmityUIKit.AmityTheme)
+  public static func set(typography: AmityUIKit.AmityTypography)
+  public static func set(eventHandler: AmityUIKit.AmityEventHandler)
+  public static func set(channelEventHandler: AmityUIKit.AmityChannelEventHandler)
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class AmityUserProfileEditorViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityUserProfileEditorViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @objc deinit
+}
+extension AmityUIKit.AmityUserProfileEditorViewController : UIKit.UITextFieldDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func textField(_ textField: UIKit.UITextField, shouldChangeCharactersIn range: Foundation.NSRange, replacementString string: Swift.String) -> Swift.Bool
+}
+extension AmityUIKit.AmityUserProfileEditorViewController : AmityUIKit.AmityTextViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func textViewDidChange(_ textView: AmityUIKit.AmityTextView)
+}
+extension AmityUIKit.AmityUserProfileEditorViewController : UIKit.UIImagePickerControllerDelegate & UIKit.UINavigationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func imagePickerController(_ picker: UIKit.UIImagePickerController, didFinishPickingMediaWithInfo info: [UIKit.UIImagePickerController.InfoKey : Any])
+}
+public struct AmitySettings {
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityNewsfeedViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityNewsfeedViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityNewsfeedViewController : AmityUIKit.AmityCommunityProfileEditorViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) public func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFinishCreateCommunity communityId: Swift.String)
+}
+extension AmityUIKit.AmityNewsfeedViewController : AmityUIKit.AmityMyCommunityPreviewViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) public func viewController(_ viewController: AmityUIKit.AmityMyCommunityPreviewViewController, didPerformAction action: AmityUIKit.AmityMyCommunityPreviewViewController.ActionType)
+  @_Concurrency.MainActor(unsafe) public func viewController(_ viewController: AmityUIKit.AmityMyCommunityPreviewViewController, shouldShowMyCommunityPreview: Swift.Bool)
+}
+public protocol AmityPhotoViewerBaseAnimator : UIKit.UIViewControllerAnimatedTransitioning {
+  var presentingDuration: Foundation.TimeInterval { get set }
+  var dismissingDuration: Foundation.TimeInterval { get set }
+  var usesSpringAnimation: Swift.Bool { get set }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPhotoAnimator : ObjectiveC.NSObject, AmityUIKit.AmityPhotoViewerBaseAnimator {
+  @_Concurrency.MainActor(unsafe) public var presentingDuration: Swift.Double
+  @_Concurrency.MainActor(unsafe) public var dismissingDuration: Swift.Double
+  @_Concurrency.MainActor(unsafe) public var usesSpringAnimation: Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc public func transitionDuration(using transitionContext: UIKit.UIViewControllerContextTransitioning?) -> Foundation.TimeInterval
+  @_Concurrency.MainActor(unsafe) @objc public func animateTransition(using transitionContext: UIKit.UIViewControllerContextTransitioning)
+  @_Concurrency.MainActor(unsafe) @objc public func animationEnded(_ transitionCompleted: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init()
+  @objc deinit
+}
+public enum AmityNavigationBarType {
+  case root
+  case present
+  case push
+  case custom
+  public static func == (a: AmityUIKit.AmityNavigationBarType, b: AmityUIKit.AmityNavigationBarType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class AmityViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) open var navigationBarType: AmityUIKit.AmityNavigationBarType {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var title: Swift.String? {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public func removeSwipeBackGesture()
+  @objc @_Concurrency.MainActor(unsafe) open func didTapLeftBarButton()
+  @_Concurrency.MainActor(unsafe) final public func generalDismiss()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityViewController : UIKit.UIGestureRecognizerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIKit.UIGestureRecognizer) -> Swift.Bool
+}
+extension UIKit.UITableView {
+  @_Concurrency.MainActor(unsafe) public var isBottomReached: Swift.Bool {
+    get
+  }
+}
+public struct AmityLocalizedStringSet {
+  public enum General {
+    public static let done: Swift.String
+  }
+  public static let newsfeedTitle: Swift.String
+  public static let exploreTitle: Swift.String
+  public static let communityHomeTitle: Swift.String
+  public static let timelineTitle: Swift.String
+  public enum Mention {
+    public static let unableToMentionTitle: Swift.String
+    public static let unableToMentionPostDescription: Swift.String
+    public static let unableToMentionCommentDescription: Swift.String
+    public static let unableToMentionReplyDescription: Swift.String
+  }
+}
+@_hasMissingDesignatedInitializers public class AmityFeedUISettings {
+  public static let shared: AmityUIKit.AmityFeedUISettings
+  public var eventHandler: AmityUIKit.AmityFeedEventHandler {
+    get
+    set
+  }
+  public var myFeedSharingTargets: Swift.Set<AmityUIKit.AmityPostSharingTarget> {
+    get
+  }
+  public var userFeedSharingTargets: Swift.Set<AmityUIKit.AmityPostSharingTarget> {
+    get
+  }
+  public var privateCommunitySharingTargets: Swift.Set<AmityUIKit.AmityPostSharingTarget> {
+    get
+  }
+  public var publicCommunitySharingTargets: Swift.Set<AmityUIKit.AmityPostSharingTarget> {
+    get
+  }
+  public func setPostSharingSettings(settings: AmityUIKit.AmityPostSharingSettings)
+  public func getPostSharingSettings() -> AmityUIKit.AmityPostSharingSettings
+  weak public var delegate: AmityUIKit.AmityFeedDelegate?
+  weak public var dataSource: AmityUIKit.AmityFeedDataSource?
+  public func register(_ nib: UIKit.UINib?, forCellReuseIdentifier identifier: Swift.String)
+  public func register(_ cellClass: Swift.AnyClass?, forCellReuseIdentifier identifier: Swift.String)
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityUserFeedViewController : AmityUIKit.AmityViewController {
+  @available(*, deprecated, message: "`AmityUserFeedViewController.makeMyFeed()` method is deprecated. Please calls `AmityMyFeedViewController.make()` instead.")
+  @_Concurrency.MainActor(unsafe) public static func makeMyFeed() -> AmityUIKit.AmityUserFeedViewController
+  @_Concurrency.MainActor(unsafe) public static func makeUserFeed(withUserId userId: Swift.String) -> AmityUIKit.AmityUserFeedViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @IBDesignable @_Concurrency.MainActor(unsafe) public class AmityImagePickerImageView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var isUserInteractionEnabled: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var tintColor: UIKit.UIColor! {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var contentMode: UIKit.UIView.ContentMode {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func layoutSubviews()
+  @objc deinit
+}
+extension AmityUIKit.AmityImagePickerImageView {
+  @_Concurrency.MainActor(unsafe) convenience public init(image: UIKit.UIImage?)
+  @_Concurrency.MainActor(unsafe) convenience public init(image: UIKit.UIImage?, highlightedImage: UIKit.UIImage?)
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) dynamic open var image: UIKit.UIImage? {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) dynamic open var highlightedImage: UIKit.UIImage? {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) dynamic open var isHighlighted: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) public var animationImages: [UIKit.UIImage]? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var highlightedAnimationImages: [UIKit.UIImage]? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var animationDuration: Foundation.TimeInterval {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var animationRepeatCount: Swift.Int {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public func startAnimating()
+  @_Concurrency.MainActor(unsafe) public func stopAnimating()
+  @_Concurrency.MainActor(unsafe) public var isAnimating: Swift.Bool {
+    get
+  }
+}
+extension UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public var isModalPresentation: Swift.Bool {
+    get
+  }
+}
+public struct AmityPostMediaComponent : AmityUIKit.AmityPostComposable {
+  public var post: AmityUIKit.AmityPostModel {
+    get
+  }
+  public init(post: AmityUIKit.AmityPostModel)
+  public func getComponentCount(for index: Swift.Int) -> Swift.Int
+  public func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  public func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMentionTableView : UIKit.UITableView {
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect, style: UIKit.UITableView.Style)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+open class AmityFeedEventHandler {
+  public init()
+  open func sharePostDidTap(from source: AmityUIKit.AmityViewController, postId: Swift.String)
+  open func sharePostToGroupDidTap(from source: AmityUIKit.AmityViewController, postId: Swift.String)
+  open func sharePostToMyTimelineDidTap(from source: AmityUIKit.AmityViewController, postId: Swift.String)
+  @objc deinit
+}
+public struct AmityTheme {
+  public init(primary: UIKit.UIColor? = nil, secondary: UIKit.UIColor? = nil, alert: UIKit.UIColor? = nil, highlight: UIKit.UIColor? = nil, base: UIKit.UIColor? = nil, baseInverse: UIKit.UIColor? = nil, messageBubble: UIKit.UIColor? = nil, messageBubbleInverse: UIKit.UIColor? = nil)
+}
+extension AmityUIKit.AmityPhotoViewerController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func scrollViewDidEndScrollingAnimation(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, sizeForItemAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGSize
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func viewForZooming(in scrollView: UIKit.UIScrollView) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func scrollViewDidZoom(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc dynamic open func scrollViewDidEndDecelerating(_ scrollView: UIKit.UIScrollView)
+}
+#warning("should be renmae to AmityCommunityProfileEditScreenViewModel")
+final public class AmityMessageModel {
+  final public var object: AmitySDK.AmityMessage
+  final public var messageId: Swift.String
+  final public var userId: Swift.String
+  final public var displayName: Swift.String?
+  final public var syncState: AmitySDK.AmitySyncState
+  final public var isDeleted: Swift.Bool
+  final public var isEdited: Swift.Bool
+  final public var flagCount: Swift.UInt
+  final public var messageType: AmitySDK.AmityMessageType
+  final public var createdAtDate: Foundation.Date
+  final public var date: Swift.String
+  final public var time: Swift.String
+  final public var data: [Swift.AnyHashable : Any]?
+  final public var tags: [Swift.String]
+  final public var channelSegment: Swift.UInt
+  final public var appearance: AmityUIKit.AmityMessageModel.AmityMessageModelAppearance
+  final public var isOwner: Swift.Bool {
+    get
+  }
+  public init(object: AmitySDK.AmityMessage)
+  final public var text: Swift.String? {
+    get
+  }
+  @objc deinit
+}
+extension AmityUIKit.AmityMessageModel {
+  open class AmityMessageModelAppearance {
+    public init()
+    public var isExpanding: Swift.Bool
+    @objc deinit
+  }
+}
+extension AmityUIKit.AmityMessageModel : Swift.Hashable {
+  public static func == (lhs: AmityUIKit.AmityMessageModel, rhs: AmityUIKit.AmityMessageModel) -> Swift.Bool
+  final public func hash(into hasher: inout Swift.Hasher)
+  final public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostFileTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var indexPath: Foundation.IndexPath? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel, indexPath: Foundation.IndexPath)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostFileTableViewCell : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) final public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+@objc @_Concurrency.MainActor(unsafe) public class AmityPhotoViewerController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public var scrollDirection: UIKit.UICollectionView.ScrollDirection {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) weak public var dataSource: AmityUIKit.AmityPhotoViewerControllerDataSource?
+  @_Concurrency.MainActor(unsafe) weak public var delegate: AmityUIKit.AmityPhotoViewerControllerDelegate?
+  @_Concurrency.MainActor(unsafe) open var shouldHideStatusBarOnPresent: Swift.Bool
+  @_Concurrency.MainActor(unsafe) open var statusBarStyleOnPresenting: UIKit.UIStatusBarStyle
+  @_Concurrency.MainActor(unsafe) open var statusBarAnimationStyle: UIKit.UIStatusBarAnimation
+  @_Concurrency.MainActor(unsafe) open var statusBarStyleOnDismissing: UIKit.UIStatusBarStyle
+  @_Concurrency.MainActor(unsafe) open var backgroundColor: UIKit.UIColor {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var automaticallyUpdateReferencedViewVisibility: Swift.Bool {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var scaleWhileDragging: Swift.Bool
+  @_Concurrency.MainActor(unsafe) open var referenceSize: CoreFoundation.CGSize {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var imageView: UIKit.UIImageView {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) weak public var referencedView: UIKit.UIView? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var scrollView: UIKit.UIScrollView {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var backgroundView: UIKit.UIView {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var panGestureRecognizer: UIKit.UIPanGestureRecognizer! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var doubleTapGestureRecognizer: UIKit.UITapGestureRecognizer! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var singleTapGestureRecognizer: UIKit.UITapGestureRecognizer! {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) open var animator: AmityUIKit.AmityPhotoViewerBaseAnimator {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public init(referencedView: UIKit.UIView?, image: UIKit.UIImage?)
+  @_Concurrency.MainActor(unsafe) convenience public init(referencedView: UIKit.UIView?, media: AmityUIKit.AmityMedia)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewWillLayoutSubviews()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewWillTransition(to size: CoreFoundation.CGSize, with coordinator: UIKit.UIViewControllerTransitionCoordinator)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var prefersStatusBarHidden: Swift.Bool {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var preferredStatusBarUpdateAnimation: UIKit.UIStatusBarAnimation {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var preferredStatusBarStyle: UIKit.UIStatusBarStyle {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) open func didScrollToPhoto(at index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) open func didZoomOnPhoto(at index: Swift.Int, atScale scale: CoreFoundation.CGFloat)
+  @_Concurrency.MainActor(unsafe) open func didEndZoomingOnPhoto(at index: Swift.Int, atScale scale: CoreFoundation.CGFloat)
+  @_Concurrency.MainActor(unsafe) open func willZoomOnPhoto(at index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) open func didReceiveDoubleTapGesture()
+  @_Concurrency.MainActor(unsafe) open func willBegin(panGestureRecognizer gestureRecognizer: UIKit.UIPanGestureRecognizer)
+  @_Concurrency.MainActor(unsafe) open func didEnd(panGestureRecognizer gestureRecognizer: UIKit.UIPanGestureRecognizer)
+  @_Concurrency.MainActor(unsafe) open func didEndPresentingAnimation()
+  @objc deinit
+}
+extension AmityUIKit.AmityPhotoViewerController : UIKit.UIViewControllerTransitioningDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func animationController(forPresented presented: UIKit.UIViewController, presenting: UIKit.UIViewController, source: UIKit.UIViewController) -> UIKit.UIViewControllerAnimatedTransitioning?
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func animationController(forDismissed dismissed: UIKit.UIViewController) -> UIKit.UIViewControllerAnimatedTransitioning?
+}
+extension AmityUIKit.AmityPhotoViewerController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) public var currentPhotoIndex: Swift.Int {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var zoomScale: CoreFoundation.CGFloat {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+extension AmityUIKit.AmityPhotoViewerController {
+  @_Concurrency.MainActor(unsafe) public func registerClassPhotoViewer(_ cellClass: Swift.AnyClass?)
+  @_Concurrency.MainActor(unsafe) public func registerNibForPhotoViewer(_ nib: UIKit.UINib?)
+  @_Concurrency.MainActor(unsafe) public func reloadData()
+  @_Concurrency.MainActor(unsafe) public func insertPhotos(at indexes: [Swift.Int], completion: ((Swift.Bool) -> Swift.Void)?)
+  @_Concurrency.MainActor(unsafe) public func deletePhotos(at indexes: [Swift.Int], completion: ((Swift.Bool) -> Swift.Void)?)
+  @_Concurrency.MainActor(unsafe) public func reloadPhotos(at indexes: [Swift.Int])
+  @_Concurrency.MainActor(unsafe) public func movePhoto(at index: Swift.Int, to newIndex: Swift.Int)
+  @_Concurrency.MainActor(unsafe) public func scrollToPhoto(at index: Swift.Int, animated: Swift.Bool)
+}
+extension AmityUIKit.AmityPhotoViewerController : AmityUIKit.AmityPhotoCollectionViewCellDelegate {
+  @_Concurrency.MainActor(unsafe) public func collectionViewCellDidZoomOnPhoto(_ cell: AmityUIKit.AmityPhotoCollectionViewCell, atScale scale: CoreFoundation.CGFloat)
+  @_Concurrency.MainActor(unsafe) public func collectionViewCellDidEndZoomingOnPhoto(_ cell: AmityUIKit.AmityPhotoCollectionViewCell, atScale scale: CoreFoundation.CGFloat)
+  @_Concurrency.MainActor(unsafe) public func collectionViewCellWillZoomOnPhoto(_ cell: AmityUIKit.AmityPhotoCollectionViewCell)
+}
+public struct AmityChannelModel {
+}
+public class AmityCommunityProfilePageSettings {
+  public init()
+  public var shouldChatButtonHide: Swift.Bool
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityCommunityProfilePageViewController : AmityUIKit.AmityProfileViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make(withCommunityId communityId: Swift.String, settings: AmityUIKit.AmityCommunityProfilePageSettings = .init()) -> AmityUIKit.AmityCommunityProfilePageViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func didTapLeftBarButton()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityCommunityProfilePageViewController : AmityUIKit.AmityCommunityProfileEditorViewControllerDelegate {
+  @_Concurrency.MainActor(unsafe) final public func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFinishCreateCommunity communityId: Swift.String)
+  @_Concurrency.MainActor(unsafe) final public func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFailWithNoPermission: Swift.Bool)
+}
+extension UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) public static var identifier: Swift.String {
+    get
+  }
+}
+public protocol AmityFeedDataSource : AnyObject {
+  func getUIComponentForPost(post: AmityUIKit.AmityPostModel, at index: Swift.Int) -> AmityUIKit.AmityPostComposable?
+}
+#warning("#HUD")
+#warning("Need to refactor hud view to support fullscreen and handle the content inside of itself")
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityMyFeedViewController : AmityUIKit.AmityUserFeedViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityMyFeedViewController
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostTargetPickerViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(postContentType: AmityUIKit.AmityPostContentType = .post) -> AmityUIKit.AmityPostTargetPickerViewController
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @objc deinit
+}
+extension AmityUIKit.AmityPostTargetPickerViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func numberOfSections(in tableView: UIKit.UITableView) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityPostTargetPickerViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, heightForHeaderInSection section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, viewForHeaderInSection section: Swift.Int) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+}
+public protocol AmityMessageListDataSource : AnyObject {
+  func cellForMessageTypes() -> [AmityUIKit.AmityMessageTypes : AmityUIKit.AmityMessageCellProtocol.Type]
+}
+extension AmityUIKit.AmityMessageListViewController {
+  public struct Settings {
+    public var composeBarStyle: AmityUIKit.AmityMessageListViewController.ComposeBarStyle
+    public var shouldHideAudioButton: Swift.Bool
+    public var shouldShowChatSettingBarButton: Swift.Bool
+    public var enableConnectionBar: Swift.Bool
+    public init()
+  }
+  public enum ComposeBarStyle {
+    case `default`
+    case textOnly
+    public static func == (a: AmityUIKit.AmityMessageListViewController.ComposeBarStyle, b: AmityUIKit.AmityMessageListViewController.ComposeBarStyle) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMessageListViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) weak final public var dataSource: AmityUIKit.AmityMessageListDataSource?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make(channelId: Swift.String, settings: AmityUIKit.AmityMessageListViewController.Settings = .init()) -> AmityUIKit.AmityMessageListViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityMessageListViewController : UIKit.UIImagePickerControllerDelegate & UIKit.UINavigationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func imagePickerController(_ picker: UIKit.UIImagePickerController, didFinishPickingMediaWithInfo info: [UIKit.UIImagePickerController.InfoKey : Any])
+}
+public protocol AmityExpandableLabelDelegate : AnyObject {
+  func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class AmityExpandableLabel : UIKit.UILabel {
+  public enum TextReplacementType {
+    case character
+    case word
+    public static func == (a: AmityUIKit.AmityExpandableLabel.TextReplacementType, b: AmityUIKit.AmityExpandableLabel.TextReplacementType) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @_Concurrency.MainActor(unsafe) weak open var delegate: AmityUIKit.AmityExpandableLabelDelegate?
+  @_Concurrency.MainActor(unsafe) public var isExpanded: Swift.Bool {
+    get
+    set
+  }
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var shouldExpand: Swift.Bool
+  @objc @IBInspectable @_Concurrency.MainActor(unsafe) open var shouldCollapse: Swift.Bool
+  @_Concurrency.MainActor(unsafe) open var collapsedAttributedLink: Foundation.NSAttributedString! {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var readMoreColor: UIKit.UIColor {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var readMoreFont: UIKit.UIFont {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var expandedAttributedLink: Foundation.NSAttributedString?
+  @_Concurrency.MainActor(unsafe) open var ellipsis: Foundation.NSAttributedString?
+  @_Concurrency.MainActor(unsafe) open var animationView: UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) open var textReplacementType: AmityUIKit.AmityExpandableLabel.TextReplacementType
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var numberOfLines: ObjectiveC.NSInteger {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func layoutSubviews()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var text: Swift.String? {
+    @objc get
+    @objc set(text)
+  }
+  @_Concurrency.MainActor(unsafe) open var expandedText: Foundation.NSAttributedString? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var attributedText: Foundation.NSAttributedString? {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) open func setLessLinkWith(lessLink: Swift.String, attributes: [Foundation.NSAttributedString.Key : Swift.AnyObject], position: UIKit.NSTextAlignment?)
+  @_Concurrency.MainActor(unsafe) open class func height(for text: Swift.String, font: UIKit.UIFont, boundingWidth: CoreFoundation.CGFloat, maximumLines: Swift.Int) -> CoreFoundation.CGFloat
+  @objc deinit
+}
+extension AmityUIKit.AmityExpandableLabel {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func touchesCancelled(_ touches: Swift.Set<UIKit.UITouch>, with event: UIKit.UIEvent?)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func touchesEnded(_ touches: Swift.Set<UIKit.UITouch>, with event: UIKit.UIEvent?)
+}
+extension Swift.String {
+  public func hasPrefixIgnoringCase(_ prefix: Swift.String) -> Swift.Bool
+}
+public protocol FeedHeaderPresentable {
+  var headerView: UIKit.UIView { get }
+  var height: CoreFoundation.CGFloat { get }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityFeedViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) final public var headerView: AmityUIKit.FeedHeaderPresentable? {
+    get
+    set
+  }
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make(feedType: AmityUIKit.AmityPostFeedType) -> AmityUIKit.AmityFeedViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+}
+extension AmityUIKit.AmityFeedViewController : AmityUIKit.AmityPostPreviewCommentDelegate {
+  @_Concurrency.MainActor(unsafe) final public func didPerformAction(_ cell: AmityUIKit.AmityPostPreviewCommentProtocol, action: AmityUIKit.AmityPostPreviewCommentAction)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPendingPostsViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(communityId: Swift.String) -> AmityUIKit.AmityPendingPostsViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPendingPostsViewController : AmityUIKit.AmityPostHeaderDelegate {
+  @_Concurrency.MainActor(unsafe) public func didPerformAction(_ cell: AmityUIKit.AmityPostHeaderProtocol, action: AmityUIKit.AmityPostHeaderAction)
+}
+extension AmityUIKit.AmityPendingPostsViewController : AmityUIKit.AmityPostDelegate {
+  @_Concurrency.MainActor(unsafe) public func didPerformAction(_ cell: AmityUIKit.AmityPostProtocol, action: AmityUIKit.AmityPostAction)
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityButton : UIKit.UIButton {
+  public enum Position {
+    case left, right
+    public static func == (a: AmityUIKit.AmityButton.Position, b: AmityUIKit.AmityButton.Position) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @_Concurrency.MainActor(unsafe) public var touchUpHandler: (() -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var isSelected: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) public func setImage(_ image: UIKit.UIImage?, position: AmityUIKit.AmityButton.Position = .right, constant: CoreFoundation.CGFloat = 16)
+  @_Concurrency.MainActor(unsafe) public func setTitleFont(_ font: UIKit.UIFont)
+  @objc deinit
+}
+public protocol BottomSheetComponent : UIKit.UIView {
+  var componentHeight: CoreFoundation.CGFloat { get }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class BottomSheetViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public func dismissBottomSheet(completion: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCategoryListViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityCategoryListViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+extension AmityUIKit.AmityCategoryListViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityCategoryListViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class BottomSheetSeparatorView : UIKit.UIView, AmityUIKit.BottomSheetComponent {
+  @_Concurrency.MainActor(unsafe) public var componentHeight: CoreFoundation.CGFloat {
+    get
+  }
+  @objc deinit
+}
+extension Swift.String {
+  public var localizedString: Swift.String {
+    get
+  }
+  public func height(withConstrainedWidth width: CoreFoundation.CGFloat, font: UIKit.UIFont) -> CoreFoundation.CGFloat
+  public func width(withConstrainedHeight height: CoreFoundation.CGFloat, font: UIKit.UIFont) -> CoreFoundation.CGFloat
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class AmityRecentChatViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(channelType: AmitySDK.AmityChannelType = .conversation) -> AmityUIKit.AmityRecentChatViewController
+  @objc deinit
+}
+extension AmityUIKit.AmityRecentChatViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityRecentChatViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPostViewAllCommentsTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityCellIdentifiable {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func awakeFromNib()
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public struct AmityPostPollComponent : AmityUIKit.AmityPostComposable {
+  public var post: AmityUIKit.AmityPostModel {
+    get
+  }
+  public init(post: AmityUIKit.AmityPostModel)
+  public func getComponentCount(for index: Swift.Int) -> Swift.Int
+  public func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  public func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+public struct AmityMentionUserModel {
+}
+public protocol AmityMentionManagerDelegate : AnyObject {
+  func didGetUsers(users: [AmityUIKit.AmityMentionUserModel])
+  func didCreateAttributedString(attributedString: Foundation.NSAttributedString)
+  func didMentionsReachToMaximumLimit()
+  func didCharactersReachToMaximumLimit()
+}
+public enum AmityMentionManagerType {
+  case post(communityId: Swift.String?)
+  case comment(communityId: Swift.String?)
+  case message(channelId: Swift.String?)
+}
+final public class AmityMentionManager {
+  final public var users: [AmityUIKit.AmityMentionUserModel]
+  public static let maximumCharacterCountForPost: Swift.Int
+  public static let maximumMentionsCount: Swift.Int
+  weak final public var delegate: AmityUIKit.AmityMentionManagerDelegate?
+  public init(withType type: AmityUIKit.AmityMentionManagerType)
+  @objc deinit
+}
+extension AmityUIKit.AmityMentionManager {
+  final public func shouldChangeTextIn(_ textInput: UIKit.UITextInput, inRange range: Foundation.NSRange, replacementText: Swift.String, currentText text: Swift.String) -> Swift.Bool
+  final public func changeSelection(_ textInput: UIKit.UITextInput)
+  final public func addMention(from textInput: UIKit.UITextInput, in text: Swift.String, at indexPath: Foundation.IndexPath)
+  final public func item(at indexPath: Foundation.IndexPath) -> AmityUIKit.AmityMentionUserModel?
+  final public func loadMore()
+  final public func setMentions(metadata: [Swift.String : Any], inText text: Swift.String)
+  final public func getMetadata(shift: Swift.Int = 0) -> [Swift.String : Any]?
+  final public func getMentionees() -> AmitySDK.AmityMentioneesBuilder?
+  final public func setColor(_ foregroundColor: UIKit.UIColor, highlightColor: UIKit.UIColor)
+  final public func setFont(_ font: UIKit.UIFont, highlightFont: UIKit.UIFont)
+  final public func resetState()
+}
+@objc extension UIKit.UIViewController {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func presentImagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, animated: Swift.Bool = true, select: ((_ asset: Photos.PHAsset) -> Swift.Void)?, deselect: ((_ asset: Photos.PHAsset) -> Swift.Void)?, cancel: (([Photos.PHAsset]) -> Swift.Void)?, finish: (([Photos.PHAsset]) -> Swift.Void)?, completion: (() -> Swift.Void)? = nil)
+}
+extension AmityUIKit.AmityImagePickerController {
+  @objc @_Concurrency.MainActor(unsafe) public static var currentAuthorization: Photos.PHAuthorizationStatus {
+    @objc get
+  }
+}
+extension AmityUIKit.AmityImagePickerController : AmityUIKit.AmityImagePickerControllerDelegate {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didSelectAsset asset: Photos.PHAsset)
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didDeselectAsset asset: Photos.PHAsset)
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didFinishWithAssets assets: [Photos.PHAsset])
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didCancelWithAssets assets: [Photos.PHAsset])
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didReachSelectionLimit count: Swift.Int)
+}
+@objc @objcMembers public class AssetStore : ObjectiveC.NSObject {
+  @objc public var assets: [Photos.PHAsset] {
+    get
+  }
+  @objc public init(assets: [Photos.PHAsset] = [])
+  @objc public var count: Swift.Int {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostPollAnswerTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable {
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostTextTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var indexPath: Foundation.IndexPath? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel, indexPath: Foundation.IndexPath)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostTextTableViewCell : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) final public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+@objc public protocol AmityPhotoViewerControllerDataSource : ObjectiveC.NSObjectProtocol {
+  @objc func numberOfItems(in photoViewerController: AmityUIKit.AmityPhotoViewerController) -> Swift.Int
+  @objc func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configurePhotoAt index: Swift.Int, withImageView imageView: UIKit.UIImageView)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configureCell cell: AmityUIKit.AmityPhotoCollectionViewCell, forPhotoAt index: Swift.Int)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, referencedViewForPhotoAt index: Swift.Int) -> UIKit.UIView?
+}
+public protocol AmityMyCommunityPreviewViewControllerDelegate : AnyObject {
+  func viewController(_ viewController: AmityUIKit.AmityMyCommunityPreviewViewController, didPerformAction action: AmityUIKit.AmityMyCommunityPreviewViewController.ActionType)
+  func viewController(_ viewController: AmityUIKit.AmityMyCommunityPreviewViewController, shouldShowMyCommunityPreview: Swift.Bool)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMyCommunityPreviewViewController : UIKit.UIViewController {
+  public enum ActionType {
+    case seeAll
+    case communityItem(communityId: Swift.String)
+  }
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityMyCommunityPreviewViewControllerDelegate?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityMyCommunityPreviewViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityMyCommunityPreviewViewController : UIKit.UICollectionViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, didSelectItemAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityMyCommunityPreviewViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+extension AmityUIKit.AmityMyCommunityPreviewViewController : AmityUIKit.FeedHeaderPresentable {
+  @_Concurrency.MainActor(unsafe) final public var headerView: UIKit.UIView {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var height: CoreFoundation.CGFloat {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostGalleryTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public var indexPath: Foundation.IndexPath? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel, indexPath: Foundation.IndexPath)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostGalleryTableViewCell : AmityUIKit.AmityPhotoViewerControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerControllerDidEndPresentingAnimation(_ photoViewerController: AmityUIKit.AmityPhotoViewerController)
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, didScrollToPhotoAt index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerControllerDidReceiveTapGesture(_ photoViewerController: AmityUIKit.AmityPhotoViewerController)
+}
+extension AmityUIKit.AmityPostGalleryTableViewCell : AmityUIKit.AmityPhotoViewerControllerDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configureCell cell: AmityUIKit.AmityPhotoCollectionViewCell, forPhotoAt index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, referencedViewForPhotoAt index: Swift.Int) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc final public func numberOfItems(in photoViewerController: AmityUIKit.AmityPhotoViewerController) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configurePhotoAt index: Swift.Int, withImageView imageView: UIKit.UIImageView)
+}
+extension AmityUIKit.AmityPostGalleryTableViewCell : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) final public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityTrendingCommunityViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) final public var selectedCommunityHandler: ((AmitySDK.AmityCommunity) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var emptyHandler: ((Swift.Bool) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityTrendingCommunityViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityTrendingCommunityViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityTrendingCommunityViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+@_hasMissingDesignatedInitializers public class AmityFile : Swift.Hashable, Swift.Equatable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: AmityUIKit.AmityFile, rhs: AmityUIKit.AmityFile) -> Swift.Bool
+  @objc deinit
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommentEditorViewController : AmityUIKit.AmityEditTextViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(comment: AmityUIKit.AmityCommentModel, communityId: Swift.String?) -> AmityUIKit.AmityCommentEditorViewController
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class AmityMedia : Swift.Equatable, Swift.Hashable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: AmityUIKit.AmityMedia, rhs: AmityUIKit.AmityMedia) -> Swift.Bool
+  @objc deinit
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol AmityPostFooterProtocol : UIKit.UITableViewCell, AmityUIKit.AmityCellIdentifiable {
+  var delegate: AmityUIKit.AmityPostFooterDelegate? { get set }
+  var post: AmityUIKit.AmityPostModel? { get }
+  func display(post: AmityUIKit.AmityPostModel)
+}
+public protocol AmityPostFooterDelegate : AnyObject {
+  func didPerformAction(_ cell: AmityUIKit.AmityPostFooterProtocol, action: AmityUIKit.AmityPostFooterAction)
+}
+public enum AmityPostFooterAction {
+  case tapLike
+  case tapComment
+  case tapShare
+  public static func == (a: AmityUIKit.AmityPostFooterAction, b: AmityUIKit.AmityPostFooterAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum AmityPostTarget {
+  case myFeed
+  case community(object: AmitySDK.AmityCommunity)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCategoryCommunityListViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(categoryId: Swift.String) -> AmityUIKit.AmityCategoryCommunityListViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+extension AmityUIKit.AmityCategoryCommunityListViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityCategoryCommunityListViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, viewForFooterInSection section: Swift.Int) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForFooterInSection section: Swift.Int) -> CoreFoundation.CGFloat
+}
+public protocol AmityFeedDelegate : AnyObject {
+  func didPerformActionLikePost()
+  func didPerformActionUnLikePost()
+  func didPerformActionLikeComment()
+  func didPerformActionUnLikeComment()
+}
+open class AmityChannelEventHandler {
+  public init()
+  open func channelDidTap(from source: AmityUIKit.AmityViewController, channelId: Swift.String)
+  open func channelDidLeaveSuccess(from source: AmityUIKit.AmityViewController)
+  open func channelGroupChatUpdateDidComplete(from source: AmityUIKit.AmityViewController)
+  open func channelAddMemberDidTap(from source: AmityUIKit.AmityViewController, channelId: Swift.String, selectedUsers: [AmityUIKit.AmitySelectMemberModel], completionHandler: @escaping ([AmityUIKit.AmitySelectMemberModel]) -> ())
+  open func channelCreateNewChat(from source: AmityUIKit.AmityViewController, completionHandler: @escaping ([AmityUIKit.AmitySelectMemberModel]) -> ())
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPagerTabViewController : AmityUIKit.AmityViewController, UIKit.UIScrollViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLayoutSubviews()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var shouldAutomaticallyForwardAppearanceMethods: Swift.Bool {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) @objc public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc public func scrollViewWillBeginDragging(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc public func scrollViewDidEndScrollingAnimation(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillTransition(to size: CoreFoundation.CGSize, with coordinator: UIKit.UIViewControllerTransitionCoordinator)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostHeaderTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostHeaderProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostHeaderDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityCommunityMemberSettingsViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(community: AmitySDK.AmityCommunity) -> AmityUIKit.AmityCommunityMemberSettingsViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+public struct AmityPostLiveStreamComponent : AmityUIKit.AmityPostComposable {
+  public var post: AmityUIKit.AmityPostModel {
+    get
+  }
+  public init(post: AmityUIKit.AmityPostModel)
+  public func getComponentCount(for index: Swift.Int) -> Swift.Int
+  public func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  public func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityPostCreatorViewController : AmityUIKit.AmityPostTextEditorViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(postTarget: AmityUIKit.AmityPostTarget, settings: AmityUIKit.AmityPostEditorSettings = AmityPostEditorSettings()) -> AmityUIKit.AmityPostCreatorViewController
+  @objc deinit
+}
+public protocol AmityCommunityProfileEditorViewControllerDelegate : AnyObject {
+  func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFinishCreateCommunity communityId: Swift.String)
+  func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFailWithNoPermission: Swift.Bool)
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewControllerDelegate {
+  public func viewController(_ viewController: AmityUIKit.AmityCommunityProfileEditorViewController, didFailWithNoPermission: Swift.Bool)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommunityProfileEditorViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) weak public var delegate: AmityUIKit.AmityCommunityProfileEditorViewControllerDelegate?
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override public func didTapLeftBarButton()
+  @objc deinit
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController : UIKit.UITextFieldDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textField(_ textField: UIKit.UITextField, shouldChangeCharactersIn range: Foundation.NSRange, replacementString string: Swift.String) -> Swift.Bool
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController : AmityUIKit.AmityTextViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChange(_ textView: AmityUIKit.AmityTextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: AmityUIKit.AmityTextView, shouldChangeTextIn range: Foundation.NSRange, replacementText text: Swift.String) -> Swift.Bool
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textFieldShouldReturn(_ textField: UIKit.UITextField) -> Swift.Bool
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, sizeForItemAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGSize
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumLineSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+extension AmityUIKit.AmityCommunityProfileEditorViewController : UIKit.UIImagePickerControllerDelegate & UIKit.UINavigationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func imagePickerController(_ picker: UIKit.UIImagePickerController, didFinishPickingMediaWithInfo info: [UIKit.UIImagePickerController.InfoKey : Any])
+}
+@objc @_inheritsConvenienceInitializers @objcMembers public class Settings : ObjectiveC.NSObject {
+  @objc public static let shared: AmityUIKit.Settings
+  @objc @_inheritsConvenienceInitializers public class Theme : ObjectiveC.NSObject {
+    public var backgroundColor: UIKit.UIColor {
+      get
+      set
+    }
+    public var selectionFillColor: UIKit.UIColor {
+      get
+      set
+    }
+    public var selectionStrokeColor: UIKit.UIColor {
+      get
+      set
+    }
+    public var selectionShadowColor: UIKit.UIColor {
+      get
+      set
+    }
+    public enum SelectionStyle {
+      case checked
+      case numbered
+      public static func == (a: AmityUIKit.Settings.Theme.SelectionStyle, b: AmityUIKit.Settings.Theme.SelectionStyle) -> Swift.Bool
+      public func hash(into hasher: inout Swift.Hasher)
+      public var hashValue: Swift.Int {
+        get
+      }
+    }
+    public var selectionStyle: AmityUIKit.Settings.Theme.SelectionStyle {
+      get
+      set
+    }
+    public var previewTitleAttributes: [Foundation.NSAttributedString.Key : Any] {
+      get
+      set
+    }
+    public var previewSubtitleAttributes: [Foundation.NSAttributedString.Key : Any] {
+      get
+      set
+    }
+    public var albumTitleAttributes: [Foundation.NSAttributedString.Key : Any] {
+      get
+      set
+    }
+    @objc override dynamic public init()
+    @objc deinit
+  }
+  @objc @_inheritsConvenienceInitializers public class List : ObjectiveC.NSObject {
+    public var cellsPerRow: (_ verticalSize: UIKit.UIUserInterfaceSizeClass, _ horizontalSize: UIKit.UIUserInterfaceSizeClass) -> Swift.Int {
+      get
+      set
+    }
+    @objc override dynamic public init()
+    @objc deinit
+  }
+  @objc @_inheritsConvenienceInitializers public class Preview : ObjectiveC.NSObject {
+    public var enabled: Swift.Bool {
+      get
+      set
+    }
+    @objc override dynamic public init()
+    @objc deinit
+  }
+  @objc @_inheritsConvenienceInitializers public class Fetch : ObjectiveC.NSObject {
+    @objc @_inheritsConvenienceInitializers public class Album : ObjectiveC.NSObject {
+      public var options: Photos.PHFetchOptions {
+        get
+        set
+      }
+      public var fetchResults: [Photos.PHFetchResult<Photos.PHAssetCollection>] {
+        get
+        set
+      }
+      @objc override dynamic public init()
+      @objc deinit
+    }
+    @objc @_inheritsConvenienceInitializers public class Assets : ObjectiveC.NSObject {
+      public enum MediaTypes {
+        case image
+        case video
+        public static func == (a: AmityUIKit.Settings.Fetch.Assets.MediaTypes, b: AmityUIKit.Settings.Fetch.Assets.MediaTypes) -> Swift.Bool
+        public func hash(into hasher: inout Swift.Hasher)
+        public var hashValue: Swift.Int {
+          get
+        }
+      }
+      public var supportedMediaTypes: Swift.Set<AmityUIKit.Settings.Fetch.Assets.MediaTypes> {
+        get
+        set
+      }
+      public var options: Photos.PHFetchOptions {
+        get
+        set
+      }
+      @objc override dynamic public init()
+      @objc deinit
+    }
+    @objc @_inheritsConvenienceInitializers public class Preview : ObjectiveC.NSObject {
+      public var photoOptions: Photos.PHImageRequestOptions {
+        get
+        set
+      }
+      public var livePhotoOptions: Photos.PHLivePhotoRequestOptions {
+        get
+        set
+      }
+      public var videoOptions: Photos.PHVideoRequestOptions {
+        get
+        set
+      }
+      @objc override dynamic public init()
+      @objc deinit
+    }
+    public var album: AmityUIKit.Settings.Fetch.Album {
+      get
+      set
+    }
+    public var assets: AmityUIKit.Settings.Fetch.Assets {
+      get
+      set
+    }
+    public var preview: AmityUIKit.Settings.Fetch.Preview {
+      get
+      set
+    }
+    @objc override dynamic public init()
+    @objc deinit
+  }
+  @objc @_inheritsConvenienceInitializers public class Dismiss : ObjectiveC.NSObject {
+    public var enabled: Swift.Bool {
+      get
+      set
+    }
+    public var allowSwipe: Swift.Bool {
+      get
+      set
+    }
+    @objc override dynamic public init()
+    @objc deinit
+  }
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityPostPollTableViewCell : UIKit.UITableViewCell, AmityUIKit.Nibbable, AmityUIKit.AmityPostProtocol {
+  @_Concurrency.MainActor(unsafe) weak final public var delegate: AmityUIKit.AmityPostDelegate?
+  @_Concurrency.MainActor(unsafe) final public var post: AmityUIKit.AmityPostModel?
+  @_Concurrency.MainActor(unsafe) final public var indexPath: Foundation.IndexPath?
+  @_Concurrency.MainActor(unsafe) @objc override final public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func display(post: AmityUIKit.AmityPostModel, indexPath: Foundation.IndexPath)
+  @available(iOS 3.0, *)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableViewCell.CellStyle, reuseIdentifier: Swift.String?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostPollTableViewCell : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityPostPollTableViewCell : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func numberOfSections(in tableView: UIKit.UITableView) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, heightForFooterInSection section: Swift.Int) -> CoreFoundation.CGFloat
+}
+extension AmityUIKit.AmityPostPollTableViewCell : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) final public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) final public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+public struct AmityCommentModel {
+}
+public protocol AmityPostComposable {
+  var post: AmityUIKit.AmityPostModel { get }
+  init(post: AmityUIKit.AmityPostModel)
+  func getComponentCount(for index: Swift.Int) -> Swift.Int
+  func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+public enum AmityMessageTypes : Swift.CaseIterable {
+  case textIncoming
+  case textOutgoing
+  case imageIncoming
+  case imageOutgoing
+  case audioIncoming
+  case audioOutgoing
+  public static func == (a: AmityUIKit.AmityMessageTypes, b: AmityUIKit.AmityMessageTypes) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [AmityUIKit.AmityMessageTypes]
+  public static var allCases: [AmityUIKit.AmityMessageTypes] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommunityEditorViewController : AmityUIKit.AmityCommunityProfileEditorViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(withCommunityId communityId: Swift.String) -> AmityUIKit.AmityCommunityEditorViewController
+  @objc deinit
+}
+public enum AmityPostFeedType : Swift.Equatable {
+  case globalFeed
+  case customPostRankingGlobalFeed
+  case myFeed
+  case userFeed(userId: Swift.String)
+  case communityFeed(communityId: Swift.String)
+  case pendingPostsFeed(communityId: Swift.String)
+  public static func == (a: AmityUIKit.AmityPostFeedType, b: AmityUIKit.AmityPostFeedType) -> Swift.Bool
+}
+@objc public protocol AmityTextViewDelegate {
+  @objc optional func textViewShouldBeginEditing(_ textView: AmityUIKit.AmityTextView) -> Swift.Bool
+  @objc optional func textViewShouldEndEditing(_ textView: AmityUIKit.AmityTextView) -> Swift.Bool
+  @objc optional func textViewDidBeginEditing(_ textView: AmityUIKit.AmityTextView)
+  @objc optional func textViewDidEndEditing(_ textView: AmityUIKit.AmityTextView)
+  @objc optional func textView(_ textView: AmityUIKit.AmityTextView, shouldChangeTextIn range: Foundation.NSRange, replacementText text: Swift.String) -> Swift.Bool
+  @objc optional func textViewDidChange(_ textView: AmityUIKit.AmityTextView)
+  @objc optional func textViewDidChangeSelection(_ textView: AmityUIKit.AmityTextView)
+  @objc optional func textView(_ textView: AmityUIKit.AmityTextView, shouldInteractWithURL url: Foundation.URL, in characterRange: Foundation.NSRange, interaction: UIKit.UITextItemInteraction) -> Swift.Bool
+  @objc optional func textView(_ textView: AmityUIKit.AmityTextView, shouldInteractWithTextAttachment textAttachment: UIKit.NSTextAttachment, in characterRange: Foundation.NSRange, interaction: UIKit.UITextItemInteraction) -> Swift.Bool
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) open class AmityTextView : UIKit.UITextView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var text: Swift.String! {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var bounds: CoreFoundation.CGRect {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) public var padding: UIKit.UIEdgeInsets {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var placeholder: Swift.String? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) public var placeholderColor: UIKit.UIColor
+  @_Concurrency.MainActor(unsafe) weak public var customTextViewDelegate: AmityUIKit.AmityTextViewDelegate?
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityTextView : UIKit.UITextViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidBeginEditing(_ textView: UIKit.UITextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidEndEditing(_ textView: UIKit.UITextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewShouldBeginEditing(_ textView: UIKit.UITextView) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewShouldEndEditing(_ textView: UIKit.UITextView) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: UIKit.UITextView, shouldChangeTextIn range: Foundation.NSRange, replacementText text: Swift.String) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChange(_ textView: UIKit.UITextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChangeSelection(_ textView: UIKit.UITextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: UIKit.UITextView, shouldInteractWith URL: Foundation.URL, in characterRange: Foundation.NSRange, interaction: UIKit.UITextItemInteraction) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: UIKit.UITextView, shouldInteractWith textAttachment: UIKit.NSTextAttachment, in characterRange: Foundation.NSRange, interaction: UIKit.UITextItemInteraction) -> Swift.Bool
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityColorPaletteTableViewController : UIKit.UITableViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(style: UIKit.UITableView.Style)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityPhotoScrollView : UIKit.UIScrollView {
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPhotoScrollView : UIKit.UIGestureRecognizerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIKit.UIGestureRecognizer) -> Swift.Bool
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) public var contentView: UIKit.UIView!
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommunityCreatorViewController : AmityUIKit.AmityCommunityProfileEditorViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityCommunityCreatorViewController
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPageViewController : AmityUIKit.AmityButtonPagerTabSViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityRecommendedCommunityViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) final public var selectedCommunityHandler: ((AmitySDK.AmityCommunity) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var emptyHandler: ((Swift.Bool) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityRecommendedCommunityViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityRecommendedCommunityViewController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, didSelectItemAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityRecommendedCommunityViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityCommunityExplorerViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityCommunityExplorerViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public protocol AmityPostPreviewCommentProtocol : UIKit.UITableViewCell, AmityUIKit.AmityCellIdentifiable {
+  var delegate: AmityUIKit.AmityPostPreviewCommentDelegate? { get set }
+  var post: AmityUIKit.AmityPostModel? { get }
+  func display(post: AmityUIKit.AmityPostModel, comment: AmityUIKit.AmityCommentModel?)
+}
+public protocol AmityPostPreviewCommentDelegate : AnyObject {
+  func didPerformAction(_ cell: AmityUIKit.AmityPostPreviewCommentProtocol, action: AmityUIKit.AmityPostPreviewCommentAction)
+}
+public enum AmityPostPreviewCommentAction {
+  case tapAvatar(comment: AmityUIKit.AmityCommentModel)
+  case tapLike(comment: AmityUIKit.AmityCommentModel)
+  case tapOption(comment: AmityUIKit.AmityCommentModel)
+  case tapReply(comment: AmityUIKit.AmityCommentModel)
+  case tapExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case willExpandExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case didExpandExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case willCollapseExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case didCollapseExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case tapOnMention(userId: Swift.String)
+}
+extension AmityUIKit.AmityPostModel {
+  public class Poll {
+    final public let id: Swift.String
+    final public let question: Swift.String
+    final public let answers: [AmityUIKit.AmityPostModel.Poll.Answer]
+    final public let isMultipleVoted: Swift.Bool
+    final public let status: Swift.String
+    final public let isClosed: Swift.Bool
+    final public let isVoted: Swift.Bool
+    final public let closedIn: Swift.UInt64
+    final public let voteCount: Swift.Int
+    final public let createdAt: Foundation.Date
+    public init(poll: AmitySDK.AmityPoll)
+    public class Answer {
+      final public let id: Swift.String
+      final public let dataType: Swift.String
+      final public let text: Swift.String
+      final public let isVotedByUser: Swift.Bool
+      final public let voteCount: Swift.Int
+      public init(answer: AmitySDK.AmityPollAnswer)
+      @objc deinit
+    }
+    @objc deinit
+  }
+}
+extension AmityUIKit.AmityPostModel {
+  public enum PostDisplayType {
+    case feed
+    case postDetail
+    public static func == (a: AmityUIKit.AmityPostModel.PostDisplayType, b: AmityUIKit.AmityPostModel.PostDisplayType) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public class Author {
+    final public let avatarURL: Swift.String?
+    final public let displayName: Swift.String?
+    final public let isGlobalBan: Swift.Bool
+    public init(avatarURL: Swift.String?, displayName: Swift.String?, isGlobalBan: Swift.Bool)
+    @objc deinit
+  }
+  open class AmityPostAppearance {
+    public init()
+    public var displayType: AmityUIKit.AmityPostModel.PostDisplayType
+    public var shouldShowCommunityName: Swift.Bool
+    public var isExpanding: Swift.Bool
+    public var shouldContentExpand: Swift.Bool {
+      get
+    }
+    public var shouldShowOption: Swift.Bool {
+      get
+    }
+    @objc deinit
+  }
+}
+public class AmityPostModel {
+  final public let postId: Swift.String
+  final public let postedUserId: Swift.String
+  final public let dataType: Swift.String
+  final public let myReactions: [AmityUIKit.AmityReactionType]
+  final public let allReactions: [Swift.String]
+  final public let targetId: Swift.String
+  final public let data: [Swift.String : Any]
+  final public let targetCommunity: AmitySDK.AmityCommunity?
+  final public let metadata: [Swift.String : Any]?
+  final public let mentionees: [AmitySDK.AmityMentionees]?
+  public var postTargetType: AmitySDK.AmityPostTargetType {
+    get
+  }
+  public var isOwner: Swift.Bool {
+    get
+  }
+  public var isCommentable: Swift.Bool {
+    get
+  }
+  public var isGroupMember: Swift.Bool {
+    get
+  }
+  public var postedUser: AmityUIKit.AmityPostModel.Author?
+  public var displayName: Swift.String {
+    get
+  }
+  final public let subtitle: Swift.String
+  final public let reactionsCount: Swift.Int
+  final public let allCommentCount: Swift.Int
+  final public let sharedCount: Swift.Int
+  public var appearance: AmityUIKit.AmityPostModel.AmityPostAppearance
+  public var poll: AmityUIKit.AmityPostModel.Poll?
+  public init(post: AmitySDK.AmityPost)
+  public var maximumLastestComments: Swift.Int {
+    get
+  }
+  public var viewAllCommentSection: Swift.Int {
+    get
+  }
+  public func getComment(at indexPath: Foundation.IndexPath, totalComponent index: Swift.Int) -> AmityUIKit.AmityCommentModel?
+  @objc deinit
+}
+public enum AmityPostSharingTarget : Swift.CaseIterable {
+  case originFeed
+  case myFeed
+  case publicCommunity
+  case privateCommunity
+  case external
+  public static func == (a: AmityUIKit.AmityPostSharingTarget, b: AmityUIKit.AmityPostSharingTarget) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [AmityUIKit.AmityPostSharingTarget]
+  public static var allCases: [AmityUIKit.AmityPostSharingTarget] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#warning("#HUD")
+#warning("Need to refactor hud view to support fullscreen and handle the content inside of itself")
+@_hasMissingDesignatedInitializers final public class AmitySelectMemberModel : Swift.Equatable {
+  public static func == (lhs: AmityUIKit.AmitySelectMemberModel, rhs: AmityUIKit.AmitySelectMemberModel) -> Swift.Bool
+  final public let userId: Swift.String
+  final public let displayName: Swift.String?
+  final public var email: Swift.String
+  final public var isSelected: Swift.Bool
+  final public let avatarURL: Swift.String
+  final public let defaultDisplayName: Swift.String
+  final public var isCurrnetUser: Swift.Bool {
+    get
+  }
+  @objc deinit
+}
+public struct AmityTypography {
+  public init(headerLine: UIKit.UIFont = .systemFont(ofSize: 20, weight: .bold), title: UIKit.UIFont = .systemFont(ofSize: 17, weight: .semibold), bodyBold: UIKit.UIFont = .systemFont(ofSize: 15, weight: .semibold), body: UIKit.UIFont = .systemFont(ofSize: 15, weight: .regular), captionBold: UIKit.UIFont = .systemFont(ofSize: 13, weight: .semibold), caption: UIKit.UIFont = .systemFont(ofSize: 13, weight: .regular))
+}
+@_hasMissingDesignatedInitializers public class AmityFontSet {
+  public static var headerLine: UIKit.UIFont {
+    get
+  }
+  public static var title: UIKit.UIFont {
+    get
+  }
+  public static var bodyBold: UIKit.UIFont {
+    get
+  }
+  public static var body: UIKit.UIFont {
+    get
+  }
+  public static var captionBold: UIKit.UIFont {
+    get
+  }
+  public static var caption: UIKit.UIFont {
+    get
+  }
+  @objc deinit
+}
+@objc @_Concurrency.MainActor(unsafe) open class AmityPostDetailViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) required public init(withPostId postId: Swift.String)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) public class func make(withPostId postId: Swift.String) -> Self
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostDetailViewController : AmityUIKit.AmityExpandableLabelDelegate {
+  @_Concurrency.MainActor(unsafe) public func expandableLabeldidTap(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) public func willExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) public func didExpandLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) public func willCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) public func didCollapseLabel(_ label: AmityUIKit.AmityExpandableLabel)
+  @_Concurrency.MainActor(unsafe) public func didTapOnMention(_ label: AmityUIKit.AmityExpandableLabel, withUserId userId: Swift.String)
+}
+extension AmityUIKit.AmityPostDetailViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityPostDetailViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityPostDetailViewController : AmityUIKit.AmityMentionManagerDelegate {
+  @_Concurrency.MainActor(unsafe) public func didCreateAttributedString(attributedString: Foundation.NSAttributedString)
+  @_Concurrency.MainActor(unsafe) public func didGetUsers(users: [AmityUIKit.AmityMentionUserModel])
+  @_Concurrency.MainActor(unsafe) public func didMentionsReachToMaximumLimit()
+  @_Concurrency.MainActor(unsafe) public func didCharactersReachToMaximumLimit()
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityActivityController : UIKit.UIActivityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(activityItems: [Any], applicationActivities: [UIKit.UIActivity]? = nil) -> AmityUIKit.AmityActivityController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(activityItems: [Any], applicationActivities: [UIKit.UIActivity]?)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityMemberPickerViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) final public var selectUsersHandler: (([AmityUIKit.AmitySelectMemberModel]) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(withCurrentUsers users: [AmityUIKit.AmitySelectMemberModel] = []) -> AmityUIKit.AmityMemberPickerViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityMemberPickerViewController : UIKit.UISearchBarDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func searchBar(_ searchBar: UIKit.UISearchBar, textDidChange searchText: Swift.String)
+}
+extension AmityUIKit.AmityMemberPickerViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, viewForHeaderInSection section: Swift.Int) -> UIKit.UIView?
+}
+extension AmityUIKit.AmityMemberPickerViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func numberOfSections(in tableView: UIKit.UITableView) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityMemberPickerViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+extension AmityUIKit.AmityMemberPickerViewController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, sizeForItemAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGSize
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumLineSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc final public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, insetForSectionAt section: Swift.Int) -> UIKit.UIEdgeInsets
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityPostEditorViewController : AmityUIKit.AmityPostTextEditorViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(withPostId postId: Swift.String, settings: AmityUIKit.AmityPostEditorSettings = AmityPostEditorSettings()) -> AmityUIKit.AmityPostEditorViewController
+  @objc deinit
+}
+public enum AmityChannelMemberAction {
+  case tapAvatar
+  case tapDisplayName
+  case tapOption
+  public static func == (a: AmityUIKit.AmityChannelMemberAction, b: AmityUIKit.AmityChannelMemberAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct AmityPostFileComponent : AmityUIKit.AmityPostComposable {
+  public var post: AmityUIKit.AmityPostModel {
+    get
+  }
+  public init(post: AmityUIKit.AmityPostModel)
+  public func getComponentCount(for index: Swift.Int) -> Swift.Int
+  public func getComponentCell(_ tableView: UIKit.UITableView, at indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+  public func getComponentHeight(indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCommentCreatorViewController : AmityUIKit.AmityEditTextViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(forCommunity communityId: Swift.String?, isReply: Swift.Bool) -> AmityUIKit.AmityCommentCreatorViewController
+  @objc deinit
+}
+#warning("FIXME: This class should be removed and all callers will be replaced with delegae or completion blocks.")
+extension UIKit.UILabel {
+  @_Concurrency.MainActor(unsafe) public func setLineSpacing(_ spacing: CoreFoundation.CGFloat)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityCategoryPickerViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make(referenceCategoryId: Swift.String? = nil) -> AmityUIKit.AmityCategoryPickerViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+extension AmityUIKit.AmityCategoryPickerViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityCategoryPickerViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityGlobalFeedViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityGlobalFeedViewController
+  @_Concurrency.MainActor(unsafe) public static func makeCustomPostRanking() -> AmityUIKit.AmityGlobalFeedViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityPostGalleryViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) public var pageTitle: Swift.String
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLayoutSubviews()
+  @_Concurrency.MainActor(unsafe) public static func make(targetType: AmitySDK.AmityPostTargetType, targetId: Swift.String) -> AmityUIKit.AmityPostGalleryViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension AmityUIKit.AmityPostGalleryViewController : UIKit.UICollectionViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func numberOfSections(in collectionView: UIKit.UICollectionView) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, numberOfItemsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, cellForItemAt indexPath: Foundation.IndexPath) -> UIKit.UICollectionViewCell
+}
+extension AmityUIKit.AmityPostGalleryViewController : UIKit.UICollectionViewDelegateFlowLayout {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, willDisplay cell: UIKit.UICollectionViewCell, forItemAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, sizeForItemAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGSize
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumLineSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Swift.Int) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, layout collectionViewLayout: UIKit.UICollectionViewLayout, insetForSectionAt section: Swift.Int) -> UIKit.UIEdgeInsets
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, didSelectItemAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func collectionView(_ collectionView: UIKit.UICollectionView, shouldSelectItemAt indexPath: Foundation.IndexPath) -> Swift.Bool
+}
+extension AmityUIKit.AmityPostGalleryViewController : AmityUIKit.AmityPhotoViewerControllerDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func numberOfItems(in photoViewerController: AmityUIKit.AmityPhotoViewerController) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configurePhotoAt index: Swift.Int, withImageView imageView: UIKit.UIImageView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, configureCell cell: AmityUIKit.AmityPhotoCollectionViewCell, forPhotoAt index: Swift.Int)
+}
+extension AmityUIKit.AmityPostGalleryViewController : AmityUIKit.AmityPhotoViewerControllerDelegate {
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityProfileViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityProfileBottomViewController : AmityUIKit.AmityButtonPagerTabSViewController {
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @objc deinit
+}
+public class AmityPostEditorSettings {
+  public init()
+  public var allowPostAttachments: Swift.Set<AmityUIKit.AmityPostAttachmentType>
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityPostTextEditorViewController : AmityUIKit.AmityViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override public func didTapLeftBarButton()
+  @objc deinit
+}
+extension AmityUIKit.AmityPostTextEditorViewController : AmityUIKit.AmityTextViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChange(_ textView: AmityUIKit.AmityTextView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textView(_ textView: AmityUIKit.AmityTextView, shouldChangeTextIn range: Foundation.NSRange, replacementText text: Swift.String) -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func textViewDidChangeSelection(_ textView: AmityUIKit.AmityTextView)
+}
+extension AmityUIKit.AmityPostTextEditorViewController : UIKit.UIImagePickerControllerDelegate, UIKit.UINavigationControllerDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func imagePickerControllerDidCancel(_ picker: UIKit.UIImagePickerController)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func imagePickerController(_ picker: UIKit.UIImagePickerController, didFinishPickingMediaWithInfo info: [UIKit.UIImagePickerController.InfoKey : Any])
+}
+extension AmityUIKit.AmityPostTextEditorViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIKit.UIGestureRecognizer) -> Swift.Bool
+}
+extension AmityUIKit.AmityPostTextEditorViewController : UIKit.UITableViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, heightForRowAt indexPath: Foundation.IndexPath) -> CoreFoundation.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, didSelectRowAt indexPath: Foundation.IndexPath)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, willDisplay cell: UIKit.UITableViewCell, forRowAt indexPath: Foundation.IndexPath)
+}
+extension AmityUIKit.AmityPostTextEditorViewController : UIKit.UITableViewDataSource {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, numberOfRowsInSection section: Swift.Int) -> Swift.Int
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func tableView(_ tableView: UIKit.UITableView, cellForRowAt indexPath: Foundation.IndexPath) -> UIKit.UITableViewCell
+}
+extension AmityUIKit.AmityPostTextEditorViewController : AmityUIKit.AmityMentionManagerDelegate {
+  @_Concurrency.MainActor(unsafe) public func didCreateAttributedString(attributedString: Foundation.NSAttributedString)
+  @_Concurrency.MainActor(unsafe) public func didGetUsers(users: [AmityUIKit.AmityMentionUserModel])
+  @_Concurrency.MainActor(unsafe) public func didMentionsReachToMaximumLimit()
+  @_Concurrency.MainActor(unsafe) public func didCharactersReachToMaximumLimit()
+}
+#warning("NOTED: Should improvements this class")
+extension Swift.Array where Element : Swift.Hashable {
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class AmityChatHomePageViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) public static func make() -> AmityUIKit.AmityChatHomePageViewController
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) final public class AmityChannelMemberSettingsViewController : AmityUIKit.AmityPageViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(channel: AmityUIKit.AmityChannelModel) -> AmityUIKit.AmityChannelMemberSettingsViewController
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class BottomSheetTitleView : UIKit.UIView, AmityUIKit.BottomSheetComponent {
+  @_Concurrency.MainActor(unsafe) public var titleLabel: UIKit.UILabel
+  @_Concurrency.MainActor(unsafe) public var componentHeight: CoreFoundation.CGFloat {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public var rightButtonAction: (() -> ())?
+  @_Concurrency.MainActor(unsafe) public var rightButton: UIKit.UIButton
+  @_Concurrency.MainActor(unsafe) public func setupRightButton()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class AmityCommunityFeedViewController : AmityUIKit.AmityProfileBottomViewController {
+  @_Concurrency.MainActor(unsafe) @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) public static func make(communityId: Swift.String) -> AmityUIKit.AmityCommunityFeedViewController
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @objc deinit
+}
+public protocol AmityCellIdentifiable : AnyObject {
+  static var cellIdentifier: Swift.String { get }
+}
+extension AmityUIKit.AmityCellIdentifiable {
+  public static var cellIdentifier: Swift.String {
+    get
+  }
+}
+public protocol Nibbable : AnyObject {
+  static var nib: UIKit.UINib { get }
+}
+extension AmityUIKit.Nibbable {
+  public static var nib: UIKit.UINib {
+    get
+  }
+}
+@objc public protocol AmityPhotoViewerControllerDelegate : ObjectiveC.NSObjectProtocol {
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, didScrollToPhotoAt index: Swift.Int)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, didZoomOnPhotoAtIndex: Swift.Int, atScale scale: CoreFoundation.CGFloat)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, didEndZoomingOnPhotoAtIndex: Swift.Int, atScale scale: CoreFoundation.CGFloat)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, willZoomOnPhotoAtIndex: Swift.Int)
+  @objc optional func photoViewerControllerDidReceiveTapGesture(_ photoViewerController: AmityUIKit.AmityPhotoViewerController)
+  @objc optional func photoViewerControllerDidReceiveDoubleTapGesture(_ photoViewerController: AmityUIKit.AmityPhotoViewerController)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, willBeginPanGestureRecognizer gestureRecognizer: UIKit.UIPanGestureRecognizer)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, didEndPanGestureRecognizer gestureRecognizer: UIKit.UIPanGestureRecognizer)
+  @objc optional func photoViewerControllerDidEndPresentingAnimation(_ photoViewerController: AmityUIKit.AmityPhotoViewerController)
+  @objc optional func photoViewerController(_ photoViewerController: AmityUIKit.AmityPhotoViewerController, scrollViewDidScroll: UIKit.UIScrollView)
+}
+extension AmityUIKit.AmityImagePickerController : UIKit.UIAdaptivePresentationControllerDelegate {
+  @available(iOS 13, *)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func presentationControllerShouldDismiss(_ presentationController: UIKit.UIPresentationController) -> Swift.Bool
+  @available(iOS 13, *)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func presentationControllerDidDismiss(_ presentationController: UIKit.UIPresentationController)
+}
+public protocol AmityImagePickerControllerDelegate : AnyObject {
+  func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didSelectAsset asset: Photos.PHAsset)
+  func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didDeselectAsset asset: Photos.PHAsset)
+  func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didFinishWithAssets assets: [Photos.PHAsset])
+  func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didCancelWithAssets assets: [Photos.PHAsset])
+  func imagePicker(_ imagePicker: AmityUIKit.AmityImagePickerController, didReachSelectionLimit count: Swift.Int)
+}
+public protocol AmityPostProtocol : UIKit.UITableViewCell, AmityUIKit.AmityCellIdentifiable {
+  var delegate: AmityUIKit.AmityPostDelegate? { get set }
+  var post: AmityUIKit.AmityPostModel? { get }
+  var indexPath: Foundation.IndexPath? { get }
+  func display(post: AmityUIKit.AmityPostModel, indexPath: Foundation.IndexPath)
+}
+public protocol AmityPostDelegate : AnyObject {
+  func didPerformAction(_ cell: AmityUIKit.AmityPostProtocol, action: AmityUIKit.AmityPostAction)
+}
+public enum AmityPostAction {
+  case tapLiveStream(stream: AmitySDK.AmityStream)
+  case tapMedia(media: AmityUIKit.AmityMedia)
+  case tapMediaInside(media: AmityUIKit.AmityMedia, photoViewer: AmityUIKit.AmityPhotoViewerController)
+  case tapFile(file: AmityUIKit.AmityFile)
+  case tapViewAll
+  case tapExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case willExpandExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case didExpandExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case willCollapseExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case didCollapseExpandableLabel(label: AmityUIKit.AmityExpandableLabel)
+  case submit
+  case tapOnMentionWithUserId(userId: Swift.String)
+}
+public enum AmityPostContentType {
+  case post
+  case poll
+  case livestream
+  public static func == (a: AmityUIKit.AmityPostContentType, b: AmityUIKit.AmityPostContentType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+open class AmityEventHandler {
+  public init()
+  open func communityDidTap(from source: AmityUIKit.AmityViewController, communityId: Swift.String)
+  open func leaveCommunityDidTap(from source: AmityUIKit.AmityViewController, communityId: Swift.String)
+  open func communityChannelDidTap(from source: AmityUIKit.AmityViewController, channelId: Swift.String)
+  open func postDidtap(from source: AmityUIKit.AmityViewController, postId: Swift.String)
+  open func userDidTap(from source: AmityUIKit.AmityViewController, userId: Swift.String)
+  open func editUserDidTap(from source: AmityUIKit.AmityViewController, userId: Swift.String)
+  open func postTargetDidSelect(from source: AmityUIKit.AmityViewController, postTarget: AmityUIKit.AmityPostTarget, postContentType: AmityUIKit.AmityPostContentType)
+  open func createPostBeingPrepared(from source: AmityUIKit.AmityViewController, postTarget: AmityUIKit.AmityPostTarget? = nil)
+  open func createPostDidTap(from source: AmityUIKit.AmityViewController, postTarget: AmityUIKit.AmityPostTarget, postContentType: AmityUIKit.AmityPostContentType = .post)
+  open func createLiveStreamPost(from source: AmityUIKit.AmityViewController, targetId: Swift.String?, targetType: AmitySDK.AmityPostTargetType, destinationToUnwindBackAfterFinish: UIKit.UIViewController)
+  open func editPostDidTap(from source: AmityUIKit.AmityViewController, postId: Swift.String)
+  open func openLiveStreamPlayer(from source: AmityUIKit.AmityViewController, postId: Swift.String, streamId: Swift.String)
+  open func openRecordedLiveStreamPlayer(from source: AmityUIKit.AmityViewController, postId: Swift.String, streamId: Swift.String, recordedData: [AmitySDK.AmityLiveVideoRecordingData])
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class AmityGalleryCollectionViewCell : UIKit.UICollectionViewCell {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func awakeFromNib()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public enum HUDContentType {
+  case success(message: Swift.String)
+  case error(message: Swift.String)
+  case loading
+  case custom(view: UIKit.UIView)
+}
+#warning("#HUD")
+#warning("Please remove this one after refactor AmityHUDErrorView, AmityHUDSuccesView, and AmityHUDLoadingView done and keep using `AmityAlertModalViewController` instead")
+@_hasMissingDesignatedInitializers public class AmityHUD {
+  public static func show(_ content: AmityUIKit.HUDContentType)
+  public static func hide(_ completion: (() -> Swift.Void)? = nil)
+  @objc deinit
+}
+public protocol AmityPostHeaderProtocol : UIKit.UITableViewCell, AmityUIKit.AmityCellIdentifiable {
+  var delegate: AmityUIKit.AmityPostHeaderDelegate? { get set }
+  var post: AmityUIKit.AmityPostModel? { get }
+  func display(post: AmityUIKit.AmityPostModel)
+}
+public protocol AmityPostHeaderDelegate : AnyObject {
+  func didPerformAction(_ cell: AmityUIKit.AmityPostHeaderProtocol, action: AmityUIKit.AmityPostHeaderAction)
+}
+public enum AmityPostHeaderAction {
+  case tapAvatar
+  case tapDisplayName
+  case tapCommunityName
+  case tapOption
+  public static func == (a: AmityUIKit.AmityPostHeaderAction, b: AmityUIKit.AmityPostHeaderAction) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct AmityIconSet {
+  public static var iconBack: UIKit.UIImage?
+  public static var iconClose: UIKit.UIImage?
+  public static var iconMessage: UIKit.UIImage?
+  public static var iconCreate: UIKit.UIImage?
+  public static var iconSearch: UIKit.UIImage?
+  public static var iconCamera: UIKit.UIImage?
+  public static var iconCameraSmall: UIKit.UIImage?
+  public static var iconCommunity: UIKit.UIImage?
+  public static var iconPrivateSmall: UIKit.UIImage?
+  public static var iconLike: UIKit.UIImage?
+  public static var iconLikeFill: UIKit.UIImage?
+  public static var iconComment: UIKit.UIImage?
+  public static var iconShare: UIKit.UIImage?
+  public static var iconPhoto: UIKit.UIImage?
+  public static var iconAttach: UIKit.UIImage?
+  public static var iconOption: UIKit.UIImage?
+  public static var iconCreatePost: UIKit.UIImage?
+  public static var iconBadgeCheckmark: UIKit.UIImage?
+  public static var iconBadgeModerator: UIKit.UIImage?
+  public static var iconReply: UIKit.UIImage?
+  public static var iconReplyInverse: UIKit.UIImage?
+  public static var iconExpand: UIKit.UIImage?
+  public static var iconCheckMark: UIKit.UIImage?
+  public static var iconExclamation: UIKit.UIImage?
+  public static var iconAdd: UIKit.UIImage?
+  public static var iconChat: UIKit.UIImage?
+  public static var iconEdit: UIKit.UIImage?
+  public static var iconMember: UIKit.UIImage?
+  public static var iconCameraFill: UIKit.UIImage?
+  public static var iconAlbumFill: UIKit.UIImage?
+  public static var iconFileFill: UIKit.UIImage?
+  public static var iconLocationFill: UIKit.UIImage?
+  public static var iconMagicWand: UIKit.UIImage?
+  public static var iconCloseWithBackground: UIKit.UIImage?
+  public static var iconNext: UIKit.UIImage?
+  public static var iconArrowRight: UIKit.UIImage?
+  public static var iconPublic: UIKit.UIImage?
+  public static var iconPrivate: UIKit.UIImage?
+  public static var iconRadioOn: UIKit.UIImage?
+  public static var iconRadioOff: UIKit.UIImage?
+  public static var iconRadioCheck: UIKit.UIImage?
+  public static var iconPollOptionAdd: UIKit.UIImage?
+  public static var iconDropdown: UIKit.UIImage?
+  public static var iconDownChevron: UIKit.UIImage?
+  public static var iconPlayVideo: UIKit.UIImage?
+  public struct File {
+    public static var iconFileAudio: UIKit.UIImage?
+    public static var iconFileAVI: UIKit.UIImage?
+    public static var iconFileCSV: UIKit.UIImage?
+    public static var iconFileDefault: UIKit.UIImage?
+    public static var iconFileDoc: UIKit.UIImage?
+    public static var iconFileEXE: UIKit.UIImage?
+    public static var iconFileHTML: UIKit.UIImage?
+    public static var iconFileMOV: UIKit.UIImage?
+    public static var iconFileMP3: UIKit.UIImage?
+    public static var iconFileMP4: UIKit.UIImage?
+    public static var iconFileMPEG: UIKit.UIImage?
+    public static var iconFilePDF: UIKit.UIImage?
+    public static var iconFilePPT: UIKit.UIImage?
+    public static var iconFilePPX: UIKit.UIImage?
+    public static var iconFileRAR: UIKit.UIImage?
+    public static var iconFileTXT: UIKit.UIImage?
+    public static var iconFileXLS: UIKit.UIImage?
+    public static var iconFileIMG: UIKit.UIImage?
+    public static var iconFileZIP: UIKit.UIImage?
+  }
+  public static var noInternetConnection: UIKit.UIImage?
+  public static var emptyChat: UIKit.UIImage?
+  public static var iconSendMessage: UIKit.UIImage?
+  public static var defaultPrivateCommunityChat: UIKit.UIImage?
+  public static var defaultPublicCommunityChat: UIKit.UIImage?
+  public static var defaultAvatar: UIKit.UIImage?
+  public static var defaultGroupChat: UIKit.UIImage?
+  public static var defaultCategory: UIKit.UIImage?
+  public static var videoThumbnailPlaceholder: UIKit.UIImage?
+  public static var iconSetting: UIKit.UIImage?
+  public static var iconDeleteMessage: UIKit.UIImage?
+  public static var emptyNewsfeed: UIKit.UIImage?
+  public static var emptyNoPosts: UIKit.UIImage?
+  public static var privateUserFeed: UIKit.UIImage?
+  public static var defaultCommunity: UIKit.UIImage?
+  public static var defaultCommunityAvatar: UIKit.UIImage?
+  public static var defaultMessageImage: UIKit.UIImage?
+  public static var iconMessageFailed: UIKit.UIImage?
+}
+extension AmityUIKit.AmityCommunityMemberAction : Swift.Equatable {}
+extension AmityUIKit.AmityCommunityMemberAction : Swift.Hashable {}
+extension AmityUIKit.AmityPostAttachmentType : Swift.Equatable {}
+extension AmityUIKit.AmityPostAttachmentType : Swift.Hashable {}
+extension AmityUIKit.AmityImageViewState : Swift.Equatable {}
+extension AmityUIKit.AmityImageViewState : Swift.Hashable {}
+extension AmityUIKit.AmityReactionType : Swift.Equatable {}
+extension AmityUIKit.AmityReactionType : Swift.Hashable {}
+extension AmityUIKit.AmityReactionType : Swift.RawRepresentable {}
+extension AmityUIKit.AmityTextField.ValueType : Swift.Equatable {}
+extension AmityUIKit.AmityTextField.ValueType : Swift.Hashable {}
+extension AmityUIKit.AmityTextField.ValueType : Swift.RawRepresentable {}
+extension AmityUIKit.AmityAvatarPosition : Swift.Equatable {}
+extension AmityUIKit.AmityAvatarPosition : Swift.Hashable {}
+extension AmityUIKit.AmityNavigationBarType : Swift.Equatable {}
+extension AmityUIKit.AmityNavigationBarType : Swift.Hashable {}
+extension AmityUIKit.AmityMessageListViewController.ComposeBarStyle : Swift.Equatable {}
+extension AmityUIKit.AmityMessageListViewController.ComposeBarStyle : Swift.Hashable {}
+extension AmityUIKit.AmityExpandableLabel.TextReplacementType : Swift.Equatable {}
+extension AmityUIKit.AmityExpandableLabel.TextReplacementType : Swift.Hashable {}
+extension AmityUIKit.AmityButton.Position : Swift.Equatable {}
+extension AmityUIKit.AmityButton.Position : Swift.Hashable {}
+extension AmityUIKit.AmityPostFooterAction : Swift.Equatable {}
+extension AmityUIKit.AmityPostFooterAction : Swift.Hashable {}
+extension AmityUIKit.Settings.Theme.SelectionStyle : Swift.Equatable {}
+extension AmityUIKit.Settings.Theme.SelectionStyle : Swift.Hashable {}
+extension AmityUIKit.Settings.Fetch.Assets.MediaTypes : Swift.Equatable {}
+extension AmityUIKit.Settings.Fetch.Assets.MediaTypes : Swift.Hashable {}
+extension AmityUIKit.AmityMessageTypes : Swift.Equatable {}
+extension AmityUIKit.AmityMessageTypes : Swift.Hashable {}
+extension AmityUIKit.AmityPostModel.PostDisplayType : Swift.Equatable {}
+extension AmityUIKit.AmityPostModel.PostDisplayType : Swift.Hashable {}
+extension AmityUIKit.AmityPostSharingTarget : Swift.Equatable {}
+extension AmityUIKit.AmityPostSharingTarget : Swift.Hashable {}
+extension AmityUIKit.AmityChannelMemberAction : Swift.Equatable {}
+extension AmityUIKit.AmityChannelMemberAction : Swift.Hashable {}
+extension AmityUIKit.AmityPostContentType : Swift.Equatable {}
+extension AmityUIKit.AmityPostContentType : Swift.Hashable {}
+extension AmityUIKit.AmityPostHeaderAction : Swift.Equatable {}
+extension AmityUIKit.AmityPostHeaderAction : Swift.Hashable {}

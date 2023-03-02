@@ -1,0 +1,11 @@
+framework module AmitySDK {
+  umbrella header "AmitySDK.h"
+
+  export *
+  module * { export * }
+}
+
+module AmitySDK.Swift {
+  header "AmitySDK-Swift.h"
+  requires objc
+}
