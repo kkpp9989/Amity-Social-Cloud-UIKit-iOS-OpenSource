@@ -11,7 +11,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'KKKTBAmityUIKit'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Init AmityUIKit'
 
 # This description is used to generate tags and improve search results.
