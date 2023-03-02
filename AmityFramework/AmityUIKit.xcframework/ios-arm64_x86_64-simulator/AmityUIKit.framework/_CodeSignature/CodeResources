@@ -486,7 +486,7 @@
 		</data>
 		<key>Assets.car</key>
 		<data>
-		x0XORQQMK8Drn2aoXHXMgAsZ8e0=
+		oQiZyF4S1hgrNwfB8vQaN17sLlQ=
 		</data>
 		<key>ButtonCell.nib</key>
 		<data>
@@ -498,7 +498,7 @@
 		</data>
 		<key>Headers/AmityUIKit-Swift.h</key>
 		<data>
-		rzegIr8wzZ44W8PzScz81w0sRno=
+		1H2EMDKugILlKr4i/vYOUFEg2yM=
 		</data>
 		<key>Headers/AmityUIKit.h</key>
 		<data>
@@ -506,7 +506,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Qee1azOzOB95J/H9w8d0xQKsXNo=
+		/J+fiEehLRlJoCBwPArfI4X2v/w=
 		</data>
 		<key>ItemOptionTableViewCell.nib</key>
 		<data>
@@ -516,53 +516,45 @@
 		<data>
 		Lyx7m6TZqMTjkH9VmygQ6+vn2+g=
 		</data>
-		<key>Modules/AmityUIKit.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
-		<data>
-		z7ugcBB20mDJnHqmAkJqGvDWT4Y=
-		</data>
-		<key>Modules/AmityUIKit.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
-		<data>
-		E2DRaVAf6mIHPoTWlQ6sqeIQyQA=
-		</data>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		FWwTqbuv5XzlPP7Gp9OAZd8rY34=
+		0V85yktn1swupOJXI+ki0J8IHiQ=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		P6M2YuKr5X6LhMC2IC2btVuLnbw=
+		8yO9IlbhNxNgJAYDkvK/AJT2/es=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		2OqwU3msaiXBitMxxQ1aP1L+MXs=
+		UGDY8JY1TLLpNq6ejkfOUXC0BtA=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		P6M2YuKr5X6LhMC2IC2btVuLnbw=
+		8yO9IlbhNxNgJAYDkvK/AJT2/es=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		QtR4MhE985MSux7bPNXKj+aRq8A=
+		AsmK3NstnvV1b7WqzFoHDcLuuVE=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		FWwTqbuv5XzlPP7Gp9OAZd8rY34=
+		0V85yktn1swupOJXI+ki0J8IHiQ=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		byJbG7rOSZNawjEz1PhnXy1ptmw=
+		USqnnMLpvxGmbY593Mxaa1114OA=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		XcF+otYNm3jyL4bZnuJB/hoEkes=
+		Iive0C5E9yvAL7tZ+8JdznMYNrs=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		byJbG7rOSZNawjEz1PhnXy1ptmw=
+		USqnnMLpvxGmbY593Mxaa1114OA=
 		</data>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		ZlspkCuNlbCZwpw/keFBubJd7yA=
+		OGLA7OQ8LjUYxKbPevt/nZMDq6Q=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1431,7 +1423,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			QHUJGzkdpLaHdEj1A3Syml9wdZ+1AQg85gef06B0vxI=
+			6YHt30+7gIXygFA69yANhx/pf2gSzgBJc/DZcGMLE4I=
 			</data>
 		</dict>
 		<key>ButtonCell.nib</key>
@@ -1452,7 +1444,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Z4S8wyYqAtbeL8n2rIpat9NcKguYJTzM45kOaeLLcqs=
+			SCSWQS3kSkGTM+S6+6oJmtSqY+PXQww4/0dlSEV+LhQ=
 			</data>
 		</dict>
 		<key>Headers/AmityUIKit.h</key>
@@ -1476,88 +1468,74 @@
 			2oi1eI+YcgdAjvwawRgq0VYoNDe2l/pylP7Redk5YQA=
 			</data>
 		</dict>
-		<key>Modules/AmityUIKit.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			iV6Z38CD1DheG3G8FUsqsapnlzi1+Zr2U9pXwD7mYtU=
-			</data>
-		</dict>
-		<key>Modules/AmityUIKit.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			gvPy94uhU7OIbezVxeWOirnO7apMwtfNHGDC5FhECPo=
-			</data>
-		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			mq16E4pqb126M3cPmvvj0wWHfIioZPtXRFSwOybHjM8=
+			xpl6uT7bnLLUyd9nBJGkCKxjMbwQxPukKnbqnU3+iIY=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			mUX15kITbrRXfCuiZ4durJLouo1zVa9lHgc8GspEi/g=
+			80Lo5GCosAPAs7B0nKAIWUgPalctb27DqikDvZQXKfg=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			4qlRo6KbBrwjraMvLW0v6UWAYN9DWdzOKaqq3lf6RjU=
+			XwnfF0aJ6Oj2SJIBeEsDdFIocZjBCTtMbs878S2HMAI=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			mUX15kITbrRXfCuiZ4durJLouo1zVa9lHgc8GspEi/g=
+			80Lo5GCosAPAs7B0nKAIWUgPalctb27DqikDvZQXKfg=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			hBq6BH9ZxZ3g6WKkBanTEqhBLlTFLVHd4WEQrb8zHf4=
+			5l7+8LTi/z5BY9rwBY9e0K75h9907/08FcFXq0Cxedw=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			mq16E4pqb126M3cPmvvj0wWHfIioZPtXRFSwOybHjM8=
+			xpl6uT7bnLLUyd9nBJGkCKxjMbwQxPukKnbqnU3+iIY=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			AFXbWV7E3yVO7OjPflNofRT8sRyka7KXqdqHK9yaqaw=
+			XgLbDKjY7cAWMzgMfAO93xSteb6OWkM6pR/sKsah9fI=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			jDwZti7HU8mtYOjYgQ6edUdMeeHay2iEAeGZghJyAEA=
+			dnhfE09CGypAvG49QRTAsKpb14Y3XMdZHorMb197BRQ=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			AFXbWV7E3yVO7OjPflNofRT8sRyka7KXqdqHK9yaqaw=
+			XgLbDKjY7cAWMzgMfAO93xSteb6OWkM6pR/sKsah9fI=
 			</data>
 		</dict>
 		<key>Modules/AmityUIKit.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			i8TIZXqGMmMnK75H48zovh6BjDdCsOhfo88IVoSJrQE=
+			R7bmeDpoiCmfyRMuMzfzGuKdl2376sR9QTDj1lDPE/Y=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
