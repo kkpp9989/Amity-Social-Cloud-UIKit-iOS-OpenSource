@@ -143,6 +143,7 @@ class AmityCommentView: AmityView {
         }
         
         likeButton.isSelected = comment.isLiked
+        replyButton.isHidden = layout.type == .reply
         separatorLineView.isHidden = true
         
         if comment.reactionsCount > 0 {
