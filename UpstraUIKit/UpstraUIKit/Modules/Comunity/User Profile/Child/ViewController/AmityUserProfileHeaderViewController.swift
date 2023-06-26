@@ -233,6 +233,8 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
             followButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
             followButton.layer.borderWidth = 1
             followButton.tintColor = AmityColorSet.secondary
+        case .blocked:
+            followButton.isHidden = true
         case .none:
             followButton.isHidden = false
             followButton.setTitle(AmityLocalizedStringSet.userDetailFollowButtonFollow.localizedString, for: .normal)
@@ -325,7 +327,7 @@ extension AmityUserProfileHeaderViewController : AmityUserProfileHeaderScreenVie
     }
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didCreateChannel channel: AmityChannel) {
-        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channel.channelId)
+        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
     }
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didFollowSuccess status: AmityFollowStatus) {

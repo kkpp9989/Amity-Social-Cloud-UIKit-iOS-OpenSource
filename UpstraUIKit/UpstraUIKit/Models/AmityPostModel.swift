@@ -164,6 +164,9 @@ public class AmityPostModel {
      */
     public let allReactions: [String]
     
+    /// List of all reactions in this post with count.
+    public let reactions: [String: Int]
+    
     /**
      * Id of the target this post belongs to.
      */
@@ -295,15 +298,16 @@ public class AmityPostModel {
         dataType = post.dataType
         targetId = post.targetId
         targetCommunity = post.targetCommunity
-        childrenPosts = post.childrenPosts ?? []
+        childrenPosts = post.childrenPosts
         parentPostId = post.parentPostId
         postedUser = Author(
             avatarURL: post.postedUser?.getAvatarInfo()?.fileURL,
-            displayName: post.postedUser?.displayName ?? AmityLocalizedStringSet.General.anonymous.localizedString, isGlobalBan: post.postedUser?.isGlobalBan ?? false)
+            displayName: post.postedUser?.displayName ?? AmityLocalizedStringSet.General.anonymous.localizedString, isGlobalBan: post.postedUser?.isGlobalBanned ?? false)
         subtitle = post.isEdited ? String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.postDetailCommentEdit.localizedString, post.createdAt.relativeTime) : post.createdAt.relativeTime
         postedUserId = post.postedUserId
         sharedCount = Int(post.sharedCount)
         reactionsCount = Int(post.reactionsCount)
+        reactions = post.reactions as? [String: Int] ?? [:]
         allCommentCount = Int(post.commentsCount)
         allReactions = post.myReactions
         myReactions = allReactions.compactMap(AmityReactionType.init)
@@ -374,7 +378,7 @@ public class AmityPostModel {
                     dataTypeInternal = .file
                 }
             case "video":
-                if let videoData = aChild.getVideoInfo(for: .original) {
+                if let videoData = aChild.getVideoInfo() {
                     let thumbnail = aChild.getVideoThumbnailInfo()
                     let state = AmityMediaState.downloadableVideo(
                         videoData: videoData,

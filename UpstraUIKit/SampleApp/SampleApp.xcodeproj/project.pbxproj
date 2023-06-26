@@ -18,7 +18,7 @@
 		0D73ACA825DB9423000D73CA /* NewJoinerPostComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D73ACA725DB9423000D73CA /* NewJoinerPostComponent.swift */; };
 		0D8FFC2925DCBFD900943538 /* AmityCustomFooterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8FFC2725DCBFD900943538 /* AmityCustomFooterTableViewCell.swift */; };
 		0D8FFC2A25DCBFD900943538 /* AmityCustomFooterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0D8FFC2825DCBFD900943538 /* AmityCustomFooterTableViewCell.xib */; };
-		68A2B372299F6417001AC0B1 /* SharedFrameworks in Frameworks */ = {isa = PBXBuildFile; productRef = 68A2B371299F6417001AC0B1 /* SharedFrameworks */; };
+		68AF0C222A3B1C2F008A09DA /* SharedFrameworks in Frameworks */ = {isa = PBXBuildFile; productRef = 68AF0C212A3B1C2F008A09DA /* SharedFrameworks */; };
 		7214C9CB2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9CA2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift */; };
 		7214C9D72632C0AD00192BB3 /* NotificationModuleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9D62632C0AD00192BB3 /* NotificationModuleTableViewCell.swift */; };
 		7214C9DB2632C0D500192BB3 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9DA2632C0D500192BB3 /* SwitchTableViewCell.swift */; };
@@ -105,6 +105,7 @@
 		0D8FFC2725DCBFD900943538 /* AmityCustomFooterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityCustomFooterTableViewCell.swift; sourceTree = "<group>"; };
 		0D8FFC2825DCBFD900943538 /* AmityCustomFooterTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityCustomFooterTableViewCell.xib; sourceTree = "<group>"; };
 		688F8617299E409B000FE6E7 /* SharedFrameworks */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SharedFrameworks; path = ../SharedFrameworks; sourceTree = "<group>"; };
+		68EF84A629B077E700C7EDEC /* RealmSwift.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RealmSwift.xcframework; path = ../Shared/RealmSwift.xcframework; sourceTree = "<group>"; };
 		7214C9CA2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLevelPushNotificationsTableViewController.swift; sourceTree = "<group>"; };
 		7214C9D62632C0AD00192BB3 /* NotificationModuleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModuleTableViewCell.swift; sourceTree = "<group>"; };
 		7214C9DA2632C0D500192BB3 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
@@ -164,7 +165,7 @@
 			files = (
 				A0BD0B4826DDE0E30054088B /* AmityUIKitLiveStream.framework in Frameworks */,
 				D478D16926240A5E006EA140 /* AmityUIKit.framework in Frameworks */,
-				68A2B372299F6417001AC0B1 /* SharedFrameworks in Frameworks */,
+				68AF0C222A3B1C2F008A09DA /* SharedFrameworks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,6 +385,7 @@
 		B78DA4A824BED83100EE902B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				68EF84A629B077E700C7EDEC /* RealmSwift.xcframework */,
 				A0BD0B4726DDE0E30054088B /* AmityUIKitLiveStream.framework */,
 				A0BD0B3E26DDE0020054088B /* AmityLiveVideoBroadcastKit.xcframework */,
 				A0BD0B3F26DDE0020054088B /* AmityVideoPlayerKit.xcframework */,
@@ -455,7 +457,7 @@
 			);
 			name = SampleApp;
 			packageProductDependencies = (
-				68A2B371299F6417001AC0B1 /* SharedFrameworks */,
+				68AF0C212A3B1C2F008A09DA /* SharedFrameworks */,
 			);
 			productName = SampleApp;
 			productReference = B78DA47524BED7D300EE902B /* SampleApp.app */;
@@ -791,7 +793,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 37Z583JR6K;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../Distribution",
@@ -818,7 +819,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 37Z583JR6K;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../Distribution",
@@ -960,7 +960,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		68A2B371299F6417001AC0B1 /* SharedFrameworks */ = {
+		68AF0C212A3B1C2F008A09DA /* SharedFrameworks */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SharedFrameworks;
 		};

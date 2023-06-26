@@ -23,7 +23,9 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var commentButton: AmityButton!
     @IBOutlet private var shareButton: AmityButton!
     @IBOutlet private var separatorView: [UIView]!
+    @IBOutlet private var likeLabelIcon: UIImageView!
     @IBOutlet private var warningLabel: UILabel!
+    @IBOutlet private var likeDetailButton: UIButton!
     
     // MARK: - Properties
     private(set) public var post: AmityPostModel?
@@ -42,6 +44,8 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         self.post = post
         likeButton.isSelected = post.isLiked
         likeLabel.isHidden = post.reactionsCount == 0
+        likeLabelIcon.isHidden = post.reactionsCount == 0
+        likeDetailButton.isEnabled = post.reactionsCount != 0
         let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
         likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
                                                           post.reactionsCount.formatUsingAbbrevation())
@@ -55,13 +59,11 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         warningLabel.isHidden = post.isCommentable
         topContainerView.isHidden = isReactionExisted
         
-        shareButton.isHidden = true
-        
-        /*!AmityPostSharePermission.canSharePost(post: post)
+        shareButton.isHidden = !AmityPostSharePermission.canSharePost(post: post)
         shareLabel.isHidden = post.sharedCount == 0
         let sharePrefix = post.sharedCount > 1 ? AmityLocalizedStringSet.Unit.sharesPlural.localizedString :
             AmityLocalizedStringSet.Unit.sharesSingular.localizedString
-        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount) */
+        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount)
     }
     
     // MARK: - Setup views
@@ -147,4 +149,7 @@ private extension AmityPostFooterTableViewCell {
         performAction(action: .tapComment)
     }
     
+    @IBAction func didTapReactionDetails() {
+        performAction(action: .tapReactionDetails)
+    }
 }
