@@ -19,6 +19,9 @@ public final class AmityMyCommunityViewController: AmityViewController {
     private var emptyView = AmitySearchEmptyView()
     private var screenViewModel: AmityMyCommunityScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,11 +29,17 @@ public final class AmityMyCommunityViewController: AmityViewController {
         setupSearchController()
         setupTableView()
         setupScreenViewModel()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         searchController.searchBar.text = screenViewModel.dataSource.searchText
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     public static func make() -> AmityMyCommunityViewController {

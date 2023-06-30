@@ -62,6 +62,7 @@ public struct AmityIconSet {
     public static var iconRadioOn = UIImage(named: "icon_radio_on", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconRadioOff = UIImage(named: "icon_radio_off", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconRadioCheck = UIImage(named: "icon_radio_check", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconRadioCheckOff = UIImage(named: "icon_radio_check_off", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconPollOptionAdd = UIImage(named: "icon_poll_option_add", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconDropdown = UIImage(named: "icon_dropdown", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconDownChevron = UIImage(named: "Icon_down_chevron", in: AmityUIKitManager.bundle, compatibleWith: nil)

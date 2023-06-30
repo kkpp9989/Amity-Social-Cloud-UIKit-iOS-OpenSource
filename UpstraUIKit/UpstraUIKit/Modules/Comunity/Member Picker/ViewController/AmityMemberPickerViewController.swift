@@ -23,12 +23,26 @@ public final class AmityMemberPickerViewController: AmityViewController {
     private var screenViewModel: AmityMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupView()
         
         screenViewModel.delegate = self
         screenViewModel.action.getUsers()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
 
     public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerViewController {
@@ -102,6 +116,7 @@ private extension AmityMemberPickerViewController {
         searchBar.backgroundImage = UIImage()
         searchBar.delegate = self
         searchBar.tintColor = AmityColorSet.base
+        searchBar.searchTextField.font = AmityFontSet.body
         searchBar.returnKeyType = .done
         (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
         ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)

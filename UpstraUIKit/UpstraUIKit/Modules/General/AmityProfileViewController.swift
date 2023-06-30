@@ -100,7 +100,11 @@ public class AmityProfileBottomViewController: AmityButtonPagerTabSViewControlle
         super.viewDidLoad()
         delegate = self
         self.changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
-            oldCell?.label.textColor = AmityColorSet.base
+            // Original
+//            oldCell?.label.textColor = AmityColorSet.base
+            // Custom for ONE Krungthai
+            oldCell?.label.textColor = UIColor(hex: "636878")
+            
             oldCell?.label.font = AmityFontSet.title
             newCell?.label.textColor = AmityColorSet.primary
             newCell?.label.font = AmityFontSet.title

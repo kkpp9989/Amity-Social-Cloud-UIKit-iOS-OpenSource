@@ -40,6 +40,9 @@ open class AmityPostDetailViewController: AmityViewController {
         }
     }
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - Initializer
     required public init(withPostId postId: String) {
         let postController = AmityPostController()
@@ -72,6 +75,9 @@ open class AmityPostDetailViewController: AmityViewController {
         setupProtocolHandler()
         setupScreenViewModel()
         setupMentionTableView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -81,6 +87,9 @@ open class AmityPostDetailViewController: AmityViewController {
         mentionManager?.delegate = self
         mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
         mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {

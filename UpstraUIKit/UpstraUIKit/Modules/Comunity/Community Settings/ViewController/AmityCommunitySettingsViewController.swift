@@ -16,9 +16,16 @@ final class AmityCommunitySettingsViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityCommunitySettingsScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         screenViewModel.delegate = self
         setupView()
         setupSettingTableView()
@@ -28,6 +35,9 @@ final class AmityCommunitySettingsViewController: AmityViewController {
         super.viewWillAppear(animated)
         screenViewModel.action.retrieveCommunity()
         screenViewModel.action.retrieveNotifcationSettings()
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     static func make(communityId: String) -> AmityCommunitySettingsViewController {

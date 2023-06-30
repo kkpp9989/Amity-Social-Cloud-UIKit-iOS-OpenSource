@@ -14,11 +14,25 @@ class AmityPostNotificationSettingsViewController: AmityViewController {
     private var screenViewModel: AmityPostNotificationSettingsScreenViewModelType!
     private var saveButton: UIBarButtonItem!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupView()
         setupTableView()
         setupViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     static func make(communityId: String, type: AmityCommunityNotificationSettingsType) -> AmityPostNotificationSettingsViewController {

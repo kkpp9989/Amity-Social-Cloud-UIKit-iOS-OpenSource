@@ -16,6 +16,9 @@ final public class AmityPostTargetPickerViewController: AmityViewController {
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let screenViewModel = AmityPostTargetPickerScreenViewModel()
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     private init() {
         super.init(nibName: nil, bundle: nil)
         title = AmityLocalizedStringSet.postToTitle.localizedString
@@ -36,6 +39,16 @@ final public class AmityPostTargetPickerViewController: AmityViewController {
         setupView()
         setupTableView()
         setupScreenViewModel()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     private func setupView() {

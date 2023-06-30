@@ -31,6 +31,9 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     @IBOutlet weak private var pendingRequestsLabel: UILabel!
     @IBOutlet weak private var followRequestDescriptionLabel: UILabel!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: Initializer
     static func make(withUserId userId: String, settings: AmityUserProfilePageSettings) -> AmityUserProfileHeaderViewController {
         let viewModel = AmityUserProfileHeaderScreenViewModel(userId: userId)
@@ -55,12 +58,21 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         setupFollowersButton()
         setupFollowButton()
         setupFollowRequestsView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
+        // Set background app for this navigation bar
+        theme?.setBackgroundApp(index: 0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         screenViewModel.action.fetchUserData()
         screenViewModel.action.fetchFollowInfo()
+        
+        // Clear setting navigation bar (normal) from ONE Krungthai custom theme
+        theme?.clearNavigationBarSetting()
     }
     
     // MARK: - Refreshable

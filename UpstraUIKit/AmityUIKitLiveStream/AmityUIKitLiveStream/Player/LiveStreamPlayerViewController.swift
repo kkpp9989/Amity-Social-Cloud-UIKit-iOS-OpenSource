@@ -39,6 +39,16 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet private weak var streamEndTitleLabel: UILabel!
     @IBOutlet private weak var streamEndDescriptionLabel: UILabel!
     
+    // MARK: - Interval timer [Custom]
+    private var timer: Timer?
+    
+    // MARK: - Post Info [Custom]
+    private var postID: String?
+    
+    // MARK: - Viewer User Info [Custom]
+    private var viewerUserID: String?
+    private var viewerDisplayName: String?
+    
     /// This sample app uses AmityVideoPlayer to play live videos.
     /// The player consumes the stream instance, and works automatically.
     /// At the this moment, the player only provide basic functionality, play and stop.
@@ -67,11 +77,14 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     private var videoView: UIView!
     
-    public init(streamIdToWatch: String) {
+    public init(streamIdToWatch: String, postID: String) {
         
         self.streamRepository = AmityStreamRepository(client: AmityUIKitManager.client)
         self.streamIdToWatch = streamIdToWatch
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
+        self.postID = postID
+        self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
+        self.viewerDisplayName = AmityUIKitManager.client.user?.object?.displayName ?? ""
         
         let bundle = Bundle(for: type(of: self))
         super.init(nibName: "LiveStreamPlayerViewController", bundle: bundle)
@@ -97,6 +110,26 @@ public class LiveStreamPlayerViewController: UIViewController {
         isStarting = true
         requestingStreamObject = true
         observeStreamObject()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Initial interval timer for request stat API
+        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start interval timer for request send viewer statistics API")
+        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { timerobj in
+            self.requestSendViewerStatisticsAPI()
+        })
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        // Stop and delete interval timer for request stat API
+        timer?.invalidate()
+        timer = nil
+        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
+        
     }
     
     private func setupStreamView() {
@@ -265,7 +298,12 @@ public class LiveStreamPlayerViewController: UIViewController {
                 strongSelf.requestingStreamObject = false
                 // Update container, this will trigger stream end container to obsecure all the views.
                 strongSelf.updateContainer()
-                //
+                
+                // Stop and delete interval timer for request stat API
+                self?.timer?.invalidate()
+                self?.timer = nil
+                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
+                
                 return
             }
             
@@ -354,5 +392,33 @@ extension LiveStreamPlayerViewController: AmityVideoPlayerDelegate {
         updateControlActionButton()
     }
     
+}
+
+extension LiveStreamPlayerViewController {
+    private func requestSendViewerStatisticsAPI() {
+        // Initial requester
+        let requester = NetworkManager()
+        
+        // Initial request setting
+        let requestSetting = BaseRequestMeta()
+        
+        // Setup request setting
+        requestSetting.method = .post
+        requestSetting.urlRequest = "https://juwh4rykm7.execute-api.ap-southeast-1.amazonaws.com/dev/viewerCount"
+        requestSetting.encoding = .jsonEncoding
+        requestSetting.params = ["postId": postID, "userId": viewerUserID, "displayName": viewerDisplayName, "isTrack": true, "streamId": streamIdToWatch]
+        
+        // Start request
+        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params)")
+        requester.request(requestSetting) { data, response, error in
+            if let currentError = error {
+                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API fail with error: \(currentError)")
+            } else {
+                if let httpResponse = response as? HTTPURLResponse {
+                    print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
+                }
+            }
+        }
+    }
 }
 
