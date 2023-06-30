@@ -20,6 +20,9 @@ public class AmitySearchViewController: AmityPageViewController {
     // MARK: - Child ViewController
     private var communitiesVC = AmityCommunitySearchViewController.make(title: AmityLocalizedStringSet.communities.localizedString)
     private var membersVC = AmityMemberSearchViewController.make(title: AmityLocalizedStringSet.accounts.localizedString)
+    
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
 
     private init() {
         super.init(nibName: AmitySearchViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -33,6 +36,12 @@ public class AmitySearchViewController: AmityPageViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
+        // Set background app for this navigation bar
+        theme?.setBackgroundApp(index: 0)
+        
         setupNavigationBar()
         setupSearchController()
         
@@ -45,6 +54,9 @@ public class AmitySearchViewController: AmityPageViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        // Clear setting navigation bar (normal) from ONE Krungthai custom theme
+        theme?.clearNavigationBarSetting()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {

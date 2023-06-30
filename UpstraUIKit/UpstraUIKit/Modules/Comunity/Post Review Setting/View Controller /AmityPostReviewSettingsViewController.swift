@@ -16,12 +16,26 @@ final class AmityPostReviewSettingsViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityPostReviewSettingsScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupView()
         setupViewModel()
         setupSettingsItems()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     static func make(communityId: String) -> AmityPostReviewSettingsViewController {

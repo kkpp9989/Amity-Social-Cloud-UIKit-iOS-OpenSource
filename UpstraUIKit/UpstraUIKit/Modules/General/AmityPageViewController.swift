@@ -11,8 +11,13 @@ import UIKit
 public class AmityPageViewController: AmityButtonPagerTabSViewController {
     
     public override func viewDidLoad() {
-        settings.style.buttonBarBackgroundColor = AmityColorSet.backgroundColor
-        settings.style.buttonBarItemBackgroundColor = AmityColorSet.backgroundColor
+        // Original
+//        settings.style.buttonBarBackgroundColor = AmityColorSet.backgroundColor
+//        settings.style.buttonBarItemBackgroundColor = AmityColorSet.backgroundColor
+        // Set tabbar to clear background color for use background app
+        settings.style.buttonBarBackgroundColor = .clear
+        settings.style.buttonBarItemBackgroundColor = .clear
+        
         settings.style.selectedBarBackgroundColor = AmityColorSet.primary
         settings.style.buttonBarItemTitleColor = AmityColorSet.base
         settings.style.selectedBarHeight = 3
@@ -23,7 +28,11 @@ public class AmityPageViewController: AmityButtonPagerTabSViewController {
         super.viewDidLoad()
         delegate = self
         self.changeCurrentIndexProgressive = { (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
-            oldCell?.label.textColor = AmityColorSet.base
+            // Original
+//            oldCell?.label.textColor = AmityColorSet.base
+            // Custom for ONE Krungthai
+            oldCell?.label.textColor = UIColor(hex: "636878")
+            
             oldCell?.label.font = AmityFontSet.title
             newCell?.label.textColor = AmityColorSet.primary
             newCell?.label.font = AmityFontSet.title

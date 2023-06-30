@@ -69,7 +69,7 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
             containerView.layer.borderColor = containerViewBorderColor.cgColor
         } else {
             if poll.isMultipleVoted {
-                iconImageView.image = answer.isSelected ? AmityIconSet.iconRadioCheck : AmityIconSet.iconRadioOff
+                iconImageView.image = answer.isSelected ? AmityIconSet.iconRadioCheck: AmityIconSet.iconRadioCheckOff
             } else {
                 iconImageView.image = answer.isSelected ? AmityIconSet.iconRadioOn : AmityIconSet.iconRadioOff
             }

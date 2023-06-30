@@ -17,6 +17,9 @@ public class AmityCategoryCommunityListViewController: AmityViewController {
     
     private var screenViewModel: AmityCategoryCommunityListScreenViewModelType
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - Initializer
     
     private init(categoryId: String) {
@@ -38,6 +41,16 @@ public class AmityCategoryCommunityListViewController: AmityViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     private func setupTableView() {

@@ -14,8 +14,14 @@ class AmityCommunityNotificationSettingsViewController: AmityViewController {
     
     private var screenViewModel: AmityCommunityNotificationSettingsScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
 
         screenViewModel.delegate = self
         setupView()
@@ -26,6 +32,9 @@ class AmityCommunityNotificationSettingsViewController: AmityViewController {
         super.viewWillAppear(animated)
         
         screenViewModel.action.retrieveNotifcationSettings()
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     static func make(community: AmityCommunityModel) -> AmityCommunityNotificationSettingsViewController {

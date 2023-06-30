@@ -642,6 +642,7 @@
 		D4D7683E26006D7000AD4367 /* AmitySettingContentIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */; };
 		D4EC11E525B93DCE0095F507 /* AmityPostSharingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */; };
 		D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */; };
+		DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1296,6 +1297,7 @@
 		D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmitySettingContentIcon.swift; sourceTree = "<group>"; };
 		D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingSettings.swift; sourceTree = "<group>"; };
 		D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingTarget.swift; sourceTree = "<group>"; };
+		DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ONEKrungthaiCustomTheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2620,6 +2622,7 @@
 				72AFAC0B24F9008B00269019 /* Services */,
 				0A7682C327B16D2200F6BA41 /* AmityMediaConverter.swift */,
 				6895D9252975359000E377F1 /* AmityAsyncAwaitTransformer.swift */,
+				DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -5003,6 +5006,7 @@
 				B750672524FC0A4000DD17B4 /* AmitySelectMemberModel.swift in Sources */,
 				72A3519724EA820800DA9D46 /* AmityPhotoCollectionViewFlowLayout.swift in Sources */,
 				B7B31C53250F4ACF000AC6E4 /* AmityProfileContainerViewController.swift in Sources */,
+				DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */,
 				7271C23A252349B400E13F9D /* AmityCategorySeletionTableViewCell.swift in Sources */,
 				B792A52B250E94E600D09452 /* AmityCommunityProfileHeaderViewController.swift in Sources */,
 				727574D726371DFE000CDB02 /* UIImageView+Extension.swift in Sources */,

@@ -36,12 +36,19 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
     private var channelToken: AmityNotificationToken?
     var isUpdateInProgress = false
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - Callback
     var didUpdatePostBanner: (() -> Void)?
     
     // MARK: - View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupDisplayName()
         setupBadgeView()
         setupSubTitleLabel()
@@ -50,6 +57,13 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
         setupDescription()
         setupActionButton()
         setupPendingPosts()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     static func make(rootViewController: AmityCommunityProfilePageViewController?, viewModel: AmityCommunityProfileScreenViewModelType) -> AmityCommunityProfileHeaderViewController {

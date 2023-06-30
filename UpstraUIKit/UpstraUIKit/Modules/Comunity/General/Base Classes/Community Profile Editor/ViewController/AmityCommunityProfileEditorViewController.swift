@@ -97,9 +97,22 @@ public class AmityCommunityProfileEditorViewController: AmityViewController {
     
     public weak var delegate: AmityCommunityProfileEditorViewControllerDelegate?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     init(viewType: ViewType) {

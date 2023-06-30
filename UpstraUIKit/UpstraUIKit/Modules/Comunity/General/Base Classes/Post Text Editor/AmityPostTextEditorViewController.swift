@@ -58,6 +58,9 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var mentionTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     private var isValueChanged: Bool {
         return !textView.text.isEmpty || !galleryView.medias.isEmpty || !fileView.files.isEmpty
     }
@@ -99,6 +102,10 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         filePicker = AmityFilePicker(presentationController: self, delegate: self)
         
         let isCreateMode = (postMode == .create)
@@ -227,6 +234,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
         mentionManager?.delegate = self
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     public override func didTapLeftBarButton() {

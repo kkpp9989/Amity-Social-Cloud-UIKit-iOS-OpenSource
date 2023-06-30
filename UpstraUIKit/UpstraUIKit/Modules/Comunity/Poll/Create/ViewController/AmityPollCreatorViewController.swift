@@ -32,9 +32,16 @@ public final class AmityPollCreatorViewController: AmityViewController {
     private var screenViewModel: AmityPollCreatorScreenViewModelType?
     private var mentionManager: AmityMentionManager?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View's lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupViewModel()
         setupTitle()
         setupPostNavigationBarbutton()
@@ -43,6 +50,13 @@ public final class AmityPollCreatorViewController: AmityViewController {
         
         mentionManager?.delegate = self
         AmityKeyboardService.shared.delegate = self
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     public static func make(postTarget: AmityPostTarget) -> AmityPollCreatorViewController {

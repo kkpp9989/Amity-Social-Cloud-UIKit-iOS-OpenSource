@@ -29,6 +29,9 @@ public class AmityCategoryPickerViewController: AmityViewController {
     // Get called by tapping done button.
     var completionHandler: ((AmityCommunityCategory?) -> Void)?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - Initializer
     
     private init(referenceCategoryId: String?) {
@@ -52,6 +55,16 @@ public class AmityCategoryPickerViewController: AmityViewController {
         setupScreenViewModel()
         setupNavigationBar()
         setupTableView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     // MARK: - Private functions
