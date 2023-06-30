@@ -68,10 +68,12 @@ class ONEKrungthaiCustomTheme {
         gradientLayer.frame = viewController.view.bounds
         gradientLayer.locations = [0.1, 1.0]
         
+        // Get height and width
         let fullScreenHeight = viewController.view.bounds.height
+        let fullScreenWidth = viewController.navigationController?.navigationBar.bounds.width ?? 0
 
         // Adjust the frame to extend beyond the navigation bar by 50 pixels
-        gradientLayer.frame = CGRect(x: 0, y: -fullScreenHeight, width: viewController.view.bounds.width , height: fullScreenHeight)
+        gradientLayer.frame = CGRect(x: 0, y: -fullScreenHeight, width: fullScreenWidth, height: fullScreenHeight)
         
         // Create image
         return gradientLayer.createImage()
