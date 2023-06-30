@@ -116,7 +116,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         super.viewWillAppear(animated)
         
         // Initial interval timer for request stat API
-        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start interval timer for request send viewer statistics API")
+//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start interval timer for request send viewer statistics API")
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { timerobj in
             self.requestSendViewerStatisticsAPI()
         })
@@ -128,7 +128,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         // Stop and delete interval timer for request stat API
         timer?.invalidate()
         timer = nil
-        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
+//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
         
     }
     
@@ -302,7 +302,7 @@ public class LiveStreamPlayerViewController: UIViewController {
                 // Stop and delete interval timer for request stat API
                 self?.timer?.invalidate()
                 self?.timer = nil
-                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
+//                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Stop and delete interval timer for request send viewer statistics API")
                 
                 return
             }
@@ -409,13 +409,13 @@ extension LiveStreamPlayerViewController {
         requestSetting.params = ["postId": postID, "userId": viewerUserID, "displayName": viewerDisplayName, "isTrack": true, "streamId": streamIdToWatch]
         
         // Start request
-        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params)")
+//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params)")
         requester.request(requestSetting) { data, response, error in
             if let currentError = error {
-                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API fail with error: \(currentError)")
+//                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API fail with error: \(currentError)")
             } else {
                 if let httpResponse = response as? HTTPURLResponse {
-                    print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
+//                    print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
                 }
             }
         }
