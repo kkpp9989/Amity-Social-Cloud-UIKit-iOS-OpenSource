@@ -53,6 +53,11 @@ final class AmityNewsfeedEmptyView: AmityView {
         createCommunityButton.setTitleColor(AmityColorSet.primary, for: .normal)
         createCommunityButton.setTitleColor(AmityColorSet.primary.blend(.shade2), for: .disabled)
         createCommunityButton.isEnabled = Reachability.shared.isConnectedToNetwork
+        
+        // [Custom for ONE Krungthai] Check create community button visble by env
+        if let visible = AmityUIKitManagerInternal.shared.env["amity_uikit_social_community_creation_button_visible"] as? Bool {
+            createCommunityButton.isHidden = !visible // Convert to opposite value for set isHidden value
+        }
     }
     
     func setNeedsUpdateState() {
