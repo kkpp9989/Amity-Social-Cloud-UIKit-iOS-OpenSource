@@ -293,7 +293,7 @@
 "user_settings_item_unfollow" = "Unfollow";
 "user_settings_item_report_user" = "Report user";
 "user_settings_item_unreport_user" = "Unreport user";
-"user_settings_item_edit_profile" = "Edite profile";
+"user_settings_item_edit_profile" = "Edit profile";
 "user_settings_unfollow_message" = "You’ll have to send a request again to follow %@. Continue?";
 "user_settings_unfollow_fail_title" = "Unable to unfollow %@";
 "user_settings_remove_user" = "Remove user";
