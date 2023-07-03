@@ -107,7 +107,7 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         displayNameTextField.maxLength = Constant.maxCharactor
         
-        // Disable editing for phase 1 only of ONE Krungthai
+        // [Custom for ONE Krungthai] Disable display name editing for ONE Krungthai
         displayNameTextField.isUserInteractionEnabled = false
         
         // about
