@@ -26,6 +26,9 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     private var screenViewModel: AmityUserProfileEditorScreenViewModelType?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // To support reuploading image
     // use this variable to store a new image
     private var uploadingAvatarImage: UIImage?
@@ -63,8 +66,19 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupNavigationBar()
         setupView()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     private func setupNavigationBar() {
@@ -92,6 +106,9 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         displayNameTextField.borderStyle = .none
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         displayNameTextField.maxLength = Constant.maxCharactor
+        
+        // Disable editing for phase 1 only of ONE Krungthai
+        displayNameTextField.isUserInteractionEnabled = false
         
         // about
         aboutLabel.text = AmityLocalizedStringSet.createCommunityAboutTitle.localizedString
