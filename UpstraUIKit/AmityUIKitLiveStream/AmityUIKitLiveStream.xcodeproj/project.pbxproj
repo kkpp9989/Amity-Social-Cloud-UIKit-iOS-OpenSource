@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		68AF0C202A3B1C22008A09DA /* SharedFrameworks in Frameworks */ = {isa = PBXBuildFile; productRef = 68AF0C1F2A3B1C22008A09DA /* SharedFrameworks */; };
 		A0B68B3026E07278007D7B5B /* LiveStreamViewController+GoLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B68B2F26E07278007D7B5B /* LiveStreamViewController+GoLive.swift */; };
 		A0B68B3626E07824007D7B5B /* AsyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B68B3526E07824007D7B5B /* AsyncOperation.swift */; };
 		A0B68B3F26E07912007D7B5B /* CreatePost.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B68B3E26E07912007D7B5B /* CreatePost.swift */; };
@@ -33,26 +32,11 @@
 		DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0182A4E80880045FFD6 /* NetworkManager.swift */; };
 		DF04C01F2A4E80880045FFD6 /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0192A4E80880045FFD6 /* RequestError.swift */; };
 		DF04C0202A4E80880045FFD6 /* RequestMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */; };
+		FA6276D22A53B825003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276D12A53B825003DFE4E /* AmitySDK */; };
 		FA645DAA2A4A7C0600BA401F /* AmityUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */; };
-		FA645DAB2A4A7C0600BA401F /* AmityUIKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		FA645DAC2A4A7C0600BA401F /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FA645DAB2A4A7C0600BA401F /* AmityUIKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		688F8615299E408F000FE6E7 /* SharedFrameworks */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SharedFrameworks; path = ../SharedFrameworks; sourceTree = "<group>"; };
 		A0B68B2F26E07278007D7B5B /* LiveStreamViewController+GoLive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveStreamViewController+GoLive.swift"; sourceTree = "<group>"; };
 		A0B68B3526E07824007D7B5B /* AsyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncOperation.swift; sourceTree = "<group>"; };
 		A0B68B3E26E07912007D7B5B /* CreatePost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePost.swift; sourceTree = "<group>"; };
@@ -85,6 +69,7 @@
 		DF04C0182A4E80880045FFD6 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DF04C0192A4E80880045FFD6 /* RequestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestError.swift; sourceTree = "<group>"; };
 		DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestMeta.swift; sourceTree = "<group>"; };
+		FA6276C72A53B727003DFE4E /* AmitySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AmitySDK.xcframework; path = ../Shared/AmitySDK.xcframework; sourceTree = "<group>"; };
 		FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AmityUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -93,22 +78,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA6276D22A53B825003DFE4E /* AmitySDK in Frameworks */,
 				FA645DAA2A4A7C0600BA401F /* AmityUIKit.framework in Frameworks */,
-				68AF0C202A3B1C22008A09DA /* SharedFrameworks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		688F8614299E408F000FE6E7 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				688F8615299E408F000FE6E7 /* SharedFrameworks */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		A0B68B3426E077CD007D7B5B /* Operation */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,7 +125,6 @@
 		A0BD0B0B26DCE4F50054088B = {
 			isa = PBXGroup;
 			children = (
-				688F8614299E408F000FE6E7 /* Packages */,
 				A0BD0B1726DCE4F50054088B /* AmityUIKitLiveStream */,
 				A0BD0B1626DCE4F50054088B /* Products */,
 				A0BD0B2026DCE5310054088B /* Frameworks */,
@@ -179,6 +155,7 @@
 		A0BD0B2026DCE5310054088B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA6276C72A53B727003DFE4E /* AmitySDK.xcframework */,
 				FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */,
 				A0BD0B3726DDDE880054088B /* AmitySDK.xcframework */,
 				A0BD0B3326DDD9820054088B /* AmityUIKit.framework */,
@@ -283,7 +260,6 @@
 				A0BD0B1126DCE4F50054088B /* Sources */,
 				A0BD0B1226DCE4F50054088B /* Frameworks */,
 				A0BD0B1326DCE4F50054088B /* Resources */,
-				FA645DAC2A4A7C0600BA401F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -291,7 +267,7 @@
 			);
 			name = AmityUIKitLiveStream;
 			packageProductDependencies = (
-				68AF0C1F2A3B1C22008A09DA /* SharedFrameworks */,
+				FA6276D12A53B825003DFE4E /* AmitySDK */,
 			);
 			productName = AmityUIKitLiveStream;
 			productReference = A0BD0B1526DCE4F50054088B /* AmityUIKitLiveStream.framework */;
@@ -321,6 +297,7 @@
 			);
 			mainGroup = A0BD0B0B26DCE4F50054088B;
 			packageReferences = (
+				FA6276D02A53B825003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */,
 			);
 			productRefGroup = A0BD0B1626DCE4F50054088B /* Products */;
 			projectDirPath = "";
@@ -768,10 +745,22 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		FA6276D02A53B825003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kkpp9989/amityuikit-frameworks-package.git";
+			requirement = {
+				branch = "amityuikit-frameworks";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		68AF0C1F2A3B1C22008A09DA /* SharedFrameworks */ = {
+		FA6276D12A53B825003DFE4E /* AmitySDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = SharedFrameworks;
+			package = FA6276D02A53B825003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */;
+			productName = AmitySDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
