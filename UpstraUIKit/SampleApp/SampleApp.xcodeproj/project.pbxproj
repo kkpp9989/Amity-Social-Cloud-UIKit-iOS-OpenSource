@@ -18,7 +18,6 @@
 		0D73ACA825DB9423000D73CA /* NewJoinerPostComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D73ACA725DB9423000D73CA /* NewJoinerPostComponent.swift */; };
 		0D8FFC2925DCBFD900943538 /* AmityCustomFooterTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8FFC2725DCBFD900943538 /* AmityCustomFooterTableViewCell.swift */; };
 		0D8FFC2A25DCBFD900943538 /* AmityCustomFooterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0D8FFC2825DCBFD900943538 /* AmityCustomFooterTableViewCell.xib */; };
-		68AF0C222A3B1C2F008A09DA /* SharedFrameworks in Frameworks */ = {isa = PBXBuildFile; productRef = 68AF0C212A3B1C2F008A09DA /* SharedFrameworks */; };
 		7214C9CB2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9CA2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift */; };
 		7214C9D72632C0AD00192BB3 /* NotificationModuleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9D62632C0AD00192BB3 /* NotificationModuleTableViewCell.swift */; };
 		7214C9DB2632C0D500192BB3 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7214C9DA2632C0D500192BB3 /* SwitchTableViewCell.swift */; };
@@ -58,6 +57,7 @@
 		D4AFF1CF25ECE8AD002C001C /* PostPreviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AFF1CD25ECE8AD002C001C /* PostPreviewTableViewCell.swift */; };
 		D4AFF23225ED1E7C002C001C /* GlobalPostsFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AFF23125ED1E7C002C001C /* GlobalPostsFeedViewController.swift */; };
 		D4AFF23625ED1F88002C001C /* GlobalPostsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AFF23525ED1F88002C001C /* GlobalPostsDataSource.swift */; };
+		FA6276D52A53B871003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276D42A53B871003DFE4E /* AmitySDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,7 +104,6 @@
 		0D73ACA725DB9423000D73CA /* NewJoinerPostComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewJoinerPostComponent.swift; sourceTree = "<group>"; };
 		0D8FFC2725DCBFD900943538 /* AmityCustomFooterTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityCustomFooterTableViewCell.swift; sourceTree = "<group>"; };
 		0D8FFC2825DCBFD900943538 /* AmityCustomFooterTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityCustomFooterTableViewCell.xib; sourceTree = "<group>"; };
-		688F8617299E409B000FE6E7 /* SharedFrameworks */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SharedFrameworks; path = ../SharedFrameworks; sourceTree = "<group>"; };
 		68EF84A629B077E700C7EDEC /* RealmSwift.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RealmSwift.xcframework; path = ../Shared/RealmSwift.xcframework; sourceTree = "<group>"; };
 		7214C9CA2632BE5500192BB3 /* UserLevelPushNotificationsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLevelPushNotificationsTableViewController.swift; sourceTree = "<group>"; };
 		7214C9D62632C0AD00192BB3 /* NotificationModuleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationModuleTableViewCell.swift; sourceTree = "<group>"; };
@@ -156,6 +155,7 @@
 		D4AFF1CD25ECE8AD002C001C /* PostPreviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostPreviewTableViewCell.swift; sourceTree = "<group>"; };
 		D4AFF23125ED1E7C002C001C /* GlobalPostsFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalPostsFeedViewController.swift; sourceTree = "<group>"; };
 		D4AFF23525ED1F88002C001C /* GlobalPostsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalPostsDataSource.swift; sourceTree = "<group>"; };
+		FA6276C42A53B720003DFE4E /* AmitySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AmitySDK.xcframework; path = ../Shared/AmitySDK.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,9 +163,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA6276D52A53B871003DFE4E /* AmitySDK in Frameworks */,
 				A0BD0B4826DDE0E30054088B /* AmityUIKitLiveStream.framework in Frameworks */,
 				D478D16926240A5E006EA140 /* AmityUIKit.framework in Frameworks */,
-				68AF0C222A3B1C2F008A09DA /* SharedFrameworks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,14 +252,6 @@
 			path = Footer;
 			sourceTree = "<group>";
 		};
-		688F8616299E409B000FE6E7 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				688F8617299E409B000FE6E7 /* SharedFrameworks */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		7214C9D32632C05600192BB3 /* User Level Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -327,7 +319,6 @@
 		B78DA46C24BED7D300EE902B = {
 			isa = PBXGroup;
 			children = (
-				688F8616299E409B000FE6E7 /* Packages */,
 				B78DA47724BED7D300EE902B /* SampleApp */,
 				B78DA48E24BED7DA00EE902B /* SampleAppTests */,
 				B78DA49924BED7DA00EE902B /* SampleAppUITests */,
@@ -385,6 +376,7 @@
 		B78DA4A824BED83100EE902B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA6276C42A53B720003DFE4E /* AmitySDK.xcframework */,
 				68EF84A629B077E700C7EDEC /* RealmSwift.xcframework */,
 				A0BD0B4726DDE0E30054088B /* AmityUIKitLiveStream.framework */,
 				A0BD0B3E26DDE0020054088B /* AmityLiveVideoBroadcastKit.xcframework */,
@@ -457,7 +449,7 @@
 			);
 			name = SampleApp;
 			packageProductDependencies = (
-				68AF0C212A3B1C2F008A09DA /* SharedFrameworks */,
+				FA6276D42A53B871003DFE4E /* AmitySDK */,
 			);
 			productName = SampleApp;
 			productReference = B78DA47524BED7D300EE902B /* SampleApp.app */;
@@ -531,6 +523,9 @@
 				Base,
 			);
 			mainGroup = B78DA46C24BED7D300EE902B;
+			packageReferences = (
+				FA6276D32A53B871003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */,
+			);
 			productRefGroup = B78DA47624BED7D300EE902B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -959,10 +954,22 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		FA6276D32A53B871003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kkpp9989/amityuikit-frameworks-package.git";
+			requirement = {
+				branch = "amityuikit-frameworks";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		68AF0C212A3B1C2F008A09DA /* SharedFrameworks */ = {
+		FA6276D42A53B871003DFE4E /* AmitySDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = SharedFrameworks;
+			package = FA6276D32A53B871003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */;
+			productName = AmitySDK;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
