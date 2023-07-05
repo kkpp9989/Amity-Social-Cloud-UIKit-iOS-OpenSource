@@ -641,7 +641,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
         imagePicker.settings.selection.unselectOnReachingMax = false
-        presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
+        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
         
     }
     

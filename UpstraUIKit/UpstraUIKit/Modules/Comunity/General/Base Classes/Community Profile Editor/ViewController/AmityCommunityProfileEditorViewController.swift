@@ -362,7 +362,7 @@ private extension AmityCommunityProfileEditorViewController {
             imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
             imagePicker.settings.selection.max = 1
             imagePicker.settings.selection.unselectOnReachingMax = true
-            self?.presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+            self?.presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
                 guard let asset = assets.first else { return }
                 asset.getImage { result in
                     switch result {

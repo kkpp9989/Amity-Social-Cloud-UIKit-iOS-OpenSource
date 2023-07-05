@@ -174,7 +174,7 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
             imagePicker.settings.selection.max = 1
             imagePicker.settings.selection.unselectOnReachingMax = true
             
-            self?.presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            self?.presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
                 guard let asset = assets.first else { return }
                 asset.getImage { result in
                     switch result {
