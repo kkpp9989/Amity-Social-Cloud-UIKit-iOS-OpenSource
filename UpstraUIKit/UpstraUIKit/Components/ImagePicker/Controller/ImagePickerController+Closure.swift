@@ -37,7 +37,7 @@ import Photos
     ///   - cancel: Cancel callback
     ///   - finish: Finish callback
     ///   - completion: Presentation completion callback
-    public func presentImagePicker(_ imagePicker: AmityImagePickerController, animated: Bool = true, select: ((_ asset: PHAsset) -> Void)?, deselect: ((_ asset: PHAsset) -> Void)?, cancel: (([PHAsset]) -> Void)?, finish: (([PHAsset]) -> Void)?, completion: (() -> Void)? = nil) {
+    public func presentAmityUIKitImagePicker(_ imagePicker: AmityImagePickerController, animated: Bool = true, select: ((_ asset: PHAsset) -> Void)?, deselect: ((_ asset: PHAsset) -> Void)?, cancel: (([PHAsset]) -> Void)?, finish: (([PHAsset]) -> Void)?, completion: (() -> Void)? = nil) {
         authorize { [weak self] in
             // Set closures
             imagePicker.onSelection = select

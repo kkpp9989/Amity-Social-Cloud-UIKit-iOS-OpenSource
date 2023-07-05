@@ -150,7 +150,7 @@ private extension AmityMessageListViewController {
         imagePicker.settings.selection.max = 20
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
-        presentImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
             self?.screenViewModel.action.send(withMedias: medias)
         })
