@@ -80,6 +80,11 @@ public final class AmityPostGalleryTableViewCell: UITableViewCell, Nibbable, Ami
         contentLabel.numberOfLines = Constant.contentMaximumLine
         contentLabel.isExpanded = false
         
+        // [Custom for ONE Krungthai] Add constraint of content label for fix caption show incomplete (For font "KrungthaiFast-Regular")
+        // [Warning] If body font of AmityTypography set font size isn't 15 px, will must to change extra point in this code
+        let extraPx: CGFloat = 25.0 // px
+        let heightConstraint = AmityFontSet.body.pointSize + extraPx // Current body font size (15px) + extraPx
+        contentLabel.heightAnchor.constraint(equalToConstant: heightConstraint).isActive = true
     }
     
     // MARK: - Perform Action
