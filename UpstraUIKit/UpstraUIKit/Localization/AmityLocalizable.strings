@@ -114,7 +114,11 @@
 // MARK: - Empty
 "empty_chat_list" = "No conversations";
 "empty_newsfeed_title" = "Your feed is empty";
-"empty_newsfeed_subtitle" = "Find community or create your own";
+//"empty_newsfeed_subtitle" = "Find community or create your own";
+
+// [Custom for ONE Krungthai] Set custom wording of empty news feed without creating
+"empty_newsfeed_subtitle" = "Find community";
+
 "empty_newsfeed_explore_button" = "Explore community";
 "empty_newsfeed_create_button" = "Create community";
 "empty_newsfeed_start_your_first_post" = "Start your first post";
