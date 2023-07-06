@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,10 +19,10 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="2qn-YE-RfK">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="46"/>
+                        <rect key="frame" x="0.0" y="10" width="320" height="36"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eyL-5W-3ZS" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
-                                <rect key="frame" x="16" y="0.0" width="288" height="46"/>
+                                <rect key="frame" x="16" y="0.0" width="288" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -53,8 +53,8 @@
                     <constraint firstItem="VmY-c6-Uv2" firstAttribute="top" secondItem="2qn-YE-RfK" secondAttribute="bottom" id="jAt-qm-DL0"/>
                     <constraint firstAttribute="trailing" secondItem="VmY-c6-Uv2" secondAttribute="trailing" id="jzv-Xq-1bA"/>
                     <constraint firstAttribute="bottom" secondItem="VmY-c6-Uv2" secondAttribute="bottom" id="kj7-I7-wZa"/>
-                    <constraint firstItem="2qn-YE-RfK" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="ov1-01-SKn"/>
                     <constraint firstAttribute="trailing" secondItem="2qn-YE-RfK" secondAttribute="trailing" id="q3f-vH-eRU"/>
+                    <constraint firstItem="2qn-YE-RfK" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="wCI-rK-yG0"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
