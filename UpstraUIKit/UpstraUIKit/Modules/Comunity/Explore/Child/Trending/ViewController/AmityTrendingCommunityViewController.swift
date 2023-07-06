@@ -95,7 +95,7 @@ extension AmityTrendingCommunityViewController: UITableViewDataSource {
         cell.display(with: community)
         cell.displayNumber(with: indexPath)
         cell.delegate = self
-        let cellHeight = cell.isCategoryLabelTruncated ? 70 : 56
+        let cellHeight = cell.isCategoryLabelTruncated ? 70 : 60
         tableViewHeight += CGFloat(cellHeight)
         return cell
     }
@@ -107,7 +107,7 @@ extension AmityTrendingCommunityViewController: AmityTrendingCommunityScreenView
     func screenViewModel(_ viewModel: AmityTrendingCommunityScreenViewModelType, didRetrieveTrending trending: [AmityCommunityModel], isEmpty: Bool) {
         emptyHandler?(isEmpty)
         tableViewHeight = 0
-        heightTableViewContraint.constant = CGFloat(trending.count * 56)
+        heightTableViewContraint.constant = CGFloat(trending.count * 60)
         tableView.reloadData()
     }
     
