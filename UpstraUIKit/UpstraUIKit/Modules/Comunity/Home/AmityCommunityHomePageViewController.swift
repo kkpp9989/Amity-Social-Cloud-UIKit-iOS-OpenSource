@@ -40,6 +40,12 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         
         // Set custom navigation bar
         setupNavigationBar()
+        
+        // [Custom for ONE Krungthai] [Temp] Set all notification off
+        Task {
+            await setAllNotificationOff()
+        }
+        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -87,5 +93,19 @@ private extension AmityCommunityHomePageViewController {
         nav.modalPresentationStyle = .fullScreen
         nav.modalTransitionStyle = .crossDissolve
         present(nav, animated: true, completion: nil)
+    }
+    
+    // [Custom for ONE Krungthai] [Temp] Set all notification off
+    func setAllNotificationOff() async {
+        // Get notification manager
+        let userNotificationManager = AmityUIKitManager.client.notificationManager
+        
+        // Set disable all notification
+        do {
+            let result = try await userNotificationManager.disableAllNotifications()
+//            print("[Custom][Notification off] Set all notification off success with result : \(result)")
+        } catch {
+//            print("[Custom][Notification off] Set all notification off fail with error: \(error)")
+        }
     }
 }

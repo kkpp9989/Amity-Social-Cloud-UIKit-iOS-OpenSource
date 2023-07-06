@@ -77,16 +77,16 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
         settingsItems.append(.navigationContent(content: itemMemberContent))
         
         // MARK: Create notification item
-        if shouldNotificationItemShow {
-            let itemNotificationDesc = isNotificationEnabled ? AmityLocalizedStringSet.General.on : AmityLocalizedStringSet.General.off
-            let itemNotificationContent = AmitySettingsItem.NavigationContent(identifier: AmityCommunitySettingsItem.notification.identifier,
-                                                                            icon: AmityCommunitySettingsItem.notification.icon,
-                                                                            title: AmityCommunitySettingsItem.notification.title,
-                                                                            description: itemNotificationDesc.localizedString)
-            settingsItems.append(.navigationContent(content: itemNotificationContent))
-            // add separator
-            settingsItems.append(.separator)
-        }
+//        if shouldNotificationItemShow {
+//            let itemNotificationDesc = isNotificationEnabled ? AmityLocalizedStringSet.General.on : AmityLocalizedStringSet.General.off
+//            let itemNotificationContent = AmitySettingsItem.NavigationContent(identifier: AmityCommunitySettingsItem.notification.identifier,
+//                                                                            icon: AmityCommunitySettingsItem.notification.icon,
+//                                                                            title: AmityCommunitySettingsItem.notification.title,
+//                                                                            description: itemNotificationDesc.localizedString)
+//            settingsItems.append(.navigationContent(content: itemNotificationContent))
+//            // add separator
+//            settingsItems.append(.separator)
+//        }
         
         // MARK: Create Community Permission
         if shouldShowEditProfileItem || isModerator {
