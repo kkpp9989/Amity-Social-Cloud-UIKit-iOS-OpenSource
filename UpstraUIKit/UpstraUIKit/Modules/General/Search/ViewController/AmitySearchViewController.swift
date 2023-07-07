@@ -45,7 +45,8 @@ public class AmitySearchViewController: AmityPageViewController {
         setupNavigationBar()
         setupSearchController()
         
-        setButtonBarHidden(hidden: true)
+        // [Custom for ONE Krungthai] Set tabbar to show when open search view
+        setButtonBarHidden(hidden: false)
         
         searchTextField.becomeFirstResponder()
     }
