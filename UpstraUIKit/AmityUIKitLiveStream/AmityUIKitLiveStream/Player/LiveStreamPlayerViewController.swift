@@ -167,6 +167,9 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         loadingActivityIndicator.stopAnimating()
         
+        // [Custom for ONE Krungthai] Set player view (controler container) hidden when open livestream
+        controlContainerDidTap()
+        
         controlContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(controlContainerDidTap)))
         
         renderGestureView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(playerContainerDidTap)))
