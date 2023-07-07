@@ -117,6 +117,16 @@ public final class AmityUIKitManager {
         return Bundle(for: self)
     }
     
+    // [Custom for ONE Krungthai] Add current user token property for use request custom API
+    public static var currentUserToken: String {
+        return AmityUIKitManagerInternal.shared.currentUserToken
+    }
+    
+    // [Custom for ONE Krungthai] Add env property for get env for use some function
+    public static var env: [String: Any] {
+        return AmityUIKitManagerInternal.shared.env
+    }
+    
     // MARK: - Helper methods
     
     public static func set(theme: AmityTheme) {
@@ -150,6 +160,9 @@ final class AmityUIKitManagerInternal: NSObject {
     
     var currentUserId: String { return client.currentUserId ?? "" }
     
+    var userToken: String = ""
+    public var currentUserToken: String { return self.userToken }
+    
     var client: AmityClient {
         guard let client = _client else {
             fatalError("Something went wrong. Please ensure `AmityUIKitManager.setup(:_)` get called before accessing client.")
@@ -170,6 +183,9 @@ final class AmityUIKitManagerInternal: NSObject {
         
         _client = client
         _client?.delegate = self
+        
+        // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
+        self.apiKey = apiKey
     }
     
     func setup(_ apiKey: String, endpoint: AmityEndpoint) {
@@ -177,6 +193,9 @@ final class AmityUIKitManagerInternal: NSObject {
         
         _client = client
         _client?.delegate = self
+        
+        // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
+        self.apiKey = apiKey
     }
     
     func registerDevice(_ userId: String,
@@ -192,6 +211,11 @@ final class AmityUIKitManagerInternal: NSObject {
             }
             self?.revokeDeviceTokens()
             self?.didUpdateClient()
+            
+            // [Custom for ONE Krungthai] Add register user token function for request custom API
+            print("[AmityUIKitManager][Custom][Register user token]: Start register user token")
+            self?.registerUserToken(userId: userId, authToken: authToken ?? "")
+            
             completion?(true, error)
         }
     }
@@ -222,6 +246,18 @@ final class AmityUIKitManagerInternal: NSObject {
                 self?.notificationTokenMap[currentUserId] = nil
             }
             completion?(success, error)
+        }
+    }
+    
+    // [Custom for ONE Krungthai] Add register user token function for request custom API
+    func registerUserToken(userId: String, authToken: String) {
+        Task {
+            do {
+                let auth = try await AmityUserTokenManager(apiKey: apiKey, region: .SG).createUserToken(userId: userId, authToken: authToken)
+                userToken = auth.accessToken
+            } catch let error {
+                print("[AmityUIKitManager][Custom][Register user token]: Can't register user token with error:", error)
+            }
         }
     }
     
