@@ -241,6 +241,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         titleTextField.returnKeyType = .done
         titleTextField.delegate = self
         
+        // [Custom for ONE Krungthai] Change placeholder text and set color white
+        titleTextField.attributedPlaceholder = NSAttributedString(string: "Livestream title", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white] )
+        
         descriptionTextView.text = nil
         descriptionTextView.padding = .zero
         descriptionTextView.backgroundColor = .clear
