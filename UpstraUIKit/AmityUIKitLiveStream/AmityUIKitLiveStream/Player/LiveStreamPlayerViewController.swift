@@ -405,14 +405,21 @@ extension LiveStreamPlayerViewController {
         // Initial request setting
         let requestSetting = BaseRequestMeta()
         
+        // Get current user token
+        let currentUserToken = AmityUIKitManager.currentUserToken
+        
         // Setup request setting
         requestSetting.method = .post
-        requestSetting.urlRequest = "https://juwh4rykm7.execute-api.ap-southeast-1.amazonaws.com/dev/viewerCount"
+        requestSetting.urlRequest = "https://one-ktb-apiuat.convolab.ai/uat/viewerCount"
         requestSetting.encoding = .jsonEncoding
         requestSetting.params = ["postId": postID, "userId": viewerUserID, "displayName": viewerDisplayName, "isTrack": true, "streamId": streamIdToWatch]
+        requestSetting.header = [
+            ["Content-Type": "application/json"],
+            ["Authorization": "Bearer \(currentUserToken)"]
+        ]
         
         // Start request
-//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params)")
+//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params) and header \(requestSetting.header)")
         requester.request(requestSetting) { data, response, error in
             if let currentError = error {
 //                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API fail with error: \(currentError)")
