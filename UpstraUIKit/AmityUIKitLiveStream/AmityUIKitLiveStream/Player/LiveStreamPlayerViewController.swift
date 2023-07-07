@@ -410,7 +410,7 @@ extension LiveStreamPlayerViewController {
         
         // Setup request setting
         requestSetting.method = .post
-        requestSetting.urlRequest = "https://one-ktb-apiuat.convolab.ai/uat/viewerCount"
+        requestSetting.urlRequest = "https://one-ktb-apiuat.convolab.ai/viewerCount"
         requestSetting.encoding = .jsonEncoding
         requestSetting.params = ["postId": postID, "userId": viewerUserID, "displayName": viewerDisplayName, "isTrack": true, "streamId": streamIdToWatch]
         requestSetting.header = [
