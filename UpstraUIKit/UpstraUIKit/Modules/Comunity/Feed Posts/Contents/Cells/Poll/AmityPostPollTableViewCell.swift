@@ -219,10 +219,9 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
         }
     }
     
-    
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let pollAnswer = post?.poll?.answers else { return }
-        tableView.frame.size.height = (cell.frame.height * CGFloat(pollAnswer.count) )
+        tableView.frame.size.height = (cell.frame.height + 10.0) * CGFloat(pollAnswer.count) // Add 10 px to height for fix more option button disappear when user voted in 3 choices poll
         tableView.layoutIfNeeded()
     }
     
