@@ -41,11 +41,11 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         // Set custom navigation bar
         setupNavigationBar()
         
-        // [Custom for ONE Krungthai] [Temp] Set all notification off
+        // [Custom for ONE Krungthai] [Temp] Set all notification on / off
         Task {
-            await setAllNotificationOff()
+//            await setAllNotificationOff()
+            await setAllNotificationOn()
         }
-        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -95,17 +95,31 @@ private extension AmityCommunityHomePageViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    // [Custom for ONE Krungthai] [Temp] Set all notification off
+    // [Custom for ONE Krungthai] [Temp] Set all notification off (top-level)
     func setAllNotificationOff() async {
         // Get notification manager
         let userNotificationManager = AmityUIKitManager.client.notificationManager
         
-        // Set disable all notification
+        // Set disable all notification (top-level)
         do {
             let result = try await userNotificationManager.disableAllNotifications()
-//            print("[Custom][Notification off] Set all notification off success with result : \(result)")
+            print("[Amity-Notification] Set all notification off (top-level) success with result : \(result)")
         } catch {
-//            print("[Custom][Notification off] Set all notification off fail with error: \(error)")
+            print("[Amity-Notification] Set all notification off (top-level) fail with error: \(error)")
+        }
+    }
+    
+    // [Custom for ONE Krungthai] [Temp] Set all notification on (top-level)
+    func setAllNotificationOn() async {
+        // Get notification manager
+        let userNotificationManager = AmityUIKitManager.client.notificationManager
+        
+        // Set enable all notification (top-level)
+        do {
+            let result = try await userNotificationManager.enable(for: [])
+            print("[Amity-Notification] Set all notification on (top-level) success with result : \(result)")
+        } catch {
+            print("[Amity-Notification] Set all notification on (top-level) fail with error: \(error)")
         }
     }
 }
