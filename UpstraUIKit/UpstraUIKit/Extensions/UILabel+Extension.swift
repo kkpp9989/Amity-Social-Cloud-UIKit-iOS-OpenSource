@@ -98,6 +98,8 @@ extension UILabel {
         
         let size = CGSize(width: frame.size.width, height: .greatestFiniteMagnitude)
         let textSize = NSString(string: text).boundingRect(with: size, options: .usesLineFragmentOrigin, attributes: [.font: font],context: nil).size
+        print("[Today-trending][isTruncated] textSize.height: \(textSize.height) | bounds.size.height: \(bounds.size.height)")
+        
         return textSize.height > bounds.size.height
     }
     

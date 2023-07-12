@@ -95,8 +95,6 @@ extension AmityTrendingCommunityViewController: UITableViewDataSource {
         cell.display(with: community)
         cell.displayNumber(with: indexPath)
         cell.delegate = self
-        let cellHeight = cell.isCategoryLabelTruncated ? 70 : 60
-        tableViewHeight += CGFloat(cellHeight)
         return cell
     }
 }
@@ -106,8 +104,7 @@ extension AmityTrendingCommunityViewController: AmityTrendingCommunityScreenView
 
     func screenViewModel(_ viewModel: AmityTrendingCommunityScreenViewModelType, didRetrieveTrending trending: [AmityCommunityModel], isEmpty: Bool) {
         emptyHandler?(isEmpty)
-        tableViewHeight = 0
-        heightTableViewContraint.constant = CGFloat(trending.count * 60)
+        tableViewHeight = CGFloat(trending.count * 62) // [Custom for ONE Krungthai][Warning] Set cell height to 62px for KrungthaiFast font and size 13 - 15 px and one line | if change font style and font size or amount line, must to check and edit this constant again
         tableView.reloadData()
     }
     
