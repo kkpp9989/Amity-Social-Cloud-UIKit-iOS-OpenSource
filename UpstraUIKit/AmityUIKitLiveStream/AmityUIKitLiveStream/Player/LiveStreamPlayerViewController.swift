@@ -408,9 +408,18 @@ extension LiveStreamPlayerViewController {
         // Get current user token
         let currentUserToken = AmityUIKitManager.currentUserToken
         
+        // Get domain url of custom API
+        var domainURL = ""
+        if let envKey = AmityUIKitManager.env["env_key"] as? String {
+//            print("[Livestream] [Custom] [Send viewer satistics] env key for get domain url custom API : \(envKey)")
+            domainURL = getDomainURLCustomAPI(env: envKey)
+        } else {
+            domainURL = getDomainURLCustomAPI(env: "") // Go to default (UAT)
+        }
+        
         // Setup request setting
         requestSetting.method = .post
-        requestSetting.urlRequest = "https://one-ktb-apiuat.convolab.ai/viewerCount"
+        requestSetting.urlRequest = "\(domainURL)/viewerCount"
         requestSetting.encoding = .jsonEncoding
         requestSetting.params = ["postId": postID, "userId": viewerUserID, "displayName": viewerDisplayName, "isTrack": true, "streamId": streamIdToWatch]
         requestSetting.header = [
@@ -419,7 +428,7 @@ extension LiveStreamPlayerViewController {
         ]
         
         // Start request
-//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with data \(requestSetting.params) and header \(requestSetting.header)")
+//        print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Start request send viewer statistics API with url: \(requestSetting.urlRequest) | data: \(requestSetting.params) | header: \(requestSetting.header)")
         requester.request(requestSetting) { data, response, error in
             if let currentError = error {
 //                print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API fail with error: \(currentError)")
@@ -428,6 +437,21 @@ extension LiveStreamPlayerViewController {
 //                    print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
                 }
             }
+        }
+    }
+    
+    private func getDomainURLCustomAPI(env: String) -> String {
+        switch env {
+        case "DEV":
+            return "https://one-ktb-apidev.convolab.ai"
+        case "SIT":
+            return "https://one-ktb-apiuat.convolab.ai"
+        case "UAT":
+            return "https://one-ktb-apiuat.convolab.ai"
+        case "PRODUCTION":
+            return "https://one-ktb-apiprod.convolab.ai" // [Mock] Not ready use
+        default:
+            return "https://one-ktb-apiuat.convolab.ai" // Set UAT to default
         }
     }
 }
