@@ -398,6 +398,7 @@ extension LiveStreamPlayerViewController: AmityVideoPlayerDelegate {
 }
 
 extension LiveStreamPlayerViewController {
+    // [Custom for ONE Krungthai] Request send viewer statistic to custom API for dashboard
     private func requestSendViewerStatisticsAPI() {
         // Initial requester
         let requester = NetworkManager()
@@ -412,9 +413,10 @@ extension LiveStreamPlayerViewController {
         var domainURL = ""
         if let envKey = AmityUIKitManager.env["env_key"] as? String {
 //            print("[Livestream] [Custom] [Send viewer satistics] env key for get domain url custom API : \(envKey)")
-            domainURL = getDomainURLCustomAPI(env: envKey)
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
         } else {
-            domainURL = getDomainURLCustomAPI(env: "") // Go to default (UAT)
+//            print(#"[Livestream] [Custom] [Send viewer satistics] can't env key for get domain url custom API"#)
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
         
         // Setup request setting
@@ -437,21 +439,6 @@ extension LiveStreamPlayerViewController {
 //                    print("[Livestream] [Custom] [Send viewer satistics] [\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
                 }
             }
-        }
-    }
-    
-    private func getDomainURLCustomAPI(env: String) -> String {
-        switch env {
-        case "DEV":
-            return "https://one-ktb-apidev.convolab.ai"
-        case "SIT":
-            return "https://one-ktb-apiuat.convolab.ai"
-        case "UAT":
-            return "https://one-ktb-apiuat.convolab.ai"
-        case "PRODUCTION":
-            return "https://one-ktb-apiprod.convolab.ai" // [Mock] Not ready use
-        default:
-            return "https://one-ktb-apiuat.convolab.ai" // Set UAT to default
         }
     }
 }
