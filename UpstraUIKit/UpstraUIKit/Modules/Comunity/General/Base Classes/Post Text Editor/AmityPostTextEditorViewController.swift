@@ -234,6 +234,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
         mentionManager?.delegate = self
+        
+        updateAttributesText()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -277,6 +279,11 @@ public class AmityPostTextEditorViewController: AmityViewController {
         scrollView.scrollIndicatorInsets = scrollView.contentInset
         let selectedRange = textView.selectedRange
         textView.scrollRangeToVisible(selectedRange)
+    }
+    
+    private func updateAttributesText() {
+        let text = textView.text ?? ""
+        mentionManager?.createAttributedText(text: text)
     }
     
     // MARK: - Action

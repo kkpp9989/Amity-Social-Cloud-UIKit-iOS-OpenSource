@@ -190,63 +190,21 @@ public extension AmityMentionManager {
         let userId: String? = member.userId
         let displayName: String = member.displayName
         let type: AmityMessageMentionType = .user
-
-        let begOfDoc = textInput.beginningOfDocument
-        let endOfDoc = textInput.endOfDocument
         
         // adding a mention from ending
-        if selectedRange == textInput.textRange(from: endOfDoc, to: endOfDoc) {
-            var range = NSRange()
-            
-            if let key = searchingKey, isSearchingStarted {
-                // this is end of the line then we need to remove the suffix
-                let rng = Range(NSRange(location: currentText.count - key.count, length: key.count), in: currentText)
-                currentText = currentText.replacingOccurrences(of: "\(key)", with: "", options: .caseInsensitive, range: rng)
-            }
-            
-            let start = currentText.count
-            range = NSRange(location: start == 0 ? 0 : start - 1, length: displayName.count)
-            currentText.append("\(displayName) ")
-            
-            let mention = AmityMention(type: type, index: range.location, length: range.length, userId: userId)
-            
-            mentions.append(mention)
-        } else {
-            let cursorOffset = textInput.offset(from: begOfDoc, to: selectedRange.start)
-            var range = NSRange()
-            if isSearchingStarted, let key = searchingKey {
-                let rng = currentText.range(of: "@\(key)")
-                currentText = currentText.replacingOccurrences(of: "@\(key)", with: "", options: .caseInsensitive, range: rng)
-                range = NSRange(location: cursorOffset - "@\(key)".count, length: displayName.count + 1)
-                if let cursorIndex = Range(.init(location: range.location, length: 0), in: currentText)?.lowerBound, cursorIndex <= currentText.endIndex {
-                    currentText.insert(contentsOf: "@\(displayName)", at: cursorIndex)
-                }
-            } else {
-                let location = cursorOffset - 1
-                range = NSRange(location: location, length: displayName.count)
-                let rangeToSet = NSRange(location: cursorOffset, length: displayName.count)
-                if let cursorIndex = Range(.init(location: rangeToSet.location, length: 0), in: currentText)?.lowerBound, cursorIndex <= currentText.endIndex {
-                    currentText.insert(contentsOf: "\(displayName)", at: cursorIndex)
-                }
-            }
-            
-            for mention in mentions {
-                if range.location < mention.index {
-                    mention.index += range.length
-                }
-            }
-            
-            let mention = AmityMention(type: type, index: range.location, length: range.length, userId: userId)
-            if mentions.count > 0 {
-                var index = 0
-                while index < mentions.count && mentions[index].index < range.location {
-                    index += 1
-                }
-                mentions.insert(mention, at: index)
-            } else {
-                mentions.insert(mention, at: 0)
-            }
-        }
+        var range = NSRange()
+        
+        let key = searchingKey ?? ""
+        let rng = Range(NSRange(location: currentText.utf16.count - key.utf16.count, length: key.utf16.count), in: currentText)
+        
+        let start = (currentText.utf16.count - (searchingKey?.utf16.count ?? 0)) - 1
+        range = NSRange(location: start == 1 ? 0 : start , length: displayName.utf16.count + 1)
+        currentText = currentText.replacingOccurrences(of: "\(searchingKey ?? "")", with: "",range: rng)
+        currentText.append("\(displayName) ")
+        
+        let mention = AmityMention(type: type, index: range.location, length: range.length, userId: userId)
+        
+        mentions.append(mention)
         
         createAttributedText(text: currentText)
         finishSearching()
@@ -404,20 +362,16 @@ private extension AmityMentionManager {
         return filteredMenion.count > 0
     }
     
-    func createAttributedText(text: String) {
+    public func createAttributedText(text: String) {
         let attributedString = NSMutableAttributedString(string: text)
-        attributedString.addAttributes([.font: font, .foregroundColor: foregroundColor], range: NSRange(location: 0, length: text.count - 1))
-
-        for mention in mentions {
-            if mention.index < 0 || mention.length <= 0 { continue }
-            let range = NSRange(location: mention.index, length: mention.length + 1)
-            
-            if range.location != NSNotFound && (range.location + range.length) <= text.count {
-                attributedString.addAttributes([.foregroundColor: highlightColor, .font: highlightFont], range: range)
-            }
+        attributedString.addAttributes([.font: font, .foregroundColor: foregroundColor], range: NSMakeRange(0, text.utf16.count))
+        mentions.forEach { (mention) in
+            attributedString.addAttributes([.foregroundColor: highlightColor, .font: highlightFont], range: NSMakeRange(mention.index, mention.length))
         }
         
-        delegate?.didCreateAttributedString(attributedString: attributedString)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
+            delegate?.didCreateAttributedString(attributedString: attributedString)
+        }
         
         if text.count > AmityMentionManager.maximumCharacterCountForPost {
             delegate?.didCharactersReachToMaximumLimit()
@@ -567,10 +521,8 @@ extension AmityMentionManager {
                 })
             }
             
-            let range = NSRange(location: mention.index + shift, length: mention.length + 1)
-            if shouldMention, range.location != NSNotFound && (range.location + range.length) <= text.count {
-                attributes.append(MentionAttribute(attributes: [.foregroundColor: highlightColor, .font: highlightFont], range: range, userId: mention.userId ?? ""))
-            }
+            let range = NSRange(location: mention.index, length: mention.length)
+            attributes.append(MentionAttribute(attributes: [.foregroundColor: highlightColor, .font: highlightFont], range: range, userId: mention.userId ?? ""))
         }
 
         return attributes
