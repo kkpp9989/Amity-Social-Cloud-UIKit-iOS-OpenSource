@@ -287,6 +287,14 @@ public class AmityPostModel {
         return myReactions.contains(.like)
     }
     
+    let reactionTypes: [AmityReactionType] = [.sangsun, .satsue, .samakki, .sumrej, .sangkom, .like, .love]
+    
+    var reacted: AmityReactionType? {
+        let filteredArray = myReactions.filter { reactionTypes.contains($0) }
+        guard filteredArray.count > 0 else { return nil }
+        return filteredArray[0]
+    }
+    
     private(set) var feedType: AmityFeedType = .published
     
     // MARK: - Initializer

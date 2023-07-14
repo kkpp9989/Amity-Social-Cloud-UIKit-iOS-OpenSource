@@ -68,6 +68,22 @@ public struct AmityIconSet {
     public static var iconDownChevron = UIImage(named: "Icon_down_chevron", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconPlayVideo = UIImage(named: "icon_play_video", in: AmityUIKitManager.bundle, compatibleWith: nil)
     
+    public static var iconBadgeDNALike = UIImage(named: "icon_badge_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNALove = UIImage(named: "icon_badge_dna_love", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNASamakki = UIImage(named: "icon_badge_dna_samakki", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNASangkom = UIImage(named: "icon_badge_dna_sangkom", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNASangsun = UIImage(named: "icon_badge_dna_sangsun", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNASatsue = UIImage(named: "icon_badge_dna_satsue", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBadgeDNASumrej = UIImage(named: "icon_badge_dna_sumrej", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    
+    public static var iconDNALike = UIImage(named: "icon_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNALove = UIImage(named: "icon_dna_love", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNASamakki = UIImage(named: "icon_dna_samakki", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNASangkom = UIImage(named: "icon_dna_sangkom", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNASangsun = UIImage(named: "icon_dna_sangsun", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNASatsue = UIImage(named: "icon_dna_satsue", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconDNASumrej = UIImage(named: "icon_dna_sumrej", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    
     public struct File {
         public static var iconFileAudio = UIImage(named: "icon_file_audio", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconFileAVI = UIImage(named: "icon_file_avi", in: AmityUIKitManager.bundle, compatibleWith: nil)

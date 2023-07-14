@@ -51,6 +51,9 @@ protocol AmityFeedScreenViewModelAction {
     func like(id: String, referenceType: AmityReactionReferenceType)
     func unlike(id: String, referenceType: AmityReactionReferenceType)
     
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType)
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType)
+    
     // MARK: Post
     func delete(withPostId postId: String)
     func report(withPostId postId: String)

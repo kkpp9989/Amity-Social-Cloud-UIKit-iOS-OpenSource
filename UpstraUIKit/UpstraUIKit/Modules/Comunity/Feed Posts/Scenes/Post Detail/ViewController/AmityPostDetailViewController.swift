@@ -40,6 +40,9 @@ open class AmityPostDetailViewController: AmityViewController {
         }
     }
     
+    // Reaction Picker
+    private let reactionPickerView = AmityReactionPickerView()
+    
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
@@ -75,6 +78,7 @@ open class AmityPostDetailViewController: AmityViewController {
         setupProtocolHandler()
         setupScreenViewModel()
         setupMentionTableView()
+        setupReactionPicker()
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
@@ -156,6 +160,17 @@ open class AmityPostDetailViewController: AmityViewController {
     private func setupComposeBarView() {
         commentComposeBarView.delegate = self
         commentComposeBarView.isHidden = true
+    }
+    
+    private func setupReactionPicker() {
+        
+        reactionPickerView.alpha = 0
+        view.addSubview(reactionPickerView)
+        
+        // Setup tap gesture recognizer
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
     
     @objc private func optionTap() {
@@ -253,6 +268,29 @@ open class AmityPostDetailViewController: AmityViewController {
     private func showReactionUserList(info: AmityReactionInfo) {
         let controller = AmityReactionPageViewController.make(info: [info])
         self.navigationController?.pushViewController(controller, animated: true)
+    }
+}
+
+// MARK: - ReactionPickerView
+extension AmityPostDetailViewController {
+    
+    @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: view)
+        if !reactionPickerView.frame.contains(location) {
+            hideReactionPicker()
+        }
+    }
+    
+    private func showReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 1 // Fade in
+        }
+    }
+    
+    private func hideReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 0 // Fade out
+        }
     }
 }
 
@@ -364,6 +402,9 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
         UITableView.automaticDimension
     }
     
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView) {
+        hideReactionPicker()
+    }
     
 }
 
@@ -563,14 +604,24 @@ extension AmityPostDetailViewController: AmityPostProtocolHandlerDelegate {
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
 extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate {
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
+        let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
+        reactionPickerView.frame.origin = CGPoint(x: 16, y: likeButtonFrameInSuperview.maxY - likeButtonFrameInSuperview.height - self.reactionPickerView.frame.height)
+    }
     
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel) {
         switch action {
         case .tapLike:
-            if post.isLiked {
-                screenViewModel.action.unlikePost()
+            if let reactionType = post.reacted {
+//                screenViewModel.action.unlikePost()
+                screenViewModel.action.removeReactionPost(type: reactionType)
             } else {
-                screenViewModel.action.likePost()
+//                screenViewModel.action.likePost()
+                reactionPickerView.onSelect = { [weak self] reactionType in
+                    self?.hideReactionPicker()
+                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+                }
+                showReactionPicker()
             }
         case .tapComment:
             parentComment = nil

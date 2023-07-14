@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "amityuikit-frameworks-package",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kkpp9989/amityuikit-frameworks-package.git",
+      "state" : {
+        "branch" : "amityuikit-frameworks",
+        "revision" : "d96328645e6230cb9a511776dd129f0901fc1806"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+
 enum AmityPostFooterProtocolHandlerAction {
     case tapLike
     case tapComment
@@ -14,15 +16,21 @@ enum AmityPostFooterProtocolHandlerAction {
 }
 protocol AmityPostFooterProtocolHandlerDelegate: AnyObject {
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel)
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView)
 }
 
 final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
+    
     weak var delegate: AmityPostFooterProtocolHandlerDelegate?
     
     private weak var viewController: AmityViewController?
     
     init(viewController: AmityViewController) {
         self.viewController = viewController
+    }
+    
+    func didPerformView(_ cell: AmityPostFooterProtocol, view: UIView) {
+        delegate?.footerProtocolHandlerDidPerformView(self, view: view)
     }
     
     func didPerformAction(_ cell: AmityPostFooterProtocol, action: AmityPostFooterAction) {
