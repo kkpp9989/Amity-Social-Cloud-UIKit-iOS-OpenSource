@@ -120,7 +120,8 @@ extension AmityMyCommunityPreviewViewController: UICollectionViewDelegate {
 extension AmityMyCommunityPreviewViewController: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return screenViewModel.dataSource.numberOfCommunity()
+        // [Custom For ONE Krungthai] Add limit to show cell not more than 8 cell
+        return screenViewModel.dataSource.numberOfCommunity() > 8 ? 8 : screenViewModel.dataSource.numberOfCommunity()
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -131,12 +132,15 @@ extension AmityMyCommunityPreviewViewController: UICollectionViewDataSource {
     
     private func configure(for cell: UICollectionViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmityMyCommunityCollectionViewCell {
-            if screenViewModel.action.shouldShowSeeAll(indexPath: indexPath) {
-                cell.setupSeeAll()
-            } else {
-                let community = screenViewModel.dataSource.item(at: indexPath)
-                cell.display(with: community)
-            }
+            // [Custom For ONE Krungthai] Disable check codition of show "See All" Button
+//            if screenViewModel.action.shouldShowSeeAll(indexPath: indexPath) {
+//                cell.setupSeeAll()
+//            } else {
+//                let community = screenViewModel.dataSource.item(at: indexPath)
+//                cell.display(with: community)
+//            }
+            let community = screenViewModel.dataSource.item(at: indexPath)
+            cell.display(with: community)
         }
     }
 }
