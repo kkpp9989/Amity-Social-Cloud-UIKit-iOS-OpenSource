@@ -77,6 +77,8 @@ protocol AmityPostDetailScreenViewModelAction {
     func updatePost(withText text: String)
     func likePost()
     func unlikePost()
+    func addReactionPost(type: AmityReactionType)
+    func removeReactionPost(type: AmityReactionType)
     func deletePost()
     func reportPost()
     func unreportPost()
