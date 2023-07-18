@@ -34,7 +34,14 @@ public class AmityProfileViewController: AmityViewController, AmityProfileDataSo
     }
     
     func scrollView(_ scrollView: UIScrollView, didUpdate progress: CGFloat) {
-        
+        let contentOffsetY = scrollView.contentOffset.y
+        let maxContentOffsetY = scrollView.contentSize.height - scrollView.bounds.size.height
+                
+        if contentOffsetY >= (maxContentOffsetY - 100) {
+            NotificationCenter.default.post(name: .scrollViewReachedLowestPoint, object: nil)
+        } else if contentOffsetY <= 30 {
+            NotificationCenter.default.post(name: .scrollViewReachedTopperPoint, object: nil)
+        }
     }
     
     func scrollViewDidLoad(_ scrollView: UIScrollView) {
@@ -143,4 +150,9 @@ extension AmityProfileBottomViewController: AmityRefreshable {
         }
     }
     
+}
+
+extension NSNotification.Name {
+    static let scrollViewReachedLowestPoint = NSNotification.Name("ScrollViewReachedLowestPoint")
+    static let scrollViewReachedTopperPoint = NSNotification.Name("ScrollViewReachedTopperPoint")
 }
