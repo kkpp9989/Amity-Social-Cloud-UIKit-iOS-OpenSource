@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -176,20 +176,20 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NZQ-e8-53o" userLabel="Bottom Container View">
                                         <rect key="frame" x="0.0" y="49" width="288" height="32"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="LY1-GA-XD2">
-                                                <rect key="frame" x="0.0" y="0.0" width="201" height="32"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="LY1-GA-XD2">
+                                                <rect key="frame" x="0.0" y="0.0" width="288" height="32"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kp8-xl-VFI">
-                                                        <rect key="frame" x="0.0" y="0.0" width="201" height="16"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="288" height="16"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Ihv-Qg-TsU">
-                                                        <rect key="frame" x="0.0" y="16" width="201" height="16"/>
+                                                        <rect key="frame" x="0.0" y="16" width="288" height="16"/>
                                                         <subviews>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dHB-Qg-NR1" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="53" height="16"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="81.666666666666671" height="16"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                 <color key="tintColor" red="0.090196078430000007" green="0.094117647060000004" blue="0.10980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <state key="normal" title="Liked" image="icon_post_like">
@@ -200,7 +200,7 @@
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7rf-c3-yY7" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                                                <rect key="frame" x="65" y="0.0" width="75" height="16"/>
+                                                                <rect key="frame" x="89.666666666666686" y="0.0" width="115" height="16"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                 <color key="tintColor" red="0.50588235290000005" green="0.52549019610000003" blue="0.59607843140000005" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <state key="normal" title="Comment" image="icon_comment">
@@ -211,7 +211,7 @@
                                                                 </connections>
                                                             </button>
                                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lYA-ML-TDz" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                                                <rect key="frame" x="152" y="0.0" width="49" height="16"/>
+                                                                <rect key="frame" x="212.66666666666666" y="0.0" width="75.333333333333343" height="16"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                 <color key="tintColor" red="0.50588235290000005" green="0.52549019610000003" blue="0.59607843140000005" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <state key="normal" title="Share" image="icon_share">
@@ -222,10 +222,20 @@
                                                                 </connections>
                                                             </button>
                                                         </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="dHB-Qg-NR1" firstAttribute="leading" secondItem="Ihv-Qg-TsU" secondAttribute="leading" id="28O-Y8-48c"/>
+                                                            <constraint firstItem="lYA-ML-TDz" firstAttribute="width" secondItem="7rf-c3-yY7" secondAttribute="width" multiplier="0.65625" id="H0c-1h-OS2"/>
+                                                            <constraint firstAttribute="trailing" secondItem="lYA-ML-TDz" secondAttribute="trailing" id="SVQ-Rr-WM4"/>
+                                                            <constraint firstItem="7rf-c3-yY7" firstAttribute="width" secondItem="dHB-Qg-NR1" secondAttribute="width" multiplier="1.40881" id="UWj-ZX-V4S"/>
+                                                            <constraint firstItem="7rf-c3-yY7" firstAttribute="leading" secondItem="dHB-Qg-NR1" secondAttribute="trailing" constant="8" symbolic="YES" id="f0f-i1-K7J"/>
+                                                            <constraint firstItem="lYA-ML-TDz" firstAttribute="leading" secondItem="7rf-c3-yY7" secondAttribute="trailing" constant="8" symbolic="YES" id="u4t-Xl-gyy"/>
+                                                        </constraints>
                                                     </stackView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="Kp8-xl-VFI" secondAttribute="trailing" id="JGg-xm-7c5"/>
+                                                    <constraint firstItem="Ihv-Qg-TsU" firstAttribute="leading" secondItem="LY1-GA-XD2" secondAttribute="leading" id="sVa-iv-buX"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Ihv-Qg-TsU" secondAttribute="trailing" id="wnY-s5-Suj"/>
                                                     <constraint firstItem="Kp8-xl-VFI" firstAttribute="leading" secondItem="LY1-GA-XD2" secondAttribute="leading" id="xHX-HS-q0B"/>
                                                 </constraints>
                                             </stackView>
@@ -234,8 +244,8 @@
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="LY1-GA-XD2" secondAttribute="bottom" id="8Sn-kv-cAe"/>
                                             <constraint firstAttribute="height" constant="32" id="THn-pH-XW8"/>
-                                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="LY1-GA-XD2" secondAttribute="trailing" id="VFY-uy-Oi0"/>
                                             <constraint firstItem="LY1-GA-XD2" firstAttribute="top" secondItem="NZQ-e8-53o" secondAttribute="top" id="od2-lC-ldH"/>
+                                            <constraint firstAttribute="trailing" secondItem="LY1-GA-XD2" secondAttribute="trailing" id="t7c-EY-eFa"/>
                                             <constraint firstItem="LY1-GA-XD2" firstAttribute="leading" secondItem="NZQ-e8-53o" secondAttribute="leading" id="zdX-8V-wUe"/>
                                         </constraints>
                                     </view>
