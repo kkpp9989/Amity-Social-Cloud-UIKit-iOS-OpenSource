@@ -18,15 +18,15 @@ class AmityReactionPickerCollectionViewCell: UICollectionViewCell, Nibbable {
     func display(_ type: AmityReactionType) {
         
         switch type {
-        case .sangsun:
+        case .create:
             reactionImageView.image = AmityIconSet.iconDNASangsun
-        case .satsue:
+        case .honest:
             reactionImageView.image = AmityIconSet.iconDNASatsue
-        case .samakki:
+        case .harmony:
             reactionImageView.image = AmityIconSet.iconDNASamakki
-        case .sumrej:
+        case .success:
             reactionImageView.image = AmityIconSet.iconDNASumrej
-        case .sangkom:
+        case .society:
             reactionImageView.image = AmityIconSet.iconDNASangkom
         case .like:
             reactionImageView.image = AmityIconSet.iconDNALike

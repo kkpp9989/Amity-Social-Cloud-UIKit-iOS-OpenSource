@@ -287,7 +287,7 @@ public class AmityPostModel {
         return myReactions.contains(.like)
     }
     
-    let reactionTypes: [AmityReactionType] = [.sangsun, .satsue, .samakki, .sumrej, .sangkom, .like, .love]
+    let reactionTypes: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
     
     var reacted: AmityReactionType? {
         let filteredArray = myReactions.filter { reactionTypes.contains($0) }
