@@ -156,27 +156,27 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     private func setLikedButton(reactionType: AmityReactionType) {
         
         switch reactionType {
-        case .sangsun:
+        case .create:
             likeButton.setTitle(AmityLocalizedStringSet.General.sangsun.localizedString, for: .selected)
             likeButton.setTitleColor(AmityColorSet.dnaSangsun, for: .selected)
             likeButton.setImage(AmityIconSet.iconBadgeDNASangsun, for: .selected)
             likeButton.setTintColor(AmityColorSet.dnaSangsun, for: .selected)
-        case .satsue:
+        case .honest:
             likeButton.setTitle(AmityLocalizedStringSet.General.satsue.localizedString, for: .selected)
             likeButton.setTitleColor(AmityColorSet.dnaSatsue, for: .selected)
             likeButton.setImage(AmityIconSet.iconBadgeDNASatsue, for: .selected)
             likeButton.setTintColor(AmityColorSet.dnaSatsue, for: .selected)
-        case .samakki:
+        case .harmony:
             likeButton.setTitle(AmityLocalizedStringSet.General.samakki.localizedString, for: .selected)
             likeButton.setTitleColor(AmityColorSet.dnaSamakki, for: .selected)
             likeButton.setImage(AmityIconSet.iconBadgeDNASamakki, for: .selected)
             likeButton.setTintColor(AmityColorSet.dnaSamakki, for: .selected)
-        case .sumrej:
+        case .success:
             likeButton.setTitle(AmityLocalizedStringSet.General.sumrej.localizedString, for: .selected)
             likeButton.setTitleColor(AmityColorSet.dnaSumrej, for: .selected)
             likeButton.setImage(AmityIconSet.iconBadgeDNASumrej, for: .selected)
             likeButton.setTintColor(AmityColorSet.dnaSumrej, for: .selected)
-        case .sangkom:
+        case .society:
             likeButton.setTitle(AmityLocalizedStringSet.General.sangkom.localizedString, for: .selected)
             likeButton.setTitleColor(AmityColorSet.dnaSangkom, for: .selected)
             likeButton.setImage(AmityIconSet.iconBadgeDNASangkom, for: .selected)
@@ -239,15 +239,15 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     
     private func dnaLabelIcon(reactionType: AmityReactionType) -> UIImage? {
         switch reactionType {
-        case .sangsun:
+        case .create:
             return AmityIconSet.iconBadgeDNASangsun
-        case .satsue:
+        case .honest:
             return AmityIconSet.iconBadgeDNASatsue
-        case .samakki:
+        case .harmony:
             return AmityIconSet.iconBadgeDNASamakki
-        case .sumrej:
+        case .success:
             return AmityIconSet.iconBadgeDNASumrej
-        case .sangkom:
+        case .society:
             return AmityIconSet.iconBadgeDNASangkom
         case .like:
             return AmityIconSet.iconBadgeDNALike
