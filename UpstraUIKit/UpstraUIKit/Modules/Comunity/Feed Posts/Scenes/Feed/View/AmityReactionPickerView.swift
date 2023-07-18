@@ -16,7 +16,7 @@ class AmityReactionPickerView: UIView {
     private let verticalSpacing: CGFloat = 12.0
     private let horizontalSpacing: CGFloat = 8.0
     
-    private let reactionTypes: [AmityReactionType] = [.sangsun, .satsue, .samakki, .sumrej, .sangkom, .like, .love]
+    private let reactionTypes: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
     
     private var viewWidth: CGFloat {
         
