@@ -10,7 +10,13 @@ import UIKit
 import AmitySDK
 
 public enum AmityReactionType: String {
-    case like
+    case sangsun = "สร้างสรรค์"
+    case satsue = "สัตย์ซื่อ"
+    case samakki = "สามัคคี"
+    case sumrej = "สำเร็จ"
+    case sangkom = "สังคม"
+    case like = "like"
+    case love = "love"
 }
 
 protocol AmityReactionControllerProtocol {

@@ -19,6 +19,7 @@ public protocol AmityPostFooterProtocol: UITableViewCell, AmityCellIdentifiable 
 /// A default delegate of footer post
 public protocol AmityPostFooterDelegate: AnyObject {
     func didPerformAction(_ cell: AmityPostFooterProtocol, action: AmityPostFooterAction)
+    func didPerformView(_ cell: AmityPostFooterProtocol, view: UIView)
 }
 
 /// A default action of footer post

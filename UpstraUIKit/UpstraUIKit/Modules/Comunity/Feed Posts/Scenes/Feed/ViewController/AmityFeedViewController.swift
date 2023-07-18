@@ -57,6 +57,9 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     
     private let debouncer = Debouncer(delay: 0.3)
     
+    // Reaction Picker
+    private let reactionPickerView = AmityReactionPickerView()
+    
     // MARK: - View lifecycle
     deinit {
         screenViewModel.action.stopObserveFeedUpdate()
@@ -66,7 +69,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         super.viewDidLoad()
         setupView()
         setupProtocolHandler()
-        setupScreenViewModel()   
+        setupScreenViewModel()
+        setupReactionPicker()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -155,6 +159,17 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         tableView.refreshControl = refreshControl
     }
     
+    private func setupReactionPicker() {
+        
+        reactionPickerView.alpha = 0
+        view.addSubview(reactionPickerView)
+        
+        // Setup tap gesture recognizer
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
     // MARK: SrollToTop
     private func scrollToTop() {
         guard tableView.numberOfRows(inSection: 0) > 0 else { return }
@@ -181,6 +196,30 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         }
         pullRefreshHandler?()
         screenViewModel.action.fetchPosts()
+    }
+    
+}
+
+// MARK: - ReactionPickerView
+extension AmityFeedViewController {
+    
+    @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: view)
+        if !reactionPickerView.frame.contains(location) {
+            hideReactionPicker()
+        }
+    }
+    
+    private func showReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 1 // Fade in
+        }
+    }
+    
+    private func hideReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 0 // Fade out
+        }
     }
 }
 
@@ -265,6 +304,10 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
         }
         emptyViewHandler?(bottomView)
         return bottomView
+    }
+    
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView) {
+        hideReactionPicker()
     }
 }
 
@@ -427,13 +470,25 @@ extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
 extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
+    
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
+        let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
+        reactionPickerView.frame.origin = CGPoint(x: 16, y: likeButtonFrameInSuperview.maxY - likeButtonFrameInSuperview.height - self.reactionPickerView.frame.height)
+    }
+    
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel) {
         switch action {
         case .tapLike:
-            if post.isLiked {
-                screenViewModel.action.unlike(id: post.postId, referenceType: .post)
-            } else {
-                screenViewModel.action.like(id: post.postId, referenceType: .post)
+            
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+            }
+            else {
+                reactionPickerView.onSelect = { [weak self] reactionType in
+                    self?.hideReactionPicker()
+                    self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+                }
+                showReactionPicker()
             }
         case .tapComment, .tapReactionDetails:
             AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)

@@ -26,7 +26,13 @@
 "general_post" = "Post";
 "general_discard" = "Discard";
 "general_leave" = "Leave";
+"general_sangsun" = "สร้างสรรค์";
+"general_satsue" = "สัตย์ซื่อ";
+"general_samakki" = "สามัคคี";
+"general_sumrej" = "สำเร็จ";
+"general_sangkom" = "สังคม";
 "general_like" = "Like";
+"general_love" = "Love";
 "general_liked" = "Liked";
 "general_reply" = "Reply";
 "general_view_reply" = "View replies";
