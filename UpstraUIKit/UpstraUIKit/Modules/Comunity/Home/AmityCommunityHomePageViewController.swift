@@ -16,12 +16,13 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
+    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
     
     private init() {
         super.init(nibName: AmityCommunityHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
-        // original
+        /* [Original] */
 //        title = AmityLocalizedStringSet.communityHomeTitle.localizedString
-        // Custom for ONE Krungthai -> Set title of navigation bar to nil and add title to left navigation item at setupNavigationBar() instead
+        /* [Custom for ONE Krungthai] Set title of navigation bar to nil and add title to left navigation item at setupNavigationBar() instead */
         title = nil
     }
     
@@ -32,16 +33,15 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        /* [Custom for ONE Krungthai] Set custom navigation bar theme */
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
-        
         // Set background app for this navigation bar from ONE Krungthai custom theme
         theme?.setBackgroundApp(index: 0)
-        
         // Set custom navigation bar
         setupNavigationBar()
         
-        // [Custom for ONE Krungthai] [Temp] Set all notification on / off
+        /* [Custom for ONE Krungthai] [Temp] Set all notification on / off */
         Task {
 //            await setAllNotificationOff()
             await setAllNotificationOn()
@@ -51,7 +51,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Clear setting navigation bar (normal) from ONE Krungthai custom theme
+        /* [Custom for ONE Krungthai] Clear setting navigation bar (normal) from ONE Krungthai custom theme */
         theme?.clearNavigationBarSetting()
     }
     
@@ -67,13 +67,20 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     // MARK: - Setup views
     private func setupNavigationBar() {
-        // Search Button (Right)
+        /* Right items */
+        // Search Button
         let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearch, style: .plain, target: self, action: #selector(searchTap))
         searchItem.tintColor = AmityColorSet.base
-        navigationItem.rightBarButtonItem = searchItem
+        // Create post Button
+        // [Custom for ONE Krungthai] Move create post button to navigation bar
+        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createPostTap))
+        createPostItem.tintColor = AmityColorSet.base
+        // Add all component to right navigation item
+        navigationItem.rightBarButtonItems = [searchItem, createPostItem]
         
-        // Title navigation bar for community home (Left)
+        /* Left items */
         // Title
+        // [Custom for ONE Krungthai] Move title to left navigation bar item
         let title = UILabel()
         title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
         title.font = AmityFontSet.headerLine
@@ -95,7 +102,11 @@ private extension AmityCommunityHomePageViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    // [Custom for ONE Krungthai] [Temp] Set all notification off (top-level)
+    @objc func createPostTap() {
+        AmityEventHandler.shared.createPostBeingPrepared(from: self)
+    }
+    
+    /* [Custom for ONE Krungthai] [Temp] Set all notification off (top-level) */
     func setAllNotificationOff() async {
         // Get notification manager
         let userNotificationManager = AmityUIKitManager.client.notificationManager
@@ -109,7 +120,7 @@ private extension AmityCommunityHomePageViewController {
         }
     }
     
-    // [Custom for ONE Krungthai] [Temp] Set all notification on (top-level)
+    /* [Custom for ONE Krungthai] [Temp] Set all notification on (top-level) */
     func setAllNotificationOn() async {
         // Get notification manager
         let userNotificationManager = AmityUIKitManager.client.notificationManager
