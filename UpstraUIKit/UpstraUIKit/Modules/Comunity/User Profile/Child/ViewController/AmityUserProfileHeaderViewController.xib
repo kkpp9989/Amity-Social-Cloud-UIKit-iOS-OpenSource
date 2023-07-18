@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -24,59 +24,70 @@
                 <outlet property="followingButton" destination="X6F-Xv-l2M" id="orL-PX-Ra6"/>
                 <outlet property="messageButton" destination="wAT-Pc-h9S" id="RJm-bl-JVu"/>
                 <outlet property="pendingRequestsLabel" destination="w3k-CK-H2F" id="tuw-xD-Jkt"/>
-                <outlet property="postsButton" destination="gI0-1w-L7s" id="Why-qG-dAz"/>
+                <outlet property="titleNameLabel" destination="o4b-7w-6Yq" id="28N-qa-V1I"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="543" height="437"/>
+            <rect key="frame" x="0.0" y="0.0" width="543" height="497"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vhq-BA-fHP" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="223.5" y="48" width="96" height="96"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="96" id="UCZ-qc-Bnh"/>
+                        <constraint firstAttribute="height" constant="96" id="YIh-lz-eVM"/>
+                    </constraints>
+                </view>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="zWx-sv-DPR">
-                    <rect key="frame" x="92" y="47" width="435" height="58.5"/>
+                    <rect key="frame" x="16" y="152" width="511" height="88.5"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LyI-Rf-txb" userLabel="Title Label">
-                            <rect key="frame" x="0.0" y="0.0" width="41.5" height="20.5"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LyI-Rf-txb" userLabel="Title Label">
+                            <rect key="frame" x="0.0" y="0.0" width="511" height="20.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="QQn-8k-Lm7">
-                            <rect key="frame" x="0.0" y="28.5" width="106" height="30"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tjI-VM-KRy">
+                            <rect key="frame" x="0.0" y="28.5" width="511" height="60"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gI0-1w-L7s" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X6F-Xv-l2M" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="38" y="0.0" width="30" height="30"/>
+                                    <rect key="frame" x="200.5" y="15" width="30" height="30"/>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xfZ-Rw-K0q" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="76" y="0.0" width="30" height="30"/>
+                                    <rect key="frame" x="280.5" y="15" width="30" height="30"/>
                                 </button>
                             </subviews>
-                        </stackView>
+                            <constraints>
+                                <constraint firstItem="xfZ-Rw-K0q" firstAttribute="centerY" secondItem="X6F-Xv-l2M" secondAttribute="centerY" id="B1R-4x-dKr"/>
+                                <constraint firstItem="xfZ-Rw-K0q" firstAttribute="height" secondItem="X6F-Xv-l2M" secondAttribute="height" id="BQ5-VG-Tod"/>
+                                <constraint firstItem="X6F-Xv-l2M" firstAttribute="centerX" secondItem="tjI-VM-KRy" secondAttribute="centerX" constant="-40" id="frm-o6-7x9"/>
+                                <constraint firstItem="xfZ-Rw-K0q" firstAttribute="centerX" secondItem="tjI-VM-KRy" secondAttribute="centerX" constant="40" id="noU-vC-c9n"/>
+                                <constraint firstAttribute="height" constant="60" id="ntK-HN-mrY"/>
+                                <constraint firstItem="X6F-Xv-l2M" firstAttribute="centerY" secondItem="tjI-VM-KRy" secondAttribute="centerY" id="ztl-Tb-M82"/>
+                            </constraints>
+                        </view>
                     </subviews>
-                </stackView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vhq-BA-fHP" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
-                    <rect key="frame" x="16" y="44" width="64" height="64"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="64" id="UCZ-qc-Bnh"/>
-                        <constraint firstAttribute="height" constant="64" id="YIh-lz-eVM"/>
+                        <constraint firstAttribute="trailing" secondItem="tjI-VM-KRy" secondAttribute="trailing" id="04E-r5-V88"/>
+                        <constraint firstAttribute="trailing" secondItem="LyI-Rf-txb" secondAttribute="trailing" id="HzL-vf-uc5"/>
+                        <constraint firstItem="tjI-VM-KRy" firstAttribute="leading" secondItem="zWx-sv-DPR" secondAttribute="leading" id="cYE-nN-6AH"/>
+                        <constraint firstItem="LyI-Rf-txb" firstAttribute="leading" secondItem="zWx-sv-DPR" secondAttribute="leading" id="ePz-20-ZAF"/>
                     </constraints>
-                </view>
+                </stackView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="FAD-J6-Siy">
-                    <rect key="frame" x="16" y="116" width="511" height="279"/>
+                    <rect key="frame" x="16" y="256.5" width="511" height="198.5"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jyx-dK-963" userLabel="Description Label">
-                            <rect key="frame" x="0.0" y="0.0" width="511" height="101"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jyx-dK-963" userLabel="Description Label">
+                            <rect key="frame" x="0.0" y="0.0" width="511" height="20.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Nbu-nK-O1g">
-                            <rect key="frame" x="0.0" y="113" width="511" height="40"/>
+                            <rect key="frame" x="0.0" y="32.5" width="511" height="40"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8G1-Jd-TQ9" userLabel="Edit Profile Button" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="255.5" height="40"/>
@@ -101,7 +112,7 @@
                             </subviews>
                         </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OXY-Se-igs" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="165" width="511" height="40"/>
+                            <rect key="frame" x="0.0" y="84.5" width="511" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="CsF-qs-4Na"/>
                             </constraints>
@@ -111,7 +122,7 @@
                             </connections>
                         </button>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iyn-7Y-jZ9">
-                            <rect key="frame" x="0.0" y="217" width="511" height="62"/>
+                            <rect key="frame" x="0.0" y="136.5" width="511" height="62"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JpU-9g-L1I">
                                     <rect key="frame" x="0.0" y="0.0" width="511" height="62"/>
@@ -171,19 +182,28 @@
                         <constraint firstAttribute="trailing" secondItem="Jyx-dK-963" secondAttribute="trailing" id="vuE-0I-UV6"/>
                     </constraints>
                 </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o4b-7w-6Yq">
+                    <rect key="frame" x="60" y="434.5" width="467" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="T2T-8S-oqQ"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="T2T-8S-oqQ" firstAttribute="bottom" secondItem="o4b-7w-6Yq" secondAttribute="bottom" constant="8" id="2yV-dP-roP"/>
+                <constraint firstItem="o4b-7w-6Yq" firstAttribute="leading" secondItem="T2T-8S-oqQ" secondAttribute="leading" constant="60" id="7Cy-EK-N2G"/>
+                <constraint firstItem="vhq-BA-fHP" firstAttribute="centerX" secondItem="T2T-8S-oqQ" secondAttribute="centerX" id="7o6-e8-ERR"/>
                 <constraint firstItem="T2T-8S-oqQ" firstAttribute="trailing" secondItem="zWx-sv-DPR" secondAttribute="trailing" constant="16" id="83V-r8-O2Y"/>
-                <constraint firstItem="FAD-J6-Siy" firstAttribute="top" secondItem="vhq-BA-fHP" secondAttribute="bottom" constant="8" id="D7A-wz-L12"/>
-                <constraint firstItem="zWx-sv-DPR" firstAttribute="centerY" secondItem="vhq-BA-fHP" secondAttribute="centerY" id="E65-pm-FS4"/>
+                <constraint firstItem="zWx-sv-DPR" firstAttribute="top" secondItem="vhq-BA-fHP" secondAttribute="bottom" constant="8" symbolic="YES" id="ECN-gO-Fim"/>
                 <constraint firstItem="T2T-8S-oqQ" firstAttribute="trailing" secondItem="FAD-J6-Siy" secondAttribute="trailing" constant="16" id="EpF-9B-l6Z"/>
+                <constraint firstItem="T2T-8S-oqQ" firstAttribute="trailing" secondItem="o4b-7w-6Yq" secondAttribute="trailing" constant="16" id="M1h-4o-yr2"/>
                 <constraint firstItem="FAD-J6-Siy" firstAttribute="leading" secondItem="T2T-8S-oqQ" secondAttribute="leading" constant="16" id="RIP-u5-Rk7"/>
+                <constraint firstItem="zWx-sv-DPR" firstAttribute="leading" secondItem="T2T-8S-oqQ" secondAttribute="leading" constant="16" id="TFf-LN-hCv"/>
+                <constraint firstItem="FAD-J6-Siy" firstAttribute="top" secondItem="zWx-sv-DPR" secondAttribute="bottom" constant="16" id="jDI-0u-q2k"/>
                 <constraint firstItem="vhq-BA-fHP" firstAttribute="top" secondItem="T2T-8S-oqQ" secondAttribute="top" id="oXZ-eD-aaE"/>
-                <constraint firstItem="vhq-BA-fHP" firstAttribute="leading" secondItem="T2T-8S-oqQ" secondAttribute="leading" constant="16" id="v4t-EH-QNB"/>
                 <constraint firstItem="T2T-8S-oqQ" firstAttribute="bottom" secondItem="FAD-J6-Siy" secondAttribute="bottom" constant="8" id="vRa-l5-weY"/>
-                <constraint firstItem="zWx-sv-DPR" firstAttribute="leading" secondItem="vhq-BA-fHP" secondAttribute="trailing" constant="12" id="y2u-fo-KQF"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="231.15942028985509" y="-25.78125"/>

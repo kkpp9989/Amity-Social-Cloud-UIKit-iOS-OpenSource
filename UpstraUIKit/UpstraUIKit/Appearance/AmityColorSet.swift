@@ -39,4 +39,31 @@ struct AmityColorSet {
         return UIColor.white
     }
     
+    static var dnaSangsun: UIColor {
+        return UIColor(hex: "#FFC104")
+    }
+    
+    static var dnaSatsue: UIColor {
+        return UIColor(hex: "#002FFF")
+    }
+    
+    static var dnaSamakki: UIColor {
+        return UIColor(hex: "#04873F")
+    }
+    
+    static var dnaSumrej: UIColor {
+        return UIColor(hex: "#FE0202")
+    }
+    
+    static var dnaSangkom: UIColor {
+        return UIColor(hex: "#FC7111")
+    }
+    
+    static var dnaLike: UIColor {
+        return UIColor(hex: "#0080BD")
+    }
+    
+    static var dnaLove: UIColor {
+        return UIColor(hex: "#EC4545")
+    }
 }

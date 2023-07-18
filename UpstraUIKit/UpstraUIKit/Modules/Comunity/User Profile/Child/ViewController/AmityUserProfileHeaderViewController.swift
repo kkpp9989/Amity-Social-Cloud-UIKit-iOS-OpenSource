@@ -18,10 +18,10 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     // MARK: - IBOutlet Properties
     @IBOutlet weak private var avatarView: AmityAvatarView!
     @IBOutlet weak private var displayNameLabel: UILabel!
+    @IBOutlet weak private var titleNameLabel: UILabel!
     @IBOutlet weak private var descriptionLabel: UILabel!
     @IBOutlet weak private var editProfileButton: AmityButton!
     @IBOutlet weak private var messageButton: AmityButton!
-    @IBOutlet weak private var postsButton: AmityButton!
     @IBOutlet weak private var followingButton: AmityButton!
     @IBOutlet weak private var followersButton: AmityButton!
     @IBOutlet weak private var followButton: AmityButton!
@@ -53,7 +53,6 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         setupEditButton()
         setupChatButton()
         setupViewModel()
-        setupPostsButton()
         setupFollowingButton()
         setupFollowersButton()
         setupFollowButton()
@@ -94,6 +93,12 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         displayNameLabel.font = AmityFontSet.headerLine
         displayNameLabel.textColor = AmityColorSet.base
         displayNameLabel.numberOfLines = 3
+        
+        titleNameLabel.text = ""
+        titleNameLabel.font = AmityFontSet.title
+        titleNameLabel.textColor = AmityColorSet.base
+        titleNameLabel.numberOfLines = 1
+        titleNameLabel.isHidden = true
     }
     
     private func setupDescription() {
@@ -128,40 +133,33 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         screenViewModel.delegate = self
     }
     
-    private func setupPostsButton() {
-        let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
-        attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
-        postsButton.attributedString = attribute
-        postsButton.isHidden = true
-    }
-    
     private func setupFollowingButton() {
         let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
+        attribute.setBoldFont(for: AmityFontSet.title)
         attribute.setNormalFont(for: AmityFontSet.caption)
         attribute.setColor(for: AmityColorSet.secondary)
         followingButton.attributedString = attribute
         followingButton.isHidden = false
         followingButton.isUserInteractionEnabled = false
-        
         followingButton.addTarget(self, action: #selector(followingAction(_:)), for: .touchUpInside)
-        
+        followingButton.titleLabel?.numberOfLines = 0
+        followingButton.titleLabel?.textAlignment = .center
+
         followingButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowingCount.localizedString, "0"))
     }
     
     private func setupFollowersButton() {
         let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
+        attribute.setBoldFont(for: AmityFontSet.title)
         attribute.setNormalFont(for: AmityFontSet.caption)
         attribute.setColor(for: AmityColorSet.secondary)
         followersButton.attributedString = attribute
         followersButton.isHidden = false
         followersButton.isUserInteractionEnabled = false
-        
         followersButton.addTarget(self, action: #selector(followersAction(_:)), for: .touchUpInside)
-        
+        followersButton.titleLabel?.numberOfLines = 0
+        followersButton.titleLabel?.textAlignment = .center
+
         followersButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowersCount.localizedString, "0"))
     }
     
@@ -170,7 +168,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         followButton.setTitleFont(AmityFontSet.bodyBold)
         followButton.tintColor = AmityColorSet.baseInverse
         followButton.backgroundColor = AmityColorSet.primary
-        followButton.layer.cornerRadius = 4
+        followButton.layer.cornerRadius = followButton.frame.height / 2
         followButton.setTitle(AmityLocalizedStringSet.userDetailFollowButtonFollow.localizedString, for: .normal)
         followButton.setImage(AmityIconSet.iconAdd, position: .left)
         
@@ -195,9 +193,43 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         followRequestDescriptionLabel.text = AmityLocalizedStringSet.userDetailsPendingRequestsDescription.localizedString
     }
     
+    private func setupNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedLowestPoint), name: .scrollViewReachedLowestPoint, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedTopperPoint), name: .scrollViewReachedTopperPoint, object: nil)
+    }
+    
+    @objc func handleScrollViewReachedLowestPoint() {
+        titleNameLabel.isHidden = false
+        
+        //  Hide all don't to show
+        avatarView.isHidden = true
+        displayNameLabel.isHidden = true
+        descriptionLabel.isHidden = true
+        followingButton.isHidden = true
+        followersButton.isHidden = true
+        followButton.isHidden = true
+    }
+    
+    @objc func handleScrollViewReachedTopperPoint() {
+        titleNameLabel.isHidden = true
+        
+        //  Show all
+        avatarView.isHidden = false
+        displayNameLabel.isHidden = false
+        descriptionLabel.isHidden = false
+        followingButton.isHidden = false
+        followersButton.isHidden = false
+        followButton.isHidden = false
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func updateView(with user: AmityUserModel) {
         avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
         displayNameLabel.text = user.displayName
+        titleNameLabel.text = user.displayName
         descriptionLabel.text = user.about
         editProfileButton.isHidden = !user.isCurrentUser
         messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser
@@ -206,15 +238,6 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     private func updateFollowInfo(with model: AmityFollowInfo) {
         updateFollowingCount(with: model.followingCount)
         updateFollowerCount(with: model.followerCount)
-    }
-    
-    private func updatePostsCount(with postCount: Int) {
-        let format = postCount == 1 ? AmityLocalizedStringSet.Unit.postSingular.localizedString : AmityLocalizedStringSet.Unit.postPlural.localizedString
-        let value = postCount.formatUsingAbbrevation()
-        let string = String.localizedStringWithFormat(format, value)
-        postsButton.attributedString.setTitle(string)
-        postsButton.attributedString.setBoldText(for: [value])
-        postsButton.setAttributedTitle()
     }
     
     private func updateFollowingCount(with followingCount: Int) {
@@ -238,7 +261,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         case .accepted:
             followButton.isHidden = true
         case .pending:
-            followButton.isHidden = false
+            followButton.isHidden = true
             followButton.setTitle(AmityLocalizedStringSet.userDetailFollowButtonCancel.localizedString, for: .normal)
             followButton.setImage(AmityIconSet.Follow.iconFollowPendingRequest, position: .left)
             followButton.backgroundColor = .white
@@ -282,9 +305,6 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         default:
             break
         }
-    }
-    
-    @objc func postsAction(_ sender: UIButton) {
     }
     
     @objc func followingAction(_ sender: UIButton) {

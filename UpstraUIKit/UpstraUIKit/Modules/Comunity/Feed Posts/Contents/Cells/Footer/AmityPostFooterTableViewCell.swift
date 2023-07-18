@@ -27,6 +27,15 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var warningLabel: UILabel!
     @IBOutlet private var likeDetailButton: UIButton!
     
+    @IBOutlet private var twoReactionsView: UIView!
+    @IBOutlet private var twoReactionsFirstIcon: UIImageView!
+    @IBOutlet private var twoReactionsSecondIcon: UIImageView!
+    
+    @IBOutlet private var threeReactionsView: UIView!
+    @IBOutlet private var threeReactionsFirstIcon: UIImageView!
+    @IBOutlet private var threeReactionsSecondIcon: UIImageView!
+    @IBOutlet private var threeReactionsThirdIcon: UIImageView!
+    
     // MARK: - Properties
     private(set) public var post: AmityPostModel?
     public var indexPath: IndexPath?
@@ -42,13 +51,28 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     
     public func display(post: AmityPostModel) {
         self.post = post
-        likeButton.isSelected = post.isLiked
+        
+        if let reactionType = post.reacted {
+            setLikedButton(reactionType: reactionType)
+            likeButton.isSelected = true
+        }
+        else {
+            likeButton.isSelected = false
+        }
+        
         likeLabel.isHidden = post.reactionsCount == 0
-        likeLabelIcon.isHidden = post.reactionsCount == 0
+//        likeLabelIcon.isHidden = post.reactionsCount == 0
+        
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+        setReactions(reactions: post.reactions)
+        
         likeDetailButton.isEnabled = post.reactionsCount != 0
-        let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
-        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
-                                                          post.reactionsCount.formatUsingAbbrevation())
+//        let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
+//        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
+//                                                          post.reactionsCount.formatUsingAbbrevation())
+        likeLabel.text = post.reactionsCount.formatUsingAbbrevation()
         commentLabel.isHidden = post.allCommentCount == 0
         let commentPrefix = post.allCommentCount == 1 ? AmityLocalizedStringSet.Unit.commentSingular.localizedString : AmityLocalizedStringSet.Unit.commentPlural.localizedString
         commentLabel.text = String.localizedStringWithFormat(commentPrefix,
@@ -128,18 +152,125 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         shareLabel.textColor = AmityColorSet.base.blend(.shade2)
         shareLabel.font = AmityFontSet.caption
     }
+    
+    private func setLikedButton(reactionType: AmityReactionType) {
+        
+        switch reactionType {
+        case .sangsun:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sangsun.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSangsun, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASangsun, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSangsun, for: .selected)
+        case .satsue:
+            likeButton.setTitle(AmityLocalizedStringSet.General.satsue.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSatsue, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASatsue, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSatsue, for: .selected)
+        case .samakki:
+            likeButton.setTitle(AmityLocalizedStringSet.General.samakki.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSamakki, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASamakki, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSamakki, for: .selected)
+        case .sumrej:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sumrej.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSumrej, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASumrej, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSumrej, for: .selected)
+        case .sangkom:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sangkom.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSangkom, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASangkom, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSangkom, for: .selected)
+        case .like:
+            likeButton.setTitle(AmityLocalizedStringSet.General.liked.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaLike, for: .selected)
+            likeButton.setImage(AmityIconSet.iconLikeFill, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaLike, for: .selected)
+        case .love:
+            likeButton.setTitle(AmityLocalizedStringSet.General.love.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaLove, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaLove, for: .selected)
+        }
+    }
+    
+    private func setReactions(reactions: [String: Int]) {
+        let filteredReactions = reactions.filter { $1 != 0 }
+        let reactionKeys = Array(filteredReactions.keys)
+        if reactionKeys.count <= 0 {
+            likeLabelIcon.isHidden = true
+            twoReactionsView.isHidden = true
+            threeReactionsView.isHidden = true
+        }
+        else if reactionKeys.count == 1 {
+            likeLabelIcon.isHidden = false
+            twoReactionsView.isHidden = true
+            threeReactionsView.isHidden = true
+            
+            let reaction: String = reactionKeys[0]
+            likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
+        }
+        else if reactionKeys.count == 2 {
+            likeLabelIcon.isHidden = true
+            twoReactionsView.isHidden = false
+            threeReactionsView.isHidden = true
+            
+            let firstReaction: String = reactionKeys[0]
+            twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
+            
+            let secondReaction: String = reactionKeys[1]
+            twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
+        }
+        else {
+            likeLabelIcon.isHidden = true
+            twoReactionsView.isHidden = true
+            threeReactionsView.isHidden = false
+            
+            let firstReaction: String = reactionKeys[0]
+            threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
+            
+            let secondReaction: String = reactionKeys[1]
+            threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
+            
+            let thirdReaction: String = reactionKeys[2]
+            threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: thirdReaction) ?? .like)
+        }
+    }
+    
+    private func dnaLabelIcon(reactionType: AmityReactionType) -> UIImage? {
+        switch reactionType {
+        case .sangsun:
+            return AmityIconSet.iconBadgeDNASangsun
+        case .satsue:
+            return AmityIconSet.iconBadgeDNASatsue
+        case .samakki:
+            return AmityIconSet.iconBadgeDNASamakki
+        case .sumrej:
+            return AmityIconSet.iconBadgeDNASumrej
+        case .sangkom:
+            return AmityIconSet.iconBadgeDNASangkom
+        case .like:
+            return AmityIconSet.iconBadgeDNALike
+        case .love:
+            return AmityIconSet.iconBadgeDNALove
+        }
+    }
  
     // MARK: - Perform Action
     private func performAction(action: AmityPostFooterAction) {
         delegate?.didPerformAction(self, action: action)
     }
     
+    private func performAction(action: AmityPostFooterAction, view: UIView) {
+        delegate?.didPerformView(self, view: view)
+        delegate?.didPerformAction(self, action: action)
+    }
 }
 
 private extension AmityPostFooterTableViewCell {
     
     @IBAction func likeTap() {
-        performAction(action: .tapLike)
+        performAction(action: .tapLike, view: likeButton)
     }
     
     @IBAction func commentTap() {

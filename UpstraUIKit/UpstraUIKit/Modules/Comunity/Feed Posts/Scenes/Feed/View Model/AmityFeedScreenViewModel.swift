@@ -192,6 +192,41 @@ extension AmityFeedScreenViewModel {
         }
     }
     
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
+        reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+            guard let strongSelf = self else { return }
+            if success {
+                switch referenceType {
+                case .post:
+                    strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
+                case .comment:
+                    strongSelf.delegate?.screenViewModelDidLikeCommentSuccess(strongSelf)
+                default:
+                    break
+                }
+            } else {
+                strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+            }
+        }
+    }
+    
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
+        reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+            guard let strongSelf = self else { return }
+            if success {
+                switch referenceType {
+                case .post:
+                    strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                case .comment:
+                    strongSelf.delegate?.screenViewModelDidUnLikeCommentSuccess(strongSelf)
+                default:
+                    break
+                }
+            } else {
+                strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+            }
+        }
+    }
 }
 
 // MARK: Post
