@@ -645,6 +645,9 @@
 		D4EC11E525B93DCE0095F507 /* AmityPostSharingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */; };
 		D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */; };
 		DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */; };
+		DFCC88C12A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCC88C02A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift */; };
+		DFCC88C42A6703C400E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCC88C32A6703C400E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.swift */; };
+		DFCC88C62A6703D000E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFCC88C52A6703D000E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.xib */; };
 		FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276CE2A53B7C2003DFE4E /* AmitySDK */; };
 /* End PBXBuildFile section */
 
@@ -1303,6 +1306,9 @@
 		D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingSettings.swift; sourceTree = "<group>"; };
 		D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingTarget.swift; sourceTree = "<group>"; };
 		DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ONEKrungthaiCustomTheme.swift; sourceTree = "<group>"; };
+		DFCC88C02A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromNavigationButtonViewController.swift; sourceTree = "<group>"; };
+		DFCC88C32A6703C400E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromNavigationButtonViewCell.swift; sourceTree = "<group>"; };
+		DFCC88C52A6703D000E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityPullDownMenuFromNavigationButtonViewCell.xib; sourceTree = "<group>"; };
 		FA6276BC2A53B58C003DFE4E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = SharedFrameworksEdit/Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2056,6 +2062,7 @@
 		72A3504B24EA820700DA9D46 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				DFCC88BD2A67013200E5B170 /* PullDownMenuFromNavigationButton */,
 				B704D13E2578CA420038BA78 /* Animation */,
 				B7C026842574CB20007CC334 /* Popover Message */,
 				72A3505F24EA820700DA9D46 /* BottomSheet */,
@@ -4377,6 +4384,24 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
+		DFCC88BD2A67013200E5B170 /* PullDownMenuFromNavigationButton */ = {
+			isa = PBXGroup;
+			children = (
+				DFCC88C22A67039B00E5B170 /* Cell */,
+				DFCC88C02A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift */,
+			);
+			path = PullDownMenuFromNavigationButton;
+			sourceTree = "<group>";
+		};
+		DFCC88C22A67039B00E5B170 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DFCC88C32A6703C400E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.swift */,
+				DFCC88C52A6703D000E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.xib */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4537,6 +4562,7 @@
 				B77AC1882512105700321CF9 /* AmityEmptyView.xib in Resources */,
 				78C1C4B925F3EE2F00D6F092 /* AmitySettingsItemHeaderContentTableViewCell.xib in Resources */,
 				7247EE2826F091BF00B379A8 /* ItemOptionTableViewCell.xib in Resources */,
+				DFCC88C62A6703D000E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.xib in Resources */,
 				7855F929263684C000D054FB /* AmitySearchEmptyView.xib in Resources */,
 				97D723732695A690000735F5 /* AmityUserProfileHeaderViewController.xib in Resources */,
 				78CFD35626E2B76400975AAB /* AmityPollCreatorScheduleTableViewCell.xib in Resources */,
@@ -4668,6 +4694,7 @@
 				726067E4260AE04D00A6E12C /* CommunityNotificationSettingModel.swift in Sources */,
 				72A3515224EA820800DA9D46 /* AmityMessageCellProtocol.swift in Sources */,
 				727A2CE926CD185D0061E7C7 /* AmityImageView.swift in Sources */,
+				DFCC88C12A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift in Sources */,
 				0DBC353F25A2ED830064D138 /* AmityCommunityInfoController.swift in Sources */,
 				0D48DEA425D24CAB0090FE80 /* AmityPostPreviewCommentTableViewCell.swift in Sources */,
 				B729BF6E2519163F00FC1A98 /* AmityMyCommunityTableViewCell.swift in Sources */,
@@ -4705,6 +4732,7 @@
 				97D723DE2695B133000735F5 /* AmityUserFollowersViewController.swift in Sources */,
 				B795878F2577FB04007B027F /* AmityFileCache.swift in Sources */,
 				72A3513A24EA820800DA9D46 /* UIImage+Extension.swift in Sources */,
+				DFCC88C42A6703C400E5B170 /* AmityPullDownMenuFromNavigationButtonViewCell.swift in Sources */,
 				B7B31C52250F4ACF000AC6E4 /* AmityProfile+Extensions.swift in Sources */,
 				97D723D92695B133000735F5 /* AmityFollowRequestsViewController.swift in Sources */,
 				781B400526CE361D00DF75C2 /* AmityPollCreatorViewController.swift in Sources */,
