@@ -13,6 +13,8 @@
             <connections>
                 <outlet property="commentComposeBarBottomConstraint" destination="UKz-Zi-AVg" id="cUz-oX-7ad"/>
                 <outlet property="commentComposeBarView" destination="gMP-ip-qOd" id="4qr-Wq-oNn"/>
+                <outlet property="hashtagTableView" destination="f5M-80-gay" id="74S-hj-JHc"/>
+                <outlet property="hashtagTableViewHeightConstraint" destination="RQ6-TT-1Yy" id="wkH-bK-Wlp"/>
                 <outlet property="mentionTableView" destination="0s6-hY-oze" id="1WK-3k-nWw"/>
                 <outlet property="mentionTableViewHeightConstraint" destination="Fxt-Kx-jBd" id="lQR-TB-aJD"/>
                 <outlet property="tableView" destination="nxX-G7-dP4" id="xhW-BB-aco"/>
@@ -39,10 +41,18 @@
                         <constraint firstAttribute="height" constant="240" id="Fxt-Kx-jBd"/>
                     </constraints>
                 </tableView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="f5M-80-gay" customClass="AmityHashtagTableView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="622" width="414" height="240"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="240" id="RQ6-TT-1Yy"/>
+                    </constraints>
+                </tableView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="Wb0-7q-vLN"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="Wb0-7q-vLN" firstAttribute="trailing" secondItem="f5M-80-gay" secondAttribute="trailing" id="2eJ-AQ-CL4"/>
                 <constraint firstItem="gMP-ip-qOd" firstAttribute="top" secondItem="nxX-G7-dP4" secondAttribute="bottom" id="6vo-MU-VI6"/>
                 <constraint firstItem="nxX-G7-dP4" firstAttribute="leading" secondItem="Wb0-7q-vLN" secondAttribute="leading" id="FUa-U5-VBJ"/>
                 <constraint firstItem="gMP-ip-qOd" firstAttribute="trailing" secondItem="Wb0-7q-vLN" secondAttribute="trailing" id="T46-Hg-UVd"/>
@@ -52,6 +62,8 @@
                 <constraint firstItem="gMP-ip-qOd" firstAttribute="leading" secondItem="Wb0-7q-vLN" secondAttribute="leading" id="k2S-06-qGU"/>
                 <constraint firstItem="Wb0-7q-vLN" firstAttribute="trailing" secondItem="0s6-hY-oze" secondAttribute="trailing" id="k9l-qe-gzs"/>
                 <constraint firstItem="nxX-G7-dP4" firstAttribute="top" secondItem="Wb0-7q-vLN" secondAttribute="top" id="qQI-fA-KRR"/>
+                <constraint firstItem="f5M-80-gay" firstAttribute="leading" secondItem="Wb0-7q-vLN" secondAttribute="leading" id="r6T-UH-Zd7"/>
+                <constraint firstItem="gMP-ip-qOd" firstAttribute="top" secondItem="f5M-80-gay" secondAttribute="bottom" id="yCd-Mv-AHA"/>
                 <constraint firstItem="nxX-G7-dP4" firstAttribute="trailing" secondItem="Wb0-7q-vLN" secondAttribute="trailing" id="yLf-Co-uxc"/>
             </constraints>
             <point key="canvasLocation" x="79.710144927536234" y="75"/>

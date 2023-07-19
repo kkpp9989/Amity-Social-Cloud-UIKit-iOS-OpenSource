@@ -369,19 +369,23 @@ private extension AmityMentionManager {
     }
     
     func searchHashtag(withText text: String) {
+        var serviceRequest = RequestHashtag()
+        serviceRequest.keyword = text
+        serviceRequest.request { result in
+            switch result {
+            case .success(let dataResponse):
+                self.keywords = dataResponse.hashtag ?? []
+                self.handleSearchHashtagResponse()
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func handleSearchHashtagResponse() {
         DispatchQueue.main.async { [self] in
-            var serviceRequest = RequestPostHashtag()
-            serviceRequest.keyword = text
-            serviceRequest.request { result in
-                switch result {
-                case .success(let dataResponse):
-                    self.keywords = dataResponse.hashtag ?? []
-                    if self.isSearchingHashtagStarted {
-                        self.delegate?.didGetHashtag(keywords: self.keywords)
-                    }
-                case .failure(let error):
-                    self.delegate?.didGetHashtag(keywords: self.keywords)
-                }
+            if isSearchingHashtagStarted {
+                delegate?.didGetHashtag(keywords: keywords)
             }
         }
     }
