@@ -18,6 +18,8 @@ open class AmityPostDetailViewController: AmityViewController {
     @IBOutlet private var commentComposeBarBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var mentionTableView: AmityMentionTableView!
     @IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var hashtagTableView: AmityHashtagTableView!
+    @IBOutlet private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     
     private var optionButton: UIBarButtonItem!
     
@@ -78,6 +80,7 @@ open class AmityPostDetailViewController: AmityViewController {
         setupProtocolHandler()
         setupScreenViewModel()
         setupMentionTableView()
+        setupHashtagTableView()
         setupReactionPicker()
         
         // Initial ONE Krungthai Custom theme
@@ -155,6 +158,13 @@ open class AmityPostDetailViewController: AmityViewController {
         mentionTableView.isHidden = true
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
+    }
+    
+    private func setupHashtagTableView() {
+        hashtagTableView.isHidden = true
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+        hashtagTableView.tag = 1
     }
     
     private func setupComposeBarView() {
@@ -709,6 +719,9 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String) {
+        AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword)
+    }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
         // Intentionally left empty
@@ -874,36 +887,74 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
 // MARK: - UITableViewDataSource
 extension AmityPostDetailViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mentionManager?.users.count ?? 0
+        if tableView.tag != 1 {
+            return mentionManager?.users.count ?? 0
+        } else {
+            return mentionManager?.keywords.count ?? 0
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
-        cell.display(with: model)
-        return cell
+        if tableView.tag != 1 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager?.itemHashtag(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
 extension AmityPostDetailViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return AmityMentionTableViewCell.height
+        if tableView.tag != 1 {
+            return AmityMentionTableViewCell.height
+        } else {
+            return AmityHashtagTableViewCell.height
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mentionManager?.addMention(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        if tableView.tag != 1 {
+            mentionManager?.addMention(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        } else {
+            mentionManager?.addHashtag(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
-            mentionManager?.loadMore()
+        if tableView.tag != 1 {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMore()
+            }
+        } else {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMoreHashtag()
+            }
         }
     }
 }
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostDetailViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            hashtagTableView.isHidden = true
+        } else {
+            var heightConstant:CGFloat = 240.0
+            if keywords.count < 5 {
+                heightConstant = CGFloat(keywords.count) * 52.0
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+        }
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         commentComposeBarView.textView.attributedText = attributedString
         commentComposeBarView.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]

@@ -27,7 +27,9 @@ public class AmityEditTextViewController: AmityViewController {
     @IBOutlet private var mentionTableView: AmityMentionTableView!
     @IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var mentionTableViewBottomConstraint: NSLayoutConstraint!
-    
+    @IBOutlet private var hashtagTableView: AmityHashtagTableView!
+    @IBOutlet private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var hashtagTableViewBottomConstraint: NSLayoutConstraint!
     
     // MARK: - Properties
     private let editMode: EditMode
@@ -70,6 +72,7 @@ public class AmityEditTextViewController: AmityViewController {
         setupHeaderView()
         setupView()
         setupMentionTableView()
+        setuphashtagTableView()
         
         mentionManager.delegate = self
         mentionManager.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
@@ -77,6 +80,8 @@ public class AmityEditTextViewController: AmityViewController {
         if let metadata = metadata {
             mentionManager.setMentions(metadata: metadata, inText: message)
         }
+        
+        mentionManager.setHashtag(inText: message)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -130,6 +135,12 @@ public class AmityEditTextViewController: AmityViewController {
         mentionTableView.dataSource = self
     }
     
+    private func setuphashtagTableView() {
+        hashtagTableView.isHidden = true
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+    }
+    
     @objc private func saveTap() {
         let metadata = mentionManager.getMetadata()
         let mentionees = mentionManager.getMentionees()
@@ -162,6 +173,7 @@ extension AmityEditTextViewController: AmityKeyboardServiceDelegate {
         let constant = -height + offset
         bottomConstraint.constant = constant
         mentionTableViewBottomConstraint.constant = constant
+        hashtagTableViewBottomConstraint.constant = constant
 
         view.setNeedsUpdateConstraints()
         view.layoutIfNeeded()
@@ -198,32 +210,66 @@ extension AmityEditTextViewController: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager.item(at: indexPath) else { return UITableViewCell() }
-        cell.display(with: model)
-        return cell
+        if tableView.tag != 1 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager.itemHashtag(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
 extension AmityEditTextViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return AmityMentionTableViewCell.height
+        if tableView.tag != 1 {
+            return AmityMentionTableViewCell.height
+        } else {
+            return AmityHashtagTableViewCell.height
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mentionManager.addMention(from: textView, in: textView.text, at: indexPath)
+        if tableView.tag != 1 {
+            mentionManager.addMention(from: textView, in: textView.text, at: indexPath)
+        } else {
+            mentionManager.addHashtag(from: textView, in: textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.isBottomReached {
-            mentionManager.loadMore()
+        if tableView.tag != 1 {
+            if tableView.isBottomReached {
+                mentionManager.loadMore()
+            }
+        } else {
+            if tableView.isBottomReached {
+                mentionManager.loadMoreHashtag()
+            }
         }
     }
 }
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityEditTextViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            hashtagTableView.isHidden = true
+        } else {
+            var heightConstant:CGFloat = 240.0
+            if keywords.count < 5 {
+                heightConstant = CGFloat(keywords.count) * 52.0
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+        }
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         textView.attributedText = attributedString
         textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]

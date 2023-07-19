@@ -25,6 +25,9 @@ public final class AmityPollCreatorViewController: AmityViewController {
     @IBOutlet private var mentionTableView: AmityMentionTableView!
     @IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var mentionTableViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet private var hashtagTableView: AmityHashtagTableView!
+    @IBOutlet private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var hashtagTableViewBottomConstraint: NSLayoutConstraint!
     private var pollTimeframeView: AmityPollCreatorTimeframeView?
     
     // MARK: - Properties
@@ -47,6 +50,7 @@ public final class AmityPollCreatorViewController: AmityViewController {
         setupPostNavigationBarbutton()
         setupTableView()
         setupMentionTableView()
+        setupHashtagTableView()
         
         mentionManager?.delegate = self
         AmityKeyboardService.shared.delegate = self
@@ -120,11 +124,19 @@ public final class AmityPollCreatorViewController: AmityViewController {
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
     }
+    
+    private func setupHashtagTableView() {
+        hashtagTableView.isHidden = true
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+        hashtagTableView.tag = 1
+    }
 }
 
 extension AmityPollCreatorViewController: AmityKeyboardServiceDelegate {
     func keyboardWillChange(service: AmityKeyboardService, height: CGFloat, animationDuration: TimeInterval) {
         mentionTableViewBottomConstraint.constant = height
+        hashtagTableViewBottomConstraint.constant = height
 
         view.setNeedsUpdateConstraints()
         view.layoutIfNeeded()
@@ -219,12 +231,22 @@ extension AmityPollCreatorViewController: UITableViewDelegate {
         if tableView == mentionTableView, let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AmityPollCreatorQusetionTableViewCell, let textView = cell.getTextView() {
             mentionManager?.addMention(from: textView, in: textView.text, at: indexPath)
         }
+        
+        if tableView == hashtagTableView, let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AmityPollCreatorQusetionTableViewCell, let textView = cell.getTextView() {
+            mentionManager?.addHashtag(from: textView, in: textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView == mentionTableView {
             if tableView.isBottomReached {
                 mentionManager?.loadMore()
+            }
+        }
+        
+        if tableView == hashtagTableView {
+            if tableView.isBottomReached {
+                mentionManager?.loadMoreHashtag()
             }
         }
     }
@@ -236,11 +258,18 @@ extension AmityPollCreatorViewController: UITableViewDataSource {
         if tableView == mentionTableView {
             return 1
         }
+        
+        if tableView == hashtagTableView {
+            return 1
+        }
         return Section.allCases.count
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == mentionTableView {
+            return mentionManager?.users.count ?? 0
+        }
+        if tableView == hashtagTableView {
             return mentionManager?.users.count ?? 0
         }
         guard let section = Section(rawValue: section) else { return 0 }
@@ -255,6 +284,11 @@ extension AmityPollCreatorViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == mentionTableView {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
+        if tableView == hashtagTableView {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager?.itemHashtag(at: indexPath) else { return UITableViewCell() }
             cell.display(with: model)
             return cell
         }
@@ -363,6 +397,21 @@ extension AmityPollCreatorViewController: AmityPollCreatorCellProtocolDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPollCreatorViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            hashtagTableView.isHidden = true
+        } else {
+            var heightConstant:CGFloat = 240.0
+            if keywords.count < 5 {
+                heightConstant = CGFloat(keywords.count) * 52.0
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+        }
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AmityPollCreatorQusetionTableViewCell, let textView = cell.getTextView() {
             textView.attributedText = attributedString

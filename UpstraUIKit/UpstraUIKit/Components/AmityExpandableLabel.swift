@@ -20,6 +20,7 @@ public protocol AmityExpandableLabelDelegate: AnyObject {
     func didCollapseLabel(_ label: AmityExpandableLabel)
     func expandableLabeldidTap(_ label: AmityExpandableLabel)
     func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String)
+    func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String)
 }
 
 struct Hyperlink {
@@ -30,6 +31,7 @@ struct Hyperlink {
 enum HyperlinkType {
     case url(url: URL)
     case mention(userId: String)
+    case hashtag(keyword: String)
 }
 
 /**
@@ -155,22 +157,39 @@ open class AmityExpandableLabel: UILabel {
         set(text) {
             if let text = text {
                 let attributedString = NSMutableAttributedString(string: text)
-                let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-                let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-                var _hyperLinkTextRange: [Hyperlink] = []
-                for match in matches {
+                
+                // Detect URLs
+                let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+                let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+                var hyperLinkTextRange: [Hyperlink] = []
+                
+                for match in urlMatches {
                     guard let textRange = Range(match.range, in: text) else { continue }
                     let urlString = String(text[textRange])
                     let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
                     guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                        let url = URL(string: formattedString) else { continue }
+                          let url = URL(string: formattedString) else { continue }
                     attributedString.addAttributes([
                         .foregroundColor: hyperLinkColor,
                         .attachment: url], range: match.range)
                     attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range)
-                    _hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                    hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
                 }
-                hyperLinks = _hyperLinkTextRange
+                
+                // Detect and process hashtags using regular expression
+                let hashtagPattern = "#\\w+"
+                let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [])
+                let hashtagMatches = hashtagRegex.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+                
+                for match in hashtagMatches {
+                    let hashtagRange = match.range
+                    let hashtag = (text as NSString).substring(with: hashtagRange)
+                    let formattedString = "#\(hashtag)"
+                    attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
+                    hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag)))
+                }
+                
+                hyperLinks = hyperLinkTextRange
                 self.attributedText = attributedString
             } else {
                 self.attributedText = nil
@@ -253,6 +272,8 @@ extension AmityExpandableLabel {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             case .mention(let userId):
                 delegate?.didTapOnMention(self, withUserId: userId)
+            case .hashtag(keyword: let keyword):
+                delegate?.didTapOnHashtag(self, withKeyword: keyword)
             }
             
         } else {
@@ -618,32 +639,78 @@ extension UILabel {
 }
 
 extension AmityExpandableLabel {
+//    func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
+//        let attributedString = NSMutableAttributedString(string: text)
+//        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+//        let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+//        var _hyperLinkTextRange: [Hyperlink] = []
+//        for match in matches {
+//            guard let textRange = Range(match.range, in: text) else { continue }
+//            let urlString = String(text[textRange])
+//            let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
+//            guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+//                let url = URL(string: formattedString) else { continue }
+//            attributedString.addAttributes([
+//                .foregroundColor: hyperLinkColor,
+//                .attachment: url], range: match.range)
+//            attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range)
+//            _hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+//        }
+//
+//        for attribute in attributes {
+//            attributedString.addAttributes(attribute.attributes, range: attribute.range)
+//            _hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
+//        }
+//
+//        hyperLinks = _hyperLinkTextRange
+//        self.attributedText = attributedString
+//    }
+    
     func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
         let attributedString = NSMutableAttributedString(string: text)
-        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-        var _hyperLinkTextRange: [Hyperlink] = []
-        for match in matches {
+        
+        // Detect URLs
+        let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+        let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+        var hyperLinkTextRange: [Hyperlink] = []
+        
+        for match in urlMatches {
             guard let textRange = Range(match.range, in: text) else { continue }
             let urlString = String(text[textRange])
             let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
             guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                let url = URL(string: formattedString) else { continue }
+                  let url = URL(string: formattedString) else { continue }
             attributedString.addAttributes([
                 .foregroundColor: hyperLinkColor,
                 .attachment: url], range: match.range)
             attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range)
-            _hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+            hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
         }
         
+        // Detect and process hashtags using regular expression
+        let hashtagPattern = "#\\w+"
+        let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [])
+        let hashtagMatches = hashtagRegex.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+        
+        for match in hashtagMatches {
+            let hashtagRange = match.range
+            let hashtag = (text as NSString).substring(with: hashtagRange)
+            let formattedString = "#\(hashtag)"
+            
+            attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
+            hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag)))
+        }
+        
+        // Apply other attributes
         for attribute in attributes {
             attributedString.addAttributes(attribute.attributes, range: attribute.range)
-            _hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
+            hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
         }
         
-        hyperLinks = _hyperLinkTextRange
+        hyperLinks = hyperLinkTextRange
         self.attributedText = attributedString
     }
+
 }
 
 struct MentionAttribute {

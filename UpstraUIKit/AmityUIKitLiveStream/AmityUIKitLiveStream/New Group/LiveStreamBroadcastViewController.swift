@@ -487,6 +487,10 @@ extension LiveStreamBroadcastViewController: AmityStreamBroadcasterDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension LiveStreamBroadcastViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        
+    }
+    
     public func didGetUsers(users: [AmityMentionUserModel]) {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0
