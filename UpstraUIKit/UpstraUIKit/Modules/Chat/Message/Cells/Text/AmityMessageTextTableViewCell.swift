@@ -116,5 +116,6 @@ extension AmityMessageTextTableViewCell: AmityExpandableLabelDelegate {
         // Intentionally left empty
     }
     
-    
+    func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String) {
+    }
 }

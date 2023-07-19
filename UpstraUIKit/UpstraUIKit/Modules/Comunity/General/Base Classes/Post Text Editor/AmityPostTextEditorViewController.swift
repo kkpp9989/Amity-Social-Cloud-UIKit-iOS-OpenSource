@@ -56,6 +56,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var filePicker: AmityFilePicker!
     private var mentionTableView: AmityMentionTableView
     private var mentionTableViewHeightConstraint: NSLayoutConstraint!
+    private var hashtagTableView: AmityHashtagTableView
+    private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
     
     // MARK: - Custom Theme Properties [Additional]
@@ -80,7 +82,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
         self.settings = settings
         self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
         self.mentionTableView = AmityMentionTableView(frame: .zero)
-        
+        self.hashtagTableView = AmityHashtagTableView(frame: .zero)
+
         if postMode == .create {
             var communityId: String? = nil
             switch postTarget {
@@ -159,6 +162,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         view.addSubview(mentionTableView)
         mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 240.0)
         
+//        hashtagTableView.isHidden = true
+        hashtagTableView.translatesAutoresizingMaskIntoConstraints = false
+        hashtagTableView.tag = 1
+        view.addSubview(hashtagTableView)
+        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 240.0)
+        
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         postMenuViewBottomConstraints = NSLayoutConstraint(item: postMenuView, attribute: .bottom, relatedBy: .equal, toItem: view.layoutMarginsGuide, attribute: .bottom, multiplier: 1, constant: 0)
@@ -204,7 +213,11 @@ public class AmityPostTextEditorViewController: AmityViewController {
             mentionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mentionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mentionTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
-            mentionTableViewHeightConstraint
+            mentionTableViewHeightConstraint,
+            hashtagTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hashtagTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hashtagTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
+            hashtagTableViewHeightConstraint
         ])
         updateConstraints()
         // keyboard
@@ -234,6 +247,10 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
         mentionManager?.delegate = self
+        
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+        hashtagTableView.tag = 1
         
         updateAttributesText()
     }
@@ -1008,16 +1025,30 @@ extension AmityPostTextEditorViewController {
 // MARK: - UITableViewDelegate
 extension AmityPostTextEditorViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return AmityMentionTableViewCell.height
+        if tableView.tag != 1 {
+            return AmityMentionTableViewCell.height
+        } else {
+            return AmityHashtagTableViewCell.height
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mentionManager?.addMention(from: textView, in: textView.text, at: indexPath)
+        if tableView.tag != 1 {
+            mentionManager?.addMention(from: textView, in: textView.text, at: indexPath)
+        } else {
+            mentionManager?.addHashtag(from: textView, in: textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
-            mentionManager?.loadMore()
+        if tableView.tag != 1 {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMore()
+            }
+        } else {
+            if indexPath.row == (mentionManager?.keywords.count ?? 0) - 4 {
+                mentionManager?.loadMoreHashtag()
+            }
         }
     }
 }
@@ -1025,18 +1056,43 @@ extension AmityPostTextEditorViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension AmityPostTextEditorViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mentionManager?.users.count ?? 0
+        if tableView.tag != 1 {
+            return mentionManager?.users.count ?? 0
+        } else {
+            return mentionManager?.keywords.count ?? 0
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
-        cell.display(with: model)
-        return cell
+        if tableView.tag != 1 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager?.itemHashtag(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
     }
 }
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            hashtagTableView.isHidden = true
+        } else {
+            var heightConstant:CGFloat = 240.0
+            if keywords.count < 5 {
+                heightConstant = CGFloat(keywords.count) * 65
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+        }
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         textView.attributedText = attributedString
         textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
