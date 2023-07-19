@@ -63,8 +63,8 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
 
 // MARK: AmityExpandableLabelDelegate
 extension AmityPostPreviewCommentTableViewCell: AmityExpandableLabelDelegate {
-    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String) {
-        performAction(action: .tapOnHashtag(keyword: keyword))
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtag(keyword: keyword, count: count))
     }
     
     public func willExpandLabel(_ label: AmityExpandableLabel) {

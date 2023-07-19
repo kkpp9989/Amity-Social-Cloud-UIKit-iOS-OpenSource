@@ -127,6 +127,10 @@ public final class AmityUIKitManager {
         return AmityUIKitManagerInternal.shared.env
     }
     
+    public static var apiKey: String {
+        return AmityUIKitManagerInternal.shared.apiKey
+    }
+    
     // MARK: - Helper methods
     
     public static func set(theme: AmityTheme) {
@@ -152,7 +156,7 @@ final class AmityUIKitManagerInternal: NSObject {
     
     public static let shared = AmityUIKitManagerInternal()
     private var _client: AmityClient?
-    private var apiKey: String = ""
+    var apiKey: String = ""
     private var notificationTokenMap: [String: String] = [:]
     
     private(set) var fileService = AmityFileService()
@@ -215,7 +219,6 @@ final class AmityUIKitManagerInternal: NSObject {
             // [Custom for ONE Krungthai] Add register user token function for request custom API
             print("[AmityUIKitManager][Custom][Register user token]: Start register user token")
             self?.registerUserToken(userId: userId, authToken: authToken ?? "")
-            
             completion?(true, error)
         }
     }

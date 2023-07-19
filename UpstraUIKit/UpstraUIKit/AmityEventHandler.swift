@@ -90,8 +90,8 @@ open class AmityEventHandler {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    open func hashtagDidTap(from source: AmityViewController, keyword: String) {
-        let viewController = AmityUserProfilePageViewController.make(withUserId: keyword)
+    open func hashtagDidTap(from source: AmityViewController, keyword: String, count: Int) {
+        let viewController = AmityHashtagFeedViewController.make(feedType: .globalFeed, keyword: keyword, count: count)
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     

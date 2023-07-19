@@ -1,18 +1,20 @@
 //
-//  RequestPostEmailLogin.swift
-//  Service
+//  RequestHashtag.swift
+//  AmityUIKit
 //
-//  Created by PrInCeInFiNiTy on 28/6/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 19/7/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import Foundation
 
-struct RequestPostHashtag {
+struct RequestHashtag {
     
     let requestMeta = BaseRequestMeta()
     let currentUserToken = AmityUIKitManager.currentUserToken
     var keyword: String = ""
-    
+    var size: Int = 3
+
     func request(_ completion: @escaping(Result<HashtagModel,Error>) -> ()) {
         var domainURL = "https://beta.amity.services"
 //        if let envKey = AmityUIKitManager.env["env_key"] as? String {
@@ -26,7 +28,7 @@ struct RequestPostHashtag {
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
         requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["text": keyword], "sort": [["count": "asc"], ["createdAt": "desc"]], "from": 0, "size": 10]
+        requestMeta.params = ["query": ["text": keyword], "sort": [["count": "asc"], ["createdAt": "desc"]], "from": 0, "size": size]
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure("Not data" as! Error))

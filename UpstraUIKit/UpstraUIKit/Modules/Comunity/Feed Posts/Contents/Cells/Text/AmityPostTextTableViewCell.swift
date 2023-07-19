@@ -116,7 +116,7 @@ extension AmityPostTextTableViewCell: AmityExpandableLabelDelegate {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
     }
     
-    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String) {
-        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword))
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
     }
 }

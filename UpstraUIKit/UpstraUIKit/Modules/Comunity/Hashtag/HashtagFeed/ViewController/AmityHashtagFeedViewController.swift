@@ -1,30 +1,24 @@
 //
-//  AmityFeedViewController.swift
+//  AmityHashtagFeedViewController.swift
 //  AmityUIKit
 //
-//  Created by sarawoot khunsri on 2/13/21.
-//  Copyright © 2021 Amity. All rights reserved.
+//  Created by GuIDe'MacbookAmityHQ on 19/7/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 
-public protocol FeedHeaderPresentable {
-    var headerView: UIView { get }
-    var height: CGFloat { get }
-}
-
-public final class AmityFeedViewController: AmityViewController, AmityRefreshable {
-    
-    var pageTitle: String?
-    var pageIndex: Int = 0
+class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
     
     // MARK: - Properties
-    private var screenViewModel: AmityFeedScreenViewModelType!
-    
+    private var screenViewModel: AmityHashtagScreenViewModelType!
+    private var keyword: String = ""
+    private var count: Int = 0
+
     // MARK: - Post Protocol Handler
     private var postHeaderProtocolHandler: AmityPostHeaderProtocolHandler?
     private var postFooterProtocolHandler: AmityPostFooterProtocolHandler?
@@ -71,6 +65,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         setupProtocolHandler()
         setupScreenViewModel()
         setupReactionPicker()
+        setupNavigationBar()
+        setupPostCountTitle()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -98,16 +94,19 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         }
     }
     
-    public static func make(feedType: AmityPostFeedType) -> AmityFeedViewController {
+    public static func make(feedType: AmityPostFeedType, keyword: String, count: Int) -> AmityHashtagFeedViewController {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reaction = AmityReactionController()
-        let viewModel = AmityFeedScreenViewModel(withFeedType: feedType,
-                                                      postController: postController,
-                                                      commentController: commentController,
-                                                      reactionController: reaction)
-        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+        let viewModel = AmityHashtagScreenViewModel(withFeedType: feedType,
+                                                    postController: postController,
+                                                    commentController: commentController,
+                                                    reactionController: reaction,
+                                                    keyword: keyword)
+        let vc = AmityHashtagFeedViewController(nibName: AmityHashtagFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
+        vc.keyword = keyword
+        vc.count = count
         return vc
     }
 
@@ -131,7 +130,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         screenViewModel.delegate = self
         screenViewModel.action.startObserveFeedUpdate()
         screenViewModel.action.fetchUserSettings()
-        screenViewModel.action.fetchPosts()
+        screenViewModel.action.fetchPosts(keyword: keyword)
     }
     
     // MARK: - Setup Views
@@ -160,7 +159,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     }
     
     private func setupReactionPicker() {
-        
         reactionPickerView.alpha = 0
         view.addSubview(reactionPickerView)
         
@@ -168,6 +166,39 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+    }
+    
+    private func setupNavigationBar() {
+        // Create a label for the navigation title
+        let titleLabel = UILabel()
+        titleLabel.numberOfLines = 2
+        titleLabel.textAlignment = .center
+        
+        let postCountString = "\n\(count.formatUsingAbbrevation()) posts"
+        
+        // Create attributed string with the desired formatting
+        let attributedString = NSMutableAttributedString(string: keyword)
+        
+        // Set the attributes for the first line (bold font)
+        attributedString.setAttributes([NSAttributedString.Key.font: AmityFontSet.bodyBold], range: NSMakeRange(0, keyword.utf16.count))
+        
+        let attributedStringExtented = NSMutableAttributedString(string: postCountString)
+        attributedStringExtented.setAttributes([NSAttributedString.Key.font: AmityFontSet.caption, NSAttributedString.Key.foregroundColor: AmityColorSet.base.blend(.shade3)], range: NSMakeRange(0, postCountString.utf16.count))
+
+        // Set the attributes for the second line (caption font)
+        attributedString.append(attributedStringExtented)
+        
+        // Assign the attributed string to the label
+        titleLabel.attributedText = attributedString
+        
+        // Assign the label to the navigation item's title view
+        navigationItem.titleView = titleLabel
+    }
+    
+    func setupPostCountTitle() {
+        if count == 0 {
+            screenViewModel.action.fetchHashtagData(keyword: keyword)
+        }
     }
     
     // MARK: SrollToTop
@@ -184,7 +215,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     func handleRefreshing() {
         // when refresh control is working, we don't need to show this loader.
         shouldShowLoader = false
-        screenViewModel.action.fetchPosts()
+        screenViewModel.action.fetchPosts(keyword: keyword)
     }
     
     @objc private func handleRefreshingControl() {
@@ -195,13 +226,13 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             return
         }
         pullRefreshHandler?()
-        screenViewModel.action.fetchPosts()
+        screenViewModel.action.fetchPosts(keyword: keyword)
     }
     
 }
 
 // MARK: - ReactionPickerView
-extension AmityFeedViewController {
+extension AmityHashtagFeedViewController {
     
     @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
         let location = sender.location(in: view)
@@ -224,7 +255,7 @@ extension AmityFeedViewController {
 }
 
 // MARK: - AmityPostTableViewDelegate
-extension AmityFeedViewController: AmityPostTableViewDelegate {
+extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch cell.self {
@@ -312,7 +343,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 }
 
 // MARK: - AmityPostTableViewDataSource
-extension AmityFeedViewController: AmityPostTableViewDataSource {
+extension AmityHashtagFeedViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
         return screenViewModel.dataSource.numberOfPostComponents()
     }
@@ -348,10 +379,16 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
     }
 }
 
-// MARK: - AmityFeedScreenViewModelDelegate
-extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
+// MARK: - AmityHashtagScreenViewModelDelegate
+extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
+    func screenViewModelDidUpdateHashtagDataSuccess(_ viewModel: AmityHashtagScreenViewModelType, postCount: Int) {
+        count = postCount
+        DispatchQueue.main.async { [self] in
+            setupNavigationBar()
+        }
+    }
     
-    func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         // When view is invisible but data source request updates, mark it as a dirty data source.
         // Then after view already appear, reload table view for refreshing data.
         guard isVisible else {
@@ -365,7 +402,7 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         refreshControl.endRefreshing()
     }
     
-    func screenViewModelLoadingState(_ viewModel: AmityFeedScreenViewModelType, for loadingState: AmityLoadingState) {
+    func screenViewModelLoadingState(_ viewModel: AmityHashtagScreenViewModelType, for loadingState: AmityLoadingState) {
         switch loadingState {
         case .loading:
             tableView.showLoadingIndicator()
@@ -376,15 +413,15 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         }
     }
     
-    func screenViewModelScrollToTop(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelScrollToTop(_ viewModel: AmityHashtagScreenViewModelType) {
         scrollToTop()
     }
     
-    func screenViewModelDidSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String) {
+    func screenViewModelDidSuccess(_ viewModel: AmityHashtagScreenViewModelType, message: String) {
         AmityHUD.show(.success(message: message.localizedString))
     }
     
-    func screenViewModelDidFail(_ viewModel: AmityFeedScreenViewModelType, failure error: AmityError) {
+    func screenViewModelDidFail(_ viewModel: AmityHashtagScreenViewModelType, failure error: AmityError) {
         switch error {
         case .unknown:
             AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
@@ -398,11 +435,11 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     }
     
     // MARK: - Post
-    func screenViewModelDidLikePostSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidLikePostSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionLikePost()
     }
     
-    func screenViewModelDidUnLikePostSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidUnLikePostSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionUnLikePost()
     }
     
@@ -411,36 +448,36 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     }
     
     // MARK: - Comment
-    func screenViewModelDidLikeCommentSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidLikeCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionLikeComment()
     }
     
-    func screenViewModelDidUnLikeCommentSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidUnLikeCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionUnLikeComment()
     }
     
-    func screenViewModelDidDeleteCommentSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidDeleteCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         // Do something with success
     }
     
-    func screenViewModelDidEditCommentSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidEditCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
         // Do something with success
     }
     
-    func screenViewModelDidGetUserSettings(_ viewModel: AmityFeedScreenViewModelType) {
+    func screenViewModelDidGetUserSettings(_ viewModel: AmityHashtagScreenViewModelType) {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
     }
     
-    func screenViewModelLoadingStatusDidChange(_ viewModel: AmityFeedScreenViewModelType, isLoading: Bool) {
+    func screenViewModelLoadingStatusDidChange(_ viewModel: AmityHashtagScreenViewModelType, isLoading: Bool) {
         tableView.reloadData()
     }
     
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
-extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
+extension AmityHashtagFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
     func headerProtocolHandlerDidPerformAction(_ handler: AmityPostHeaderProtocolHandler, action: AmityPostProtocolHeaderHandlerAction, withPost post: AmityPostModel) {
         let postId: String = post.postId
         switch action {
@@ -460,7 +497,7 @@ extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
 }
 
 // MARK: - AmityPostProtocolHandlerDelegate
-extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
+extension AmityHashtagFeedViewController: AmityPostProtocolHandlerDelegate {
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -469,7 +506,7 @@ extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
 }
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
-extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
+extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate {
     
     func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
         let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
@@ -497,7 +534,7 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
 }
 
 // MARK: AmityPostPreviewCommentDelegate
-extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
+extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
     
     public func didPerformAction(_ cell: AmityPostPreviewCommentProtocol, action: AmityPostPreviewCommentAction) {
         guard let post = cell.post else { return }
@@ -627,12 +664,4 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
         }
         
     }
-}
-
-extension AmityFeedViewController: IndicatorInfoProvider {
-    
-    func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
-        return IndicatorInfo(title: pageTitle ?? "\(pageIndex)")
-    }
-    
 }

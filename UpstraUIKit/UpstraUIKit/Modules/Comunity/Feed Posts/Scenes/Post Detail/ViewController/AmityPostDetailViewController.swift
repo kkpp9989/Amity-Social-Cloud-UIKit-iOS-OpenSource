@@ -165,6 +165,7 @@ open class AmityPostDetailViewController: AmityViewController {
         hashtagTableView.delegate = self
         hashtagTableView.dataSource = self
         hashtagTableView.tag = 1
+        hashtagTableView.backgroundColor = .red
     }
     
     private func setupComposeBarView() {
@@ -719,8 +720,8 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
-    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String) {
-        AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword)
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
     }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
@@ -965,10 +966,7 @@ extension AmityPostDetailViewController: AmityMentionManagerDelegate {
             mentionTableViewHeightConstraint.constant = 0
             mentionTableView.isHidden = true
         } else {
-            var heightConstant:CGFloat = 240.0
-            if users.count < 5 {
-                heightConstant = CGFloat(users.count) * 52.0
-            }
+            var heightConstant:CGFloat = 200.0
             mentionTableViewHeightConstraint.constant = heightConstant
             mentionTableView.isHidden = false
             mentionTableView.reloadData()

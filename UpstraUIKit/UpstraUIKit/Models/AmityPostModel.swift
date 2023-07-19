@@ -270,6 +270,7 @@ public class AmityPostModel {
     
     var dataTypeInternal: DataType = .unknown
     var isModerator: Bool = false
+    var isDelete: Bool = false
     let parentPostId: String?
     let latestComments: [AmityCommentModel]
     let postAsModerator: Bool = false
@@ -325,6 +326,7 @@ public class AmityPostModel {
         poll = post.getPollInfo().map(Poll.init)
         metadata = post.metadata
         mentionees = post.mentionees
+        isDelete = post.isDeleted
         extractPostData()
     }
     

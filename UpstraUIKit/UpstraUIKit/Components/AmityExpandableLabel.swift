@@ -20,7 +20,7 @@ public protocol AmityExpandableLabelDelegate: AnyObject {
     func didCollapseLabel(_ label: AmityExpandableLabel)
     func expandableLabeldidTap(_ label: AmityExpandableLabel)
     func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String)
-    func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String)
+    func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int)
 }
 
 struct Hyperlink {
@@ -31,7 +31,7 @@ struct Hyperlink {
 enum HyperlinkType {
     case url(url: URL)
     case mention(userId: String)
-    case hashtag(keyword: String)
+    case hashtag(keyword: String, count: Int)
 }
 
 /**
@@ -186,7 +186,7 @@ open class AmityExpandableLabel: UILabel {
                     let hashtag = (text as NSString).substring(with: hashtagRange)
                     let formattedString = "#\(hashtag)"
                     attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
-                    hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag)))
+                    hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag, count: 0)))
                 }
                 
                 hyperLinks = hyperLinkTextRange
@@ -272,8 +272,8 @@ extension AmityExpandableLabel {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             case .mention(let userId):
                 delegate?.didTapOnMention(self, withUserId: userId)
-            case .hashtag(keyword: let keyword):
-                delegate?.didTapOnHashtag(self, withKeyword: keyword)
+            case .hashtag(keyword: let keyword, count: let count):
+                delegate?.didTapOnHashtag(self, withKeyword: keyword, count: count)
             }
             
         } else {
@@ -698,7 +698,7 @@ extension AmityExpandableLabel {
             let formattedString = "#\(hashtag)"
             
             attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
-            hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag)))
+            hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag, count: 0)))
         }
         
         // Apply other attributes

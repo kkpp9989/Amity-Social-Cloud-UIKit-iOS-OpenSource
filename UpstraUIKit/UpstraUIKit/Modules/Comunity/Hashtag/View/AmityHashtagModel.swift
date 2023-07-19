@@ -11,6 +11,10 @@ import Foundation
 //  MARK: - AmityHashtagModel
 public struct HashtagModel: Codable {
     let hashtag: [AmityHashtagModel]?
+    
+    enum CodingKeys: String, CodingKey {
+        case hashtag = "hashtags"
+    }
 }
 
 //  MARK: - Hashtag
@@ -18,4 +22,10 @@ public struct AmityHashtagModel: Codable {
     let text: String?
     let count: Int?
     let createdAt: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case text = "text"
+        case count = "count"
+        case createdAt = "createdAt"
+    }
 }
