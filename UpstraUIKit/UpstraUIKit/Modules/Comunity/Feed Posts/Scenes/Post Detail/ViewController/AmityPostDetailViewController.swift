@@ -57,12 +57,34 @@ open class AmityPostDetailViewController: AmityViewController {
         super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
+    required public init(withStreamId streamId: String) {
+        
+        var postId = ""
+        
+        // Get postId by streamId with API
+        
+        let postController = AmityPostController()
+        let commentController = AmityCommentController()
+        let reactionController = AmityReactionController()
+        let childrenController = AmityCommentChildrenController(postId: postId)
+        screenViewModel = AmityPostDetailScreenViewModel(withPostId: postId,
+                                                             postController: postController,
+                                                             commentController: commentController,
+                                                             reactionController: reactionController,
+                                                             childrenController: childrenController)
+        super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
+    }
+    
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     public class func make(withPostId postId: String) -> Self {
         return self.init(withPostId: postId)
+    }
+    
+    public class func make(withStreamId streamId: String) -> Self {
+        return self.init(withStreamId: streamId)
     }
     
     // MARK: - View Lifecycle
