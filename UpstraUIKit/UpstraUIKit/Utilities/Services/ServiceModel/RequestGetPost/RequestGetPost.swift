@@ -22,21 +22,19 @@ struct RequestGetPost {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
         
-        print("currentUserToken: \(currentUserToken)")
-        
         requestMeta.urlRequest = "\(domainURL)/getPostId?streamId=\(streamId)"
         requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .get
         requestMeta.encoding = .urlEncoding
         
-        print("[Post-detail][Custom][Get postId from streamId] Start request get postId by streamId API with url: \(requestMeta.urlRequest) | data: \(requestMeta.params) | header: \(requestMeta.header)")
+//        print("[Post-detail][Custom][Get postId from streamId] Start request get postId by streamId API with url: \(requestMeta.urlRequest) | data: \(requestMeta.params) | header: \(requestMeta.header)")
         
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure("Not data" as! Error))
                 return
             }
-            print("[Post-detail][Custom][Get postId from streamId] Request get postId by streamId API with response status code: \(httpResponse.statusCode)")
+//            print("[Post-detail][Custom][Get postId from streamId] Request get postId by streamId API with response status code: \(httpResponse.statusCode)")
             
             switch httpResponse.statusCode {
             case 200:
