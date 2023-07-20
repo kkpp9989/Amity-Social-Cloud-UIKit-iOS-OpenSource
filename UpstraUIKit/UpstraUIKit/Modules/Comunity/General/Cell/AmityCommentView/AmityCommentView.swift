@@ -141,6 +141,7 @@ class AmityCommentView: AmityView {
         likeButton.setTitle(likeButtonTitle, for: .normal)
         
         replyButton.isHidden = layout.type == .reply
+        
         separatorLineView.isHidden = true
         
         if comment.reactionsCount > 0 {
@@ -162,7 +163,12 @@ class AmityCommentView: AmityView {
     }
     
     func toggleActionVisibility(comment: AmityCommentModel, layout: AmityCommentView.Layout) {
-        let actionButtons = [likeButton, replyButton, optionButton]
+        var actionButtons = [likeButton, replyButton, optionButton]
+        
+        // [Custom for ONE Krungthai] Hide reply button if comment is reply comment
+        if layout.type == .reply {
+            actionButtons = [likeButton, optionButton]
+        }
         
         if layout.shouldShowActions {
             actionButtons.forEach { $0?.isHidden = false }
