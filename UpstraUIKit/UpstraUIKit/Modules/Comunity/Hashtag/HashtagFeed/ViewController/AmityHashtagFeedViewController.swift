@@ -215,6 +215,7 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     func handleRefreshing() {
         // when refresh control is working, we don't need to show this loader.
         shouldShowLoader = false
+        screenViewModel.action.refresh()
         screenViewModel.action.fetchPosts(keyword: keyword)
     }
     
@@ -226,6 +227,7 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
             return
         }
         pullRefreshHandler?()
+        screenViewModel.action.refresh()
         screenViewModel.action.fetchPosts(keyword: keyword)
     }
     

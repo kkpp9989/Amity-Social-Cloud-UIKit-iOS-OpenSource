@@ -36,6 +36,8 @@ open class AmityPostDetailViewController: AmityViewController {
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
     
+    private var livestreamId: String?
+    
     private var parentComment: AmityCommentModel? {
         didSet {
             commentComposeBarView.replyingUsername = parentComment?.displayName
@@ -49,16 +51,17 @@ open class AmityPostDetailViewController: AmityViewController {
     private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - Initializer
-    required public init(withPostId postId: String) {
+    required public init(withPostId postId: String, withStreamId streamId: String?) {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reactionController = AmityReactionController()
         let childrenController = AmityCommentChildrenController(postId: postId)
         screenViewModel = AmityPostDetailScreenViewModel(withPostId: postId,
-                                                             postController: postController,
-                                                             commentController: commentController,
-                                                             reactionController: reactionController,
-                                                             childrenController: childrenController)
+                                                         postController: postController,
+                                                         commentController: commentController,
+                                                         reactionController: reactionController,
+                                                         childrenController: childrenController,
+                                                         withStreamId: streamId)
         super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -66,8 +69,8 @@ open class AmityPostDetailViewController: AmityViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public class func make(withPostId postId: String) -> Self {
-        return self.init(withPostId: postId)
+    public class func make(withPostId postId: String, withStreamId streamId: String? = nil) -> Self {
+        return self.init(withPostId: postId, withStreamId: streamId)
     }
     
     // MARK: - View Lifecycle

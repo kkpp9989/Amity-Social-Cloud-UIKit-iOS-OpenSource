@@ -48,7 +48,8 @@ protocol AmityHashtagScreenViewModelAction {
     func fetchPosts(keyword: String)
     func loadMore()
     func fetchHashtagData(keyword: String)
-    
+    func refresh()
+
     // MARK: PostId / CommentId
     func like(id: String, referenceType: AmityReactionReferenceType)
     func unlike(id: String, referenceType: AmityReactionReferenceType)

@@ -39,7 +39,8 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
     private var fromIndex: Int = 0
     private let dispatchGroup = DispatchGroup()
     private var postLists: [AmityPostModel] = []
-    
+    private var dummyList: AmitySearchPostsModel = AmitySearchPostsModel(postIDS: [])
+
     init(withFeedType feedType: AmityPostFeedType,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
@@ -126,7 +127,14 @@ extension AmityHashtagScreenViewModel {
         fetchPosts(keyword: keyword)
     }
     
+    func refresh() {
+        fromIndex = 0
+        dummyList.postIDS = []
+        postLists = []
+    }
+    
     func getPostbyPostIDsList(posts: AmitySearchPostsModel) {
+        dummyList.postIDS += posts.postIDS
         DispatchQueue.main.async { [self] in
             for postId in posts.postIDS {
                 dispatchGroup.enter()
@@ -149,7 +157,7 @@ extension AmityHashtagScreenViewModel {
                 tokenArray.append(token)
                 
                 dispatchGroup.notify(queue: .main) {
-                    let sortedArray = self.sortArrayPositions(array1: posts.postIDS, array2: self.postLists)
+                    let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
                     self.prepareComponents(posts: sortedArray)
                     self.tokenArray.removeAll()
                 }

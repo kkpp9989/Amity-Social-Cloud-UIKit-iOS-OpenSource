@@ -320,6 +320,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster.videoResolution = renderingContainer.bounds.size
         broadcaster.setup(with: config)
         
+        // [Custom for ONE Krungthai] Set default to front camera same as Android
+        broadcaster.switchCamera = .front
+        
         // Embed broadcaster.previewView
         broadcaster.previewView.translatesAutoresizingMaskIntoConstraints = false
         renderingContainer.addSubview(broadcaster.previewView)

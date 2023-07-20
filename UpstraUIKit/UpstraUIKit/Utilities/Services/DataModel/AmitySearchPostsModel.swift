@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - AmitySearchPostsModel
 struct AmitySearchPostsModel: Codable {
-    let postIDS: [String]
+    var postIDS: [String]
 
     enum CodingKeys: String, CodingKey {
         case postIDS = "postIds"
