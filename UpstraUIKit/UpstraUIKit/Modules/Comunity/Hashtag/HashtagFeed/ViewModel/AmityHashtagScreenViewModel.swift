@@ -202,7 +202,11 @@ extension AmityHashtagScreenViewModel {
         serviceRequest.request { result in
             switch result {
             case .success(let data):
-                self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data.hashtag?[0].count ?? 0)
+                if let data = data.hashtag, !data.isEmpty {
+                    self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data[0].count ?? 0)
+                } else {
+                    self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: 0)
+                }
             case .failure(let error):
                 print(error)
             }
