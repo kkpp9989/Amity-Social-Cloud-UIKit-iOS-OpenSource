@@ -19,24 +19,29 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private let childrenController: AmityCommentChildrenController
     private let pollRepository: AmityPollRepository
     
-    private let postId: String
+    private var postId: String
     private(set) var post: AmityPostModel?
     private var comments: [AmityCommentModel] = []
     private var viewModelArrays: [[PostDetailViewModel]] = []
     private let debouncer = Debouncer(delay: 0.3)
     private(set) var community: AmityCommunity?
     
+    private var streamId: String?
+    
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
          reactionController: AmityReactionControllerProtocol,
-         childrenController: AmityCommentChildrenController) {
+         childrenController: AmityCommentChildrenController,
+         withStreamId streamId: String?
+    ) {
         self.postId = postId
         self.postController = postController
         self.commentController = commentController
         self.reactionController = reactionController
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.streamId = streamId
     }
     
 }
@@ -186,29 +191,64 @@ extension AmityPostDetailScreenViewModel {
     // MARK: Post
     
     func fetchPost() {
-        postController.getPostForPostId(withPostId: postId) { [weak self] (result) in
-            switch result {
-            case .success(let post):
-                self?.post = post
-                self?.debouncer.run {
-                    self?.prepareData()
+        func getPostId(withStreamId streamId: String, completion: @escaping (String) -> Void) {
+            // Simulate your API request using a service object or Alamofire, etc.
+            let serviceRequest = RequestGetPost()
+            serviceRequest.requestPostIdByStreamId(streamId) { result in
+                switch result {
+                case .success(let dataResponse):
+                    let postId = dataResponse.postId ?? ""
+//                    print("[Post-detail][Custom][Get postId from streamId] Get postId from streamId success | postId : \(postId) | status : \(dataResponse.status)")
+                    completion(postId)
+                case .failure(let failure):
+//                    print("[Post-detail][Custom][Get postId from streamId] Get postId from streamId fail with error: \(failure.localizedDescription)")
+                    completion("")
                 }
-            case .failure:
-                break
             }
+        }
+        
+        func doFetchPost() {
+            DispatchQueue.main.async { [self] in
+                postController.getPostForPostId(withPostId: postId) { [weak self] (result) in
+                    switch result {
+                    case .success(let post):
+                        self?.post = post
+                        self?.debouncer.run {
+                            self?.prepareData()
+                        }
+                    case .failure:
+                        break
+                    }
+                }
+            }
+        }
+        
+        if postId == "" {
+            DispatchQueue.main.async {
+                // Get postId by streamId with API
+                getPostId(withStreamId: self.streamId ?? "") { [self] postId in
+                    self.postId = postId
+                    doFetchPost()
+                    fetchComments()
+                }
+            }
+        } else {
+            doFetchPost()
         }
     }
     
     func fetchComments() {
-        commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .descending, includeDeleted: true) { [weak self] (result) in
-            switch result {
-            case .success(let comments):
-                self?.comments = comments
-                self?.debouncer.run {
-                    self?.prepareData()
+        DispatchQueue.main.async { [self] in
+            commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .descending, includeDeleted: true) { [weak self] (result) in
+                switch result {
+                case .success(let comments):
+                    self?.comments = comments
+                    self?.debouncer.run {
+                        self?.prepareData()
+                    }
+                case .failure:
+                    break
                 }
-            case .failure:
-                break
             }
         }
     }
