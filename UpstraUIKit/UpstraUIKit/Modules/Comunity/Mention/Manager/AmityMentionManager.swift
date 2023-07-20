@@ -248,7 +248,7 @@ public extension AmityMentionManager {
     }
     
     func addHashtag(from textInput: UITextInput, in text: String, at indexPath: IndexPath) {
-        guard let selectedRange = textInput.selectedTextRange, indexPath.row < keywords.count else { return }
+        guard let selectedRange = textInput.selectedTextRange, indexPath.row < keywords[indexPath.row].text?.count ?? 0 else { return }
         
         var currentText = text
         let keyword = keywords[indexPath.row]
@@ -257,7 +257,7 @@ public extension AmityMentionManager {
         let key = searchingKey ?? ""
         let rng = Range(NSRange(location: currentText.utf16.count - key.utf16.count, length: key.utf16.count), in: currentText)
         currentText = currentText.replacingOccurrences(of: "\(searchingKey ?? "")", with: "",range: rng)
-        currentText.append("\(keyword) ")
+        currentText.append("\(keyword.text ?? "") ")
         
         createAttributedText(text: currentText)
         finishHashtagSearching()
