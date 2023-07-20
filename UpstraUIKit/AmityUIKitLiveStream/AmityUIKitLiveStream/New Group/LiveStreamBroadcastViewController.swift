@@ -343,11 +343,11 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             return
         }
         
-        switch broadcaster.cameraPosition {
+        switch broadcaster.switchCamera {
         case .front:
-            broadcaster.cameraPosition = .back
+            broadcaster.switchCamera = .back
         case .back:
-            broadcaster.cameraPosition = .front
+            broadcaster.switchCamera = .front
         @unknown default:
             assertionFailure("Unhandled case")
         }
