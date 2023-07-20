@@ -382,7 +382,7 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDataSource {
 // MARK: - AmityHashtagScreenViewModelDelegate
 extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
     func screenViewModelDidUpdateHashtagDataSuccess(_ viewModel: AmityHashtagScreenViewModelType, postCount: Int) {
-        count = postCount
+        count = postCount == 0 ? postCount : screenViewModel.dataSource.numberOfPostComponents()
         DispatchQueue.main.async { [self] in
             setupNavigationBar()
         }
