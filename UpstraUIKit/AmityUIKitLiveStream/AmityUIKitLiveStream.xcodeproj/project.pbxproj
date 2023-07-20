@@ -32,6 +32,8 @@
 		DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0182A4E80880045FFD6 /* NetworkManager.swift */; };
 		DF04C01F2A4E80880045FFD6 /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0192A4E80880045FFD6 /* RequestError.swift */; };
 		DF04C0202A4E80880045FFD6 /* RequestMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */; };
+		DF68BEA92A699EFD004C901F /* RequestViewerStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */; };
+		DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */; };
 		FA6276D22A53B825003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276D12A53B825003DFE4E /* AmitySDK */; };
 		FA645DAA2A4A7C0600BA401F /* AmityUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */; };
 /* End PBXBuildFile section */
@@ -69,6 +71,8 @@
 		DF04C0182A4E80880045FFD6 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DF04C0192A4E80880045FFD6 /* RequestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestError.swift; sourceTree = "<group>"; };
 		DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestMeta.swift; sourceTree = "<group>"; };
+		DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestViewerStatistics.swift; sourceTree = "<group>"; };
+		DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStatisticsModel.swift; sourceTree = "<group>"; };
 		FA6276C72A53B727003DFE4E /* AmitySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AmitySDK.xcframework; path = ../Shared/AmitySDK.xcframework; sourceTree = "<group>"; };
 		FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AmityUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -195,7 +199,7 @@
 		A0BD0B5426DE22E60054088B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				DF04C0122A4E80880045FFD6 /* Service */,
+				DF04C0122A4E80880045FFD6 /* Services */,
 				A0B68B3426E077CD007D7B5B /* Operation */,
 				A0BD0B5826DE26700054088B /* Error */,
 				A0BD0B5726DE23010054088B /* UIViewController */,
@@ -219,12 +223,13 @@
 			path = Error;
 			sourceTree = "<group>";
 		};
-		DF04C0122A4E80880045FFD6 /* Service */ = {
+		DF04C0122A4E80880045FFD6 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				DF68BEA42A699D50004C901F /* ServiceModel */,
 				DF04C0162A4E80880045FFD6 /* Request */,
 			);
-			path = Service;
+			path = Services;
 			sourceTree = "<group>";
 		};
 		DF04C0162A4E80880045FFD6 /* Request */ = {
@@ -236,6 +241,23 @@
 				DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */,
 			);
 			path = Request;
+			sourceTree = "<group>";
+		};
+		DF68BEA42A699D50004C901F /* ServiceModel */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BEA72A699EB5004C901F /* RequestViewerStatistics */,
+			);
+			path = ServiceModel;
+			sourceTree = "<group>";
+		};
+		DF68BEA72A699EB5004C901F /* RequestViewerStatistics */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */,
+				DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */,
+			);
+			path = RequestViewerStatistics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -330,12 +352,14 @@
 				A0BD0B2F26DCE5800054088B /* LiveStreamBroadcastViewController.swift in Sources */,
 				A0B68B4326E07928007D7B5B /* CreateStream.swift in Sources */,
 				DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */,
+				DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */,
 				DF04C0202A4E80880045FFD6 /* RequestMeta.swift in Sources */,
 				A0BD0B6226DF3A3F0054088B /* LiveStreamBroadcast+UIContainerState.swift in Sources */,
 				A0BD0B5E26DF37160054088B /* LiveStreamBroadcastVC+Keyboard.swift in Sources */,
 				DF04C01D2A4E80880045FFD6 /* URLEnpointManager.swift in Sources */,
 				A0B68B4726E07960007D7B5B /* GoLive.swift in Sources */,
 				A0B68B3F26E07912007D7B5B /* CreatePost.swift in Sources */,
+				DF68BEA92A699EFD004C901F /* RequestViewerStatistics.swift in Sources */,
 				A0BD0B5C26DF35C80054088B /* LiveStreamBroadcastVC+Permission.swift in Sources */,
 				A0B68B3026E07278007D7B5B /* LiveStreamViewController+GoLive.swift in Sources */,
 				A0BD0B5A26DE26940054088B /* GeneralError.swift in Sources */,
