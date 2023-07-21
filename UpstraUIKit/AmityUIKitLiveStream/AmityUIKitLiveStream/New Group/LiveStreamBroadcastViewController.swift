@@ -321,7 +321,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster.setup(with: config)
         
         // [Custom for ONE Krungthai] Set default to front camera same as Android
-        broadcaster.switchCamera = .front
+        broadcaster.cameraPosition = .front
         
         // Embed broadcaster.previewView
         broadcaster.previewView.translatesAutoresizingMaskIntoConstraints = false
