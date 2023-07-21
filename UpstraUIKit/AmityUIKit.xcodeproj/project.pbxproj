@@ -667,7 +667,12 @@
 		D4D7683E26006D7000AD4367 /* AmitySettingContentIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */; };
 		D4EC11E525B93DCE0095F507 /* AmityPostSharingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */; };
 		D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */; };
+		DF68BE9E2A694B0D004C901F /* URLEnpointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE962A694B0D004C901F /* URLEnpointManager.swift */; };
+		DF68BE9F2A694B0D004C901F /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE972A694B0D004C901F /* NetworkManager.swift */; };
+		DF68BEA02A694B0D004C901F /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE982A694B0D004C901F /* RequestError.swift */; };
+		DF68BEA12A694B0D004C901F /* RequestMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE992A694B0D004C901F /* RequestMeta.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
+		DF68BEA32A694B0D004C901F /* ResponseGetPostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9D2A694B0D004C901F /* ResponseGetPostModel.swift */; };
 		DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */; };
 		FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276CE2A53B7C2003DFE4E /* AmitySDK */; };
 /* End PBXBuildFile section */
@@ -1349,7 +1354,12 @@
 		D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmitySettingContentIcon.swift; sourceTree = "<group>"; };
 		D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingSettings.swift; sourceTree = "<group>"; };
 		D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingTarget.swift; sourceTree = "<group>"; };
+		DF68BE962A694B0D004C901F /* URLEnpointManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEnpointManager.swift; sourceTree = "<group>"; };
+		DF68BE972A694B0D004C901F /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		DF68BE982A694B0D004C901F /* RequestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestError.swift; sourceTree = "<group>"; };
+		DF68BE992A694B0D004C901F /* RequestMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestMeta.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
+		DF68BE9D2A694B0D004C901F /* ResponseGetPostModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseGetPostModel.swift; sourceTree = "<group>"; };
 		DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ONEKrungthaiCustomTheme.swift; sourceTree = "<group>"; };
 		FA6276BC2A53B58C003DFE4E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = SharedFrameworksEdit/Package.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -4553,6 +4563,34 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
+		DF68BE952A694B0D004C901F /* Request */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BE962A694B0D004C901F /* URLEnpointManager.swift */,
+				DF68BE972A694B0D004C901F /* NetworkManager.swift */,
+				DF68BE982A694B0D004C901F /* RequestError.swift */,
+				DF68BE992A694B0D004C901F /* RequestMeta.swift */,
+			);
+			path = Request;
+			sourceTree = "<group>";
+		};
+		DF68BE9A2A694B0D004C901F /* ServiceModel */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BE9B2A694B0D004C901F /* RequestGetPost */,
+			);
+			path = ServiceModel;
+			sourceTree = "<group>";
+		};
+		DF68BE9B2A694B0D004C901F /* RequestGetPost */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */,
+				DF68BE9D2A694B0D004C901F /* ResponseGetPostModel.swift */,
+			);
+			path = RequestGetPost;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4932,6 +4970,7 @@
 				72A3517124EA820800DA9D46 /* AmityImagePickerImageView.swift in Sources */,
 				B7B31C61250F4ACF000AC6E4 /* PagerTabStripBehaviour.swift in Sources */,
 				72A3513C24EA820800DA9D46 /* UIViewController+Extension.swift in Sources */,
+				DF68BEA02A694B0D004C901F /* RequestError.swift in Sources */,
 				72A3517B24EA820800DA9D46 /* CheckmarkView.swift in Sources */,
 				72507138251CCAED00200A24 /* AmityCategoryListScreenViewModel.swift in Sources */,
 				72D841F324F646A00039B1C2 /* AmityPostTextEditorScreenViewModel.swift in Sources */,
@@ -5158,6 +5197,7 @@
 				B748E16E2591ED4E000CF4CC /* AmityCommunityUserModeratorController.swift in Sources */,
 				B77E6C1C24F615F9003EEE49 /* AmityCommunityProfileEditorViewController.swift in Sources */,
 				B7B31C55250F4ACF000AC6E4 /* AmityProfilePannableViewsProtocol.swift in Sources */,
+				DF68BEA32A694B0D004C901F /* ResponseGetPostModel.swift in Sources */,
 				B70D2BA5257713F100E2D56B /* AmityMessageAudioTableViewCell.swift in Sources */,
 				72A3516E24EA820800DA9D46 /* Settings.swift in Sources */,
 				7858D3A526DAD83600A0090E /* AmityPostPollTableViewCell.swift in Sources */,
@@ -5204,6 +5244,7 @@
 				D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */,
 				97D7C4BE264BF92C00EA24F5 /* AmityChannelMemberSettingsScreenViewModelProtocol.swift in Sources */,
 				78C1C51E25F4160A00D6F092 /* AmitySettingsItemRadioButtonContentTableViewCell.swift in Sources */,
+				DF68BE9F2A694B0D004C901F /* NetworkManager.swift in Sources */,
 				A9E891102A00CC0E00A22B35 /* AmityReactionPageViewController.swift in Sources */,
 				724FBA8A252F41DB00EDC556 /* AmityHUDSuccessView.swift in Sources */,
 				B750672524FC0A4000DD17B4 /* AmitySelectMemberModel.swift in Sources */,
@@ -5256,6 +5297,7 @@
 				D404015925FF88FE00311C83 /* AmityCommunityNotificationSettingsViewController.swift in Sources */,
 				0DBC357025A388690064D138 /* AmityCommunityRoleController.swift in Sources */,
 				97E21E8B264D266C00F19CB3 /* AmityGroupChatEditScreenViewModel.swift in Sources */,
+				DF68BEA12A694B0D004C901F /* RequestMeta.swift in Sources */,
 				72A3518024EA820800DA9D46 /* VideoCollectionViewCell.swift in Sources */,
 				7211553E25505D180081CC23 /* AmityCategoryPickerViewController.swift in Sources */,
 				0DC1999A25E637B500A655AE /* AmityCommunityTrendingController.swift in Sources */,
@@ -5272,6 +5314,7 @@
 				AA8CC6D42A6845A2003F8B8E /* AmityHashtagFeedViewController.swift in Sources */,
 				78DA0323263C715C007C11CE /* AmityMyCommunityPreviewScreenViewModel.swift in Sources */,
 				B750672124FC061B00DD17B4 /* AmitySelectMemberListTableViewCell.swift in Sources */,
+				DF68BE9E2A694B0D004C901F /* URLEnpointManager.swift in Sources */,
 				78D9442D25F8D730003C32A5 /* AmityCommunitySettingsScreenViewModelProtocol.swift in Sources */,
 				D404015525FF88FE00311C83 /* AmityCommunityNotificationSettingsViewModelProtocol.swift in Sources */,
 				A0E2B23226B7B68200F1C4D5 /* AmityPostGalleryViewController.swift in Sources */,
