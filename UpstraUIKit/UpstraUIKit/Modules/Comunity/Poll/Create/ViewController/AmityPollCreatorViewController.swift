@@ -379,6 +379,9 @@ extension AmityPollCreatorViewController: AmityPollCreatorCellProtocolDelegate {
                 let insertIndexPath = IndexPath(row: row, section: section)
                 self?.tableView.insertRows(at: [insertIndexPath], with: .top)
                 
+                // [Fix defect] Add reload table for update current amount choice
+                self?.tableView.reloadData()
+                
                 if let cell = tableView.cellForRow(at: insertIndexPath) as? AmityPollCreatorAnswerTableViewCell {
                     cell.moveInputCursorToTextView()
                 }
