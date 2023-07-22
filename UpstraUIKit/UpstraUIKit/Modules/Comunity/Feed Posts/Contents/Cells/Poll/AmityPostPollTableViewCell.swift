@@ -220,7 +220,7 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        tableView.frame.size.height += cell.frame.height
+        tableView.frame.size.height += cell.frame.height // [Fix defect] Change set table view height
         tableView.layoutIfNeeded()
     }
     
