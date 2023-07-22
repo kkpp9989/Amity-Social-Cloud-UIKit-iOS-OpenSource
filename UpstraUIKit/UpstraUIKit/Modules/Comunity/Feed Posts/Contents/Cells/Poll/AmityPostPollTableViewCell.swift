@@ -120,10 +120,6 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
         tableView.tableFooterView = UIView()
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
-        
-        tableView.estimatedRowHeight = 100
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.reloadData()
     }
     
     private func setupSubmitVoteButton() {
@@ -224,6 +220,7 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        tableView.frame.size.height += cell.frame.height
         tableView.layoutIfNeeded()
     }
     
