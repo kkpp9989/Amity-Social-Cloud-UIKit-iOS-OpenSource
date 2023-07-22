@@ -114,7 +114,8 @@ public struct AmityLocalizedStringSet {
     static let searchResultNotFound = "search_result_not_found"
     static let communities = "communities"
     static let accounts = "accounts"
-    
+    static let hashtags = "hashtags"
+
     static let somethingWentWrongWithTryAgain = "something_went_wrong_with_try_again"
     static let noInternetConnection = "no_internet_connection"
     

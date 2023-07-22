@@ -28,6 +28,7 @@ public protocol AmityMentionManagerDelegate: AnyObject {
     func didCreateAttributedString(attributedString: NSAttributedString)
     func didMentionsReachToMaximumLimit()
     func didCharactersReachToMaximumLimit()
+    func didGetHashtag(keywords: [AmityHashtagModel])
 }
 
 public enum AmityMentionManagerType {
@@ -42,7 +43,9 @@ final public class AmityMentionManager {
     private var mentions: [AmityMention] = []
     private var searchingKey: String? = nil
     private(set) var isSearchingStarted: Bool = false
+    private(set) var isSearchingHashtagStarted: Bool = false
     public var users: [AmityMentionUserModel] = []
+    public var keywords: [AmityHashtagModel] = []
     private let communityId: String?
     private var font: UIFont = AmityFontSet.body
     private var highlightFont = AmityFontSet.bodyBold
@@ -110,6 +113,18 @@ public extension AmityMentionManager {
                 finishSearching()
                 return true
             }
+        } else if replacementText == "#" {
+            if text == "" {
+                isSearchingHashtagStarted = true
+                searchHashtag(withText: "")
+                return true
+            } else {
+                if let selectedRange = textInput.selectedTextRange, canHanldeHashtag(textInput, inRange: range, withSelectedRange: selectedRange, inText: text) {
+                    return true
+                }
+                finishHashtagSearching()
+                return true
+            }
         } else if replacementText == "" { // Started to remove
             // Removing during search
             if isSearchingStarted {
@@ -122,6 +137,20 @@ public extension AmityMentionManager {
                     search(withText: searchingKey ?? "")
                 } else {
                     finishSearching()
+                }
+                return true
+            }
+            
+            if isSearchingHashtagStarted {
+                if (searchingKey?.count ?? 0) > 0 {
+                    searchingKey?.removeLast()
+                    searchHashtag(withText: searchingKey ?? "")
+                } else if text.count > 0, text.dropLast().hasSuffix("#") {
+                    searchingKey = ""
+                    isSearchingStarted = true
+                    searchHashtag(withText: searchingKey ?? "")
+                } else {
+                    finishHashtagSearching()
                 }
                 return true
             }
@@ -139,6 +168,13 @@ public extension AmityMentionManager {
             }
             searchingKey?.append(replacementText)
             search(withText: searchingKey ?? "")
+        } else if isSearchingHashtagStarted {
+            // when searching is started just append the replacement text to the searching key and make search
+            if searchingKey == nil {
+                searchingKey = ""
+            }
+            searchingKey?.append(replacementText)
+            searchHashtag(withText: searchingKey ?? "")
         } else { // when writing a text
             let finalText = text.appending(replacementText)
             if finalText.count > AmityMentionManager.maximumCharacterCountForPost {
@@ -152,13 +188,14 @@ public extension AmityMentionManager {
                 }
             }
             finishSearching()
+            finishHashtagSearching()
         }
         
         return true
     }
     
     func changeSelection(_ textInput: UITextInput) {
-        if isSearchingStarted { return }
+        if isSearchingStarted || isSearchingHashtagStarted { return }
 
         guard let selectedRange = textInput.selectedTextRange, selectedRange != textInput.textRange(from: textInput.endOfDocument, to: textInput.endOfDocument), selectedRange != textInput.textRange(from: textInput.beginningOfDocument, to: textInput.beginningOfDocument) else { return }
         
@@ -210,9 +247,30 @@ public extension AmityMentionManager {
         finishSearching()
     }
     
+    func addHashtag(from textInput: UITextInput, in text: String, at indexPath: IndexPath) {
+        guard let selectedRange = textInput.selectedTextRange, indexPath.row < keywords[indexPath.row].text?.count ?? 0 else { return }
+        
+        var currentText = text
+        let keyword = keywords[indexPath.row]
+                
+        // adding a hashtag from ending
+        let key = searchingKey ?? ""
+        let rng = Range(NSRange(location: currentText.utf16.count - key.utf16.count, length: key.utf16.count), in: currentText)
+        currentText = currentText.replacingOccurrences(of: "\(searchingKey ?? "")", with: "",range: rng)
+        currentText.append("\(keyword.text ?? "") ")
+        
+        createAttributedText(text: currentText)
+        finishHashtagSearching()
+    }
+    
     func item(at indexPath: IndexPath) -> AmityMentionUserModel? {
         guard indexPath.row < users.count else { return nil }
         return users[indexPath.row]
+    }
+    
+    func itemHashtag(at indexPath: IndexPath) -> AmityHashtagModel? {
+        guard indexPath.row < keywords.count else { return nil }
+        return keywords[indexPath.row]
     }
     
     func loadMore() {
@@ -228,8 +286,15 @@ public extension AmityMentionManager {
         }
     }
     
+    func loadMoreHashtag() {
+    }
+    
     func setMentions(metadata: [String: Any], inText text: String) {
         mentions = AmityMentionMapper.mentions(fromMetadata: metadata)
+        createAttributedText(text: text)
+    }
+    
+    func setHashtag(inText text: String) {
         createAttributedText(text: text)
     }
     
@@ -274,7 +339,9 @@ public extension AmityMentionManager {
         mentions = []
         searchingKey = nil
         isSearchingStarted = false
+        isSearchingHashtagStarted = false
         users = []
+        keywords = []
         collectionToken?.invalidate()
         collectionToken = nil
         privateCommunityMembersCollection = nil
@@ -297,6 +364,28 @@ private extension AmityMentionManager {
             privateCommunityMembersCollection = privateCommunityRepository.searchMembers(communityId: communityId, displayName: text, membership: [.member], roles: [], sortBy: .lastCreated)
             collectionToken = privateCommunityMembersCollection?.observe { [ weak self] (collection, change, error) in
                 self?.handleSearchResponse(with: collection)
+            }
+        }
+    }
+    
+    func searchHashtag(withText text: String) {
+        var serviceRequest = RequestHashtag()
+        serviceRequest.keyword = text
+        serviceRequest.request { result in
+            switch result {
+            case .success(let dataResponse):
+                self.keywords = dataResponse.hashtag ?? []
+                self.handleSearchHashtagResponse()
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func handleSearchHashtagResponse() {
+        DispatchQueue.main.async { [self] in
+            if isSearchingHashtagStarted {
+                delegate?.didGetHashtag(keywords: keywords)
             }
         }
     }
@@ -333,6 +422,14 @@ private extension AmityMentionManager {
         delegate?.didGetUsers(users: users)
     }
     
+    func finishHashtagSearching() {
+        keywords = []
+        searchingKey = nil
+        isSearchingHashtagStarted = false
+        
+        delegate?.didGetHashtag(keywords: keywords)
+    }
+    
     func removeMention(at range: NSRange) {
         // Find the mention and remove
         let theMentionToRemove = mentions.filter { mention in
@@ -365,8 +462,18 @@ private extension AmityMentionManager {
     public func createAttributedText(text: String) {
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.addAttributes([.font: font, .foregroundColor: foregroundColor], range: NSMakeRange(0, text.utf16.count))
-        mentions.forEach { (mention) in
+        
+        // Add attributes for mentions
+        mentions.forEach { mention in
             attributedString.addAttributes([.foregroundColor: highlightColor, .font: highlightFont], range: NSMakeRange(mention.index, mention.length))
+        }
+        
+        // Add attributes for hashtags
+        let hashtagRegex = try? NSRegularExpression(pattern: "#\\w+", options: [])
+        if let matches = hashtagRegex?.matches(in: text, options: [], range: NSMakeRange(0, text.utf16.count)) {
+            for match in matches {
+                attributedString.addAttributes([.foregroundColor: highlightColor, .font: highlightFont], range: match.range)
+            }
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [self] in
@@ -425,6 +532,50 @@ private extension AmityMentionManager {
         return false
     }
     
+    func canHanldeHashtag(_ textInput: UITextInput, inRange range: NSRange, withSelectedRange selectedRange: UITextRange, inText text: String) -> Bool {
+        let startPosition: UITextPosition = textInput.beginningOfDocument
+        let endPosition: UITextPosition = textInput.endOfDocument
+        
+        // There are 3 cases for cursor position:
+        //  - in the begining: can activate and make search if there is a space on the right side of the cursor
+        //  - in the middle: can activate and make search if there are only space on the both right and left sides of the cursor
+        //  - in the end: can activate and make search if there is a space on the left side of the cursor
+        
+        if let currentRange = textInput.textRange(from: endPosition, to: endPosition), selectedRange == currentRange, let leftRange = Range(NSRange(location: range.location  > 0 ? range.location - 1 : 0, length: range.length), in: text) {
+            // In the end
+            let leftSubstring = String(text[leftRange.lowerBound])
+            let leftTrimmedString = leftSubstring.trimmingCharacters(in: .whitespacesAndNewlines)
+            if leftTrimmedString.isEmpty {
+                isSearchingHashtagStarted = true
+                searchHashtag(withText: searchingKey ?? "")
+                return true
+            }
+        } else if let currentRange = textInput.textRange(from: startPosition, to: startPosition), selectedRange == currentRange, let rightRange = Range(NSRange(location: range.location  > 0 ? range.location + 1 : 0, length: range.length), in: text) {
+            // in the beginning
+            let rightSubstring = String(text[rightRange.lowerBound])
+            let rightTrimmedString = rightSubstring.trimmingCharacters(in: .whitespacesAndNewlines)
+            if rightTrimmedString.isEmpty {
+                isSearchingHashtagStarted = true
+                searchHashtag(withText: searchingKey ?? "")
+                return true
+            }
+        } else if let leftRange = Range(NSRange(location: range.location  > 0 ? range.location - 1 : 0, length: range.length), in: text), let rightRange = Range(NSRange(location: range.location, length: range.length), in: text) {
+            // in the middle
+            let leftSubstring = String(text[leftRange.lowerBound])
+            let leftTrimmedString = leftSubstring.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+            let rightSubstring = String(text[rightRange.lowerBound])
+            let rightTrimmedString = rightSubstring.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+            if rightTrimmedString.isEmpty && leftTrimmedString.isEmpty {
+                isSearchingHashtagStarted = true
+                searchHashtag(withText: searchingKey ?? "")
+                return true
+            }
+        }
+        return false
+    }
+    
     // Checks is it possible to remove the text in the selected range
     // If it's possible then removes the selected mention in the given range if there is any
     func canRemove(_ textInput: UITextInput, inRange range: NSRange, withSelectedRange selectedRange: UITextRange, startPosition: UITextPosition, endPosition: UITextPosition, inText text: String) -> Bool {
@@ -475,7 +626,6 @@ private extension AmityMentionManager {
     // Configures the indexes of remaining mentions after removing a mention or text in the given range
     func configureMentions(inRange range: NSRange, forText text: String) {
         guard range.length > 0 else { return }
-        
         // If there is no mention in the selected range then change the indexes of every mention from mentions array
         var space = 0
         

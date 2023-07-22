@@ -33,4 +33,5 @@ public enum AmityPostAction {
     case didCollapseExpandableLabel(label: AmityExpandableLabel)
     case submit
     case tapOnMentionWithUserId(userId: String)
+    case tapOnHashtagWithKeyword(keyword: String, count: Int)
 }

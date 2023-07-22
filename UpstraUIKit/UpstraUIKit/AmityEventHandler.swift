@@ -95,6 +95,11 @@ open class AmityEventHandler {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
+    open func hashtagDidTap(from source: AmityViewController, keyword: String, count: Int) {
+        let viewController = AmityHashtagFeedViewController.make(feedType: .globalFeed, keyword: keyword, count: count)
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
     /// Event for edit user
     /// It will be triggered when edit user button is tapped
     ///

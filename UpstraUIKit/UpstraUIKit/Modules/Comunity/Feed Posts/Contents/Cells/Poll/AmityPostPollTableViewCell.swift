@@ -12,8 +12,8 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     
     private struct Constant {
         static let pollTitleContentMaxLines = 8
-        static let maxPollOptionRowCountInNormalFeed = 2
-        static let maxRowCountInNormalFeed = 3
+        static let maxPollOptionRowCountInNormalFeed = 6 // [Custom for ONE Krungthai] Change value from 2 to 6 refer to requirement
+        static let maxRowCountInNormalFeed = 7 // [Custom for ONE Krungthai] Change value from 3 to 7 refer to requirement
     }
     
     // MARK: - IBOutlet Properties
@@ -213,15 +213,14 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
         let answersCount = poll.answers.count
         switch post.appearance.displayType {
         case .feed:
-            return answersCount == Constant.maxPollOptionRowCountInNormalFeed ? answersCount : Constant.maxRowCountInNormalFeed
+            return answersCount <= Constant.maxPollOptionRowCountInNormalFeed ? answersCount : Constant.maxRowCountInNormalFeed
         case .postDetail:
             return answersCount
         }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let pollAnswer = post?.poll?.answers else { return }
-        tableView.frame.size.height = (cell.frame.height + 10.0) * CGFloat(pollAnswer.count) // Add 10 px to height for fix more option button disappear when user voted in 3 choices poll
+        tableView.frame.size.height += cell.frame.height // [Fix defect] Change set table view height
         tableView.layoutIfNeeded()
     }
     
@@ -282,5 +281,9 @@ extension AmityPostPollTableViewCell: AmityExpandableLabelDelegate {
 
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
     }
 }

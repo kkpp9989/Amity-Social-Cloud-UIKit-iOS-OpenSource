@@ -548,6 +548,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             tableView.endUpdates()
         case .tapOnMention(let userId):
             AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        case .tapOnHashtag(keyword: let keyword, count: let count):
+            AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
         }
     }
    

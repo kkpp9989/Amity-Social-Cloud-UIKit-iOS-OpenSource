@@ -320,6 +320,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster.videoResolution = renderingContainer.bounds.size
         broadcaster.setup(with: config)
         
+        // [Custom for ONE Krungthai] Set default to front camera same as Android
+        broadcaster.cameraPosition = .front
+        
         // Embed broadcaster.previewView
         broadcaster.previewView.translatesAutoresizingMaskIntoConstraints = false
         renderingContainer.addSubview(broadcaster.previewView)
@@ -487,6 +490,10 @@ extension LiveStreamBroadcastViewController: AmityStreamBroadcasterDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension LiveStreamBroadcastViewController: AmityMentionManagerDelegate {
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        
+    }
+    
     public func didGetUsers(users: [AmityMentionUserModel]) {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0

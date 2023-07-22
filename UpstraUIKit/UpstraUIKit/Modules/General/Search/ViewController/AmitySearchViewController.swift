@@ -20,7 +20,8 @@ public class AmitySearchViewController: AmityPageViewController {
     // MARK: - Child ViewController
     private var communitiesVC = AmityCommunitySearchViewController.make(title: AmityLocalizedStringSet.communities.localizedString)
     private var membersVC = AmityMemberSearchViewController.make(title: AmityLocalizedStringSet.accounts.localizedString)
-    
+    private var hashtagVC = AmityHashtagSearchViewController.make(title: AmityLocalizedStringSet.hashtags.localizedString)
+
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
 
@@ -71,7 +72,7 @@ public class AmitySearchViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [communitiesVC, membersVC]
+        return [communitiesVC, membersVC, hashtagVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
@@ -91,7 +92,7 @@ public class AmitySearchViewController: AmityPageViewController {
         searchTextField.returnKeyType = .search
         searchTextField.clearButtonMode = .always
         
-        searchTextField.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        searchTextField.backgroundColor = .white
         searchTextField.tintColor = AmityColorSet.base
         searchTextField.textColor = AmityColorSet.base
         searchTextField.font = AmityFontSet.body
@@ -103,7 +104,7 @@ public class AmitySearchViewController: AmityPageViewController {
         searchIcon.image = AmityIconSet.iconSearch?.withRenderingMode(.alwaysTemplate)
         searchIcon.tintColor = AmityColorSet.base.blend(.shade1)
         
-        searchView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        searchView.backgroundColor = .white
         searchView.layer.cornerRadius = 4
     }
     
@@ -122,6 +123,8 @@ private extension AmitySearchViewController {
     func handelSearch(with key: String?) {
         if viewControllers[currentIndex] == communitiesVC {
             communitiesVC.search(with: key)
+        } else if viewControllers[currentIndex] == hashtagVC {
+            hashtagVC.search(withText: key)
         } else {
             membersVC.search(with: key)
         }
@@ -130,6 +133,8 @@ private extension AmitySearchViewController {
     func viewControllerWillMove() {
         if currentIndex == 1 {
             communitiesVC.search(with: searchTextField.text)
+        } else if currentIndex == 3 {
+            hashtagVC.search(withText: searchTextField.text)
         } else {
             membersVC.search(with: searchTextField.text)
         }

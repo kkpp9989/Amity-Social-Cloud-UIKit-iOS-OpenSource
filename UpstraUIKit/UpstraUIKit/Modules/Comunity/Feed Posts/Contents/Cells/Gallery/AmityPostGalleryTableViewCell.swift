@@ -215,4 +215,8 @@ extension AmityPostGalleryTableViewCell: AmityExpandableLabelDelegate {
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
     }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
+    }
 }

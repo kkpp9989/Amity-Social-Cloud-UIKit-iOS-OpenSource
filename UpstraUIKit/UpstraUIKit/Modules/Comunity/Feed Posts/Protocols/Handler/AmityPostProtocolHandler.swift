@@ -129,6 +129,8 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             }
         case .tapOnMentionWithUserId(let userId):
             AmityEventHandler.shared.userDidTap(from: viewController!, userId: userId)
+        case .tapOnHashtagWithKeyword(keyword: let keyword, count: let count):
+            AmityEventHandler.shared.hashtagDidTap(from: viewController!, keyword: keyword, count: count)
         }
         
     }
