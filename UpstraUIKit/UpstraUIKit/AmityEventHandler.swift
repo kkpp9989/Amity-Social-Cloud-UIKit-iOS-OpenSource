@@ -32,7 +32,7 @@ public enum AmityPostContentType {
 
 public enum AmityEventOutputMenuStyleType {
     case bottom
-    case popupfrombutton
+    case pullDownMenuFromNavigationButton
 }
 
 open class AmityEventHandler {
@@ -126,7 +126,8 @@ open class AmityEventHandler {
     ///
     /// If there is a `postTarget` passing into, immediately calls `postTargetDidSelect(:)`.
     /// If there isn't , navigate to `AmityPostTargetSelectionViewController`.
-    open func createPostBeingPrepared(from source: AmityViewController, postTarget: AmityPostTarget? = nil, menustyle: AmityEventOutputMenuStyleType = .bottom) {
+    /// [Custom for ONE Krungthai] Modify function for support pulldown menu from navigation button
+    open func createPostBeingPrepared(from source: AmityViewController, postTarget: AmityPostTarget? = nil, menustyle: AmityEventOutputMenuStyleType = .bottom, selectItem: UIBarButtonItem? = nil) {
         let completion: ((AmityPostContentType) -> Void) = { postContentType in
             if let postTarget = postTarget {
                 // show create post
@@ -140,28 +141,31 @@ open class AmityEventHandler {
             }
         }
         
+        let postOption = ImageItemOption(title: AmityLocalizedStringSet.General.post.localizedString, image: AmityIconSet.CreatePost.iconPost) {
+            completion(.post)
+        }
+        let pollPostOption = ImageItemOption(title: AmityLocalizedStringSet.General.poll.localizedString, image: AmityIconSet.CreatePost.iconPoll) {
+            completion(.poll)
+        }
+        
+        let livestreamPost = ImageItemOption(
+            title: "Livestream",
+            image: UIImage(named: "icon_create_livestream_post", in: AmityUIKitManager.bundle, compatibleWith: nil)) {
+                completion(.livestream)
+            }
+        
         switch menustyle {
         case .bottom:
             // present bottom sheet
-            let postOption = ImageItemOption(title: AmityLocalizedStringSet.General.post.localizedString, image: AmityIconSet.CreatePost.iconPost) {
-                completion(.post)
-            }
-            let pollPostOption = ImageItemOption(title: AmityLocalizedStringSet.General.poll.localizedString, image: AmityIconSet.CreatePost.iconPoll) {
-                completion(.poll)
-            }
-            
-            let livestreamPost = ImageItemOption(
-                title: "Livestream",
-                image: UIImage(named: "icon_create_livestream_post", in: AmityUIKitManager.bundle, compatibleWith: nil)) {
-                    completion(.livestream)
-                }
-            
             AmityBottomSheet.present(options: [livestreamPost, postOption, pollPostOption], from: source)
-        case .popupfrombutton: break
-            // present pop-up
+        case .pullDownMenuFromNavigationButton:
+            // present pull down menu from navigation button -> if source have UIPopoverPresentationControllerDelegate and selected button
+            if let vc = source as? UIPopoverPresentationControllerDelegate, let selectedButton = selectItem {
+                AmityPullDownMenuFromButtonView.present(options: [postOption, livestreamPost, pollPostOption], selectedItem: selectedButton, from: vc, width: 164.0) // Custom witdth from Figma
+            } else { // present bottom sheet -> if source don't have UIPopoverPresentationControllerDelegate
+                AmityBottomSheet.present(options: [livestreamPost, postOption, pollPostOption], from: source)
+            }
         }
-        
-        
     }
     
     /// Event for post creator

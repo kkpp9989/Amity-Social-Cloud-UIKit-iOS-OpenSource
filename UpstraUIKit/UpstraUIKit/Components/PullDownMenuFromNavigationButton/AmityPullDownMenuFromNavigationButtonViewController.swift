@@ -5,23 +5,17 @@
 //  Created by Thanaphat Thanawatpanya on 19/7/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
+// [Custom For ONE Krungthai][New component] Pull down menu from navigation button for ONE Krungthai -> Refer from BottomSheetOptionView
 
 import UIKit
 
-struct AmityPullDownMenuItem {
-    var name: String
-    var image: UIImage?
-    var completion: (() -> Void)?
-}
-
 class AmityPullDownMenuFromNavigationButtonViewController: UIViewController {
     
-    private let items: [AmityPullDownMenuItem] = [
-        AmityPullDownMenuItem(name: AmityLocalizedStringSet.General.post.localizedString, image: AmityIconSet.CreatePost.iconPost),
-        AmityPullDownMenuItem(name: "Livestream", image: UIImage(named: "icon_create_livestream_post", in: AmityUIKitManager.bundle, compatibleWith: nil)),
-        AmityPullDownMenuItem(name: AmityLocalizedStringSet.General.poll.localizedString, image: AmityIconSet.CreatePost.iconPoll)
-    ]
-    private var tableview: UITableView!
+    public var items: [any ItemOption] = []
+    public let tableview: UITableView = UITableView(frame: .zero)
+    public var currentDynamicTableViewWidth: CGFloat { return self.maxRowContentWidth }
+    public var currentDynamicTableViewHeight: CGFloat { return self.tableview.contentSize.height }
+    private var maxRowContentWidth: CGFloat = 0.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,41 +24,82 @@ class AmityPullDownMenuFromNavigationButtonViewController: UIViewController {
     
     private func setUpTableView(){
         /** Initial table view **/
-        tableview = UITableView(frame: .zero)
-        tableview.register(AmityPullDownMenuFromNavigationButtonViewCell.nib, forCellReuseIdentifier: AmityPullDownMenuFromNavigationButtonViewCell.identifier)
+        tableview.register(ItemOptionTableViewCell.nib, forCellReuseIdentifier: ItemOptionTableViewCell.identifier)
         tableview.isScrollEnabled = false
         tableview.separatorStyle = .none
         tableview.dataSource = self
         tableview.delegate = self
+        tableview.rowHeight = UITableView.automaticDimension
         
         /** Add table view to subview **/
         view.addSubview(tableview)
         
-        /** Trigger table view to reload data **/
+        /** Set up constraints for the table view **/
+        tableview.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tableview.topAnchor.constraint(equalTo: view.topAnchor),
+            tableview.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableview.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableview.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        /** Trigger table view to reload data when init table view **/
         tableview.reloadData()
+        tableview.layoutIfNeeded()
+    }
+    
+    func configure(items: [any ItemOption]) {
+        /** Set items of pull down menu **/
+        self.items = items
+        
+        /** Trigger table view to reload data when assign new items **/
+        tableview.reloadData()
+        tableview.layoutIfNeeded()
     }
 }
 
-extension AmityPullDownMenuFromNavigationButtonViewController: UITableViewDataSource {
+extension AmityPullDownMenuFromNavigationButtonViewController: UITableViewDataSource, UITableViewDelegate {
+    // Table View Datasource
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return tableView.dequeueReusableCell(withIdentifier: ItemOptionTableViewCell.identifier, for: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        tableview.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height)
-//        print("[Pulldownmenu] item count: \(items.count)")
         return items.count
     }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell: AmityPullDownMenuFromNavigationButtonViewCell = tableView.dequeueReusableCell(for: indexPath)
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityPullDownMenuFromNavigationButtonViewCell.identifier) as? AmityPullDownMenuFromNavigationButtonViewCell else { return UITableViewCell() }
-//        print("[Pulldownmenu] init item No.: \(items[indexPath.row])")
-        cell.display(item: items[indexPath.row])
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = cell as? ItemOptionTableViewCell else { return }
+        let item = items[indexPath.row]
+        cell.accessibilityIdentifier = item.title.lowercased().replacingOccurrences(of: " ", with: "_")
         cell.selectionStyle = .none
-
-        return cell
+        cell.backgroundColor = AmityColorSet.backgroundColor
+        cell.titleLabel.text = item.title
+        cell.titleLabel.tintColor = item.tintColor
+        cell.titleLabel.textColor = item.textColor
+        cell.titleLabel.font = AmityFontSet.bodyBold
+        
+        if let imageItem = item as? ImageRepresentableOption {
+            cell.iconImageView.image = imageItem.image
+            cell.imageBackgroundView.isHidden = imageItem.image == nil
+            cell.imageBackgroundView.backgroundColor = imageItem.imageBackgroundColor
+        }
+        
+        maxRowContentWidth = max(maxRowContentWidth, cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).width)
     }
-}
-
-extension AmityPullDownMenuFromNavigationButtonViewController: UITableViewDelegate {
+    
+    // Table View Delegate
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return items[indexPath.row].height
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("[Pulldownmenu] select item name \(items[indexPath.row])")
+        /** Dismiss pull down menu for allow present other view controller **/
+        dismiss(animated: true)
+        
+        /** Run handler action of button **/
+        let item = items[indexPath.row]
+        item.completion?()
     }
 }
+ 

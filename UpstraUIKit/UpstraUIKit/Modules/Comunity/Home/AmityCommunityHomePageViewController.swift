@@ -103,32 +103,7 @@ private extension AmityCommunityHomePageViewController {
     }
     
     @objc func createPostTap() {
-        // Create Pulldown menu viewcontroller
-        let menuVC = AmityPullDownMenuFromNavigationButtonViewController()
-        
-        // Set open view controller style to popover
-        menuVC.modalPresentationStyle = .popover
-        
-        // Set the size for the popover view controller
-        menuVC.preferredContentSize = CGSize(width: 164.0, height: 140.0)
-        
-        // Set popover view controller
-        let popoverController = menuVC.popoverPresentationController
-        
-        popoverController?.sourceView = view
-        popoverController?.sourceRect = view.bounds
-        
-        // Set delegate
-        popoverController?.delegate = self
-        
-        // Set sender point
-        popoverController?.barButtonItem = createPostItem
-        
-        // Delete arrow
-        popoverController!.permittedArrowDirections = UIPopoverArrowDirection.init(rawValue: 0)
-        
-        // Show menu
-        present(menuVC, animated: true, completion: nil)
+        AmityEventHandler.shared.createPostBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
     }
     
     /* [Custom for ONE Krungthai] [Temp] Set all notification off (top-level) */
