@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OneKTBActivityDetailViewController" customModule="AmityUIKit" customModuleProvider="target">
+            <connections>
+                <outlet property="commentComposeBarBottomConstraint" destination="hUx-N0-7Tv" id="YOc-UQ-4g2"/>
+                <outlet property="commentComposeBarView" destination="fl9-2p-l9p" id="UL3-m0-aM7"/>
+                <outlet property="hashtagTableView" destination="PC1-Jv-gnd" id="i6S-oJ-5Ve"/>
+                <outlet property="hashtagTableViewHeightConstraint" destination="uXj-7p-1kd" id="4uu-Pq-kjQ"/>
+                <outlet property="mentionTableView" destination="FfP-vV-uax" id="7nt-hU-u3B"/>
+                <outlet property="mentionTableViewHeightConstraint" destination="OcM-qD-Qbl" id="7dL-oo-8y2"/>
+                <outlet property="tableView" destination="bkN-4Z-hPF" id="bAO-Ck-Pb2"/>
+                <outlet property="view" destination="62g-is-BZx" id="mFp-Xy-sNm"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="62g-is-BZx">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bkN-4Z-hPF" customClass="AmityPostTableView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="48" width="393" height="814"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </tableView>
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fl9-2p-l9p" customClass="AmityPostDetailCompostView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="862" width="393" height="0.0"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </view>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="FfP-vV-uax" customClass="AmityMentionTableView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="622" width="393" height="240"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="240" id="OcM-qD-Qbl"/>
+                    </constraints>
+                </tableView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="PC1-Jv-gnd" customClass="AmityHashtagTableView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="622" width="393" height="240"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="240" id="uXj-7p-1kd"/>
+                    </constraints>
+                </tableView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Aea-K3-FiB"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="PC1-Jv-gnd" firstAttribute="leading" secondItem="Aea-K3-FiB" secondAttribute="leading" id="46f-2V-A11"/>
+                <constraint firstItem="bkN-4Z-hPF" firstAttribute="top" secondItem="Aea-K3-FiB" secondAttribute="top" id="5kW-fH-Pu2"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="bottom" secondItem="Aea-K3-FiB" secondAttribute="bottom" id="IDs-9V-BLg"/>
+                <constraint firstItem="bkN-4Z-hPF" firstAttribute="trailing" secondItem="Aea-K3-FiB" secondAttribute="trailing" id="IQS-V0-hrX"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="top" secondItem="FfP-vV-uax" secondAttribute="bottom" id="NcJ-xN-oRf"/>
+                <constraint firstItem="Aea-K3-FiB" firstAttribute="trailing" secondItem="PC1-Jv-gnd" secondAttribute="trailing" id="PxA-SR-ayK"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="trailing" secondItem="Aea-K3-FiB" secondAttribute="trailing" id="S18-eu-hda"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="leading" secondItem="Aea-K3-FiB" secondAttribute="leading" id="Zv6-CN-mRM"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="top" secondItem="bkN-4Z-hPF" secondAttribute="bottom" id="aYW-GE-ZBV"/>
+                <constraint firstItem="Aea-K3-FiB" firstAttribute="trailing" secondItem="FfP-vV-uax" secondAttribute="trailing" id="c1Q-SY-A3c"/>
+                <constraint firstItem="fl9-2p-l9p" firstAttribute="top" secondItem="PC1-Jv-gnd" secondAttribute="bottom" id="hUx-N0-7Tv"/>
+                <constraint firstItem="FfP-vV-uax" firstAttribute="leading" secondItem="Aea-K3-FiB" secondAttribute="leading" id="t2L-R3-MU1"/>
+                <constraint firstItem="bkN-4Z-hPF" firstAttribute="leading" secondItem="Aea-K3-FiB" secondAttribute="leading" id="xe0-R5-Hl4"/>
+            </constraints>
+            <point key="canvasLocation" x="79.710144927536234" y="75"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -1,9 +1,9 @@
 //
-//  AmityPostTextComponent.swift
+//  AmityPostContentComponent.swift
 //  AmityUIKit
 //
-//  Created by sarawoot khunsri on 2/11/21.
-//  Copyright © 2021 Amity. All rights reserved.
+//  Created by GuIDe'MacbookAmityHQ on 22/7/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
@@ -11,12 +11,10 @@ import UIKit
  This is a default component for providing to display a `Text` post
  
  # Consists of 4 cells
- - `AmityPostHeaderTableViewCell`
- - `AmityPostTextTableViewCell`
  - `AmityPostFooterTableViewCell`
  - `AmityPostPreviewCommentTableViewCell`
  */
-public struct AmityPostTextComponent: AmityPostComposable {
+public struct AmityPostContentComponent: AmityPostComposable {
 
     private(set) public var post: AmityPostModel
     
@@ -36,12 +34,10 @@ public struct AmityPostTextComponent: AmityPostComposable {
     public func getComponentCell(_ tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.row {
         case 0:
-            let cell: AmityPostHeaderTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.display(post: post)
+            let cell: AmityPostTextTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             return cell
         case 1:
             let cell: AmityPostTextTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.display(post: post, indexPath: indexPath)
             return cell
         case 2:
             let cell: AmityPostFooterTableViewCell = tableView.dequeueReusableCell(for: indexPath)
