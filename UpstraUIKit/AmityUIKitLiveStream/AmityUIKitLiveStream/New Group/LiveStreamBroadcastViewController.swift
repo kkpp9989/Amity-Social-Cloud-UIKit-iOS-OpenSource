@@ -379,7 +379,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     
     private func showAlertForMaximumCharacters() {
         let title = "Unable to post"
-        let message = "Unable message"
+        let message = "You have reached maximum 20,000 characters in a post."
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: "Done", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
