@@ -27,7 +27,9 @@ public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProv
         setupFeedView()
         setupHeaderView()
         setupEmptyView()
-        setupPostButton()
+        
+        // [Custom for ONE Krungthai] Disable create post floating button
+//        setupPostButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
