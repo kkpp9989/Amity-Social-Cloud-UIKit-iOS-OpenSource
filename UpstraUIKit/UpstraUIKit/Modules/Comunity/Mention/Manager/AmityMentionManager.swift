@@ -65,7 +65,7 @@ final public class AmityMentionManager {
     
     private var collectionToken: AmityNotificationToken?
     
-    public static let maximumCharacterCountForPost = 50000
+    public static let maximumCharacterCountForPost = 20000 // [Custom for ONE Krungthai] Change value from 50,000 to 20,000 refer to requirement
     public static let maximumMentionsCount = 30
     
     public weak var delegate: AmityMentionManagerDelegate?

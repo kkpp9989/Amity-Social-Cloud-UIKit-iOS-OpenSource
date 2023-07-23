@@ -208,9 +208,9 @@
 "post_unable_to_post_title" = "Unable to post";
 "post_unable_to_comment_title" = "Unable to comment";
 "post_unable_to_reply_title" = "Unable to reply";
-"post_unable_to_post_description" = "You have reached maximum 50,000 characters in a post.";
-"post_unable_to_comment_description" = "You have reached maximum 50,000 characters in a comment.";
-"post_unable_to_reply_description" = "You have reached maximum 50,000 characters in a reply.";
+"post_unable_to_post_description" = "You have reached maximum 20,000 characters in a post."; // [Custom for ONE Krungthai] Change 50,000 to 20,000 refer to requirement
+"post_unable_to_comment_description" = "You have reached maximum 20,000 characters in a comment."; // [Custom for ONE Krungthai] Change 50,000 to 20,000 refer to requirement
+"post_unable_to_reply_description" = "You have reached maximum 20,000 characters in a reply."; // [Custom for ONE Krungthai] Change 50,000 to 20,000 refer to requirement
 
 // MARK: - Post detail
 "post_detail_replying_to" = "Replying to %@";
