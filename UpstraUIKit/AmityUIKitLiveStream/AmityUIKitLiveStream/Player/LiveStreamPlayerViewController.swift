@@ -251,6 +251,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         postCommentButton.titleLabel?.font = AmityFontSet.body
         postCommentButton.addTarget(self, action: #selector(self.sendComment), for: .touchUpInside)
         
+        reactionButton.isSelected = false
         reactionButton.setImage(UIImage(named: "like_dna_icon"), for: .normal)
     }
     
@@ -546,7 +547,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         case .love:
             reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
         @unknown default:
-            break
+            reactionButton.setImage(UIImage(named: "like_dna_icon"), for: .normal)
         }
     }
 }

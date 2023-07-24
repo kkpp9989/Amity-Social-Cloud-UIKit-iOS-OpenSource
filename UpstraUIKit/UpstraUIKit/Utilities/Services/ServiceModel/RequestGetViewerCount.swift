@@ -1,20 +1,20 @@
 //
-//  RequestGetPost.swift
+//  RequestGetViewerCount.swift
 //  AmityUIKit
 //
-//  Created by Thanaphat Thanawatpanya on 19/7/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 24/7/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import Foundation
 
-struct RequestGetPost {
+struct RequestGetViewerCount {
     
     let requestMeta = BaseRequestMeta()
     let currentUserToken = AmityUIKitManager.currentUserToken
     var streamId: String = ""
     
-    func requestPostIdByStreamId(_ streamId: String, _ completion: @escaping(Result<ResponseGetPostModel,Error>) -> ()) {
+    func request(postId: String, viewerUserId: String, viewerDisplayName: String, isTrack: Bool, streamId: String, _ completion: @escaping(Result<ResponseGetViewerCountModel,Error>) -> ()) {
         var domainURL = ""
         if let envKey = AmityUIKitManager.env["env_key"] as? String {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
@@ -22,11 +22,15 @@ struct RequestGetPost {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
         
-        requestMeta.urlRequest = "\(domainURL)/getPostId?streamId=\(streamId)"
-        requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.method = .get
-        requestMeta.encoding = .urlEncoding
-        
+        requestMeta.method = .post
+        requestMeta.urlRequest = "\(domainURL)/viewerCount"
+        requestMeta.encoding = .jsonEncoding
+        requestMeta.params = ["postId": postId, "userId": viewerUserId, "displayName": viewerDisplayName, "isTrack": isTrack, "streamId": streamId]
+        requestMeta.header = [
+            ["Content-Type": "application/json"],
+            ["Authorization": "Bearer \(currentUserToken)"]
+        ]
+                
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
@@ -35,7 +39,7 @@ struct RequestGetPost {
             
             switch httpResponse.statusCode {
             case 200:
-                guard let dataModel = try? JSONDecoder().decode(ResponseGetPostModel.self, from: data) else {
+                guard let dataModel = try? JSONDecoder().decode(ResponseGetViewerCountModel.self, from: data) else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
@@ -46,7 +50,5 @@ struct RequestGetPost {
                 completion(.failure(HandleError.connectionError))
             }
         }
-        
     }
-    
 }
