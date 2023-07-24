@@ -28,6 +28,9 @@
 		A0BD0B5E26DF37160054088B /* LiveStreamBroadcastVC+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BD0B5D26DF37160054088B /* LiveStreamBroadcastVC+Keyboard.swift */; };
 		A0BD0B6026DF377A0054088B /* LiveStreamBroadcastVC+CoverImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BD0B5F26DF377A0054088B /* LiveStreamBroadcastVC+CoverImagePicker.swift */; };
 		A0BD0B6226DF3A3F0054088B /* LiveStreamBroadcast+UIContainerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BD0B6126DF3A3F0054088B /* LiveStreamBroadcast+UIContainerState.swift */; };
+		AA3A24922A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24902A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.swift */; };
+		AA3A24932A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA3A24912A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.xib */; };
+		AA7972462A6D8F2D00ED3BC9 /* UIColor + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972452A6D8F2D00ED3BC9 /* UIColor + Extension.swift */; };
 		DF04C01D2A4E80880045FFD6 /* URLEnpointManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0172A4E80880045FFD6 /* URLEnpointManager.swift */; };
 		DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0182A4E80880045FFD6 /* NetworkManager.swift */; };
 		DF04C01F2A4E80880045FFD6 /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0192A4E80880045FFD6 /* RequestError.swift */; };
@@ -67,6 +70,9 @@
 		A0BD0B5D26DF37160054088B /* LiveStreamBroadcastVC+Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveStreamBroadcastVC+Keyboard.swift"; sourceTree = "<group>"; };
 		A0BD0B5F26DF377A0054088B /* LiveStreamBroadcastVC+CoverImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveStreamBroadcastVC+CoverImagePicker.swift"; sourceTree = "<group>"; };
 		A0BD0B6126DF3A3F0054088B /* LiveStreamBroadcast+UIContainerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveStreamBroadcast+UIContainerState.swift"; sourceTree = "<group>"; };
+		AA3A24902A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStreamCommentTableViewCell.swift; sourceTree = "<group>"; };
+		AA3A24912A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LiveStreamCommentTableViewCell.xib; sourceTree = "<group>"; };
+		AA7972452A6D8F2D00ED3BC9 /* UIColor + Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor + Extension.swift"; sourceTree = "<group>"; };
 		DF04C0172A4E80880045FFD6 /* URLEnpointManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEnpointManager.swift; sourceTree = "<group>"; };
 		DF04C0182A4E80880045FFD6 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DF04C0192A4E80880045FFD6 /* RequestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestError.swift; sourceTree = "<group>"; };
@@ -152,6 +158,7 @@
 				A0BD0B3226DCE5A80054088B /* Player */,
 				A0BD0B4C26DDEFB40054088B /* Assets.xcassets */,
 				A0BD0B1926DCE4F50054088B /* Info.plist */,
+				AA3A248C2A6D33AC004CEEA0 /* CustomView */,
 			);
 			path = AmityUIKitLiveStream;
 			sourceTree = "<group>";
@@ -203,6 +210,7 @@
 				A0B68B3426E077CD007D7B5B /* Operation */,
 				A0BD0B5826DE26700054088B /* Error */,
 				A0BD0B5726DE23010054088B /* UIViewController */,
+				AA7972472A6D8F3100ED3BC9 /* Extension */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -221,6 +229,31 @@
 				A0BD0B5926DE26940054088B /* GeneralError.swift */,
 			);
 			path = Error;
+			sourceTree = "<group>";
+		};
+		AA3A248C2A6D33AC004CEEA0 /* CustomView */ = {
+			isa = PBXGroup;
+			children = (
+				AA3A24942A6D3748004CEEA0 /* Cell */,
+			);
+			path = CustomView;
+			sourceTree = "<group>";
+		};
+		AA3A24942A6D3748004CEEA0 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				AA3A24902A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.swift */,
+				AA3A24912A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.xib */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		AA7972472A6D8F3100ED3BC9 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				AA7972452A6D8F2D00ED3BC9 /* UIColor + Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		DF04C0122A4E80880045FFD6 /* Services */ = {
@@ -337,6 +370,7 @@
 			files = (
 				A0BD0B4D26DDEFB40054088B /* Assets.xcassets in Resources */,
 				A0BD0B3026DCE5800054088B /* LiveStreamBroadcastViewController.xib in Resources */,
+				AA3A24932A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.xib in Resources */,
 				A0B68B6526E73522007D7B5B /* LiveStreamPlayerViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +386,7 @@
 				A0BD0B2F26DCE5800054088B /* LiveStreamBroadcastViewController.swift in Sources */,
 				A0B68B4326E07928007D7B5B /* CreateStream.swift in Sources */,
 				DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */,
+				AA7972462A6D8F2D00ED3BC9 /* UIColor + Extension.swift in Sources */,
 				DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */,
 				DF04C0202A4E80880045FFD6 /* RequestMeta.swift in Sources */,
 				A0BD0B6226DF3A3F0054088B /* LiveStreamBroadcast+UIContainerState.swift in Sources */,
@@ -365,6 +400,7 @@
 				A0BD0B5A26DE26940054088B /* GeneralError.swift in Sources */,
 				A0BD0B6026DF377A0054088B /* LiveStreamBroadcastVC+CoverImagePicker.swift in Sources */,
 				DF04C01F2A4E80880045FFD6 /* RequestError.swift in Sources */,
+				AA3A24922A6D3743004CEEA0 /* LiveStreamCommentTableViewCell.swift in Sources */,
 				A0B68B4126E0791D007D7B5B /* UploadCoverImage.swift in Sources */,
 				A0B68B6426E73522007D7B5B /* LiveStreamPlayerViewController.swift in Sources */,
 				A0B68B3626E07824007D7B5B /* AsyncOperation.swift in Sources */,

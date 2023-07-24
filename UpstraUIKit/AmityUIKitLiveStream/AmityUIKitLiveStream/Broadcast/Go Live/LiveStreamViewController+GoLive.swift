@@ -24,6 +24,7 @@ extension LiveStreamBroadcastViewController {
         
         // This will turn back on again when the operation complete (either fail or success.)
         goLiveButton.isEnabled = false
+        liveCommentView.isHidden = false
         
         // Create and perform go live operations.
         let operations = createGoLiveOperations(metadata: metadata, mentionees: mentionees)
@@ -117,6 +118,7 @@ extension LiveStreamBroadcastViewController {
             broadcaster?.startPublish(existingStreamId: streamObject.streamId)
             startLiveDurationTimer()
             switchToUIState(.streaming)
+            startRealTimeEventSubscribe()
         case .failure(let error):
             presentErrorDialogue(title: "Error", message: error.localizedDescription)
         }

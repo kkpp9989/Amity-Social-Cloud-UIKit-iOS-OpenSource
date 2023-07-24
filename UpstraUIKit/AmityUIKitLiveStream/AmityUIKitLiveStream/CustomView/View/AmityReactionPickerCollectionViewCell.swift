@@ -6,12 +6,13 @@
 //
 
 import UIKit
+import AmityUIKit
 
-public class AmityReactionPickerCollectionViewCell: UICollectionViewCell, Nibbable {
+class AmityReactionPickerCollectionViewCell: UICollectionViewCell, Nibbable {
 
     @IBOutlet weak var reactionImageView: UIImageView!
     
-    public override func awakeFromNib() {
+    override func awakeFromNib() {
         super.awakeFromNib()
     }
 
