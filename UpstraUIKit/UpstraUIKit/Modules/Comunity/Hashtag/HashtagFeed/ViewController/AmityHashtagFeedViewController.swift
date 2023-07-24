@@ -262,7 +262,7 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
-            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView)
+            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: nil)
             break
         default:
             (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
