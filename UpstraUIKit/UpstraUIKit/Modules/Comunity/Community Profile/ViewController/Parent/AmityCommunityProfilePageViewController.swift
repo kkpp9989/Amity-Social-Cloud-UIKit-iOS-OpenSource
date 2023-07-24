@@ -208,12 +208,7 @@ extension AmityCommunityProfilePageViewController: AmityCommunityProfileScreenVi
         switch route {
         case .post:
             // [Custom for ONE Krungthai] Change setting of create post menu | [Warning] Must to run setupNavigationItemOption() before this process because of permission
-            // Add check community is official for each action
-            if community.isOfficial { // Case : Community official -> open normal post to community (for moderator) |
-                AmityEventHandler.shared.postTargetDidSelect(from: self, postTarget: .community(object: community.object), postContentType: .post)
-            } else { // Case : Community not official -> open post type
-                AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object), menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
-            }
+            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object), menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
             // [Original]
 //            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object))
         case .member:

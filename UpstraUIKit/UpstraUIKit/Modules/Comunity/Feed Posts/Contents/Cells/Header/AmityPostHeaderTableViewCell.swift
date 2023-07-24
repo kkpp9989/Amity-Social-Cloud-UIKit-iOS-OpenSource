@@ -80,6 +80,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         containerView.backgroundColor = AmityColorSet.backgroundColor
+        
+        // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
         displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUser: false)
         
         // badge
