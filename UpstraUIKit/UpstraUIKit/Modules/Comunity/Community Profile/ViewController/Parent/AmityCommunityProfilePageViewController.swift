@@ -20,15 +20,28 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
     
     private var screenViewModel: AmityCommunityProfileScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupFeed()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupViewModel()
-        setupPostButton()
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
+        
+        // [Custom for ONE Krungthai] Disable create post floating button
+//        setupPostButton()
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -93,10 +106,36 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         }
     }
     
+    // [Custom for ONE Krungthai] Modify function for add create post button with check moderator permission of official community
     private func setupNavigationItemOption(show isJoined: Bool) {
-        let item = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
-        item.tintColor = AmityColorSet.base
-        navigationItem.rightBarButtonItem = isJoined ? item : nil
+        /* Check user is join community before show button */
+        if isJoined {
+            /* Right items */
+            var rightButtonItems: [UIBarButtonItem] = []
+            
+            // Option button
+            let optionItem = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(self.optionTap))
+            optionItem.tintColor = AmityColorSet.base
+            rightButtonItems.append(optionItem)
+            navigationItem.rightBarButtonItems = rightButtonItems
+            
+            // Create post button (with check moderator permission in official community)
+            AmityUIKitManager.client.hasPermission(.createCommunityPost, forCommunity: screenViewModel.communityId) { hasPermission in
+                // [Custom for ONE Krungthai] Move create post button to navigation bar
+                self.createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(self.createPostTap))
+                self.createPostItem.tintColor = AmityColorSet.base
+
+                let isOfficial = self.screenViewModel.community?.isOfficial ?? false
+                if isOfficial {
+                    if hasPermission {
+                        rightButtonItems.append(self.createPostItem)
+                    }
+                } else {
+                    rightButtonItems.append(self.createPostItem)
+                }
+                self.navigationItem.rightBarButtonItems = rightButtonItems
+            }
+        }
     }
     
     private func showCommunitySettingModal() {
@@ -139,6 +178,11 @@ private extension AmityCommunityProfilePageViewController {
         screenViewModel.action.route(.settings)
     }
     
+    @objc func createPostTap() {
+        // Go to current action
+        postAction()
+    }
+    
     func postAction() {
         screenViewModel.action.route(.post)
     }
@@ -163,7 +207,15 @@ extension AmityCommunityProfilePageViewController: AmityCommunityProfileScreenVi
         guard let community = viewModel.community else { return }
         switch route {
         case .post:
-            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object))
+            // [Custom for ONE Krungthai] Change setting of create post menu | [Warning] Must to run setupNavigationItemOption() before this process because of permission
+            // Add check community is official for each action
+            if community.isOfficial { // Case : Community official -> open normal post to community (for moderator) |
+                AmityEventHandler.shared.postTargetDidSelect(from: self, postTarget: .community(object: community.object), postContentType: .post)
+            } else { // Case : Community not official -> open post type
+                AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object), menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
+            }
+            // [Original]
+//            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object))
         case .member:
             let vc = AmityCommunityMemberSettingsViewController.make(community: community.object)
             navigationController?.pushViewController(vc, animated: true)
@@ -203,4 +255,10 @@ extension AmityCommunityProfilePageViewController: AmityCommunityProfileEditorVi
         navigationController?.popToRootViewController(animated: true)
     }
 
+}
+
+extension AmityCommunityProfilePageViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Show the popover on iPhone devices as well
+    }
 }

@@ -20,9 +20,8 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     private init() {
         super.init(nibName: AmityCommunityHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
-        /* [Original] */
-        //        title = AmityLocalizedStringSet.communityHomeTitle.localizedString
         /* [Custom for ONE Krungthai] Set title of navigation bar to nil and add title to left navigation item at setupNavigationBar() instead */
+//        title = AmityLocalizedStringSet.communityHomeTitle.localizedString
         title = nil
     }
     
@@ -75,7 +74,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         // [Custom for ONE Krungthai] Move create post button to navigation bar
         createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createPostTap))
         createPostItem.tintColor = AmityColorSet.base
-        // Add all component to right navigation item
+        // Add all component to right navigation items
         navigationItem.rightBarButtonItems = [searchItem, createPostItem]
         
         /* Left items */
@@ -87,7 +86,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         // Back button (Refer default leftBarButtonItem from AmityViewController)
         let backButton = UIBarButtonItem(image: AmityIconSet.iconBack, style: .plain, target: self, action: #selector(didTapLeftBarButton))
         backButton.tintColor = AmityColorSet.base
-        // Add all component to left navigation item
+        // Add all component to left navigation items
         navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
     }
 }
