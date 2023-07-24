@@ -250,9 +250,14 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         postCommentButton.titleLabel?.font = AmityFontSet.body
         postCommentButton.addTarget(self, action: #selector(self.sendComment), for: .touchUpInside)
-        
-        reactionButton.isSelected = false
-        reactionButton.setImage(UIImage(named: "like_dna_icon"), for: .normal)
+                
+        let reactionType = findReactionType()
+        if !reactionType.isEmpty {
+            reactionButton.isSelected = false
+            setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
+        } else {
+            reactionButton.setImage(UIImage(named: "like_dna_icon"), for: .selected)
+        }
     }
     
     private func setupReactionPicker() {
@@ -547,7 +552,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         case .love:
             reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
         @unknown default:
-            reactionButton.setImage(UIImage(named: "like_dna_icon"), for: .normal)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
         }
     }
 }
