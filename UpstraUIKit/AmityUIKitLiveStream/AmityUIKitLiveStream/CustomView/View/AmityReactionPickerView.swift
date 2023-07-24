@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class AmityReactionPickerView: UIView {
+class AmityReactionPickerView: UIView {
 
     private var contentView: UIView!
     private var collectionView: UICollectionView!
@@ -27,7 +27,7 @@ public class AmityReactionPickerView: UIView {
     
     private let viewHeight: CGFloat = 84
     
-    public var onSelect:((AmityReactionType) -> Void)?
+    var onSelect:((AmityReactionType) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -94,7 +94,7 @@ public class AmityReactionPickerView: UIView {
 
 extension AmityReactionPickerView: UICollectionViewDelegate {
     
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let onSelect = onSelect {
             onSelect(reactionTypes[indexPath.item])
         }
@@ -103,11 +103,11 @@ extension AmityReactionPickerView: UICollectionViewDelegate {
 
 extension AmityReactionPickerView: UICollectionViewDataSource {
     
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return reactionTypes.count
     }
     
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: AmityReactionPickerCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.display(reactionTypes[indexPath.item])
