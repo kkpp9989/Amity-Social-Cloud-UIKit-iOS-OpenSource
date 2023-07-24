@@ -36,18 +36,26 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     
     public func display(post: AmityPostModel) {
         self.post = post
-        avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        // [Custom for ONE Krungthai] Add check set picture of community or user if user is moderator
+//        avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        avatarView.setImage(withImageURL: post.isModerator ? post.targetCommunity?.avatar?.fileURL : post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
         avatarView.actionHandler = { [weak self] in
             self?.avatarTap()
         }
-
+        // [Custom for ONE Krungthai] Add check set interaction of avatar if user is moderator
+        avatarView.isUserInteractionEnabled = post.isModerator ? false : true
+        
+        // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
         displayNameLabel.configure(displayName: post.displayName,
                                    communityName: post.targetCommunity?.displayName,
                                    isOfficial: post.targetCommunity?.isOfficial ?? false,
-                                   shouldShowCommunityName: post.appearance.shouldShowCommunityName, shouldShowBannedSymbol: post.postedUser?.isGlobalBan ?? false)
+                                   shouldShowCommunityName: post.appearance.shouldShowCommunityName, shouldShowBannedSymbol: post.postedUser?.isGlobalBan ?? false, isModeratorUser: post.isModerator)
         displayNameLabel.delegate = self
-        datetimeLabel.text = post.subtitle
         
+        // [Custom for ONE Krungthai] Add check set interaction of displaybame if user is moderator
+        displayNameLabel.isUserInteractionEnabled = post.isModerator ? false : true
+        
+        datetimeLabel.text = post.subtitle
 
         switch post.feedType {
         case .reviewing:
@@ -72,7 +80,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         containerView.backgroundColor = AmityColorSet.backgroundColor
-        displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false)
+        displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUser: false)
         
         // badge
         badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
