@@ -116,7 +116,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         super.viewWillAppear(animated)
         
         // [Custom for ONE Krungthai] Initial interval timer for request stat API
-//        print("[Livestream][Custom][Send viewer satistics][\(Date())] Start interval timer for request send viewer statistics API")
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             requestSendViewerStatisticsAPI()
         })
@@ -128,7 +127,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
         timer?.invalidate()
         timer = nil
-//        print("[Livestream][Custom][Send viewer satistics][\(Date())] Stop and delete interval timer for request send viewer statistics API")
     }
     
     private func setupStreamView() {
@@ -304,7 +302,6 @@ public class LiveStreamPlayerViewController: UIViewController {
                 // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
                 self?.timer?.invalidate()
                 self?.timer = nil
-//                print("[Livestream][Custom][Send viewer satistics][\(Date())] Stop and delete interval timer for request send viewer statistics API")
                 
                 return
             }
@@ -404,10 +401,8 @@ extension LiveStreamPlayerViewController {
             switch result {
             case .success(let dataResponse):
 //                let viewerCount = dataResponse.viewerCount
-//                print("[Livestream][Custom][Send viewer satistics][\(Date())] Request send viewer statistics API success with response -> viewerCount: \(viewerCount)")
                 break
             case .failure(let failure):
-//                print("[Livestream][Custom][Send viewer satistics][\(Date())] Request send viewer statistics API fail with error -> \(failure.localizedDescription)")
                 break
             }
         }

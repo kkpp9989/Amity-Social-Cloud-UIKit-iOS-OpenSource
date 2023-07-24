@@ -198,10 +198,8 @@ extension AmityPostDetailScreenViewModel {
                 switch result {
                 case .success(let dataResponse):
                     let postId = dataResponse.postId ?? ""
-//                    print("[Post-detail][Custom][Get postId from streamId] Get postId from streamId success | postId : \(postId) | status : \(dataResponse.status)")
                     completion(postId)
                 case .failure(let failure):
-//                    print("[Post-detail][Custom][Get postId from streamId] Get postId from streamId fail with error: \(failure.localizedDescription)")
                     completion("")
                 }
             }

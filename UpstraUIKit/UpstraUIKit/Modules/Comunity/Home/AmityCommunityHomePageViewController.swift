@@ -42,10 +42,10 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         setupNavigationBar()
         
         // [Custom for ONE Krungthai] [Temp] Set all notification on / off
-        Task {
+//        Task {
 //            await setAllNotificationOff()
-            await setAllNotificationOn()
-        }
+//            await setAllNotificationOn()
+//        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -103,9 +103,7 @@ private extension AmityCommunityHomePageViewController {
         // Set disable all notification (top-level)
         do {
             let result = try await userNotificationManager.disableAllNotifications()
-            print("[Amity-Notification] Set all notification off (top-level) success with result : \(result)")
         } catch {
-            print("[Amity-Notification] Set all notification off (top-level) fail with error: \(error)")
         }
     }
     
@@ -117,9 +115,7 @@ private extension AmityCommunityHomePageViewController {
         // Set enable all notification (top-level)
         do {
             let result = try await userNotificationManager.enable(for: [])
-            print("[Amity-Notification] Set all notification on (top-level) success with result : \(result)")
         } catch {
-            print("[Amity-Notification] Set all notification on (top-level) fail with error: \(error)")
         }
     }
 }

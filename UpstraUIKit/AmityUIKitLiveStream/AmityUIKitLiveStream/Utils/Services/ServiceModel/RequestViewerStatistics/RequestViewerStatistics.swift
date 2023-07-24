@@ -31,15 +31,11 @@ struct RequestViewerStatistics {
             ["Authorization": "Bearer \(currentUserToken)"]
         ]
         
-//        print("[Livestream][Custom][Send viewer satistics][\(Date())] Start request send viewer statistics API with url: \(requestMeta.urlRequest) | data: \(requestMeta.params) | header: \(requestMeta.header)")
-        
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure("Not data" as! Error))
                 return
             }
-
-//            print("[Livestream][Custom][Send viewer satistics][\(Date())] Request send viewer statistics API success with response status code: \(httpResponse.statusCode)")
             
             switch httpResponse.statusCode {
             case 200:
