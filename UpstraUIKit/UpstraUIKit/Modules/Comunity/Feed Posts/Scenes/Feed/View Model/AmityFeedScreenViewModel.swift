@@ -127,7 +127,6 @@ extension AmityFeedScreenViewModel {
     func loadMore() {
         postController.loadMore()
     }
-    
 }
 
 // MARK: Observer

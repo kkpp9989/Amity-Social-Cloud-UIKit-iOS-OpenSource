@@ -122,6 +122,10 @@ public final class AmityUIKitManager {
         return AmityUIKitManagerInternal.shared.currentUserToken
     }
     
+    public static var displayName: String {
+        return AmityUIKitManagerInternal.shared.displayName
+    }
+    
     // [Custom for ONE Krungthai] Add env property for get env for use some function
     public static var env: [String: Any] {
         return AmityUIKitManagerInternal.shared.env
@@ -163,7 +167,8 @@ final class AmityUIKitManagerInternal: NSObject {
     private(set) var messageMediaService = AmityMessageMediaService()
     
     var currentUserId: String { return client.currentUserId ?? "" }
-    
+    var displayName: String { return client.user?.object?.displayName ?? "" }
+
     var userToken: String = ""
     public var currentUserToken: String { return self.userToken }
     
