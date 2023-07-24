@@ -114,7 +114,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         editProfileButton.tintColor = AmityColorSet.secondary
         editProfileButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
         editProfileButton.layer.borderWidth = 1
-        editProfileButton.layer.cornerRadius = 6
+        editProfileButton.layer.cornerRadius = editProfileButton.frame.height / 2
         editProfileButton.isHidden = true
         editProfileButton.setTitleFont(AmityFontSet.bodyBold)
     }
@@ -125,7 +125,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         messageButton.tintColor = AmityColorSet.secondary
         messageButton.layer.borderColor = AmityColorSet.secondary.blend(.shade3).cgColor
         messageButton.layer.borderWidth = 1
-        messageButton.layer.cornerRadius = 6
+        messageButton.layer.cornerRadius = messageButton.frame.height / 2
         messageButton.isHidden = settings.shouldChatButtonHide
     }
     
