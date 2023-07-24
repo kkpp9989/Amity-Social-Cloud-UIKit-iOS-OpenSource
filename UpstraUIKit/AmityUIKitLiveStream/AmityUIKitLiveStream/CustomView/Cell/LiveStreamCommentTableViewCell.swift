@@ -20,11 +20,10 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet var displayNameLabel: UILabel!
     @IBOutlet var commentLabel: UILabel!
     @IBOutlet var likeButton: UIButton!
-    
+    @IBOutlet var unlikeButton: UIButton!
+
     static let height: CGFloat = 60
-    
-    var likeButtonTapAction: ((_ reaction: String, _ isLike: Bool) -> Void)?
-    
+        
     var delegate: LiveStreamCommentTableViewCellProtocol?
     var commentId: String = ""
     var isLike: Bool = false
@@ -55,7 +54,7 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         commentLabel.textColor = .white
         
         likeButton.setTitle("", for: .normal)
-        likeButton.setImage(UIImage(named: "like_icon"), for: .normal)
+        unlikeButton.setTitle("", for: .normal)
     }
 
     func display(comment: AmityCommentModel) {
@@ -66,9 +65,11 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         isLike = comment.isLiked
         
         if comment.isLiked {
-            likeButton.setImage(UIImage(named: "like_icon_fill"), for: .normal)
+            likeButton.isHidden = true
+            unlikeButton.isHidden = false
         } else {
-            likeButton.setImage(UIImage(named: "like_icon"), for: .normal)
+            likeButton.isHidden = false
+            unlikeButton.isHidden = true
         }
     }
     
@@ -87,7 +88,6 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
     
     // MARK: - Tap avatar to show profile
     @IBAction func didReactionInCellIsTapped() {
-        likeButtonTapAction?(commentId, isLike)
-//        delegate?.didReactionTap(reaction: commentId, isLike: isLike)
+        delegate?.didReactionTap(reaction: commentId, isLike: isLike)
     }
 }
