@@ -217,7 +217,6 @@ final class AmityUIKitManagerInternal: NSObject {
             self?.didUpdateClient()
             
             // [Custom for ONE Krungthai] Add register user token function for request custom API
-            print("[AmityUIKitManager][Custom][Register user token]: Start register user token")
             self?.registerUserToken(userId: userId, authToken: authToken ?? "")
             completion?(true, error)
         }
@@ -259,7 +258,6 @@ final class AmityUIKitManagerInternal: NSObject {
                 let auth = try await AmityUserTokenManager(apiKey: apiKey, region: .SG).createUserToken(userId: userId, authToken: authToken)
                 userToken = auth.accessToken
             } catch let error {
-                print("[AmityUIKitManager][Custom][Register user token]: Can't register user token with error:", error)
             }
         }
     }
