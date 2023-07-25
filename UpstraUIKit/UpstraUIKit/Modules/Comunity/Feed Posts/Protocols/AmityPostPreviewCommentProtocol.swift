@@ -24,6 +24,7 @@ public enum AmityPostPreviewCommentAction {
     case tapLike(comment: AmityCommentModel)
     case tapOption(comment: AmityCommentModel)
     case tapReply(comment: AmityCommentModel)
+    case tapCommunityName(post: AmityPostModel) // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
     case tapExpandableLabel(label: AmityExpandableLabel)
     case willExpandExpandableLabel(label: AmityExpandableLabel)
     case didExpandExpandableLabel(label: AmityExpandableLabel)

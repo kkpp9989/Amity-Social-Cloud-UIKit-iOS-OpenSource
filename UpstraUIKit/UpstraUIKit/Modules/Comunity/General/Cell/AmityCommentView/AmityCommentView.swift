@@ -48,7 +48,9 @@ class AmityCommentView: AmityView {
     private(set) var comment: AmityCommentModel?
     
     // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
-    private var isModeratorUserInOfficialCommunity: Bool = false
+    public var isModeratorUserInOfficialCommunity: Bool = false
+    public var isOfficialCommunity: Bool = false
+    public var shouldDidTapAction: Bool = true
     
     override func initial() {
         loadNibContent()
@@ -127,13 +129,18 @@ class AmityCommentView: AmityView {
         // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
         if let community = post?.targetCommunity { // Case : Comment from community
             isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: comment.userId, communityId: community.communityId)
-            if let currentPost = post, isModeratorUserInOfficialCommunity, community.isOfficial { // Case : Comment owner is moderator in official community
+            isOfficialCommunity = community.isOfficial
+            if let currentPost = post, isModeratorUserInOfficialCommunity, isOfficialCommunity { // Case : Comment owner is moderator in official community
+                switch post?.appearance.amitySocialPostDisplayStyle {
+                case .community:
+                    shouldDidTapAction = false
+                default:
+                    break
+                }
+                
                 avatarView.setImage(withImageURL: currentPost.targetCommunity?.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                 titleLabel.text = currentPost.targetCommunity?.displayName ?? comment.displayName
                 titleLabel.setImageWithText(position: .right(image: AmityIconSet.iconBadgeCheckmark), size: CGSize(width: 18, height: 18), tintColor: AmityColorSet.highlight) // Badge
-                
-                avatarView.isUserInteractionEnabled = false
-                titleLabel.isUserInteractionEnabled = false
             } else { // Case : Comment owner isn't moderator or not official community
                 // Original
                 avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
@@ -207,9 +214,7 @@ class AmityCommentView: AmityView {
     }
     
     @IBAction func displaynameTap(_ sender: Any) {
-        if !isModeratorUserInOfficialCommunity {
-            delegate?.commentView(self, didTapAction: .avatar)
-        }
+        delegate?.commentView(self, didTapAction: .avatar)
     }
     
     @objc private func replyButtonTap() {

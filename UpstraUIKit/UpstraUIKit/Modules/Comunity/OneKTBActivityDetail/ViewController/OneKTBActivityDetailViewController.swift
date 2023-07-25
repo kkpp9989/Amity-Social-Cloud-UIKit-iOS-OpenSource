@@ -713,7 +713,7 @@ extension OneKTBActivityDetailViewController: AmityExpandableLabelDelegate {
 }
 
 extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate {
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String) {
+    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
         AmityEventHandler.shared.userDidTap(from: self, userId: userId)
     }
     

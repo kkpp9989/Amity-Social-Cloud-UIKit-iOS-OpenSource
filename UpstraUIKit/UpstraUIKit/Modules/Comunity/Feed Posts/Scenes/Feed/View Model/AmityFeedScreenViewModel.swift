@@ -68,6 +68,16 @@ extension AmityFeedScreenViewModel {
         postComponents = []
         for post in posts {
             post.appearance.displayType = .feed
+            
+            // [Custom for ONE Krungthai] Assign custom source post display type for use in moderator user in official community condition to outputing and prepare action
+            switch feedType {
+            case .communityFeed(_):
+                post.appearance.amitySocialPostDisplayStyle = .community
+                break
+            default:
+                post.appearance.amitySocialPostDisplayStyle = .feed
+            }
+            
             switch post.dataTypeInternal {
             case .text:
                 addComponent(component: AmityPostTextComponent(post: post))

@@ -24,8 +24,9 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     
     private(set) public var post: AmityPostModel?
     
-    // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
+    // [Custom for ONE Krungthai] Add these properties for check condition of moderator user in official community for outputing
     private var isModeratorUserInOfficialCommunity: Bool = false
+    private var isOfficialCommunity: Bool = false
     
     public override func awakeFromNib() {
         super.awakeFromNib()
@@ -40,15 +41,21 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     public func display(post: AmityPostModel) {
         self.post = post
         
-        // [Custom for ONE Krungthai] Add condition of moderator user in official community for set avatar view
+        // [Custom for ONE Krungthai] Add condition of moderator user in official community for set avatar view and displayname interaction
         if let community = post.targetCommunity { // Case : Post from community
             isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: post.postedUserId, communityId: community.communityId)
-            if isModeratorUserInOfficialCommunity && community.isOfficial { // Case : Owner post is moderator and community is official
+            isOfficialCommunity = community.isOfficial
+            if isModeratorUserInOfficialCommunity && isOfficialCommunity { // Case : Owner post is moderator and community is official
                 avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                 avatarView.actionHandler = { [weak self] in
-                    self?.avatarTap()
+                    // Check source of post
+                    switch post.appearance.amitySocialPostDisplayStyle {
+                    case .feed: // Case : Post output from news feed
+                        self?.communityTap()
+                    default: // Case : Post output from community profile feed -> Nothing happened
+                        break
+                    }
                 }
-                avatarView.isUserInteractionEnabled = false
             } else { // Case : Owner post is normal user or not official community
                 avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
                 avatarView.actionHandler = { [weak self] in
@@ -69,8 +76,6 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
                                    isOfficial: post.targetCommunity?.isOfficial ?? false,
                                    shouldShowCommunityName: post.appearance.shouldShowCommunityName, shouldShowBannedSymbol: post.postedUser?.isGlobalBan ?? false, isModeratorUserInOfficialCommunity: isModeratorUserInOfficialCommunity)
         displayNameLabel.delegate = self
-        // [Custom for ONE Krungthai] Add check set interaction of displaybame if user is moderator in official community
-        displayNameLabel.isUserInteractionEnabled = isModeratorUserInOfficialCommunity ? false : true
 
         switch post.feedType {
         case .reviewing:
@@ -132,11 +137,28 @@ private extension AmityPostHeaderTableViewCell {
     @IBAction func optionTap() {
         performAction(action: .tapOption)
     }
+    
+    func communityTap() {
+        performAction(action: .tapCommunityName)
+    }
 }
 
 extension AmityPostHeaderTableViewCell: AmityFeedDisplayNameLabelDelegate {
     func labelDidTapUserDisplayName(_ label: AmityFeedDisplayNameLabel) {
-        performAction(action: .tapDisplayName)
+        // [Custom for ONE Krungthai] Add check moderator user in official community for prepare tap displayname button action
+        if isModeratorUserInOfficialCommunity && isOfficialCommunity { // Case : Post is from official community and owner is moderator
+            // Check source of post
+            switch post?.appearance.amitySocialPostDisplayStyle {
+            case .feed: // Case : Post output from news feed
+                performAction(action: .tapCommunityName)
+            case .community: // Case : Post output from community -> Nothing happened
+                break
+            default: // Case : Other case
+                performAction(action: .tapDisplayName)
+            }
+        } else { // Case : Post isn't from official community or owner isn't moderator
+            performAction(action: .tapDisplayName)
+        }
     }
     
     func labelDidTapCommunityName(_ label: AmityFeedDisplayNameLabel) {

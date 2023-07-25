@@ -39,7 +39,6 @@ class AmityFeedDisplayNameLabel: UILabel {
         self.displayName = isModeratorUserInOfficialCommunity ? communityName ?? "" : displayName
         self.communityName = communityName
         
-        // [Custom for ONE Krungthai] Add check is moderator user for set displayname to community name or current display name
         let attributeString = NSMutableAttributedString()
         attributeString.append(NSAttributedString(string: isModeratorUserInOfficialCommunity ? communityName ?? "" : displayName))
         
