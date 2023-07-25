@@ -71,7 +71,8 @@ open class AmityTextView: UITextView {
     /// Adds a placeholder UILabel to this UITextView
     private func setupPlaceholder() {
         placeholderLabel.sizeToFit()
-        placeholderLabel.font = font
+        // [Fix defect] Set font of placeholder label refer to AmityFontSet
+        placeholderLabel.font = AmityFontSet.body
         placeholderLabel.textColor = placeholderColor
         placeholderLabel.isHidden = !text.isEmpty
         addSubview(placeholderLabel)
