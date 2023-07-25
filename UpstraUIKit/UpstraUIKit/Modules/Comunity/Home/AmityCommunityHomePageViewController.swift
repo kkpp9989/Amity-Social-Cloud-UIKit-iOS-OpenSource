@@ -68,11 +68,11 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     private func setupNavigationBar() {
         /* Right items */
         // Search Button
-        let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearch, style: .plain, target: self, action: #selector(searchTap))
+        let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(searchTap)) // [Custom for ONE Krungthai] Set custom icon theme
         searchItem.tintColor = AmityColorSet.base
         // Create post Button
         // [Custom for ONE Krungthai] Move create post button to navigation bar
-        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createPostTap))
+        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
         createPostItem.tintColor = AmityColorSet.base
         // Add all component to right navigation items
         navigationItem.rightBarButtonItems = [searchItem, createPostItem]
@@ -84,7 +84,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
         title.font = AmityFontSet.headerLine
         // Back button (Refer default leftBarButtonItem from AmityViewController)
-        let backButton = UIBarButtonItem(image: AmityIconSet.iconBack, style: .plain, target: self, action: #selector(didTapLeftBarButton))
+        let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
         backButton.tintColor = AmityColorSet.base
         // Add all component to left navigation items
         navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar

@@ -22,10 +22,12 @@ public struct AmityIconSet {
     private init() { }
     
     public static var iconBack = UIImage(named: "icon_back", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBackNavigationBar = UIImage(named: "icon_back_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconClose = UIImage(named: "icon_close", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMessage = UIImage(named: "icon_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCreate = UIImage(named: "icon_create", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconSearch = UIImage(named: "icon_search", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconSearchNavigationBar = UIImage(named: "icon_search_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconCamera = UIImage(named: "icon_camera", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCameraSmall = UIImage(named: "icon_camera_small", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCommunity = UIImage(named: "icon_community", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -37,6 +39,7 @@ public struct AmityIconSet {
     public static var iconPhoto = UIImage(named: "icon_photo", in: AmityUIKitManager.bundle, compatibleWith: nil)?.withRenderingMode(.alwaysOriginal)
     public static var iconAttach = UIImage(named: "icon_attach", in: AmityUIKitManager.bundle, compatibleWith: nil)?.withRenderingMode(.alwaysOriginal)
     public static var iconOption = UIImage(named: "icon_option", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconOptionNavigationBar = UIImage(named: "icon_option_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconCreatePost = UIImage(named: "icon_create_post", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeCheckmark = UIImage(named: "icon_badge_checkmark", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeModerator = UIImage(named: "icon_badge_moderator", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -46,6 +49,7 @@ public struct AmityIconSet {
     public static var iconCheckMark =  UIImage(named: "icon_checkmark", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconExclamation =  UIImage(named: "icon_exclamation", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconAdd = UIImage(named: "icon_add", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconAddNavigationBar = UIImage(named: "icon_add_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconChat = UIImage(named: "icon_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconEdit = UIImage(named: "icon_edit", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMember = UIImage(named: "icon_members", in: AmityUIKitManager.bundle, compatibleWith: nil)

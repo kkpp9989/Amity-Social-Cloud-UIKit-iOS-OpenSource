@@ -135,7 +135,7 @@ open class AmityPostDetailViewController: AmityViewController {
     }
     
     private func setupNavigationBar() {
-        optionButton = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
+        optionButton = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // [Custom for ONE Krungthai] Set custom icon theme
         optionButton.tintColor = AmityColorSet.base
         navigationItem.rightBarButtonItem = optionButton
     }
