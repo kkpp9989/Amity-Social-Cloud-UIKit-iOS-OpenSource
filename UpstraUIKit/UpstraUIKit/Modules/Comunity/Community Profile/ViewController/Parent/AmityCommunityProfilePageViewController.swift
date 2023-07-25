@@ -117,24 +117,25 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
             let optionItem = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(self.optionTap))
             optionItem.tintColor = AmityColorSet.base
             rightButtonItems.append(optionItem)
-            navigationItem.rightBarButtonItems = rightButtonItems
             
-            // Create post button (with check moderator permission in official community)
-            AmityUIKitManager.client.hasPermission(.createCommunityPost, forCommunity: screenViewModel.communityId) { hasPermission in
-                // [Custom for ONE Krungthai] Move create post button to navigation bar
-                self.createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(self.createPostTap))
-                self.createPostItem.tintColor = AmityColorSet.base
+            
+            createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(self.createPostTap))
+            createPostItem.tintColor = AmityColorSet.base
 
-                let isOfficial = self.screenViewModel.community?.isOfficial ?? false
-                if isOfficial {
-                    if hasPermission {
-                        rightButtonItems.append(self.createPostItem)
-                    }
-                } else {
-                    rightButtonItems.append(self.createPostItem)
+            // Create post button (with check moderator permission in official community)
+            let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: screenViewModel.communityId)
+            let isOfficial = self.screenViewModel.community?.isOfficial ?? false
+            
+            if isOfficial { // Case : Official community
+                if isModeratorUserInOfficialCommunity { // Case : Moderator user in official community
+                    rightButtonItems.append(createPostItem)
                 }
-                self.navigationItem.rightBarButtonItems = rightButtonItems
+            } else { // Case : Not official community
+                rightButtonItems.append(createPostItem)
             }
+            
+            // Add all button to navigation bar
+            navigationItem.rightBarButtonItems = rightButtonItems
         }
     }
     
