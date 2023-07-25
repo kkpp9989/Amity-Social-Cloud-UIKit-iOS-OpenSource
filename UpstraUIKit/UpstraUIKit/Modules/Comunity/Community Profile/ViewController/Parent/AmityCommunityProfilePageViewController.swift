@@ -114,15 +114,13 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
             var rightButtonItems: [UIBarButtonItem] = []
             
             // Option button
-            let optionItem = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(self.optionTap))
+            let optionItem = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
             optionItem.tintColor = AmityColorSet.base
             rightButtonItems.append(optionItem)
             
-            
-            createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(self.createPostTap))
-            createPostItem.tintColor = AmityColorSet.base
-
             // Create post button (with check moderator permission in official community)
+            createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createPostTap))
+            createPostItem.tintColor = AmityColorSet.base
             let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: screenViewModel.communityId)
             let isOfficial = self.screenViewModel.community?.isOfficial ?? false
             
