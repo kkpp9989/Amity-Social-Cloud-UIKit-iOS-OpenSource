@@ -36,7 +36,9 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
             shouldShowActions: post.isCommentable,
             shouldLineShow: false
         )
-        commentView.configure(with: comment, layout: layout)
+        
+        // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
         commentView.contentLabel.delegate = self
     }

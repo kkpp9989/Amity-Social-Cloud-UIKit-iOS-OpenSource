@@ -34,16 +34,14 @@ class AmityFeedDisplayNameLabel: UILabel {
     }
     
     // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
-    func configure(displayName: String, communityName: String?, isOfficial: Bool, shouldShowCommunityName: Bool, shouldShowBannedSymbol: Bool, isModeratorUser: Bool) {
+    func configure(displayName: String, communityName: String?, isOfficial: Bool, shouldShowCommunityName: Bool, shouldShowBannedSymbol: Bool, isModeratorUserInOfficialCommunity: Bool) {
         // [Custom for ONE Krungthai] Add check is moderator user for set displayname to community name or current display name
-//        self.displayName = displayName
-        self.displayName = isModeratorUser ? communityName ?? "" : displayName
+        self.displayName = isModeratorUserInOfficialCommunity ? communityName ?? "" : displayName
         self.communityName = communityName
         
         // [Custom for ONE Krungthai] Add check is moderator user for set displayname to community name or current display name
         let attributeString = NSMutableAttributedString()
-//        attributeString.append(NSAttributedString(string: displayName))
-        attributeString.append(NSAttributedString(string: isModeratorUser ? communityName ?? "" : displayName))
+        attributeString.append(NSAttributedString(string: isModeratorUserInOfficialCommunity ? communityName ?? "" : displayName))
         
         if shouldShowBannedSymbol {
             let imageRightAttachment = NSTextAttachment()
@@ -55,7 +53,7 @@ class AmityFeedDisplayNameLabel: UILabel {
         
         // configure community displayname
         // [Custom for ONE Krungthai] Add check is moderator user for show community name when open post detail or global feed
-        if shouldShowCommunityName, let communityName = communityName, !isModeratorUser {
+        if shouldShowCommunityName, let communityName = communityName, !isModeratorUserInOfficialCommunity {
             attributeString.append(NSAttributedString(string: " ‣ "))
             attributeString.append(NSAttributedString(string: communityName))
         }
@@ -68,8 +66,7 @@ class AmityFeedDisplayNameLabel: UILabel {
         // [Custom for ONE Krungthai] Change condition of shouldShowBadge as scenario ..
         // [Community profile] -> Show badge when post is moderator user in displayname and don't must show community name
         // [Community profile, Global feed, Post Detail] -> Show badge when community is official and must show community name
-//        let shouldShowBadge = (shouldShowCommunityName && isOfficial)
-        let shouldShowBadge = isModeratorUser || (!isModeratorUser && isOfficial && shouldShowCommunityName)
+        let shouldShowBadge = isModeratorUserInOfficialCommunity || (!isModeratorUserInOfficialCommunity && isOfficial && shouldShowCommunityName)
         setImageWithText(position: .right(image: shouldShowBadge ? AmityIconSet.iconBadgeCheckmark : nil), size: CGSize(width: 18, height: 18), tintColor: AmityColorSet.highlight)
     }
     

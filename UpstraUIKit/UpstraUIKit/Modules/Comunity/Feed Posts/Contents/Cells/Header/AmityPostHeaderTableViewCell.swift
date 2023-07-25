@@ -24,6 +24,9 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     
     private(set) public var post: AmityPostModel?
     
+    // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
+    private var isModeratorUserInOfficialCommunity: Bool = false
+    
     public override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -36,26 +39,38 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     
     public func display(post: AmityPostModel) {
         self.post = post
-        // [Custom for ONE Krungthai] Add check set picture of community or user if user is moderator
-//        avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
-        avatarView.setImage(withImageURL: post.isModerator ? post.targetCommunity?.avatar?.fileURL : post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
-        avatarView.actionHandler = { [weak self] in
-            self?.avatarTap()
+        
+        // [Custom for ONE Krungthai] Add condition of moderator user in official community for set avatar view
+        if let community = post.targetCommunity { // Case : Post from community
+            isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: post.postedUserId, communityId: community.communityId)
+            if isModeratorUserInOfficialCommunity && community.isOfficial { // Case : Owner post is moderator and community is official
+                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                avatarView.actionHandler = { [weak self] in
+                    self?.avatarTap()
+                }
+                avatarView.isUserInteractionEnabled = false
+            } else { // Case : Owner post is normal user or not official community
+                avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+                avatarView.actionHandler = { [weak self] in
+                    self?.avatarTap()
+                }
+            }
+        } else { // Case : Post from user profile
+            // Original
+            avatarView.setImage(withImageURL: post.postedUser?.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+            avatarView.actionHandler = { [weak self] in
+                self?.avatarTap()
+            }
         }
-        // [Custom for ONE Krungthai] Add check set interaction of avatar if user is moderator
-        avatarView.isUserInteractionEnabled = post.isModerator ? false : true
         
         // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
         displayNameLabel.configure(displayName: post.displayName,
                                    communityName: post.targetCommunity?.displayName,
                                    isOfficial: post.targetCommunity?.isOfficial ?? false,
-                                   shouldShowCommunityName: post.appearance.shouldShowCommunityName, shouldShowBannedSymbol: post.postedUser?.isGlobalBan ?? false, isModeratorUser: post.isModerator)
+                                   shouldShowCommunityName: post.appearance.shouldShowCommunityName, shouldShowBannedSymbol: post.postedUser?.isGlobalBan ?? false, isModeratorUserInOfficialCommunity: isModeratorUserInOfficialCommunity)
         displayNameLabel.delegate = self
-        
-        // [Custom for ONE Krungthai] Add check set interaction of displaybame if user is moderator
-        displayNameLabel.isUserInteractionEnabled = post.isModerator ? false : true
-        
-        datetimeLabel.text = post.subtitle
+        // [Custom for ONE Krungthai] Add check set interaction of displaybame if user is moderator in official community
+        displayNameLabel.isUserInteractionEnabled = isModeratorUserInOfficialCommunity ? false : true
 
         switch post.feedType {
         case .reviewing:
@@ -82,7 +97,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         containerView.backgroundColor = AmityColorSet.backgroundColor
         
         // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
-        displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUser: false)
+        displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUserInOfficialCommunity: false)
         
         // badge
         badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "

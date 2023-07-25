@@ -352,7 +352,8 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                     shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                     shouldLineShow: viewModel.isReplyType
                 )
-                _cell.configure(with: comment, layout: layout)
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+                _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
                 _cell.labelDelegate = self
                 _cell.actionDelegate = self
             }

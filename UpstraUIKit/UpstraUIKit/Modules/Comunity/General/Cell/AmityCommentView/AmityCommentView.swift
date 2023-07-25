@@ -47,6 +47,9 @@ class AmityCommentView: AmityView {
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
     
+    // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
+    private var isModeratorUserInOfficialCommunity: Bool = false
+    
     override func initial() {
         loadNibContent()
         setupView()
@@ -112,16 +115,35 @@ class AmityCommentView: AmityView {
         viewReplyButton.addTarget(self, action: #selector(viewReplyButtonTap), for: .touchUpInside)
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout) {
+    // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, post: AmityPostModel? = nil) {
         self.comment = comment
-        
         if comment.isEdited {
             timeLabel.text = String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.postDetailCommentEdit.localizedString, comment.createdAt.relativeTime)
         } else {
             timeLabel.text = comment.createdAt.relativeTime
         }
-        avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
-        titleLabel.text = comment.displayName
+        
+        // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
+        if let community = post?.targetCommunity { // Case : Comment from community
+            isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: comment.userId, communityId: community.communityId)
+            if let currentPost = post, isModeratorUserInOfficialCommunity, community.isOfficial { // Case : Comment owner is moderator in official community
+                avatarView.setImage(withImageURL: currentPost.targetCommunity?.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                titleLabel.text = currentPost.targetCommunity?.displayName ?? comment.displayName
+                titleLabel.setImageWithText(position: .right(image: AmityIconSet.iconBadgeCheckmark), size: CGSize(width: 18, height: 18), tintColor: AmityColorSet.highlight) // Badge
+                
+                avatarView.isUserInteractionEnabled = false
+                titleLabel.isUserInteractionEnabled = false
+            } else { // Case : Comment owner isn't moderator or not official community
+                // Original
+                avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                titleLabel.text = comment.displayName
+            }
+        } else { // Case : Comment from user profile post
+            // Original
+            avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
+            titleLabel.text = comment.displayName
+        }
         
         if comment.isAuthorGlobalBanned {
             bannedImageView.isHidden = false
@@ -185,7 +207,9 @@ class AmityCommentView: AmityView {
     }
     
     @IBAction func displaynameTap(_ sender: Any) {
-        delegate?.commentView(self, didTapAction: .avatar)
+        if !isModeratorUserInOfficialCommunity {
+            delegate?.commentView(self, didTapAction: .avatar)
+        }
     }
     
     @objc private func replyButtonTap() {

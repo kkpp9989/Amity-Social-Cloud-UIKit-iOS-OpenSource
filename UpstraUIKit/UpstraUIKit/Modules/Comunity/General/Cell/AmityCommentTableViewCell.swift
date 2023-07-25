@@ -32,8 +32,9 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout) {
-        commentView.configure(with: comment, layout: layout)
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, post: AmityPostModel? = nil) {
+        // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
     }
     

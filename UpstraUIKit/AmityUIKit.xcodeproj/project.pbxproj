@@ -677,6 +677,7 @@
 		D4EC11E525B93DCE0095F507 /* AmityPostSharingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */; };
 		D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
+		DF816EA02A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */; };
 		DF9818E92A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */; };
 		DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */; };
 		DFCC88C12A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCC88C02A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift */; };
@@ -1370,6 +1371,7 @@
 		D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingSettings.swift; sourceTree = "<group>"; };
 		D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingTarget.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
+		DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberCommunityUtilities.swift; sourceTree = "<group>"; };
 		DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromButtonView.swift; sourceTree = "<group>"; };
 		DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ONEKrungthaiCustomTheme.swift; sourceTree = "<group>"; };
 		DFCC88C02A6701D100E5B170 /* AmityPullDownMenuFromNavigationButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromNavigationButtonViewController.swift; sourceTree = "<group>"; };
@@ -2698,6 +2700,7 @@
 				DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */,
 				7290C385260DCC07002FFDC8 /* Reachability.swift */,
 				72AFAC0B24F9008B00269019 /* Services */,
+				DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -4903,6 +4906,7 @@
 				72A3512A24EA820800DA9D46 /* AmityResponsiveView.swift in Sources */,
 				B735CD66254937A100A98B95 /* AmityKeyboardComposeBarCollectionViewCell.swift in Sources */,
 				7809D64626374BD900C5B517 /* AmityMyCommunityScreenViewModel.swift in Sources */,
+				DF816EA02A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift in Sources */,
 				97D723DF2695B133000735F5 /* AmityFollowersListScreenViewModelProtocol.swift in Sources */,
 				72A3519D24EA820800DA9D46 /* AmityDocumentPickerViewController.swift in Sources */,
 				72A3517924EA820800DA9D46 /* PlayerView.swift in Sources */,
