@@ -29,11 +29,14 @@ class AmityCategoryCommunityListViewEmptyView: AmityView {
         contentView.backgroundColor = AmityColorSet.backgroundColor
         
         imageView.image = AmityIconSet.emptyNewsfeed
-        titleLabel.text = AmityLocalizedStringSet.emptyNewsfeedTitle.localizedString
+        // [Fix defect] Change message of title
+        titleLabel.text = AmityLocalizedStringSet.emptyCommunityInCategoryTitle.localizedString
         titleLabel.textColor = AmityColorSet.base.blend(.shade2)
-        titleLabel.font = AmityFontSet.headerLine
+        // [Fix defect] Set font to title style
+        titleLabel.font = AmityFontSet.title
         
-        subtitleLabel.text = AmityLocalizedStringSet.emptyNewsfeedSubtitle.localizedString
+        // [Fix defect] Change message of subtitle
+        subtitleLabel.text = AmityLocalizedStringSet.emptyCommunityInCategorySubtitle.localizedString
         subtitleLabel.textColor = AmityColorSet.base.blend(.shade2)
         subtitleLabel.font = AmityFontSet.body
     }

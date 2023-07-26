@@ -239,9 +239,11 @@ extension AmityPostDetailScreenViewModel {
         }
         
         func doFetchViewerCount() {
-            getViewerCount(withpostId: postId) { [self] viewerCount in
-                self.viewerCount = viewerCount
-                doFetchPost()
+            DispatchQueue.main.async { [self] in
+                getViewerCount(withpostId: postId) { [self] viewerCount in
+                    self.viewerCount = viewerCount
+                    doFetchPost()
+                }
             }
         }
         
