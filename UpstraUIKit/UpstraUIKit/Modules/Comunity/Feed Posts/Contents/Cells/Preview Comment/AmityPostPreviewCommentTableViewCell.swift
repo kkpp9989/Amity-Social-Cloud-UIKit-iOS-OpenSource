@@ -36,7 +36,9 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
             shouldShowActions: post.isCommentable,
             shouldLineShow: false
         )
-        commentView.configure(with: comment, layout: layout)
+        
+        // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
         commentView.contentLabel.delegate = self
     }
@@ -99,7 +101,14 @@ extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
         guard let comment = view.comment else { return }
         switch action {
         case .avatar:
-            performAction(action: .tapAvatar(comment: comment))
+            // [Custom for ONE Krungthai] Add check moderator user in official community for prepare tap action
+            if view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity { // Case : Post is from official community and owner is moderator
+                if let currentPost = post, view.shouldDidTapAction { // Post must to output from newsfeed only
+                    performAction(action: .tapCommunityName(post: currentPost))
+                }
+            } else { // Case : Post isn't from official community or owner isn't moderator
+                performAction(action: .tapAvatar(comment: comment))
+            }
         case .like:
             performAction(action: .tapLike(comment: comment))
         case .option:

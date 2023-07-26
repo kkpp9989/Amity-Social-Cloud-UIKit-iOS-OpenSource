@@ -13,13 +13,17 @@ protocol AmityCommentTableViewCellDelegate: AnyObject {
     func commentCellDidTapLike(_ cell: AmityCommentTableViewCell)
     func commentCellDidTapReply(_ cell: AmityCommentTableViewCell)
     func commentCellDidTapOption(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String)
+    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) // [Custom for ONE Krungthai] Modify delegate function for open community for moderator user in official community action
     func commentCellDidTapReactionDetails(_ cell: AmityCommentTableViewCell)
 }
 
 class AmityCommentTableViewCell: UITableViewCell, Nibbable {
 
     @IBOutlet private var commentView: AmityCommentView!
+    
+    // [Custom for ONE Krungthai] Add properties for for check moderator user in official community for outputing
+    public private(set) var post: AmityPostModel?
+    public private(set) var comment: AmityCommentModel?
     
     weak var actionDelegate: AmityCommentTableViewCellDelegate?
     
@@ -32,8 +36,13 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout) {
-        commentView.configure(with: comment, layout: layout)
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, post: AmityPostModel? = nil) {
+        // [Custom for ONE Krungthai] Add properties for for check moderator user in official community for outputing
+        self.post = post
+        self.comment = comment
+        
+        // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
     }
     
@@ -57,7 +66,12 @@ extension AmityCommentTableViewCell: AmityCommentViewDelegate {
     func commentView(_ view: AmityCommentView, didTapAction action: AmityCommentViewAction) {
         switch action {
         case .avatar:
-            actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "")
+            // [Custom for ONE Krungthai] Add check moderator user in official community for prepare tap displayname or avatar action
+            if let currentPost = post, view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity  { // Case : Post is from official community and owner is moderator
+                actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "", communityId: currentPost.targetCommunity?.communityId)
+            } else { // Case : Post isn't from official community or owner isn'y moderator
+                actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "", communityId: nil)
+            }
         case .like:
             actionDelegate?.commentCellDidTapLike(self)
         case .option:

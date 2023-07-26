@@ -101,6 +101,12 @@ public final class AmityPollCreatorViewController: AmityViewController {
     private func setupPostNavigationBarbutton() {
         postButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.post.localizedString, style: .plain, target: self, action: #selector(onPostButtonTap))
         postButton?.tintColor = AmityColorSet.primary
+        
+        // [Fix defect] Set font of post button refer to AmityFontSet
+        postButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        postButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        postButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         navigationItem.rightBarButtonItem = postButton
         navigationItem.rightBarButtonItem?.isEnabled = false
     }

@@ -564,6 +564,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.userDidTap(from: self, userId: userId)
         case .tapOnHashtag(keyword: let keyword, count: let count):
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
+        case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: post.targetCommunity?.communityId ?? "")
         }
     }
    

@@ -83,7 +83,13 @@ class AssetsViewController: UIViewController {
             assertionFailure("AssetsViewController only support either .image or .video, but not both")
             pageHeaderTitle = ""
         }
-        navigationItem.title = pageHeaderTitle
+        
+        // [Fix defect] Set font of navigation title refer to AmityFontSet
+        let pageHeaderTitleCustom = UILabel()
+        pageHeaderTitleCustom.text = pageHeaderTitle
+        pageHeaderTitleCustom.font = AmityFontSet.title
+        pageHeaderTitleCustom.textColor = AmityColorSet.base
+        navigationItem.titleView = pageHeaderTitleCustom
         
         collectionView.allowsMultipleSelection = true
         collectionView.bounces = true

@@ -65,6 +65,14 @@ extension AmityPostModel {
         case postDetail
     }
     
+    // [Custom for ONE Krungthai] Add custom post display type for check moderator user in official community condition
+    public enum AmitySocialPostDisplayType {
+        case feed
+        case community
+        case postDetailFromCommunityProfile
+        case postDetailFromNewsFeed
+    }
+    
     public class Author {
         public let avatarURL: String?
         public let displayName: String?
@@ -85,6 +93,9 @@ extension AmityPostModel {
          * The displayType of view `Feed/PostDetail`
          */
         public var displayType: PostDisplayType = .feed
+        
+        // [Custom for ONE Krungthai] Add custom post display type for check moderator user in official community condition
+        public var amitySocialPostDisplayStyle: AmitySocialPostDisplayType = .feed
         
         /**
          * The flag for showing comunity name
