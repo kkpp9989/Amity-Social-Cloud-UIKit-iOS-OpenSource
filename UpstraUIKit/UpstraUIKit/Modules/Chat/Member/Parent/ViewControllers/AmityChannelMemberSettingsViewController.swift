@@ -63,7 +63,7 @@ public final class AmityChannelMemberSettingsViewController: AmityPageViewContro
 extension AmityChannelMemberSettingsViewController: AmityChannelMemberSettingsScreenViewModelDelegate {
     func screenViewModelShouldShowAddButtonBarItem(status: Bool) {
         if status {
-            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(addMemberTap))
+            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
             rightItem.tintColor = AmityColorSet.base
             navigationItem.rightBarButtonItem = rightItem
             navigationController?.reset()

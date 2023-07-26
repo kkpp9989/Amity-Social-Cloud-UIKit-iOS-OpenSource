@@ -25,6 +25,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private var viewModelArrays: [[PostDetailViewModel]] = []
     private let debouncer = Debouncer(delay: 0.3)
     private(set) var community: AmityCommunity?
+    private var viewerCount: Int = 0
     
     private var streamId: String?
     
@@ -199,8 +200,22 @@ extension AmityPostDetailScreenViewModel {
                 case .success(let dataResponse):
                     let postId = dataResponse.postId ?? ""
                     completion(postId)
-                case .failure(let failure):
+                case .failure(_):
                     completion("")
+                }
+            }
+        }
+        
+        func getViewerCount(withpostId postId: String, completion: @escaping (Int) -> Void) {
+            // Simulate your API request using a service object or Alamofire, etc.
+            let serviceRequest = RequestGetViewerCount()
+            serviceRequest.request(postId: postId, viewerUserId: AmityUIKitManager.currentUserToken, viewerDisplayName: AmityUIKitManager.displayName, isTrack: false, streamId: ""){ result in
+                switch result {
+                case .success(let dataResponse):
+                    let viwerCount = dataResponse.viewerCount ?? 0
+                    completion(viwerCount)
+                case .failure(_):
+                    completion(0)
                 }
             }
         }
@@ -211,6 +226,8 @@ extension AmityPostDetailScreenViewModel {
                     switch result {
                     case .success(let post):
                         self?.post = post
+                        self?.post?.viewerCount = self?.viewerCount ?? 0
+                        
                         self?.debouncer.run {
                             self?.prepareData()
                         }
@@ -221,17 +238,28 @@ extension AmityPostDetailScreenViewModel {
             }
         }
         
+        func doFetchViewerCount() {
+            DispatchQueue.main.async { [self] in
+                getViewerCount(withpostId: postId) { [self] viewerCount in
+                    self.viewerCount = viewerCount
+                    doFetchPost()
+                }
+            }
+        }
+        
         if postId == "" {
             DispatchQueue.main.async {
                 // Get postId by streamId with API
                 getPostId(withStreamId: self.streamId ?? "") { [self] postId in
                     self.postId = postId
-                    doFetchPost()
+//                    doFetchPost()
+                    doFetchViewerCount()
                     fetchComments()
                 }
             }
         } else {
-            doFetchPost()
+            doFetchViewerCount()
+//            doFetchPost()
         }
     }
     

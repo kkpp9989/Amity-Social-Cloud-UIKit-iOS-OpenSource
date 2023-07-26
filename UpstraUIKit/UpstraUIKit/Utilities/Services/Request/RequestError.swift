@@ -24,3 +24,7 @@ struct RequestError:OurErrorProtocol {
     }
     
 }
+
+enum HandleError: Error {
+    case connectionError, notFound, JsonDecodeError
+}

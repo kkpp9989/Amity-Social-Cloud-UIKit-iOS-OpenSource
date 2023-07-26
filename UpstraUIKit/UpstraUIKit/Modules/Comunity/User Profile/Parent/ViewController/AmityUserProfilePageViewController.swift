@@ -25,6 +25,9 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     private let postButton: AmityFloatingButton = AmityFloatingButton()
     private var screenViewModel: AmityUserProfileScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
+    
     // MARK: - Initializer
     
     public static func make(withUserId userId: String, settings: AmityUserProfilePageSettings = AmityUserProfilePageSettings()) -> AmityUserProfilePageViewController {
@@ -42,7 +45,9 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
+        // [Custom for ONE Krungthai] Disable create post floating button
+//        setupView()
+        
         setupNavigationItem()
         setupViewModel()
     }
@@ -70,9 +75,23 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     }
     
     private func setupNavigationItem() {
-        let item = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
-        item.tintColor = AmityColorSet.base
-        navigationItem.rightBarButtonItem = item
+        /* Right items */
+        var rightButtonItems: [UIBarButtonItem] = []
+        
+        // Option button
+        let optionItem = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // [Custom for ONE Krungthai] Set custom icon theme
+        optionItem.tintColor = AmityColorSet.base
+        rightButtonItems.append(optionItem)
+        
+        // Create post button (with check moderator permission in official community)
+        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
+        createPostItem.tintColor = AmityColorSet.base
+        if screenViewModel.isCurrentUser { // Add create post item when profile is current user
+            rightButtonItems.append(createPostItem)
+        }
+        
+        // Add all button to navigation bar
+        navigationItem.rightBarButtonItems = rightButtonItems
     }
     
     private func setupViewModel() {
@@ -98,6 +117,10 @@ private extension AmityUserProfilePageViewController {
         let vc = AmityUserSettingsViewController.make(withUserId: screenViewModel.dataSource.userId)
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @objc func createPostTap() {
+        AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .myFeed, menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
+    }
 }
 
 extension AmityUserProfilePageViewController: AmityUserProfileScreenViewModelDelegate {
@@ -108,5 +131,11 @@ extension AmityUserProfilePageViewController: AmityUserProfileScreenViewModelDel
         default:
             break
         }
+    }
+}
+
+extension AmityUserProfilePageViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Show the popover on iPhone devices as well
     }
 }

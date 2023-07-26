@@ -153,12 +153,12 @@
 			isa = PBXGroup;
 			children = (
 				A0BD0B1826DCE4F50054088B /* AmityUIKitLiveStream.h */,
-				A0BD0B5426DE22E60054088B /* Utils */,
-				A0BD0B3126DCE5850054088B /* Broadcast */,
-				A0BD0B3226DCE5A80054088B /* Player */,
-				A0BD0B4C26DDEFB40054088B /* Assets.xcassets */,
 				A0BD0B1926DCE4F50054088B /* Info.plist */,
+				A0BD0B4C26DDEFB40054088B /* Assets.xcassets */,
+				A0BD0B3126DCE5850054088B /* Broadcast */,
 				AA3A248C2A6D33AC004CEEA0 /* CustomView */,
+				A0BD0B3226DCE5A80054088B /* Player */,
+				A0BD0B5426DE22E60054088B /* Utils */,
 			);
 			path = AmityUIKitLiveStream;
 			sourceTree = "<group>";

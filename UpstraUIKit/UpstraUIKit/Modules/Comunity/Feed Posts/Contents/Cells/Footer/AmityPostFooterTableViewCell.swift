@@ -55,8 +55,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         if let reactionType = post.reacted {
             setLikedButton(reactionType: reactionType)
             likeButton.isSelected = true
-        }
-        else {
+        } else {
             likeButton.isSelected = false
         }
         

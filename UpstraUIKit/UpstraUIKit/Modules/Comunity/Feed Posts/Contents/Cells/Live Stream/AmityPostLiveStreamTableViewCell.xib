@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -43,6 +43,33 @@
                                     <constraint firstAttribute="trailing" secondItem="QsG-xM-wXL" secondAttribute="trailing" constant="8" id="uwJ-Be-WDg"/>
                                 </constraints>
                             </view>
+                            <view hidden="YES" alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hE8-l0-Of6" userLabel="Viewer Container">
+                                <rect key="frame" x="158" y="16" width="54.5" height="28.5"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_viewer_count" translatesAutoresizingMaskIntoConstraints="NO" id="U7Y-xb-7aF">
+                                        <rect key="frame" x="0.0" y="0.5" width="28" height="28"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="28" id="BRr-OK-Ena"/>
+                                            <constraint firstAttribute="height" constant="28" id="Ii8-hM-3YL"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4n7-Xy-ZkK" userLabel="Viewer Count Label">
+                                        <rect key="frame" x="36" y="4" width="10.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="U7Y-xb-7aF" firstAttribute="leading" secondItem="hE8-l0-Of6" secondAttribute="leading" id="79D-GM-Be8"/>
+                                    <constraint firstItem="U7Y-xb-7aF" firstAttribute="centerY" secondItem="4n7-Xy-ZkK" secondAttribute="centerY" id="AfJ-nG-xuh"/>
+                                    <constraint firstAttribute="bottom" secondItem="4n7-Xy-ZkK" secondAttribute="bottom" constant="4" id="Eyu-lK-OBg"/>
+                                    <constraint firstItem="4n7-Xy-ZkK" firstAttribute="leading" secondItem="U7Y-xb-7aF" secondAttribute="trailing" constant="8" symbolic="YES" id="r7y-yI-WHl"/>
+                                    <constraint firstAttribute="trailing" secondItem="4n7-Xy-ZkK" secondAttribute="trailing" constant="8" id="wag-5o-Lao"/>
+                                    <constraint firstItem="4n7-Xy-ZkK" firstAttribute="top" secondItem="hE8-l0-Of6" secondAttribute="top" constant="4" id="xWx-Ho-Ell"/>
+                                </constraints>
+                            </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uQO-vO-ask" userLabel="Play Button">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="196"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -56,6 +83,7 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="MWO-hD-glN" secondAttribute="trailing" id="6S6-NC-iMC"/>
                             <constraint firstAttribute="trailing" secondItem="uQO-vO-ask" secondAttribute="trailing" id="8je-Zn-N7u"/>
+                            <constraint firstItem="hE8-l0-Of6" firstAttribute="centerY" secondItem="Ooy-WH-M0r" secondAttribute="centerY" id="NRK-W0-imQ"/>
                             <constraint firstAttribute="bottom" secondItem="MWO-hD-glN" secondAttribute="bottom" id="UEj-6x-tiB"/>
                             <constraint firstItem="uQO-vO-ask" firstAttribute="leading" secondItem="gEd-7L-Mwt" secondAttribute="leading" id="Wic-Kn-Qgc"/>
                             <constraint firstItem="Ooy-WH-M0r" firstAttribute="top" secondItem="gEd-7L-Mwt" secondAttribute="top" constant="16" id="YEJ-td-yq3"/>
@@ -65,6 +93,7 @@
                             <constraint firstItem="uQO-vO-ask" firstAttribute="top" secondItem="gEd-7L-Mwt" secondAttribute="top" id="qEf-A1-ysP"/>
                             <constraint firstAttribute="height" priority="999" constant="220" id="qk0-EJ-o4I"/>
                             <constraint firstAttribute="bottom" secondItem="uQO-vO-ask" secondAttribute="bottom" id="uyA-xv-Sz0"/>
+                            <constraint firstItem="hE8-l0-Of6" firstAttribute="leading" secondItem="Ooy-WH-M0r" secondAttribute="trailing" constant="8" symbolic="YES" id="zdB-ki-uBl"/>
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tIm-uJ-NaV" userLabel="Stream End View">
@@ -117,12 +146,15 @@ to watch shortly.</string>
                 <outlet property="streamStateContainer" destination="Ooy-WH-M0r" id="U1d-b4-s0u"/>
                 <outlet property="streamStateLabel" destination="QsG-xM-wXL" id="tbt-by-IXx"/>
                 <outlet property="thumbnailImageView" destination="MWO-hD-glN" id="hjo-v5-bZe"/>
+                <outlet property="viewerCountContainer" destination="hE8-l0-Of6" id="Alh-5l-sBV"/>
+                <outlet property="viewerCountLabel" destination="4n7-Xy-ZkK" id="9uQ-G8-fzj"/>
             </connections>
             <point key="canvasLocation" x="130" y="119"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="default_livestream" width="375" height="221"/>
+        <image name="icon_viewer_count" width="12" height="12"/>
         <image name="play_livestream_button" width="40" height="40"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

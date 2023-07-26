@@ -31,6 +31,9 @@ public final class AmityReactionUsersViewController: AmityViewController {
     
     @IBOutlet private weak var tableView: UITableView!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     let reactionsInfo: AmityReactionInfo
     let viewModel: AmityReactionUsersScreenViewModel
     
@@ -53,6 +56,16 @@ public final class AmityReactionUsersViewController: AmityViewController {
         setupViews()
         
         setupScreenViewModel()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     func setupScreenViewModel() {

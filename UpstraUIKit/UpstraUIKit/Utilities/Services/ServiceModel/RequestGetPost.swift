@@ -27,26 +27,23 @@ struct RequestGetPost {
         requestMeta.method = .get
         requestMeta.encoding = .urlEncoding
         
-//        print("[Post-detail][Custom][Get postId from streamId] Start request get postId by streamId API with url: \(requestMeta.urlRequest) | data: \(requestMeta.params) | header: \(requestMeta.header)")
-        
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
-                completion(.failure("Not data" as! Error))
+                completion(.failure(HandleError.notFound))
                 return
             }
-//            print("[Post-detail][Custom][Get postId from streamId] Request get postId by streamId API with response status code: \(httpResponse.statusCode)")
             
             switch httpResponse.statusCode {
             case 200:
                 guard let dataModel = try? JSONDecoder().decode(ResponseGetPostModel.self, from: data) else {
-                    completion(.failure("Json Decode Error" as! Error))
+                    completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
                 completion(.success(dataModel))
             case 400...499:
-                completion(.failure("Page not found" as! Error))
+                completion(.failure(HandleError.notFound))
             default:
-                completion(.failure("Service Error" as! Error))
+                completion(.failure(HandleError.connectionError))
             }
         }
         

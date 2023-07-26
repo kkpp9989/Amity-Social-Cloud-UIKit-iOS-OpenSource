@@ -44,6 +44,16 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             }
         }
     }
+    public var postTabHeaderView: FeedHeaderPresentable? {
+        didSet {
+            debouncer.run { [weak self] in
+                DispatchQueue.main.async { [weak self] in
+                    self?.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
     var emptyView: UIView?
     var dataDidUpdateHandler: ((Int) -> Void)?
     var emptyViewHandler: ((UIView?) -> Void)?
@@ -229,7 +239,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
-            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView)
+            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: postTabHeaderView?.headerView)
             break
         default:
             (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
@@ -242,10 +252,14 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 
     func tableView(_ tableView: AmityPostTableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            guard let headerView = headerView else {
-                return 0
+            var height: CGFloat = 0
+            if let headerView = headerView {
+                height = headerView.height + 10
             }
-            return headerView.height
+            guard let postView = postTabHeaderView else {
+                return height
+            }
+            return postView.height + height
         } else {
             return UITableView.automaticDimension
         }
@@ -267,7 +281,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
-        let postComponentsCount = screenViewModel.dataSource.numberOfPostComponents() - (headerView == nil ? 1:0)
+        let postComponentsCount = screenViewModel.dataSource.numberOfPostComponents() - (postTabHeaderView == nil ? 1:0)
         return postComponentsCount > 0 ? 0 : tableView.frame.height
     }
 
@@ -319,7 +333,7 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
     
     func tableView(_ tableView: AmityPostTableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return headerView == nil ? 0 : 1
+            return postTabHeaderView == nil ? 0 : 1
         } else {
             let singleComponent = screenViewModel.dataSource.postComponents(in: section)
             if let component = tableView.feedDataSource?.getUIComponentForPost(post: singleComponent._composable.post, at: section) {
@@ -550,6 +564,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.userDidTap(from: self, userId: userId)
         case .tapOnHashtag(keyword: let keyword, count: let count):
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
+        case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: post.targetCommunity?.communityId ?? "")
         }
     }
    

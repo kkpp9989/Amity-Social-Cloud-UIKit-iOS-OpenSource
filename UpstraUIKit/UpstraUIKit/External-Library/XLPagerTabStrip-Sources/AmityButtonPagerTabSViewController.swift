@@ -82,7 +82,7 @@ public class AmityButtonPagerTabSViewController: AmityPagerTabViewController, Pa
         return self.calculateWidths()
     }()
     
-    private var bottomLineView: UIView = UIView()
+    var bottomLineView: UIView = UIView()
 
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)

@@ -15,7 +15,7 @@ struct DomainManager {
         private enum CustomAPI: String {
             case DEV = "https://one-ktb-apidev.convolab.ai"
             case UAT = "https://one-ktb-apiuat.convolab.ai"
-            case PRODUCTION = "https://one-ktb-apiprod.convolab.ai"  // [Mock] Not ready to use
+            case PRODUCTION = "https://one-ktb-api.convolab.ai"
         }
         
         // [Custom for ONE Krungthai] -> Get domain of custom API functoon by env from env_key of AmityUIKitManager.env or AmityUIKitManagerInternal.shared.env

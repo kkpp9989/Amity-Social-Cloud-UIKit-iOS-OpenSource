@@ -65,6 +65,14 @@ extension AmityPostModel {
         case postDetail
     }
     
+    // [Custom for ONE Krungthai] Add custom post display type for check moderator user in official community condition
+    public enum AmitySocialPostDisplayType {
+        case feed
+        case community
+        case postDetailFromCommunityProfile
+        case postDetailFromNewsFeed
+    }
+    
     public class Author {
         public let avatarURL: String?
         public let displayName: String?
@@ -85,6 +93,9 @@ extension AmityPostModel {
          * The displayType of view `Feed/PostDetail`
          */
         public var displayType: PostDisplayType = .feed
+        
+        // [Custom for ONE Krungthai] Add custom post display type for check moderator user in official community condition
+        public var amitySocialPostDisplayStyle: AmitySocialPostDisplayType = .feed
         
         /**
          * The flag for showing comunity name
@@ -287,7 +298,7 @@ public class AmityPostModel {
     var isLiked: Bool {
         return myReactions.contains(.like)
     }
-    
+        
     let reactionTypes: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
     
     var reacted: AmityReactionType? {
@@ -354,6 +365,32 @@ public class AmityPostModel {
         }
         return postId
     }
+    
+    public var viewerCount: Int = 0
+//    {
+//        var count = 0
+//        if dataTypeInternal == .liveStream {
+//            requestVierCountData(postId: postId) { value in
+//                print("---------> count \(count)")
+//                count = value
+//            }
+//            print("---------> return \(count)")
+//        }
+//        return count
+//    }
+    
+//    func requestVierCountData(postId: String, completion: @escaping (Int) -> Void) {
+//        let serviceRequest = RequestGetViewerCount()
+//        serviceRequest.request(postId: postId, viewerUserId: AmityUIKitManager.currentUserToken, viewerDisplayName: AmityUIKitManager.displayName, isTrack: false, streamId: "") { result in
+//            switch result {
+//            case .success(let dataResponse):
+//                let viewerCount = dataResponse.viewerCount ?? 0
+//                completion(viewerCount)
+//            case .failure(_):
+//                completion(0)
+//            }
+//        }
+//    }
     
     // Each post has a property called childrenPosts. This contains an array of AmityPost object.
     // If a post contains files or images, those are present as children posts. So we need

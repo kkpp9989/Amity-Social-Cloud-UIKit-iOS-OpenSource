@@ -10,6 +10,7 @@ import UIKit
 
 /// A view controller for providing global feed with create post functionality.
 public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProvider {
+    
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
     }
@@ -18,6 +19,7 @@ public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProv
     var pageTitle: String?
     
     private let emptyView = AmityNewsfeedEmptyView()
+    private var postTabHeaderView = AmityPostTabbarViewController.make()
     private var headerView = AmityMyCommunityPreviewViewController.make()
     private let createPostButton: AmityFloatingButton = AmityFloatingButton()
     private let feedViewController = AmityFeedViewController.make(feedType: .globalFeed)
@@ -35,6 +37,7 @@ public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProv
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         headerView.retrieveCommunityList()
+        postTabHeaderView.reloadView()
     }
     
     public static func make() -> AmityNewsfeedViewController {
@@ -59,6 +62,8 @@ private extension AmityNewsfeedViewController {
     
     private func setupHeaderView() {
         headerView.delegate = self
+        postTabHeaderView.delegate = self
+        
     }
     
     private func setupEmptyView() {
@@ -118,3 +123,21 @@ extension AmityNewsfeedViewController: AmityMyCommunityPreviewViewControllerDele
         }
     }
 }
+
+extension AmityNewsfeedViewController: AmityPostTabbarViewControllerDelegate {
+    public func viewController(_ viewController: AmityPostTabbarViewController) {
+        feedViewController.postTabHeaderView = postTabHeaderView
+    }
+    
+    public func didTapPostButton(_ viewController: AmityPostTabbarViewController) {
+        let postTargetVC = AmityPostTargetPickerViewController.make(postContentType: .post)
+        let navPostTargetVC = UINavigationController(rootViewController: postTargetVC)
+        navPostTargetVC.modalPresentationStyle = .fullScreen
+        present(navPostTargetVC, animated: true, completion: nil)
+    }
+    
+    public func didTapAvatarButton(_ viewController: AmityPostTabbarViewController) {
+        AmityEventHandler.shared.userDidTap(from: self, userId: AmityUIKitManagerInternal.shared.currentUserId)
+    }
+}
+    

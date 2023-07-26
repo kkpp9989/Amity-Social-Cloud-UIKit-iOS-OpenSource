@@ -51,6 +51,12 @@ class AmityPostNotificationSettingsViewController: AmityViewController {
     private func setupView() {
         title = screenViewModel.type == .post ? AmityLocalizedStringSet.CommunityNotificationSettings.post.localizedString : AmityLocalizedStringSet.CommunityNotificationSettings.comment.localizedString
         saveButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.save.localizedString, style: .done, target: self, action: #selector(saveButtonDidTap))
+        
+        // [Fix defect] Set font of post button refer to AmityFontSet
+        saveButton.tintColor = AmityColorSet.primary
+        saveButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        saveButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
 
         saveButton.isEnabled = false
         

@@ -262,7 +262,7 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
-            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView)
+            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: nil)
             break
         default:
             (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
@@ -589,6 +589,8 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.userDidTap(from: self, userId: userId)
         case .tapOnHashtag(keyword: let keyword, count: let count):
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
+        case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
+            break // Nothing happen for hashtag
         }
     }
    

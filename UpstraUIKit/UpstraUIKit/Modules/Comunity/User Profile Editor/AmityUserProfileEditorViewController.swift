@@ -83,6 +83,13 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     private func setupNavigationBar() {
         saveBarButtonItem = UIBarButtonItem(title: AmityLocalizedStringSet.General.save.localizedString, style: .done, target: self, action: #selector(saveButtonTap))
+        
+        // [Fix defect] Set font of save button refer to AmityFontSet
+        saveBarButtonItem.tintColor = AmityColorSet.primary
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         saveBarButtonItem.isEnabled = false
         navigationItem.rightBarButtonItem = saveBarButtonItem
     }
@@ -107,6 +114,10 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         displayNameTextField.maxLength = Constant.maxCharactor
         
+        // [Fix defect] Set font of displayname text field refer to AmityFontSet
+        displayNameTextField.font = AmityFontSet.body
+        displayNameTextField.textColor = AmityColorSet.base
+        
         // [Custom for ONE Krungthai] Disable display name editing for ONE Krungthai
         displayNameTextField.isUserInteractionEnabled = false
         
@@ -118,6 +129,10 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         aboutCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
         aboutTextView.customTextViewDelegate = self
         aboutTextView.maxCharacters = Constant.maxCharactor
+        
+        // [Fix defect] Set font of about text field refer to AmityFontSet
+        aboutTextView.font = AmityFontSet.body
+        aboutTextView.textColor = AmityColorSet.base
         
         // separator
         aboutSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)

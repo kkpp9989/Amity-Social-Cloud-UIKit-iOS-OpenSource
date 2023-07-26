@@ -133,6 +133,10 @@ public struct AmityLocalizedStringSet {
         static let editMessage = "message_edit"
     }
     
+    // MARK: - Empty Community in category
+    static let emptyCommunityInCategoryTitle = "It’s empty here..."
+    static let emptyCommunityInCategorySubtitle = "No community found in this category"
+    
     // MARK: - Empty Newsfeed
     static let emptyNewsfeedTitle = "empty_newsfeed_title"
     static let emptyNewsfeedSubtitle = "empty_newsfeed_subtitle"

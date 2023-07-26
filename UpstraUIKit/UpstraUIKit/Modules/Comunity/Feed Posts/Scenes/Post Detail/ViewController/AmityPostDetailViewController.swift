@@ -135,7 +135,7 @@ open class AmityPostDetailViewController: AmityViewController {
     }
     
     private func setupNavigationBar() {
-        optionButton = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
+        optionButton = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // [Custom for ONE Krungthai] Set custom icon theme
         optionButton.tintColor = AmityColorSet.base
         navigationItem.rightBarButtonItem = optionButton
     }
@@ -352,7 +352,8 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                     shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                     shouldLineShow: viewModel.isReplyType
                 )
-                _cell.configure(with: comment, layout: layout)
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+                _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
                 _cell.labelDelegate = self
                 _cell.actionDelegate = self
             }
@@ -780,8 +781,13 @@ extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
 }
 
 extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {    
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String) {
-        AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
+        // [Custom for ONE Krungthai] Add check condition for tap to community for moderator user in official community action
+        if let currentCommunityId = communityId {
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: currentCommunityId)
+        } else {
+            AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        }
     }
     
     func commentCellDidTapReadMore(_ cell: AmityCommentTableViewCell) {

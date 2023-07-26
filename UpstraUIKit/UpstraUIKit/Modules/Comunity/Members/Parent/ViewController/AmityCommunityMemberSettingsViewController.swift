@@ -36,6 +36,16 @@ public final class AmityCommunityMemberSettingsViewController: AmityPageViewCont
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
+        
+        // [Custom for ONE Krungthai] Add condition for output tabbar of moderator user in official community permission
+        let community = screenViewModel.dataSource.community
+        let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: community.communityId)
+        if !isModeratorUserInOfficialCommunity && community.isOfficial {
+            NSLayoutConstraint.activate([
+                buttonBarView.heightAnchor.constraint(equalToConstant: 0),
+                bottomLineView.heightAnchor.constraint(equalToConstant: 0)
+            ])
+        }
     }
     
     public static func make(community: AmityCommunity) -> AmityCommunityMemberSettingsViewController {
@@ -53,7 +63,6 @@ public final class AmityCommunityMemberSettingsViewController: AmityPageViewCont
         memberVC = AmityCommunityMemberViewController.make(pageTitle: AmityLocalizedStringSet.CommunityMembreSetting.title.localizedString,
                                                          viewType: .member,
                                                          community: screenViewModel.dataSource.community)
-        
         moderatorVC = AmityCommunityMemberViewController.make(pageTitle: AmityLocalizedStringSet.CommunityMembreSetting.moderatorTitle.localizedString,
                                                             viewType: .moderator,
                                                             community: screenViewModel.dataSource.community)
@@ -75,7 +84,7 @@ public final class AmityCommunityMemberSettingsViewController: AmityPageViewCont
 extension AmityCommunityMemberSettingsViewController: AmityCommunityMemberSettingsScreenViewModelDelegate {
     func screenViewModelShouldShowAddButtonBarItem(status: Bool) {
         if status {
-            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(addMemberTap))
+            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
             rightItem.tintColor = AmityColorSet.base
             navigationItem.rightBarButtonItem = rightItem
             navigationController?.reset()

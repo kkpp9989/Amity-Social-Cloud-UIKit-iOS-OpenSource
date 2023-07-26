@@ -20,9 +20,8 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     private init() {
         super.init(nibName: AmityCommunityHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
-        /* [Original] */
-        //        title = AmityLocalizedStringSet.communityHomeTitle.localizedString
         /* [Custom for ONE Krungthai] Set title of navigation bar to nil and add title to left navigation item at setupNavigationBar() instead */
+//        title = AmityLocalizedStringSet.communityHomeTitle.localizedString
         title = nil
     }
     
@@ -69,13 +68,13 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     private func setupNavigationBar() {
         /* Right items */
         // Search Button
-        let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearch, style: .plain, target: self, action: #selector(searchTap))
+        let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(searchTap)) // [Custom for ONE Krungthai] Set custom icon theme
         searchItem.tintColor = AmityColorSet.base
         // Create post Button
         // [Custom for ONE Krungthai] Move create post button to navigation bar
-        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createPostTap))
+        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
         createPostItem.tintColor = AmityColorSet.base
-        // Add all component to right navigation item
+        // Add all component to right navigation items
         navigationItem.rightBarButtonItems = [searchItem, createPostItem]
         
         /* Left items */
@@ -85,9 +84,9 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
         title.font = AmityFontSet.headerLine
         // Back button (Refer default leftBarButtonItem from AmityViewController)
-        let backButton = UIBarButtonItem(image: AmityIconSet.iconBack, style: .plain, target: self, action: #selector(didTapLeftBarButton))
+        let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
         backButton.tintColor = AmityColorSet.base
-        // Add all component to left navigation item
+        // Add all component to left navigation items
         navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
     }
 }

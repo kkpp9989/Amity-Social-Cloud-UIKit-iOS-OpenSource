@@ -70,6 +70,19 @@
                                     <action selector="didReactionInCellIsTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Lk3-Fk-Q09"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YXD-tV-oUw">
+                                <rect key="frame" x="223" y="16" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="Ljb-gh-JsF"/>
+                                    <constraint firstAttribute="height" constant="30" id="O2o-Zg-exz"/>
+                                </constraints>
+                                <color key="tintColor" systemColor="tintColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="like_icon_fill"/>
+                                <connections>
+                                    <action selector="didReactionInCellIsTapped" destination="KGk-i7-Jjw" eventType="touchUpInside" id="lN0-BU-AH1"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
@@ -77,6 +90,8 @@
                             <constraint firstAttribute="trailing" secondItem="s5n-oN-bC1" secondAttribute="trailing" constant="8" id="5Mu-zK-KX8"/>
                             <constraint firstItem="WVN-eU-pbS" firstAttribute="leading" secondItem="OqD-xq-rxb" secondAttribute="leading" constant="5" id="9AR-eA-a7w"/>
                             <constraint firstItem="s5n-oN-bC1" firstAttribute="leading" secondItem="WVN-eU-pbS" secondAttribute="trailing" constant="8" id="TGM-6c-aD8"/>
+                            <constraint firstItem="YXD-tV-oUw" firstAttribute="centerX" secondItem="s5n-oN-bC1" secondAttribute="centerX" id="dMm-SF-YTq"/>
+                            <constraint firstItem="YXD-tV-oUw" firstAttribute="centerY" secondItem="s5n-oN-bC1" secondAttribute="centerY" id="jf3-1h-GxG"/>
                             <constraint firstAttribute="bottom" secondItem="WVN-eU-pbS" secondAttribute="bottom" id="q6d-eP-aKn"/>
                             <constraint firstItem="s5n-oN-bC1" firstAttribute="centerY" secondItem="OqD-xq-rxb" secondAttribute="centerY" id="udF-pO-37d"/>
                         </constraints>
@@ -98,12 +113,14 @@
                 <outlet property="commentView" destination="OqD-xq-rxb" id="wrM-Te-CYU"/>
                 <outlet property="displayNameLabel" destination="5cg-Cj-kTB" id="9B2-al-KJG"/>
                 <outlet property="likeButton" destination="s5n-oN-bC1" id="bik-EH-Ekr"/>
+                <outlet property="unlikeButton" destination="YXD-tV-oUw" id="TlN-xT-ISt"/>
             </connections>
             <point key="canvasLocation" x="68.702290076335871" y="28.87323943661972"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="like_icon" width="20" height="20"/>
+        <image name="like_icon_fill" width="20" height="20"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
