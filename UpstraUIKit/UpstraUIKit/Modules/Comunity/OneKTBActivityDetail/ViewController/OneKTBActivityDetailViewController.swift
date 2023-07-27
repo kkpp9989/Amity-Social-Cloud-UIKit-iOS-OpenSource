@@ -236,7 +236,15 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     }
     
     private func updateContentHeight() {
-        delegate?.childViewController(self, didUpdateContentHeight: 150)
+        let screenHeight = UIScreen.main.bounds.height
+        let contentHeight = tableView.contentSize.height
+        let maxHeight = screenHeight // Custom offset if needed
+        
+        if contentHeight > maxHeight {
+            delegate?.childViewController(self, didUpdateContentHeight: maxHeight)
+        } else {
+            delegate?.childViewController(self, didUpdateContentHeight: contentHeight + 30)
+        }
     }
     
     private func openCommentView() {
