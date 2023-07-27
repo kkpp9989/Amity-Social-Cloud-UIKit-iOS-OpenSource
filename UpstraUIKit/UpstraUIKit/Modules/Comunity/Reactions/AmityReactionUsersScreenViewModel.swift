@@ -88,7 +88,7 @@ class AmityReactionUsersScreenViewModel {
         liveCollection = nil
         
         // Query reactions
-        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: AmityReactionType.like.rawValue)
+        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: nil)
         token = liveCollection?.observe({ [weak self] liveCollection, _, error in
             guard let weakSelf = self else { return }
 
