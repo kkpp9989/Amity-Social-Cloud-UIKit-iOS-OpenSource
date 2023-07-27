@@ -26,14 +26,14 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
     private let debouncer = Debouncer(delay: 0.3)
     private(set) var community: AmityCommunity?
     
-    private var streamId: String?
-    
+    private var isComment: Bool = false
+        
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
          reactionController: AmityReactionControllerProtocol,
          childrenController: AmityCommentChildrenController,
-         withStreamId streamId: String?
+         withIsComment isComment: Bool
     ) {
         self.postId = postId
         self.postController = postController
@@ -41,7 +41,7 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
         self.reactionController = reactionController
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
-        self.streamId = streamId
+        self.isComment = isComment
     }
     
 }
@@ -108,50 +108,52 @@ extension OneKTBActivityDetailScreenViewModel {
         }
         
         // prepare comments
-        for model in comments {
-            var commentsModels = [PostDetailViewModel]()
-            
-            // parent comment
-            commentsModels.append(.comment(model))
-            
-            // if parent is deleted, don't show its children.
-            guard !model.isDeleted else {
+        if isComment {
+            for model in comments {
+                var commentsModels = [PostDetailViewModel]()
+                
+                // parent comment
+                commentsModels.append(.comment(model))
+                
+                // if parent is deleted, don't show its children.
+                guard !model.isDeleted else {
+                    viewModels.append(commentsModels)
+                    continue
+                }
+                
+                // child comments
+                let parentId = model.id
+                var loadedItems = childrenController.childrenComments(for: parentId)
+                let itemToDisplay = childrenController.numberOfDisplayingItem(for: parentId)
+                let deletedItemCount = childrenController.numberOfDeletedChildren(for: parentId)
+                
+                // loadedItems will be empty on the first load.
+                // set childrenComment directly to reduce number of server request.
+                if loadedItems.isEmpty {
+                    loadedItems = model.childrenComment.reversed()
+                }
+                
+                // model.childrenNumber doesn't include deleted children.
+                // so, add it directly to correct the total count.
+                let totalItemCount = model.childrenNumber + deletedItemCount
+                let shouldShowLoadmore = itemToDisplay < totalItemCount
+                let isReadyToShow = itemToDisplay <= loadedItems.count
+                let isAllLoaded = loadedItems.count == totalItemCount
+                
+                // visible items are limited by itemToDisplay.
+                // see more: AmityCommentChildrenController.swift
+                let postDetailViewModels: [PostDetailViewModel] = loadedItems.map({ PostDetailViewModel.replyComment($0) })
+                commentsModels += Array(postDetailViewModels.prefix(itemToDisplay))
+                
+                if shouldShowLoadmore {
+                    commentsModels.append(.loadMoreReply)
+                }
+                if !(isReadyToShow || isAllLoaded) {
+                    loadChild(commentId: model.id)
+                }
+                
                 viewModels.append(commentsModels)
-                continue
             }
-            
-            // child comments
-            let parentId = model.id
-            var loadedItems = childrenController.childrenComments(for: parentId)
-            let itemToDisplay = childrenController.numberOfDisplayingItem(for: parentId)
-            let deletedItemCount = childrenController.numberOfDeletedChildren(for: parentId)
-            
-            // loadedItems will be empty on the first load.
-            // set childrenComment directly to reduce number of server request.
-            if loadedItems.isEmpty {
-                loadedItems = model.childrenComment.reversed()
-            }
-            
-            // model.childrenNumber doesn't include deleted children.
-            // so, add it directly to correct the total count.
-            let totalItemCount = model.childrenNumber + deletedItemCount
-            let shouldShowLoadmore = itemToDisplay < totalItemCount
-            let isReadyToShow = itemToDisplay <= loadedItems.count
-            let isAllLoaded = loadedItems.count == totalItemCount
-            
-            // visible items are limited by itemToDisplay.
-            // see more: AmityCommentChildrenController.swift
-            let postDetailViewModels: [PostDetailViewModel] = loadedItems.map({ PostDetailViewModel.replyComment($0) })
-            commentsModels += Array(postDetailViewModels.prefix(itemToDisplay))
-            
-            if shouldShowLoadmore {
-                commentsModels.append(.loadMoreReply)
-            }
-            if !(isReadyToShow || isAllLoaded) {
-                loadChild(commentId: model.id)
-            }
-            
-            viewModels.append(commentsModels)
         }
         
         self.viewModelArrays = viewModels
