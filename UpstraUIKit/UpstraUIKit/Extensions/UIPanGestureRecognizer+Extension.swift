@@ -39,3 +39,7 @@ extension UIPanGestureRecognizer {
     }
     
 }
+
+final public class CustomTapGestureRecognizer: UITapGestureRecognizer {
+    public var vc: OneKTBActivityDetailViewController?
+}

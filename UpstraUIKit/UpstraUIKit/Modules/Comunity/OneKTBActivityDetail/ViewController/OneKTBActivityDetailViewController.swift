@@ -36,8 +36,9 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
     
-    private var livestreamId: String?
-    
+    private var postId: String?
+    private var isComment: Bool
+
     private var parentComment: AmityCommentModel? {
         didSet {
             commentComposeBarView.replyingUsername = parentComment?.displayName
@@ -53,7 +54,9 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - Initializer
-    required public init(withPostId postId: String, withStreamId streamId: String?) {
+    required public init(withPostId postId: String, withIsComment isComment: Bool) {
+        self.isComment = isComment
+        self.postId = postId
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reactionController = AmityReactionController()
@@ -63,7 +66,7 @@ open class OneKTBActivityDetailViewController: AmityViewController {
                                                               commentController: commentController,
                                                               reactionController: reactionController,
                                                               childrenController: childrenController,
-                                                              withStreamId: streamId)
+                                                              withIsComment: isComment)
         super.init(nibName: OneKTBActivityDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -76,8 +79,8 @@ open class OneKTBActivityDetailViewController: AmityViewController {
         tableView.removeObserver(self, forKeyPath: "contentSize")
     }
     
-    public class func make(withPostId postId: String, withStreamId streamId: String? = nil) -> Self {
-        return self.init(withPostId: postId, withStreamId: streamId)
+    public class func make(withPostId postId: String, withIsComment isComment: Bool) -> Self {
+        return self.init(withPostId: postId, withIsComment: isComment)
     }
     
     // Observe content size changes and update the height constraint
@@ -182,6 +185,12 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     private func setupComposeBarView() {
         commentComposeBarView.delegate = self
         commentComposeBarView.isHidden = true
+        
+        if !isComment {
+            NSLayoutConstraint.activate([
+                commentComposeBarView.heightAnchor.constraint(equalToConstant: 0),
+            ])
+        }
     }
     
     private func setupReactionPicker() {
@@ -222,19 +231,18 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     
     private func showReactionUserList(info: AmityReactionInfo) {
         let controller = AmityReactionPageViewController.make(info: [info])
-        self.navigationController?.pushViewController(controller, animated: true)
+        controller.modalPresentationStyle = .popover
+        present(controller, animated: true, completion: nil)
     }
     
     private func updateContentHeight() {
-        let screenHeight = UIScreen.main.bounds.height
-        let contentHeight = tableView.contentSize.height
-        let maxHeight = screenHeight // Custom offset if needed
-        
-        if contentHeight > maxHeight {
-            delegate?.childViewController(self, didUpdateContentHeight: maxHeight)
-        } else {
-            delegate?.childViewController(self, didUpdateContentHeight: contentHeight + 30)
-        }
+        delegate?.childViewController(self, didUpdateContentHeight: 150)
+    }
+    
+    private func openCommentView() {
+        let amityCommentVC = OneKTBActivityDetailViewController.make(withPostId: postId ?? "", withIsComment: true)
+        amityCommentVC.modalPresentationStyle = .popover
+        present(amityCommentVC, animated: true, completion: nil)
     }
 }
 
@@ -254,7 +262,7 @@ extension OneKTBActivityDetailViewController {
         }
     }
     
-    private func hideReactionPicker() {
+    public func hideReactionPicker() {
         UIView.animate(withDuration: 0.1) {
             self.reactionPickerView.alpha = 0 // Fade out
         }
@@ -436,7 +444,9 @@ extension OneKTBActivityDetailViewController: OneKTBActivityDetailScreenViewMode
     func screenViewModelDidUpdateData(_ viewModel: OneKTBActivityDetailScreenViewModelType) {
         tableView.reloadData()
         if let post = screenViewModel.post {
-            commentComposeBarView.configure(with: post)
+            if isComment {
+                commentComposeBarView.configure(with: post)
+            }
         }
         
         setupMentionManager()
@@ -560,10 +570,8 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
         switch action {
         case .tapLike:
             if let reactionType = post.reacted {
-//                screenViewModel.action.unlikePost()
                 screenViewModel.action.removeReactionPost(type: reactionType)
             } else {
-//                screenViewModel.action.likePost()
                 reactionPickerView.onSelect = { [weak self] reactionType in
                     self?.hideReactionPicker()
                     self?.screenViewModel.action.addReactionPost(type: reactionType)
@@ -571,9 +579,13 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
                 showReactionPicker()
             }
         case .tapComment:
-            parentComment = nil
-            if post.isGroupMember {
-                _ = commentComposeBarView.becomeFirstResponder()
+            if isComment {
+                parentComment = nil
+                if post.isGroupMember {
+                    _ = commentComposeBarView.becomeFirstResponder()
+                }
+            } else {
+                openCommentView()
             }
         case .tapReactionDetails:
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
