@@ -20,10 +20,16 @@ public final class AmityUserFollowersViewController: AmityPageViewController {
     private var selectedControllerType: AmityFollowerViewType?
     private var screenViewModel: AmityUserFollowersScreenViewModelType!
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupViewModel()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
 
     public static func make(withUserId userId: String, isFollowersSelected: Bool = false) -> AmityUserFollowersViewController {
@@ -48,6 +54,13 @@ public final class AmityUserFollowersViewController: AmityPageViewController {
             setSelected(viewController: vc)
             selectedControllerType = nil
         }
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
