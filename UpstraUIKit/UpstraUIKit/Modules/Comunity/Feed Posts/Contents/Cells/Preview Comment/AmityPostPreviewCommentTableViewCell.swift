@@ -104,7 +104,7 @@ extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
             // [Custom for ONE Krungthai] Add check moderator user in official community for prepare tap action
             if view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity { // Case : Post is from official community and owner is moderator
                 if let currentPost = post, view.shouldDidTapAction { // Post must to output from newsfeed only
-                    performAction(action: .tapCommunityName(post: currentPost))
+                    performAction(action: .tapCommunityName(post: currentPost)) // Send post model for get community model
                 }
             } else { // Case : Post isn't from official community or owner isn't moderator
                 performAction(action: .tapAvatar(comment: comment))

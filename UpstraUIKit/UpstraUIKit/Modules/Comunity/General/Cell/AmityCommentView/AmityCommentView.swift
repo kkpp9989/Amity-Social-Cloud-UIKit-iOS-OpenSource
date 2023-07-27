@@ -127,7 +127,7 @@ class AmityCommentView: AmityView {
         }
         
         // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
-        if let community = post?.targetCommunity { // Case : Comment from community
+        if let community = post?.targetCommunity { // Case : Comment from post community
             isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: comment.userId, communityId: community.communityId)
             isOfficialCommunity = community.isOfficial
             if let currentPost = post, isModeratorUserInOfficialCommunity, isOfficialCommunity { // Case : Comment owner is moderator in official community
