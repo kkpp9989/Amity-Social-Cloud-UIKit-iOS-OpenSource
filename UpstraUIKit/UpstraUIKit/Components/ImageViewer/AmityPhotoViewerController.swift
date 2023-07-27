@@ -288,6 +288,12 @@ public class AmityPhotoViewerController: UIViewController {
         default:
             break
         }
+        
+        if media.type == .video {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+                delegate?.photoViewerControllerDidReceiveTapGesture?(self)
+            }
+        }
     }
     
     
