@@ -42,8 +42,10 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         return isValueChanged && isValueExisted
     }
     
+    // [Custom for ONE Krungthai] Seperate max character each data
     private enum Constant {
-        static let maxCharactor: Int = 100
+        static let maxCharacterOfDisplayname: Int = 100
+        static let maxCharacterOfAboutInfo: Int = 180
     }
     
     private init() {
@@ -112,7 +114,7 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         displayNameTextField.delegate = self
         displayNameTextField.borderStyle = .none
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
-        displayNameTextField.maxLength = Constant.maxCharactor
+        displayNameTextField.maxLength = Constant.maxCharacterOfDisplayname
         
         // [Fix defect] Set font of displayname text field refer to AmityFontSet
         displayNameTextField.font = AmityFontSet.body
@@ -128,7 +130,9 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         aboutCounterLabel.font = AmityFontSet.caption
         aboutCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
         aboutTextView.customTextViewDelegate = self
-        aboutTextView.maxCharacters = Constant.maxCharactor
+        
+        // [Custom for ONE Krungthai] Set constant from maxCharacterOfAboutInfo instead
+        aboutTextView.maxCharacters = Constant.maxCharacterOfAboutInfo
         
         // [Fix defect] Set font of about text field refer to AmityFontSet
         aboutTextView.font = AmityFontSet.body
