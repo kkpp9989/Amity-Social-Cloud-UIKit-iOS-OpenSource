@@ -265,7 +265,7 @@ extension AmityPostDetailScreenViewModel {
     
     func fetchComments() {
         DispatchQueue.main.async { [self] in
-            commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .descending, includeDeleted: true) { [weak self] (result) in
+            commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .ascending, includeDeleted: true) { [weak self] (result) in
                 switch result {
                 case .success(let comments):
                     self?.comments = comments
