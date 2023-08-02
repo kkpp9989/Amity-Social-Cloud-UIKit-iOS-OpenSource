@@ -156,6 +156,11 @@ public final class AmityUIKitManager {
     public static func set(channelEventHandler: AmityChannelEventHandler) {
         AmityChannelEventHandler.shared = channelEventHandler
     }
+    
+    // [Improvement] Add function for update file repository when session state is established and don't want to register device again
+    public static func updateFileRepository() {
+        AmityUIKitManagerInternal.shared.didUpdateClient()
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -280,7 +285,7 @@ final class AmityUIKitManagerInternal: NSObject {
         }
     }
     
-    private func didUpdateClient() {
+    func didUpdateClient() {
         // Update file repository to use in file service.
         fileService.fileRepository = AmityFileRepository(client: client)
         messageMediaService.fileRepository = AmityFileRepository(client: client)
