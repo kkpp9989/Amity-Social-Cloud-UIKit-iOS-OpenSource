@@ -28,6 +28,13 @@ final public class AmityPostTabbarViewController: UIViewController {
         super.viewDidLoad()
         setupView()
     }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // [Fix defect] Add reload user profile image when this open community home first time after open app and update user profile image
+        reloadAvatarImage()
+    }
 
     public static func make() -> AmityPostTabbarViewController {
         let vc = AmityPostTabbarViewController(nibName: AmityPostTabbarViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -51,6 +58,10 @@ final public class AmityPostTabbarViewController: UIViewController {
     
     func reloadView() {
         delegate?.viewController(self)
+    }
+    
+    private func reloadAvatarImage() {
+        avatarView.setImage(withImageURL: AmityUIKitManager.avatarURL, placeholder: AmityIconSet.defaultAvatar)
     }
     
     @objc func avatarTap() {
