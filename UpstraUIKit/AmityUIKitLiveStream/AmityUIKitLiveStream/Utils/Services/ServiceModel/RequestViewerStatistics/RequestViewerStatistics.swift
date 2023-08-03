@@ -45,9 +45,9 @@ struct RequestViewerStatistics {
                 }
                 completion(.success(dataModel))
             case 400...499:
-                completion(.failure("Page not found" as! Error))
+                completion(.failure(HandleError.notFound))
             default:
-                completion(.failure("Service Error" as! Error))
+                completion(.failure(HandleError.connectionError))
             }
         }
     }
