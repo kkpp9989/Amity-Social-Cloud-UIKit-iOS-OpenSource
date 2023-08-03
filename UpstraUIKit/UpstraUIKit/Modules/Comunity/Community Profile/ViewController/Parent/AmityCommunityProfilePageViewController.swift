@@ -123,9 +123,10 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
             createPostItem.tintColor = AmityColorSet.base
             let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: screenViewModel.communityId)
             let isOfficial = self.screenViewModel.community?.isOfficial ?? false
+            let isOnlyAdminCanPost = self.screenViewModel.community?.object.onlyAdminCanPost ?? false
             
             if isOfficial { // Case : Official community
-                if isModeratorUserInOfficialCommunity { // Case : Moderator user in official community
+                if isModeratorUserInOfficialCommunity || isOnlyAdminCanPost { // Case : Moderator user or set only admin can post in official community
                     rightButtonItems.append(createPostItem)
                 }
             } else { // Case : Not official community
