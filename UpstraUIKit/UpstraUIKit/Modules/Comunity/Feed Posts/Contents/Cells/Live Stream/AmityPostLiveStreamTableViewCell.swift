@@ -163,7 +163,9 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
     }
     
     func setViewerCount(viewerCount: Int) {
-        viewerCountLabel.text = String(viewerCount.formatUsingAbbrevation())
+        DispatchQueue.main.async { [self] in
+            viewerCountLabel.text = String(viewerCount.formatUsingAbbrevation())
+        }
     }
     
     @IBAction private func playLiveStreamButtonDidTouch() {
