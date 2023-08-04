@@ -233,6 +233,10 @@ final class AmityUIKitManagerInternal: NSObject {
             
             // [Custom for ONE Krungthai] Add register user token function for request custom API
             self?.registerUserToken(userId: userId, authToken: authToken ?? "")
+            
+            // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+            self?.disableLivestreamUserLevelNotification()
+            
             completion?(true, error)
         }
     }
@@ -275,6 +279,16 @@ final class AmityUIKitManagerInternal: NSObject {
             } catch let error {
             }
         }
+    }
+    
+    // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+    func disableLivestreamUserLevelNotification() {
+        let userNotificationManager = client.notificationManager
+        
+        userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .videoStreaming, isEnabled: false, roleFilter: nil)]) { result, error in
+            print("[Livestream-notification] Disable livestream user level notification result : \(result)")
+        }
+        
     }
     
     // MARK: - Helpers
