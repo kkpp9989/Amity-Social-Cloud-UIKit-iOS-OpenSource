@@ -9,6 +9,10 @@
 import AmitySDK
 import UIKit
 
+enum CustomAmityCommunityPermission {
+    case userCanPost
+}
+
 class AmityPostTargetPickerScreenViewModel: AmityPostTargetPickerScreenViewModelType {
     
     weak var delegate: AmityPostTargetPickerScreenViewModelDelegate?
@@ -17,11 +21,21 @@ class AmityPostTargetPickerScreenViewModel: AmityPostTargetPickerScreenViewModel
     private var communityCollection: AmityCollection<AmityCommunity>?
     private var categoryCollectionToken:AmityNotificationToken?
     
+    private var communities: [AmityCommunity] = []
+    
     func observe() {
         let queryOptions = AmityCommunityQueryOptions(displayName: "", filter: .userIsMember, sortBy: .displayName, includeDeleted: false)
         communityCollection = communityRepository.getCommunities(with: queryOptions)
         categoryCollectionToken = communityCollection?.observe({ [weak self] (collection, _, _) in
             guard let strongSelf = self else { return }
+            
+            // [Fix-defect] Add filter community from user can post setting
+            let latestResultCommunities = collection.allObjects().filter { _community in
+                return strongSelf.checkCurrentLoginUserCommunityPermission(community: _community, permission: .userCanPost)
+            }
+            
+            strongSelf.communities = latestResultCommunities
+            
             switch collection.dataStatus {
             case .fresh:
                 strongSelf.delegate?.screenViewModelDidUpdateItems(strongSelf)
@@ -31,11 +45,13 @@ class AmityPostTargetPickerScreenViewModel: AmityPostTargetPickerScreenViewModel
     }
     
     func numberOfItems() -> Int {
-        return Int(communityCollection?.count() ?? 0)
+//        return Int(communityCollection?.count() ?? 0)
+        return communities.count
     }
     
     func community(at indexPath: IndexPath) -> AmityCommunity? {
-        return communityCollection?.object(at: indexPath.row)
+//        return communityCollection?.object(at: indexPath.row)
+        return communities[indexPath.row]
     }
     
     func loadNext() {
@@ -46,6 +62,29 @@ class AmityPostTargetPickerScreenViewModel: AmityPostTargetPickerScreenViewModel
         default:
             break
         }
+    }
+    
+    private func checkCurrentLoginUserCommunityPermission(community: AmityCommunity, permission: CustomAmityCommunityPermission) -> Bool {
+        var result: Bool = false
+        
+        switch permission {
+        case .userCanPost:
+            let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: community.communityId)
+            let isOfficial = community.isOfficial
+            let isOnlyAdminCanPost = community.onlyAdminCanPost
+            
+            if isOfficial { // Case : Official community
+                if isModeratorUserInOfficialCommunity || isOnlyAdminCanPost { // Case : Moderator user or set only admin can post in official community
+                    result = true
+                }
+            } else { // Case : Not official community
+                result = true
+            }
+        default:
+            break
+        }
+        
+        return result
     }
     
 }
