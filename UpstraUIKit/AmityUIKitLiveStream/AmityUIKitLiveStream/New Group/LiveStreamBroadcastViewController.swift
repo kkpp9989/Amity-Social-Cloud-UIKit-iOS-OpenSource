@@ -728,7 +728,7 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = createdPost else { return }
             let serviceRequest = RequestViewerStatistics()
-            serviceRequest.sendViewerStatistics(postId: currentPost.postId, viewerUserId: client.currentUserId ?? "", viewerDisplayName: client.user?.object?.displayName ?? "", isTrack: true, streamId: "") { result in
+            serviceRequest.sendViewerStatistics(postId: currentPost.postId, viewerUserId: client.currentUserId ?? "", viewerDisplayName: client.user?.object?.displayName ?? "", isTrack: false, streamId: "") { result in
                 switch result {
                 case .success(let dataResponse):
                     self.viewerCount = dataResponse.viewerCount ?? 0
