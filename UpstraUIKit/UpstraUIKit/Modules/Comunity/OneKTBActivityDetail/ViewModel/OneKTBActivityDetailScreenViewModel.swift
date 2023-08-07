@@ -108,10 +108,12 @@ extension OneKTBActivityDetailScreenViewModel {
         }
         
         // prepare comments
-        if isComment {
-            for model in comments {
-                var commentsModels = [PostDetailViewModel]()
-                
+        var index: Int = 0
+        for model in comments {
+            index += 1
+            var commentsModels = [PostDetailViewModel]()
+            
+            if index <= 2 {
                 // parent comment
                 commentsModels.append(.comment(model))
                 
@@ -192,7 +194,7 @@ extension OneKTBActivityDetailScreenViewModel {
     }
     
     func fetchComments() {
-        commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .descending, includeDeleted: true) { [weak self] (result) in
+        commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .ascending, includeDeleted: true) { [weak self] (result) in
             switch result {
             case .success(let comments):
                 self?.comments = comments
