@@ -124,13 +124,11 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
             let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: screenViewModel.communityId)
             let isOfficial = self.screenViewModel.community?.isOfficial ?? false
             let isOnlyAdminCanPost = self.screenViewModel.community?.object.onlyAdminCanPost ?? false
+            rightButtonItems.append(createPostItem)
             
-            if isOfficial { // Case : Official community
-                if isModeratorUserInOfficialCommunity || isOnlyAdminCanPost { // Case : Moderator user or set only admin can post in official community
-                    rightButtonItems.append(createPostItem)
-                }
-            } else { // Case : Not official community
-                rightButtonItems.append(createPostItem)
+            // Check permission from backend setting
+            if isOnlyAdminCanPost && !isModeratorUserInOfficialCommunity {
+                rightButtonItems.removeLast() // Case : Can't post -> hide create post button
             }
             
             // Add all button to navigation bar

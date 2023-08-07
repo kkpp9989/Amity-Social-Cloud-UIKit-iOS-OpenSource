@@ -65,20 +65,17 @@ class AmityPostTargetPickerScreenViewModel: AmityPostTargetPickerScreenViewModel
     }
     
     private func checkCurrentLoginUserCommunityPermission(community: AmityCommunity, permission: CustomAmityCommunityPermission) -> Bool {
-        var result: Bool = false
+        var result: Bool = true
         
         switch permission {
         case .userCanPost:
             let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: community.communityId)
             let isOfficial = community.isOfficial
             let isOnlyAdminCanPost = community.onlyAdminCanPost
-            
-            if isOfficial { // Case : Official community
-                if isModeratorUserInOfficialCommunity || isOnlyAdminCanPost { // Case : Moderator user or set only admin can post in official community
-                    result = true
-                }
-            } else { // Case : Not official community
-                result = true
+
+            // Check permission from backend setting
+            if isOnlyAdminCanPost && !isModeratorUserInOfficialCommunity {
+                result = false // Case : Can't post -> remove this community from post community picker
             }
         default:
             break
