@@ -745,10 +745,14 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
-            if comment.isLiked {
-                screenViewModel.action.unlikeComment(withCommendId: comment.id)
+            if isComment {
+                if comment.isLiked {
+                    screenViewModel.action.unlikeComment(withCommendId: comment.id)
+                } else {
+                    screenViewModel.action.likeComment(withCommendId: comment.id)
+                }
             } else {
-                screenViewModel.action.likeComment(withCommendId: comment.id)
+                openCommentView()
             }
         case .post, .loadMoreReply:
             break
@@ -759,14 +763,22 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
         guard let indexPath = tableView.indexPath(for: cell),
             case .comment(let comment) = screenViewModel.item(at: indexPath) else { return }
         parentComment = comment
-        _ = commentComposeBarView.becomeFirstResponder()
+        if isComment {
+            _ = commentComposeBarView.becomeFirstResponder()
+        } else {
+            openCommentView()
+        }
     }
     
     func commentCellDidTapOption(_ cell: AmityCommentTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
-            presentOptionBottomSheet(comment: comment)
+            if isComment {
+                presentOptionBottomSheet(comment: comment)
+            } else {
+                openCommentView()
+            }
         case .post, .loadMoreReply:
             break
         }
