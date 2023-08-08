@@ -227,7 +227,6 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
         actionStackView.isHidden = actionButton.isHidden
     }
     
-    
     private func shouldShowPendingsPostBanner() {
         switch screenViewModel.dataSource.memberStatusCommunity {
         case .guest:
@@ -235,7 +234,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
             self.isUpdateInProgress = false
         case .member:
             screenViewModel.action.getPendingPostCount { [weak self] pendingPostsCount in
-                self?.pendingPostsContainerView.isHidden = pendingPostsCount == 0
+                self?.pendingPostsContainerView.isHidden = true
                 self?.pendingPostsDescriptionLabel.text = AmityLocalizedStringSet.PendingPosts.statusMemberDesc.localizedString
                 self?.didUpdatePostBanner?()
                 self?.isUpdateInProgress = false
