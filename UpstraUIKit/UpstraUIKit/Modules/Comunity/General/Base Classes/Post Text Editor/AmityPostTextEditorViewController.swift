@@ -63,8 +63,6 @@ public class AmityPostTextEditorViewController: AmityViewController {
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
-    private var defaultHeightConstantPopupView: CGFloat = 240.0
-    
     private var isValueChanged: Bool {
         return !textView.text.isEmpty || !galleryView.medias.isEmpty || !fileView.files.isEmpty
     }
@@ -168,13 +166,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.isHidden = true
         mentionTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mentionTableView)
-        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 0)
+        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 240.0)
         
 //        hashtagTableView.isHidden = true
         hashtagTableView.translatesAutoresizingMaskIntoConstraints = false
         hashtagTableView.tag = 1
         view.addSubview(hashtagTableView)
-        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 0)
+        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 240.0)
         
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
@@ -298,7 +296,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + defaultHeightConstantPopupView, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
         scrollView.scrollIndicatorInsets = scrollView.contentInset
@@ -1091,7 +1089,7 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
             hashtagTableViewHeightConstraint.constant = 0
             hashtagTableView.isHidden = true
         } else {
-            var heightConstant:CGFloat = defaultHeightConstantPopupView
+            var heightConstant:CGFloat = 240.0
             if keywords.count < 5 {
                 heightConstant = CGFloat(keywords.count) * 65
             }
@@ -1111,7 +1109,7 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
             mentionTableViewHeightConstraint.constant = 0
             mentionTableView.isHidden = true
         } else {
-            var heightConstant:CGFloat = defaultHeightConstantPopupView
+            var heightConstant:CGFloat = 240.0
             if users.count < 5 {
                 heightConstant = CGFloat(users.count) * 52.0
             }
