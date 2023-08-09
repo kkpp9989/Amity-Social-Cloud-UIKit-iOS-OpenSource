@@ -13,10 +13,13 @@ class ONEKrungthaiCustomTheme {
     
     var viewController: UIViewController
     
+    static let defaultIconBarItemWidth: CGFloat = 32.0
+    static let defaultIconBarItemHeight: CGFloat = 32.0
+    
     init(viewController: UIViewController) {
         self.viewController = viewController
     }
-    
+    // MARK: Background of navigation bar
     public func setBackgroundApp(index: Int) {
         // Get gradient background
         let background = getGradientImageForBackgroundApp()
@@ -99,6 +102,17 @@ class ONEKrungthaiCustomTheme {
         
         // Create image
         return gradientLayer.createImage()
+    }
+    
+    // MARK: Icon of navigation bar
+    public static func groupButtonsToUIBarButtonItem(buttons: [UIButton]) -> UIBarButtonItem {
+        let customStackView = UIStackView.init(arrangedSubviews: buttons)
+        customStackView.distribution = .equalSpacing
+        customStackView.axis = .horizontal
+        customStackView.alignment = .center
+        customStackView.spacing = 12
+        
+        return UIBarButtonItem(customView: customStackView)
     }
 }
 

@@ -26,7 +26,7 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     private var screenViewModel: AmityUserProfileScreenViewModelType!
     
     // MARK: - Custom Theme Properties [Additional]
-    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
+    public var rightBarButtons: UIBarButtonItem = UIBarButtonItem()
     
     // MARK: - Initializer
     
@@ -76,22 +76,33 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     
     private func setupNavigationItem() {
         /* Right items */
-        var rightButtonItems: [UIBarButtonItem] = []
+        // [Improvement] Change set button solution to use custom stack view
+        var rightButtonItems: [UIButton] = []
         
-        // Option button
-        let optionItem = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // [Custom for ONE Krungthai] Set custom icon theme
-        optionItem.tintColor = AmityColorSet.base
-        rightButtonItems.append(optionItem)
+        // Create post button
+        let createPostButton: UIButton = UIButton.init(type: .custom)
+        createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+        createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(createPostButton)
         
-        // Create post button (with check moderator permission in official community)
-        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
-        createPostItem.tintColor = AmityColorSet.base
-        if screenViewModel.isCurrentUser { // Add create post item when profile is current user
-            rightButtonItems.append(createPostItem)
+        // Option Button
+        let optionButton: UIButton = UIButton.init(type: .custom)
+        optionButton.setImage(AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        optionButton.addTarget(self, action: #selector(optionTap), for: .touchUpInside)
+        optionButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(optionButton)
+        
+        // Check is current login user profile
+        if !screenViewModel.isCurrentUser {
+            rightButtonItems.removeFirst() // Case : Isn't current login user profile -> remove create post button
         }
         
-        // Add all button to navigation bar
-        navigationItem.rightBarButtonItems = rightButtonItems
+        // Group all button to UIBarButtonItem
+        rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
+        
+        // Set custom stack view to UIBarButtonItem
+        navigationItem.rightBarButtonItem = rightBarButtons
     }
     
     private func setupViewModel() {
@@ -119,7 +130,7 @@ private extension AmityUserProfilePageViewController {
     }
     
     @objc func createPostTap() {
-        AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .myFeed, menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
+        AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .myFeed, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
     }
 }
 
