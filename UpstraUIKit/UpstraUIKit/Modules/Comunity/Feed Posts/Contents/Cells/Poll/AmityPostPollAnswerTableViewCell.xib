@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -34,18 +34,18 @@
                                     <stackView opaque="NO" contentMode="scaleAspectFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="fbm-68-5kt">
                                         <rect key="frame" x="0.0" y="0.0" width="433" height="91"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dSK-6R-Zcl" userLabel="Voting Detail Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="433" height="91"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fOk-Bm-43z">
+                                                <rect key="frame" x="0.0" y="0.0" width="418" height="85"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_radio_on" translatesAutoresizingMaskIntoConstraints="NO" id="e41-YO-6KR">
-                                                        <rect key="frame" x="0.0" y="33.5" width="24" height="24"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="24" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="24" id="XEB-fZ-Oud"/>
                                                             <constraint firstAttribute="width" constant="24" id="jJs-dH-5nq"/>
                                                         </constraints>
                                                     </imageView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i3V-xw-Dtq" customClass="AmityCustomPaddingTextLabel" customModule="AmityUIKit" customModuleProvider="target">
-                                                        <rect key="frame" x="32" y="3" width="401" height="85.5"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i3V-xw-Dtq">
+                                                        <rect key="frame" x="32" y="2" width="386" height="83"/>
                                                         <string key="text">Label 1
 Label 2
 ...
@@ -55,7 +55,16 @@ Label 4</string>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                 </subviews>
-                                            </stackView>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstItem="e41-YO-6KR" firstAttribute="top" secondItem="fOk-Bm-43z" secondAttribute="top" id="4Ib-em-Hvf"/>
+                                                    <constraint firstAttribute="bottom" secondItem="i3V-xw-Dtq" secondAttribute="bottom" id="73H-ac-FJj"/>
+                                                    <constraint firstAttribute="trailing" secondItem="i3V-xw-Dtq" secondAttribute="trailing" id="8oR-ir-fDA"/>
+                                                    <constraint firstItem="e41-YO-6KR" firstAttribute="leading" secondItem="fOk-Bm-43z" secondAttribute="leading" id="FNa-eX-Bnl"/>
+                                                    <constraint firstItem="i3V-xw-Dtq" firstAttribute="top" secondItem="fOk-Bm-43z" secondAttribute="top" constant="2" id="R4W-60-m5B"/>
+                                                    <constraint firstItem="i3V-xw-Dtq" firstAttribute="leading" secondItem="e41-YO-6KR" secondAttribute="trailing" constant="8" symbolic="YES" id="wiw-uB-P5U"/>
+                                                </constraints>
+                                            </view>
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="yQy-NE-f56">
@@ -131,6 +140,9 @@ Label 4</string>
     </designables>
     <resources>
         <image name="icon_radio_on" width="24" height="24"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
