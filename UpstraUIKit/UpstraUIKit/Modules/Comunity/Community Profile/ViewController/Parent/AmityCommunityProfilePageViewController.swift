@@ -22,7 +22,7 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
-    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
+    public var rightBarButtons: UIBarButtonItem = UIBarButtonItem()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,28 +111,36 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         /* Check user is join community before show button */
         if isJoined {
             /* Right items */
-            var rightButtonItems: [UIBarButtonItem] = []
+            // [Improvement] Change set button solution to use custom stack view
+            var rightButtonItems: [UIButton] = []
             
-            // Option button
-            let optionItem = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // // [Custom for ONE Krungthai] Set custom icon theme
-            optionItem.tintColor = AmityColorSet.base
-            rightButtonItems.append(optionItem)
+            // Create post button
+            let createPostButton: UIButton = UIButton.init(type: .custom)
+            createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+            createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(createPostButton)
             
-            // Create post button (with check moderator permission in official community)
-            createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
-            createPostItem.tintColor = AmityColorSet.base
+            // Option Button
+            let optionButton: UIButton = UIButton.init(type: .custom)
+            optionButton.setImage(AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            optionButton.addTarget(self, action: #selector(optionTap), for: .touchUpInside)
+            optionButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(optionButton)
+            
+            // Check permission of create post button
             let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: screenViewModel.communityId)
             let isOfficial = self.screenViewModel.community?.isOfficial ?? false
             let isOnlyAdminCanPost = self.screenViewModel.community?.object.onlyAdminCanPost ?? false
-            rightButtonItems.append(createPostItem)
-            
-            // Check permission from backend setting
             if isOnlyAdminCanPost && !isModeratorUserInOfficialCommunity {
-                rightButtonItems.removeLast() // Case : Can't post -> hide create post button
+                rightButtonItems.removeFirst() // Case : Can't post -> hide create post button
             }
             
-            // Add all button to navigation bar
-            navigationItem.rightBarButtonItems = rightButtonItems
+            // Group all button to UIBarButtonItem
+            rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
+            
+            // Set custom stack view to UIBarButtonItem
+            navigationItem.rightBarButtonItem = rightBarButtons
         }
     }
     
@@ -206,7 +214,7 @@ extension AmityCommunityProfilePageViewController: AmityCommunityProfileScreenVi
         switch route {
         case .post:
             // [Custom for ONE Krungthai] Change setting of create post menu | [Warning] Must to run setupNavigationItemOption() before this process because of permission
-            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object), menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
+            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object), menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
             // [Original]
 //            AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .community(object: community.object))
         case .member:
