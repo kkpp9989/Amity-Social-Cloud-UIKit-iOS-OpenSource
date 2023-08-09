@@ -32,20 +32,20 @@
                                 <rect key="frame" x="12" y="12" width="433" height="217"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleAspectFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="fbm-68-5kt">
-                                        <rect key="frame" x="0.0" y="0.0" width="433" height="91"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="433" height="95"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="dSK-6R-Zcl" userLabel="Voting Detail Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="433" height="91"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="433" height="95"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_radio_on" translatesAutoresizingMaskIntoConstraints="NO" id="e41-YO-6KR">
-                                                        <rect key="frame" x="0.0" y="33.5" width="24" height="24"/>
+                                                        <rect key="frame" x="0.0" y="35.5" width="24" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="24" id="XEB-fZ-Oud"/>
                                                             <constraint firstAttribute="width" constant="24" id="jJs-dH-5nq"/>
                                                         </constraints>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i3V-xw-Dtq" customClass="AmityCustomPaddingTextLabel" customModule="AmityUIKit" customModuleProvider="target">
-                                                        <rect key="frame" x="32" y="3" width="401" height="85.5"/>
+                                                        <rect key="frame" x="32" y="7" width="401" height="81.5"/>
                                                         <string key="text">Label 1
 Label 2
 ...
@@ -59,10 +59,10 @@ Label 4</string>
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="yQy-NE-f56">
-                                        <rect key="frame" x="0.0" y="91" width="433" height="126"/>
+                                        <rect key="frame" x="0.0" y="95" width="433" height="122"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s2B-V8-vre" customClass="AmityCustomPaddingTextLabel" customModule="AmityUIKit" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="0.0" width="433" height="85.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="433" height="81.5"/>
                                                 <string key="text">Label 1
 Label 2
 ...
@@ -72,13 +72,13 @@ Label 4</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="NcF-0m-57x">
-                                                <rect key="frame" x="0.0" y="89.5" width="433" height="12"/>
+                                                <rect key="frame" x="0.0" y="85.5" width="433" height="12"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="12" id="q9c-ih-9mo"/>
                                                 </constraints>
                                             </progressView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LZy-ld-GQf">
-                                                <rect key="frame" x="0.0" y="105.5" width="433" height="20.5"/>
+                                                <rect key="frame" x="0.0" y="101.5" width="433" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -121,14 +121,6 @@ Label 4</string>
             <point key="canvasLocation" x="-167.39130434782609" y="-10.379464285714285"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="i3V-xw-Dtq">
-            <size key="intrinsicContentSize" width="56.5" height="85.5"/>
-        </designable>
-        <designable name="s2B-V8-vre">
-            <size key="intrinsicContentSize" width="56.5" height="85.5"/>
-        </designable>
-    </designables>
     <resources>
         <image name="icon_radio_on" width="24" height="24"/>
         <systemColor name="systemBlueColor">

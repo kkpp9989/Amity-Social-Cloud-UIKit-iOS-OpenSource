@@ -13,16 +13,10 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var containerView: UIView!
     @IBOutlet private var votingStackView: UIStackView!
     @IBOutlet private var votedStackView: UIStackView!
-    
-    // [Fix-defect] Change type from UILabel to custom UILabel for set new padding value to compatible both of iOS and iPadOS
-    @IBOutlet private var titleLabel: AmityCustomPaddingTextLabel!
-    
+    @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var iconImageView: UIImageView!
     @IBOutlet private var statusView: UIView!
-    
-    // [Fix-defect] Change type from UILabel to custom UILabel for set new padding value to compatible both of iOS and iPadOS
-    @IBOutlet private var resultTitleLabel: AmityCustomPaddingTextLabel!
-    
+    @IBOutlet private var resultTitleLabel: UILabel!
     @IBOutlet private var voteProgressView: UIProgressView!
     @IBOutlet private var voteCountLabel: UILabel!
     
