@@ -13,11 +13,16 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var containerView: UIView!
     @IBOutlet private var votingStackView: UIStackView!
     @IBOutlet private var votedStackView: UIStackView!
-    @IBOutlet private var titleLabel: UILabel!
+    
+    // [Fix-defect] Change type from UILabel to custom UILabel for set new padding value to compatible both of iOS and iPadOS
+    @IBOutlet private var titleLabel: AmityCustomPaddingTextLabel!
+    
     @IBOutlet private var iconImageView: UIImageView!
     @IBOutlet private var statusView: UIView!
-   
-    @IBOutlet private var resultTitleLabel: UILabel!
+    
+    // [Fix-defect] Change type from UILabel to custom UILabel for set new padding value to compatible both of iOS and iPadOS
+    @IBOutlet private var resultTitleLabel: AmityCustomPaddingTextLabel!
+    
     @IBOutlet private var voteProgressView: UIProgressView!
     @IBOutlet private var voteCountLabel: UILabel!
     
@@ -34,10 +39,12 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        titleLabel.textAlignment = .left
         titleLabel.text = ""
         titleLabel.font = AmityFontSet.bodyBold
         titleLabel.textColor = AmityColorSet.base
+        resultTitleLabel.text = ""
+        resultTitleLabel.font = AmityFontSet.bodyBold
+        resultTitleLabel.textColor = AmityColorSet.base
         iconImageView.image = AmityIconSet.iconRadioOff
         iconImageView.isHidden = false
         containerView.layer.borderColor = AmityColorSet.base.blend(.shade4).cgColor
@@ -104,7 +111,6 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
         titleLabel.font = AmityFontSet.bodyBold
         titleLabel.textColor = AmityColorSet.base
         titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byCharWrapping
         titleLabel.preferredMaxLayoutWidth = votingStackView.bounds.width - 34 // [ImageWidth + Spacing]
     }
     
