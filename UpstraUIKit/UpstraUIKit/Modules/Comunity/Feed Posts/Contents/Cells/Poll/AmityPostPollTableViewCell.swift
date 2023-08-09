@@ -77,6 +77,11 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
         submitVoteButton.isEnabled = poll.answers.contains(where: { $0.isSelected })
         titlePollLabel.isExpanded = post.appearance.shouldContentExpand
         tableView.reloadData()
+        
+        // [Fix-defect] [Workaround] Reload data of table view again for adjust latest size setting of cell
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [self] in
+            tableView.reloadData()
+        }
     }
     
     private func computePollStatus(poll: AmityPostModel.Poll) -> String {
