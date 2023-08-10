@@ -166,13 +166,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.isHidden = true
         mentionTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mentionTableView)
-        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(lessThanOrEqualToConstant: 240.0)
+        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 1.0)
         
 //        hashtagTableView.isHidden = true
         hashtagTableView.translatesAutoresizingMaskIntoConstraints = false
         hashtagTableView.tag = 1
         view.addSubview(hashtagTableView)
-        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(lessThanOrEqualToConstant: 240.0)
+        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 1.0)
         
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
