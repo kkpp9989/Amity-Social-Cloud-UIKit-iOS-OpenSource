@@ -144,6 +144,10 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         }
     }
     
+    private func setupTitleCommunityProfileNavigationbar(_ name: String) {
+        title = name
+    }
+    
     private func showCommunitySettingModal() {
         if AmityCommunityProfilePageViewController.newCreatedCommunityIds.contains(screenViewModel.dataSource.communityId) {
             let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.communitySettings,
@@ -200,6 +204,7 @@ extension AmityCommunityProfilePageViewController: AmityCommunityProfileScreenVi
         postButton.isHidden = !community.isJoined
         header.updateView()
         setupNavigationItemOption(show: community.isJoined)
+        setupTitleCommunityProfileNavigationbar(community.displayName) // [Custom for ONE Krungthai] Set community name to title navigation bar in community profile
         AmityHUD.hide()
     }
     
