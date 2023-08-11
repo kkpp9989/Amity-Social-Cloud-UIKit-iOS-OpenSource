@@ -124,6 +124,11 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         likeButton.setTitleFont(AmityFontSet.bodyBold)
         likeButton.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
         
+        // Create a long press gesture recognizer
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
+        longPressRecognizer.minimumPressDuration = 1.5
+        likeButton.addGestureRecognizer(longPressRecognizer)
+        
         // like badge
         likeLabel.textColor = AmityColorSet.base.blend(.shade2)
         likeLabel.font = AmityFontSet.caption
@@ -193,48 +198,45 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         }
     }
     
-    private func setReactions(reactions: [String: Int]) {
-        let filteredReactions = reactions.filter { $1 != 0 }
-        let reactionKeys = Array(filteredReactions.keys)
-        if reactionKeys.count <= 0 {
-            likeLabelIcon.isHidden = true
-            twoReactionsView.isHidden = true
-            threeReactionsView.isHidden = true
-        }
-        else if reactionKeys.count == 1 {
-            likeLabelIcon.isHidden = false
-            twoReactionsView.isHidden = true
-            threeReactionsView.isHidden = true
-            
-            let reaction: String = reactionKeys[0]
-            likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
-        }
-        else if reactionKeys.count == 2 {
-            likeLabelIcon.isHidden = true
-            twoReactionsView.isHidden = false
-            threeReactionsView.isHidden = true
-            
-            let firstReaction: String = reactionKeys[0]
-            twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
-            
-            let secondReaction: String = reactionKeys[1]
-            twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
-        }
-        else {
-            likeLabelIcon.isHidden = true
-            twoReactionsView.isHidden = true
-            threeReactionsView.isHidden = false
-            
-            let firstReaction: String = reactionKeys[0]
-            threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
-            
-            let secondReaction: String = reactionKeys[1]
-            threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
-            
-            let thirdReaction: String = reactionKeys[2]
-            threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: thirdReaction) ?? .like)
-        }
-    }
+//    private func setReactions(reactions: [String: Int]) {
+//        let filteredReactions = reactions.filter { $1 != 0 }
+//        let reactionKeys = Array(filteredReactions.keys)
+//        if reactionKeys.count <= 0 {
+//            likeLabelIcon.isHidden = true
+//            twoReactionsView.isHidden = true
+//            threeReactionsView.isHidden = true
+//        } else if reactionKeys.count == 1 {
+//            likeLabelIcon.isHidden = false
+//            twoReactionsView.isHidden = true
+//            threeReactionsView.isHidden = true
+//
+//            let reaction: String = reactionKeys[0]
+//            likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
+//        } else if reactionKeys.count == 2 {
+//            likeLabelIcon.isHidden = true
+//            twoReactionsView.isHidden = false
+//            threeReactionsView.isHidden = true
+//
+//            let firstReaction: String = reactionKeys[0]
+//            twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
+//
+//            let secondReaction: String = reactionKeys[1]
+//            twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
+//        } else {
+//            likeLabelIcon.isHidden = true
+//            twoReactionsView.isHidden = true
+//            threeReactionsView.isHidden = false
+//
+//            let firstReaction: String = reactionKeys[0]
+//            threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
+//
+//            let secondReaction: String = reactionKeys[1]
+//            threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
+//
+//            let thirdReaction: String = reactionKeys[2]
+//            threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: thirdReaction) ?? .like)
+//        }
+//    }
     
     private func dnaLabelIcon(reactionType: AmityReactionType) -> UIImage? {
         switch reactionType {
@@ -269,7 +271,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
 private extension AmityPostFooterTableViewCell {
     
     @IBAction func likeTap() {
-        performAction(action: .tapLike, view: likeButton)
+        performAction(action: .tapLike)
     }
     
     @IBAction func commentTap() {
@@ -287,4 +289,89 @@ private extension AmityPostFooterTableViewCell {
     @IBAction func didTapReactionDetails() {
         performAction(action: .tapReactionDetails)
     }
+    
+    @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            performAction(action: .tapHoldLike, view: likeButton)
+        }
+    }
+}
+
+private extension AmityPostFooterTableViewCell {
+    
+    private func setReactions(reactions: [String: Int]) {
+        let reactionKeys = Array(reactions.keys)
+        let totalReactionsCount = reactionKeys.count
+        
+        if totalReactionsCount <= 0 {
+            hideAllReactionViews()
+        } else if totalReactionsCount == 1 {
+            showSingleReactionView(reaction: reactionKeys[0])
+        } else {
+            // Sort reaction keys based on priority (add your priority logic here)
+            let sortedReactionKeys = sortReactionKeys(reactionKeys: reactionKeys)
+            
+            if totalReactionsCount == 2 {
+                showTwoReactionsView(reactions: sortedReactionKeys)
+            } else {
+                showThreeReactionsView(reactions: sortedReactionKeys)
+            }
+        }
+    }
+    
+    private func sortReactionKeys(reactionKeys: [String]) -> [String] {
+        // Define the priority of reactions using the AmityReactionType enum
+        let priorityOrder: [AmityReactionType] = [.love, .honest, .success, .harmony, .society, .create, .like]
+        
+        // Sort reaction keys based on priority order
+        let sortedReactionKeys = reactionKeys.sorted { (key1, key2) -> Bool in
+            guard let reactionType1 = AmityReactionType(rawValue: key1),
+                  let reactionType2 = AmityReactionType(rawValue: key2) else {
+                return false // Default sorting behavior if reaction types are not valid
+            }
+            
+            guard let index1 = priorityOrder.firstIndex(of: reactionType1),
+                  let index2 = priorityOrder.firstIndex(of: reactionType2) else {
+                return false // Default sorting behavior if reaction types are not found in priorityOrder
+            }
+            
+            return index1 < index2
+        }
+        
+        return sortedReactionKeys
+    }
+    
+    private func hideAllReactionViews() {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+    }
+    
+    private func showSingleReactionView(reaction: String) {
+        likeLabelIcon.isHidden = false
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+        
+        likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
+    }
+    
+    private func showTwoReactionsView(reactions: [String]) {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = false
+        threeReactionsView.isHidden = true
+        
+        twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[0]) ?? .like)
+        twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[1]) ?? .like)
+    }
+    
+    private func showThreeReactionsView(reactions: [String]) {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = false
+        
+        threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[0]) ?? .like)
+        threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[1]) ?? .like)
+        threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[2]) ?? .like)
+    }
+
 }

@@ -87,6 +87,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var subscriptionManager: AmityTopicSubscription?
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
+    private var commentCount: Int = 0
 
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
@@ -116,6 +117,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManager.client)
         self.commentRepository = AmityCommentRepository(client: AmityUIKitManager.client)
         self.streamIdToWatch = streamIdToWatch
+        self.subscriptionManager = AmityTopicSubscription(client: AmityUIKitManager.client)
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
         self.postID = postID
         self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
@@ -227,6 +229,10 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTableView.showsVerticalScrollIndicator = false
         commentTableView.showsHorizontalScrollIndicator = false
         commentTableView.tag = 1
+        commentTextView.autocorrectionType = .no
+        commentTextView.spellCheckingType = .no
+        commentTextView.inputAccessoryView = UIView()
+        commentTextView.returnKeyType = .done
         
         let textViewToolbar: UIToolbar = UIToolbar()
         textViewToolbar.barStyle = .default
@@ -243,7 +249,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTextView.customTextViewDelegate = self
         commentTextView.textContainer.lineBreakMode = .byTruncatingTail
         commentTextView.placeholder = "Comment"
-        commentTextView.autocorrectionType = .no
         commentTextView.tag = 1
         
         liveCommentView.backgroundColor = .clear
@@ -727,6 +732,10 @@ extension LiveStreamPlayerViewController {
             guard let strongSelf = self else { return }
             strongSelf.commentTableView.reloadData()
             if !strongSelf.storedComment.isEmpty {
+                if strongSelf.commentCount != strongSelf.storedComment.count {
+                    strongSelf.commentCount = strongSelf.storedComment.count
+                    strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                }
                 guard let collection = strongSelf.collection else { return }
                 if collection.hasNext {
                     collection.nextPage()

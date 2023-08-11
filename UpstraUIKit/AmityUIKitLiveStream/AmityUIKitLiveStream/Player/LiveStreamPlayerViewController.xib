@@ -210,7 +210,7 @@ to watch shortly.</string>
                             <nil key="highlightedColor"/>
                         </label>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LHh-yY-eFb" userLabel="Comment TableView">
-                            <rect key="frame" x="0.0" y="2" width="414" height="270"/>
+                            <rect key="frame" x="0.0" y="2" width="345" height="270"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="270" id="aQF-aL-Vao"/>
@@ -289,8 +289,8 @@ to watch shortly.</string>
                         <constraint firstItem="55e-rX-D0h" firstAttribute="bottom" secondItem="LHh-yY-eFb" secondAttribute="bottom" id="I1T-bP-iuX"/>
                         <constraint firstAttribute="bottom" secondItem="jjN-LL-zMG" secondAttribute="bottom" id="OmZ-xb-GhS"/>
                         <constraint firstItem="jjN-LL-zMG" firstAttribute="leading" secondItem="qKF-U3-b83" secondAttribute="leading" id="Pfp-gf-MvM"/>
+                        <constraint firstItem="55e-rX-D0h" firstAttribute="leading" secondItem="LHh-yY-eFb" secondAttribute="trailing" constant="8" symbolic="YES" id="XDs-wJ-ch3"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="height" secondItem="55e-rX-D0h" secondAttribute="height" id="Z0d-Zy-Jt5"/>
-                        <constraint firstAttribute="trailing" secondItem="LHh-yY-eFb" secondAttribute="trailing" id="bqn-rR-UqI"/>
                         <constraint firstItem="LHh-yY-eFb" firstAttribute="leading" secondItem="qKF-U3-b83" secondAttribute="leading" id="cUC-mU-iBL"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="centerY" secondItem="55e-rX-D0h" secondAttribute="centerY" id="fu7-87-r6z"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="width" secondItem="55e-rX-D0h" secondAttribute="width" id="lre-As-97c"/>

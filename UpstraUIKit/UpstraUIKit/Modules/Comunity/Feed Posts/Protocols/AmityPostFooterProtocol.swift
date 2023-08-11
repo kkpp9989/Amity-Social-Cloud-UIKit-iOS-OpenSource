@@ -25,6 +25,7 @@ public protocol AmityPostFooterDelegate: AnyObject {
 /// A default action of footer post
 public enum AmityPostFooterAction {
     case tapLike
+    case tapHoldLike
     case tapComment
     case tapShare
     case tapReactionDetails

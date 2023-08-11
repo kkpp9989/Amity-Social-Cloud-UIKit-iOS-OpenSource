@@ -32,3 +32,19 @@ extension Nibbable {
     }
     
 }
+
+extension UITextField {
+    func setupWithoutSuggestions() {
+        autocorrectionType = .no
+        spellCheckingType = .no
+        inputAccessoryView = UIView()
+    }
+}
+
+extension UITextView {
+    func setupWithoutSuggestions() {
+        autocorrectionType = .no
+        spellCheckingType = .no
+        inputAccessoryView = UIView()
+    }
+}

@@ -414,6 +414,10 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         }
     }
     
+    func screenViewModelRouteToPostDetail(_ postId: String, viewModel: AmityFeedScreenViewModelType) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
+    
     // MARK: - Post
     func screenViewModelDidLikePostSuccess(_ viewModel: AmityFeedScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionLikePost()
@@ -496,7 +500,14 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel) {
         switch action {
         case .tapLike:
-            
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+            } else {
+                screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post)
+            }
+        case .tapComment, .tapReactionDetails:
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+        case .tapHoldLike:
             if let reactionType = post.reacted {
                 screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
             }
@@ -507,8 +518,6 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                 }
                 showReactionPicker()
             }
-        case .tapComment, .tapReactionDetails:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
         }
     }
 }

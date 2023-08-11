@@ -628,15 +628,9 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
         switch action {
         case .tapLike:
             if let reactionType = post.reacted {
-//                screenViewModel.action.unlikePost()
                 screenViewModel.action.removeReactionPost(type: reactionType)
             } else {
-//                screenViewModel.action.likePost()
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
-                }
-                showReactionPicker()
+                screenViewModel.action.addReactionPost(type: .create)
             }
         case .tapComment:
             parentComment = nil
@@ -646,6 +640,16 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
         case .tapReactionDetails:
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
             self.showReactionUserList(info: info)
+        case .tapHoldLike:
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReactionPost(type: reactionType)
+            } else {
+                reactionPickerView.onSelect = { [weak self] reactionType in
+                    self?.hideReactionPicker()
+                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+                }
+                showReactionPicker()
+            }
         }
     }
     

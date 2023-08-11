@@ -11,6 +11,7 @@ import UIKit
 
 enum AmityPostFooterProtocolHandlerAction {
     case tapLike
+    case tapHoldLike
     case tapComment
     case tapReactionDetails
 }
@@ -44,6 +45,8 @@ final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
             delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapComment, withPost: post)
         case .tapShare:
             handleShareOption(post: post)
+        case .tapHoldLike:
+            delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapHoldLike, withPost: post)
         }
     }
     

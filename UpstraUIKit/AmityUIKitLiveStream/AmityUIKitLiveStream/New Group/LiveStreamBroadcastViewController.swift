@@ -149,6 +149,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         postRepository = AmityPostRepository(client: client)
         broadcaster = AmityStreamBroadcaster(client: client)
         reactionReposity = AmityReactionRepository(client: client)
+        subscriptionManager = AmityTopicSubscription(client: client)
         mentionManager = AmityMentionManager(withType: .post(communityId: targetId))
         
         let bundle = Bundle(for: type(of: self))
@@ -291,6 +292,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         commentTextView.textContainer.lineBreakMode = .byTruncatingTail
         commentTextView.placeholder = "Comment"
         commentTextView.autocorrectionType = .no
+        commentTextView.spellCheckingType = .no
+        commentTextView.inputAccessoryView = UIView()
         commentTextView.tag = 1
         
         liveCommentView.backgroundColor = .clear
@@ -450,6 +453,17 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "Done", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    private func updateTableViewHeightConstraints() {
+        let contentHeight = commentTableView.contentSize.height
+        let maxHeight = 270.0
+        
+        if contentHeight > maxHeight {
+            
+        } else {
+            
+        }
     }
     
     // MARK: - IBActions
@@ -775,7 +789,10 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.commentTableView.reloadData()
+            
             if !strongSelf.storedComment.isEmpty {
+                strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+
                 guard let collection = strongSelf.collection else { return }
                 if collection.hasNext {
                     collection.nextPage()
