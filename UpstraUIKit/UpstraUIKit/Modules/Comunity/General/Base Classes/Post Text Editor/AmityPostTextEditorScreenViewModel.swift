@@ -183,7 +183,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     private func createPostResponseHandler(forPost post: AmityPost?, error: Error?) {
         Log.add("File Post Created: \(post != nil) Error: \(String(describing: error))")
         delegate?.screenViewModelDidCreatePost(self, post: post, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: post?.postId)
     }
     
     private func updatePostResponseHandler(forPost post: AmityPost?, error: Error?) {

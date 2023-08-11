@@ -144,6 +144,7 @@ class AmityPostDetailCompostView: UIView {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         textView.isScrollEnabled = false
+        textView.setupWithoutSuggestions()
         textView.padding = UIEdgeInsets(top: Constant.textViewTopPadding,
                                         left: Constant.textViewLeftPadding,
                                         bottom: Constant.textViewBottomPadding,

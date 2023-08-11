@@ -29,7 +29,6 @@ extension UIViewController {
         viewController.didMove(toParent: self)
     }
     
-    
     func addContainerView(_ viewController: UIViewController, to containerView: UIView) {
         addChild(viewController)
         
@@ -49,6 +48,10 @@ extension UIViewController {
         let player = AVPlayer(url: url)
         let playerViewController = AVPlayerViewController()
         playerViewController.player = player
+        // Override sound settings
+        try? AVAudioSession.sharedInstance().setCategory(.playback)
+        try? AVAudioSession.sharedInstance().setActive(true)
+        
         present(playerViewController, animated: true) { [weak player] in
             player?.play()
         }

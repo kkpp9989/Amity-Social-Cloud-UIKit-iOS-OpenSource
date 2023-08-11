@@ -91,6 +91,7 @@ public class AmitySearchViewController: AmityPageViewController {
         searchTextField.placeholder = AmityLocalizedStringSet.General.search.localizedString
         searchTextField.returnKeyType = .search
         searchTextField.clearButtonMode = .always
+        searchTextField.setupWithoutSuggestions()
         
         searchTextField.backgroundColor = .white
         searchTextField.tintColor = AmityColorSet.base

@@ -136,6 +136,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         textView.isScrollEnabled = false
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
+        textView.setupWithoutSuggestions()
         textView.placeholder = AmityLocalizedStringSet.postCreationTextPlaceholder.localizedString
         scrollView.addSubview(textView)
         
@@ -812,7 +813,6 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
             }
         }
     }
-    
 }
 
 extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate {
