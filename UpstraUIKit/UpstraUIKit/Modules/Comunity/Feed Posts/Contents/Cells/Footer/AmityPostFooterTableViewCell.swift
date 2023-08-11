@@ -300,7 +300,8 @@ private extension AmityPostFooterTableViewCell {
 private extension AmityPostFooterTableViewCell {
     
     private func setReactions(reactions: [String: Int]) {
-        let reactionKeys = Array(reactions.keys)
+        let filteredReactions = reactions.filter { $1 != 0 }
+        let reactionKeys = Array(filteredReactions.keys)
         let totalReactionsCount = reactionKeys.count
         
         if totalReactionsCount <= 0 {
