@@ -45,6 +45,9 @@ private extension AmityCategoryPreviewCollectionViewCell {
     }
     
     func setupAvatarView() {
+        // [Improvement] Set avatar view setting same as trending community table view cell except default image
+        avatarView.placeholderPostion = .fullSize
+        avatarView.contentMode = .scaleAspectFill
         avatarView.placeholder = AmityIconSet.defaultCategory
         
         avatarView.actionHandler = { [weak self] in
