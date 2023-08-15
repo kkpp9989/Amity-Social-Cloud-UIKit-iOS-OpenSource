@@ -109,6 +109,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     
     // MARK: - UI Comment tableView
     @IBOutlet private weak var commentTableView: UITableView!
+    @IBOutlet private weak var commentTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private weak var commentTextView: AmityTextView!
     @IBOutlet private weak var commentTextViewHeight: NSLayoutConstraint!
     @IBOutlet private weak var postCommentButton: UIButton!
@@ -485,21 +486,18 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
-    private func updateTableViewHeightConstraints() {
-        let contentHeight = commentTableView.contentSize.height
-        let maxHeight = 270.0
-        
-        if contentHeight > maxHeight {
-            
-        } else {
-            
-        }
-    }
-    
     func formatTimeInterval(_ minutes: Int) -> String {
         let hours = minutes / 60
         let minutesRemainder = minutes % 60
         return String(format: "%02d:%02d", hours, minutesRemainder)
+    }
+    
+    func updateTableViewHeight() {
+        if storedComment.count > 5 {
+            commentTableViewHeightConstraint.constant = 270
+        } else {
+            commentTableViewHeightConstraint.constant = commentTableView.contentSize.height
+        }
     }
     
     // MARK: - IBActions
@@ -806,6 +804,7 @@ extension LiveStreamBroadcastViewController {
             } else {
                 strongSelf.storedComment = strongSelf.prepareData()
                 strongSelf.reloadData()
+                strongSelf.updateTableViewHeight()
             }
         }
     }
