@@ -93,6 +93,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     @IBOutlet weak var streamingContainer: UIView!
     @IBOutlet weak var streamingStatusLabel: UILabel!
     @IBOutlet weak var finishButton: UIButton!
+    @IBOutlet weak var viewerCountContainer: UIView!
     @IBOutlet weak var viewerCountLabel: UILabel!
 
     // MARK: - UI Container End Components
@@ -387,6 +388,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         streamingStatusLabel.textColor = .white
         streamingStatusLabel.font = AmityFontSet.captionBold
         
+        viewerCountContainer.clipsToBounds = true
+        viewerCountContainer.layer.cornerRadius = 4
         viewerCountLabel.font = AmityFontSet.captionBold
         viewerCountLabel.textColor = .white
 

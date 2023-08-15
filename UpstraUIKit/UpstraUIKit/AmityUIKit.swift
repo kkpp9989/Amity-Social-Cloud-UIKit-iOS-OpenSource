@@ -102,6 +102,12 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.env = env
     }
     
+    public static func isModeratorUserInCommunity(withUserId userId: String, communityId: String) -> Bool {
+        let membershipParticipation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+        let member = membershipParticipation.getMember(withId: userId)
+        return member?.hasModeratorRole ?? false
+    }
+    
     // MARK: - Variable
     
     /// Public instance of `AmityClient` from `AmitySDK`. If you are using both`AmitySDK` & `AmityUIKit` in a same project, we recommend to have only one instance of `AmityClient`. You can use this instance instead.

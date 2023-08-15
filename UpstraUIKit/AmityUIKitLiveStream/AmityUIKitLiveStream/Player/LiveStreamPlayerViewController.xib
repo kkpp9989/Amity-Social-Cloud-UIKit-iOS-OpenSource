@@ -13,6 +13,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LiveStreamPlayerViewController" customModule="AmityUIKitLiveStream" customModuleProvider="target">
             <connections>
                 <outlet property="commentTableView" destination="LHh-yY-eFb" id="QHB-f1-hQy"/>
+                <outlet property="commentTableViewHeightConstraint" destination="aQF-aL-Vao" id="tbV-dC-KNZ"/>
                 <outlet property="commentTextView" destination="Jdi-Hh-Lad" id="8IS-eO-k7U"/>
                 <outlet property="commentTextViewHeight" destination="cvI-I9-Ib1" id="vbR-4z-aph"/>
                 <outlet property="controlContainer" destination="aMJ-3v-4eD" id="4Lz-vE-u6M"/>
@@ -35,6 +36,7 @@
                 <outlet property="streamEndTitleLabel" destination="wYP-in-Z1B" id="M6g-NG-D79"/>
                 <outlet property="streamingViewBottomConstraint" destination="OmZ-xb-GhS" id="F5i-xC-p4h"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="viewerCountContainer" destination="FZj-M8-yaC" id="qXi-Se-aGJ"/>
                 <outlet property="viewerCountLabel" destination="eMH-6x-AP1" id="JX8-WC-oMK"/>
             </connections>
         </placeholder>
@@ -51,10 +53,10 @@
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rQa-vC-jCd" userLabel="Status Container">
-                            <rect key="frame" x="15" y="15" width="90" height="28.333333333333329"/>
+                            <rect key="frame" x="15" y="63" width="90" height="28.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIVE 0:45" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BfH-Mk-SEa" userLabel="Status Label">
-                                    <rect key="frame" x="8" y="4" width="74" height="20.333333333333332"/>
+                                    <rect key="frame" x="8" y="4" width="74" height="20.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -69,7 +71,7 @@
                             </constraints>
                         </view>
                         <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FZj-M8-yaC" userLabel="Viewer Container">
-                            <rect key="frame" x="112.99999999999999" y="15.333333333333336" width="54.333333333333329" height="28"/>
+                            <rect key="frame" x="113" y="63.5" width="54.5" height="28"/>
                             <subviews>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="viewer" translatesAutoresizingMaskIntoConstraints="NO" id="o2t-tC-3IY">
                                     <rect key="frame" x="0.0" y="0.0" width="28" height="28"/>
@@ -79,7 +81,7 @@
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eMH-6x-AP1" userLabel="Viewer Count Label">
-                                    <rect key="frame" x="36" y="3.9999999999999982" width="10.333333333333336" height="20"/>
+                                    <rect key="frame" x="36" y="4" width="10.5" height="20"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -116,7 +118,7 @@
                     </constraints>
                 </view>
                 <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S6e-xR-XMI" userLabel="Loading Overlay">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                     <subviews>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="oZo-fU-T19">
                             <rect key="frame" x="197" y="399" width="20" height="20"/>
@@ -127,19 +129,19 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
                 <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dWE-Vp-cX4" userLabel="Stream End Container">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="SKH-tW-v3Q">
-                            <rect key="frame" x="15" y="413.66666666666669" width="384" height="69"/>
+                            <rect key="frame" x="15" y="372.5" width="384" height="69.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This livestream has ended." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wYP-in-Z1B">
-                                    <rect key="frame" x="0.0" y="0.0" width="384" height="20.333333333333332"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="384" height="20.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="afI-fc-1JZ">
-                                    <rect key="frame" x="0.0" y="28.333333333333311" width="384" height="40.666666666666657"/>
+                                    <rect key="frame" x="0.0" y="28.5" width="384" height="41"/>
                                     <string key="text">Playback will be available for you
 to watch shortly.</string>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -157,7 +159,7 @@ to watch shortly.</string>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aMJ-3v-4eD" userLabel="Control Container">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e3Z-YA-P5g" userLabel="Close Button">
                             <rect key="frame" x="352" y="10" width="32" height="32"/>
@@ -167,7 +169,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eMx-8g-uCW" userLabel="Play Button">
-                            <rect key="frame" x="187.66666666666666" y="419" width="38.666666666666657" height="58"/>
+                            <rect key="frame" x="188" y="378" width="38.5" height="58"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" image="play.fill" catalog="system">
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="44"/>
@@ -177,7 +179,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GsN-Z4-b5d" userLabel="Stop Button">
-                            <rect key="frame" x="184" y="427.66666666666669" width="46" height="41"/>
+                            <rect key="frame" x="184" y="386.5" width="46" height="41"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" image="pause.fill" catalog="system">
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="44"/>
@@ -200,7 +202,7 @@ to watch shortly.</string>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qKF-U3-b83" userLabel="Comment Container">
-                    <rect key="frame" x="0.0" y="546" width="414" height="350"/>
+                    <rect key="frame" x="0.0" y="512" width="414" height="350"/>
                     <subviews>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uyh-yQ-nPx" userLabel="Like Count">
                             <rect key="frame" x="186" y="114" width="42" height="21"/>
@@ -210,7 +212,7 @@ to watch shortly.</string>
                             <nil key="highlightedColor"/>
                         </label>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LHh-yY-eFb" userLabel="Comment TableView">
-                            <rect key="frame" x="0.0" y="2" width="345" height="270"/>
+                            <rect key="frame" x="0.0" y="-42" width="414" height="270"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="270" id="aQF-aL-Vao"/>
@@ -283,18 +285,18 @@ to watch shortly.</string>
                         </view>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="jjN-LL-zMG" firstAttribute="top" secondItem="LHh-yY-eFb" secondAttribute="bottom" constant="8" symbolic="YES" id="5Jb-kS-Fve"/>
                         <constraint firstItem="55e-rX-D0h" firstAttribute="trailing" secondItem="Mzj-jp-oL8" secondAttribute="trailing" id="9Qa-xW-SGl"/>
                         <constraint firstAttribute="trailing" secondItem="jjN-LL-zMG" secondAttribute="trailing" id="EFq-8w-z9G"/>
-                        <constraint firstItem="55e-rX-D0h" firstAttribute="bottom" secondItem="LHh-yY-eFb" secondAttribute="bottom" id="I1T-bP-iuX"/>
+                        <constraint firstItem="55e-rX-D0h" firstAttribute="top" secondItem="LHh-yY-eFb" secondAttribute="bottom" constant="8" symbolic="YES" id="Fnp-v0-Ekb"/>
                         <constraint firstAttribute="bottom" secondItem="jjN-LL-zMG" secondAttribute="bottom" id="OmZ-xb-GhS"/>
                         <constraint firstItem="jjN-LL-zMG" firstAttribute="leading" secondItem="qKF-U3-b83" secondAttribute="leading" id="Pfp-gf-MvM"/>
-                        <constraint firstItem="55e-rX-D0h" firstAttribute="leading" secondItem="LHh-yY-eFb" secondAttribute="trailing" constant="8" symbolic="YES" id="XDs-wJ-ch3"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="height" secondItem="55e-rX-D0h" secondAttribute="height" id="Z0d-Zy-Jt5"/>
                         <constraint firstItem="LHh-yY-eFb" firstAttribute="leading" secondItem="qKF-U3-b83" secondAttribute="leading" id="cUC-mU-iBL"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="centerY" secondItem="55e-rX-D0h" secondAttribute="centerY" id="fu7-87-r6z"/>
+                        <constraint firstItem="jjN-LL-zMG" firstAttribute="top" secondItem="55e-rX-D0h" secondAttribute="bottom" constant="8" symbolic="YES" id="hJw-FI-Y4Z"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="width" secondItem="55e-rX-D0h" secondAttribute="width" id="lre-As-97c"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="centerX" secondItem="55e-rX-D0h" secondAttribute="centerX" id="p7Z-Zf-f9y"/>
+                        <constraint firstAttribute="trailing" secondItem="LHh-yY-eFb" secondAttribute="trailing" id="sG7-ZH-rNu"/>
                         <constraint firstAttribute="height" constant="350" id="uKq-mW-eov"/>
                     </constraints>
                 </view>
