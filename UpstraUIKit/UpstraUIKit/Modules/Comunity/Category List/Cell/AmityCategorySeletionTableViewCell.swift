@@ -21,11 +21,9 @@ class AmityCategorySeletionTableViewCell: UITableViewCell, Nibbable {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
-        contentView.backgroundColor = AmityColorSet.backgroundColor
-        checkmarkImageView.image = AmityIconSet.iconCheckMark
-        checkmarkImageView.tintColor = AmityColorSet.primary
+        
+        // [Improvement] Encapsulate statement to setupView() function
+        setupView()
     }
     
     override func prepareForReuse() {
@@ -51,4 +49,20 @@ class AmityCategorySeletionTableViewCell: UITableViewCell, Nibbable {
         checkmarkTrailingConstraint.constant = shouldSelectionEnable ? 38 : 8
     }
     
+}
+
+// MARK: - Setup view
+private extension AmityCategorySeletionTableViewCell {
+    func setupView() {
+        selectionStyle = .none
+        backgroundColor = AmityColorSet.backgroundColor
+        contentView.backgroundColor = AmityColorSet.backgroundColor
+        checkmarkImageView.image = AmityIconSet.iconCheckMark
+        checkmarkImageView.tintColor = AmityColorSet.primary
+        
+        // [Improvement] Set avatar view setting same as trending community table view cell
+        avatarView.placeholderPostion = .fullSize
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.placeholder = AmityIconSet.defaultCategory
+    }
 }

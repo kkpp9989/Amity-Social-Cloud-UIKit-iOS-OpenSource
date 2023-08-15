@@ -87,10 +87,12 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var subscriptionManager: AmityTopicSubscription?
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
+    private var commentCount: Int = 0
 
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
-    
+    private var currentReactionType: String = ""
+
     /// Indicate that the user request to play the stream
     private var isStarting = true {
         didSet {
@@ -116,6 +118,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManager.client)
         self.commentRepository = AmityCommentRepository(client: AmityUIKitManager.client)
         self.streamIdToWatch = streamIdToWatch
+        self.subscriptionManager = AmityTopicSubscription(client: AmityUIKitManager.client)
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
         self.postID = postID
         self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
@@ -210,6 +213,10 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         renderGestureView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(playerContainerDidTap)))
         
+        // Create a long press gesture recognizer
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
+        longPressRecognizer.minimumPressDuration = 0.5
+        reactionButton.addGestureRecognizer(longPressRecognizer)
     }
     
     func setupTableView(){
@@ -227,6 +234,10 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTableView.showsVerticalScrollIndicator = false
         commentTableView.showsHorizontalScrollIndicator = false
         commentTableView.tag = 1
+        commentTextView.autocorrectionType = .no
+        commentTextView.spellCheckingType = .no
+        commentTextView.inputAccessoryView = UIView()
+        commentTextView.returnKeyType = .done
         
         let textViewToolbar: UIToolbar = UIToolbar()
         textViewToolbar.barStyle = .default
@@ -243,7 +254,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTextView.customTextViewDelegate = self
         commentTextView.textContainer.lineBreakMode = .byTruncatingTail
         commentTextView.placeholder = "Comment"
-        commentTextView.autocorrectionType = .no
         commentTextView.tag = 1
         
         liveCommentView.backgroundColor = .clear
@@ -302,6 +312,28 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @objc func cancelInput() {
         view.endEditing(true)
+    }
+    
+    @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            let reactionType = findReactionType()
+            reactionPickerView.onSelect = { [weak self] reactionValue in
+                self?.hideReactionPicker()
+                if !reactionType.isEmpty {
+                    print("reaction: remove")
+                    self?.removeReaction(withReaction: reactionType, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
+                        self?.reactionButton.isSelected = false
+                        self?.setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
+                    }
+                }
+                self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
+                    self?.reactionButton.isSelected = true
+                    self?.setReactionType(reactionType: reactionValue)
+                    print("reaction: add")
+                }
+            }
+            showReactionPicker()
+        }
     }
     
     private func updateControlActionButton() {
@@ -510,18 +542,22 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     @IBAction func showReactionView() {
+        animateReactionButton()
+        
         let reactionType = findReactionType()
-        if !reactionType.isEmpty {
-            removeReaction(withReaction: reactionType, referanceId: postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                self?.reactionButton.isSelected = false
-                self?.setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
-            }
-        } else {
+        if reactionType == currentReactionType {
+            print("reaction: nothing")
+            return // Do nothing
+        }
+            
+        if reactionType.isEmpty {
+            print("reaction: add")
             reactionPickerView.onSelect = { [weak self] reactionType in
                 self?.hideReactionPicker()
                 self?.addReaction(withReaction: reactionType.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
                     self?.reactionButton.isSelected = true
                     self?.setReactionType(reactionType: reactionType)
+                    self?.currentReactionType = reactionType.rawValue
                 }
             }
             showReactionPicker()
@@ -533,6 +569,37 @@ public class LiveStreamPlayerViewController: UIViewController {
         let filteredArray = amityPost?.myReactions.filter { reactionTypes.contains(AmityReactionType(rawValue: $0) ?? .like) }
         guard filteredArray?.count ?? 0 > 0 else { return "" }
         return filteredArray?[0] ?? "like"
+    }
+    
+    private func animateReactionButton() {
+        let bubbleWidth: CGFloat = 40
+        let bubbleHeight: CGFloat = 40
+        
+        let randomXOffset = CGFloat.random(in: -20...20) // Adjust the range as needed
+        let randomYOffset = CGFloat.random(in: 8...20) // Adjust the range as needed
+        
+        let likeButtonFrameInSuperview = reactionButton.convert(reactionButton.bounds, to: self.view)
+        
+        let newOrigin = CGPoint(
+            x: likeButtonFrameInSuperview.origin.x + randomXOffset,
+            y: likeButtonFrameInSuperview.origin.y - bubbleHeight + randomYOffset
+        )
+        
+        let bubbleView = FloatingBubbleView(frame: CGRect(origin: newOrigin, size: CGSize(width: bubbleWidth, height: bubbleHeight)))
+        view.addSubview(bubbleView)
+        
+        // Set the amplitude and frequency for the wave animation
+        let amplitude: CGFloat = 10 // Adjust the amplitude of the wave
+        let frequency: CGFloat = 0.5 // Adjust the frequency of the wave
+        
+        UIView.animate(withDuration: 5.0, delay: 0, options: [.curveEaseInOut], animations: {
+            bubbleView.center.y -= 200
+            bubbleView.center.x += amplitude * sin(bubbleView.center.y * frequency)
+            bubbleView.center.y -= amplitude * sin(bubbleView.center.x * frequency)
+            bubbleView.alpha = 0.0
+        }) { (_) in
+            bubbleView.removeFromSuperview()
+        }
     }
     
     private func setReactionType(reactionType: AmityReactionType) {
@@ -727,6 +794,10 @@ extension LiveStreamPlayerViewController {
             guard let strongSelf = self else { return }
             strongSelf.commentTableView.reloadData()
             if !strongSelf.storedComment.isEmpty {
+                if strongSelf.commentCount != strongSelf.storedComment.count {
+                    strongSelf.commentCount = strongSelf.storedComment.count
+                    strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                }
                 guard let collection = strongSelf.collection else { return }
                 if collection.hasNext {
                     collection.nextPage()

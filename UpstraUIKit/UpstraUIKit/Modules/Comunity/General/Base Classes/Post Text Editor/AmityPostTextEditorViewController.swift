@@ -136,6 +136,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         textView.isScrollEnabled = false
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
+        textView.setupWithoutSuggestions()
         textView.placeholder = AmityLocalizedStringSet.postCreationTextPlaceholder.localizedString
         scrollView.addSubview(textView)
         
@@ -166,13 +167,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.isHidden = true
         mentionTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mentionTableView)
-        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 240.0)
+        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 1.0)
         
 //        hashtagTableView.isHidden = true
         hashtagTableView.translatesAutoresizingMaskIntoConstraints = false
         hashtagTableView.tag = 1
         view.addSubview(hashtagTableView)
-        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 240.0)
+        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 1.0)
         
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
@@ -812,7 +813,6 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
             }
         }
     }
-    
 }
 
 extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,6 +12,9 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityEditTextViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
                 <outlet property="bottomConstraint" destination="srR-px-yia" id="ZMG-cD-DjB"/>
+                <outlet property="hashtagTableView" destination="lwb-76-FgQ" id="iV3-qp-zIg"/>
+                <outlet property="hashtagTableViewBottomConstraint" destination="cna-yd-wOb" id="Dlh-YJ-ccA"/>
+                <outlet property="hashtagTableViewHeightConstraint" destination="4WI-Da-r2k" id="m2S-7r-SQQ"/>
                 <outlet property="headerLabel" destination="l6E-e1-oaV" id="FU5-IO-OL5"/>
                 <outlet property="headerView" destination="ERo-GZ-2dl" id="DyH-QH-OI5"/>
                 <outlet property="mentionTableView" destination="863-ru-kjH" id="fsD-gn-UbL"/>
@@ -27,14 +30,14 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="wNs-jb-2fO" customClass="AmityTextView" customModule="AmityUIKit" customModuleProvider="target">
-                    <rect key="frame" x="16" y="60" width="382" height="802"/>
+                    <rect key="frame" x="16" y="64" width="382" height="798"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <color key="textColor" systemColor="labelColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ERo-GZ-2dl" userLabel="Header View">
-                    <rect key="frame" x="0.0" y="44" width="414" height="40"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="40"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l6E-e1-oaV" userLabel="Header Label">
                             <rect key="frame" x="16" y="9.5" width="382" height="21"/>
@@ -58,6 +61,13 @@
                         <constraint firstAttribute="height" constant="240" id="MCf-1a-cSd"/>
                     </constraints>
                 </tableView>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="lwb-76-FgQ" customClass="AmityHashtagTableView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="622" width="414" height="240"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="240" id="4WI-Da-r2k"/>
+                    </constraints>
+                </tableView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -66,9 +76,12 @@
                 <constraint firstItem="wNs-jb-2fO" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="9OL-4c-YvL"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="863-ru-kjH" secondAttribute="trailing" id="Cjz-Io-sed"/>
                 <constraint firstItem="ERo-GZ-2dl" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="F1Z-Wn-zY2"/>
+                <constraint firstItem="lwb-76-FgQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Kn3-xD-7z5"/>
                 <constraint firstItem="ERo-GZ-2dl" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Rio-8S-x44"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="lwb-76-FgQ" secondAttribute="trailing" id="XJW-O5-bkS"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="wNs-jb-2fO" secondAttribute="trailing" constant="16" id="Zlw-Dk-ZJ2"/>
                 <constraint firstItem="863-ru-kjH" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="c3m-lE-aWy"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="lwb-76-FgQ" secondAttribute="bottom" id="cna-yd-wOb"/>
                 <constraint firstItem="wNs-jb-2fO" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="ewl-ya-6V0"/>
                 <constraint firstItem="ERo-GZ-2dl" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="qaN-S7-6HR"/>
                 <constraint firstItem="wNs-jb-2fO" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="srR-px-yia"/>
@@ -78,7 +91,7 @@
     </objects>
     <resources>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

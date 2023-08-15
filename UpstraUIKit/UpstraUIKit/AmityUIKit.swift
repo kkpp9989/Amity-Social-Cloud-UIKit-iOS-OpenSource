@@ -156,6 +156,11 @@ public final class AmityUIKitManager {
     public static func set(channelEventHandler: AmityChannelEventHandler) {
         AmityChannelEventHandler.shared = channelEventHandler
     }
+    
+    // [Improvement] Add function for update file repository when session state is established and don't want to register device again
+    public static func updateFileRepository() {
+        AmityUIKitManagerInternal.shared.didUpdateClient()
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -228,6 +233,10 @@ final class AmityUIKitManagerInternal: NSObject {
             
             // [Custom for ONE Krungthai] Add register user token function for request custom API
             self?.registerUserToken(userId: userId, authToken: authToken ?? "")
+            
+            // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+            self?.disableLivestreamUserLevelNotification()
+            
             completion?(true, error)
         }
     }
@@ -272,6 +281,16 @@ final class AmityUIKitManagerInternal: NSObject {
         }
     }
     
+    // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+    func disableLivestreamUserLevelNotification() {
+        let userNotificationManager = client.notificationManager
+        
+        userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .videoStreaming, isEnabled: false, roleFilter: nil)]) { result, error in
+            print("[Livestream-notification] Disable livestream user level notification result : \(result)")
+        }
+        
+    }
+    
     // MARK: - Helpers
     
     private func revokeDeviceTokens() {
@@ -280,7 +299,7 @@ final class AmityUIKitManagerInternal: NSObject {
         }
     }
     
-    private func didUpdateClient() {
+    func didUpdateClient() {
         // Update file repository to use in file service.
         fileService.fileRepository = AmityFileRepository(client: client)
         messageMediaService.fileRepository = AmityFileRepository(client: client)

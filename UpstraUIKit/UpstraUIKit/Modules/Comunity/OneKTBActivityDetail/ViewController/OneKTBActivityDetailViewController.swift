@@ -236,7 +236,15 @@ open class OneKTBActivityDetailViewController: AmityViewController {
     }
     
     private func updateContentHeight() {
-        delegate?.childViewController(self, didUpdateContentHeight: 150)
+        let screenHeight = UIScreen.main.bounds.height
+        let contentHeight = tableView.contentSize.height
+        let maxHeight = screenHeight // Custom offset if needed
+        
+        if contentHeight > maxHeight {
+            delegate?.childViewController(self, didUpdateContentHeight: maxHeight)
+        } else {
+            delegate?.childViewController(self, didUpdateContentHeight: contentHeight + 50)
+        }
     }
     
     private func openCommentView() {
@@ -572,11 +580,7 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
             if let reactionType = post.reacted {
                 screenViewModel.action.removeReactionPost(type: reactionType)
             } else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
-                }
-                showReactionPicker()
+                screenViewModel.action.addReactionPost(type: .create)
             }
         case .tapComment:
             if isComment {
@@ -590,6 +594,16 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
         case .tapReactionDetails:
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
             self.showReactionUserList(info: info)
+        case .tapHoldLike:
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReactionPost(type: reactionType)
+            } else {
+                reactionPickerView.onSelect = { [weak self] reactionType in
+                    self?.hideReactionPicker()
+                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+                }
+                showReactionPicker()
+            }
         }
     }
     
@@ -737,10 +751,14 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
-            if comment.isLiked {
-                screenViewModel.action.unlikeComment(withCommendId: comment.id)
+            if isComment {
+                if comment.isLiked {
+                    screenViewModel.action.unlikeComment(withCommendId: comment.id)
+                } else {
+                    screenViewModel.action.likeComment(withCommendId: comment.id)
+                }
             } else {
-                screenViewModel.action.likeComment(withCommendId: comment.id)
+                openCommentView()
             }
         case .post, .loadMoreReply:
             break
@@ -751,14 +769,22 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
         guard let indexPath = tableView.indexPath(for: cell),
             case .comment(let comment) = screenViewModel.item(at: indexPath) else { return }
         parentComment = comment
-        _ = commentComposeBarView.becomeFirstResponder()
+        if isComment {
+            _ = commentComposeBarView.becomeFirstResponder()
+        } else {
+            openCommentView()
+        }
     }
     
     func commentCellDidTapOption(_ cell: AmityCommentTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
-            presentOptionBottomSheet(comment: comment)
+            if isComment {
+                presentOptionBottomSheet(comment: comment)
+            } else {
+                openCommentView()
+            }
         case .post, .loadMoreReply:
             break
         }

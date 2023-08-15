@@ -10,9 +10,11 @@ import Foundation
 struct ViewerStatisticsModel: Codable {
     let viewerCount: Int?
     let postId: String?
+    let message: String?
     
     enum CodingKeys: String, CodingKey {
         case viewerCount = "viewerCount"
         case postId = "postId"
+        case message = "message"
     }
 }

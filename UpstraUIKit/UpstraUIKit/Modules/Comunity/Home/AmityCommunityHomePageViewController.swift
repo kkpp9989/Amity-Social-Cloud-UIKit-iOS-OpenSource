@@ -16,7 +16,8 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
-    public var createPostItem: UIBarButtonItem = UIBarButtonItem()
+    public var rightBarButtons: UIBarButtonItem = UIBarButtonItem()
+    public var leftBarButtons: UIBarButtonItem = UIBarButtonItem()
     
     private init() {
         super.init(nibName: AmityCommunityHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -67,15 +68,28 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     // MARK: - Setup views
     private func setupNavigationBar() {
         /* Right items */
+        // [Improvement] Change set button solution to use custom stack view
+        var rightButtonItems: [UIButton] = []
+        
+        // Create post button
+        let createPostButton: UIButton = UIButton.init(type: .custom)
+        createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+        createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(createPostButton)
+        
         // Search Button
-        let searchItem = UIBarButtonItem(image: AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(searchTap)) // [Custom for ONE Krungthai] Set custom icon theme
-        searchItem.tintColor = AmityColorSet.base
-        // Create post Button
-        // [Custom for ONE Krungthai] Move create post button to navigation bar
-        createPostItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createPostTap)) // [Custom for ONE Krungthai] Set custom icon theme
-        createPostItem.tintColor = AmityColorSet.base
-        // Add all component to right navigation items
-        navigationItem.rightBarButtonItems = [searchItem, createPostItem]
+        let searchButton: UIButton = UIButton.init(type: .custom)
+        searchButton.setImage(AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        searchButton.addTarget(self, action: #selector(searchTap), for: .touchUpInside)
+        searchButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(searchButton)
+        
+        // Group all button to UIBarButtonItem
+        rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
+        
+        // Set custom stack view to UIBarButtonItem
+        navigationItem.rightBarButtonItem = rightBarButtons
         
         /* Left items */
         // Title
@@ -86,6 +100,8 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         // Back button (Refer default leftBarButtonItem from AmityViewController)
         let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
         backButton.tintColor = AmityColorSet.base
+        leftBarButtons = backButton
+        
         // Add all component to left navigation items
         navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
     }
@@ -102,7 +118,7 @@ private extension AmityCommunityHomePageViewController {
     }
     
     @objc func createPostTap() {
-        AmityEventHandler.shared.createPostBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: createPostItem)
+        AmityEventHandler.shared.createPostBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
     }
     
     /* [Custom for ONE Krungthai] [Temp] Set all notification off (top-level) */

@@ -106,19 +106,26 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         cameraImageView.clipsToBounds = true
         
         // display name
-        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
+        /* [Original] */
+//        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
+        /* [Custom For ONE Krungthai][Fix defect] Delete * from "Display Name" topic label | refer design from Figma */
+        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString
         displayNameLabel.font = AmityFontSet.title
         displayNameLabel.textColor = AmityColorSet.base
+        
         displayNameCounterLabel.font = AmityFontSet.caption
         displayNameCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
+        /* [Custom For ONE Krungthai][Fix defect] Hide displayname counter lable | refer design from Figma */
+        displayNameCounterLabel.isHidden = true
+        
         displayNameTextField.delegate = self
         displayNameTextField.borderStyle = .none
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         displayNameTextField.maxLength = Constant.maxCharacterOfDisplayname
         
-        // [Fix defect] Set font of displayname text field refer to AmityFontSet
+        // [Fix defect] Set font of displayname text field refer to AmityFontSet and set disable text field color | refer design from Figma
         displayNameTextField.font = AmityFontSet.body
-        displayNameTextField.textColor = AmityColorSet.base
+        displayNameTextField.textColor = AmityColorSet.disableTextField
         
         // [Custom for ONE Krungthai] Disable display name editing for ONE Krungthai
         displayNameTextField.isUserInteractionEnabled = false
@@ -134,9 +141,10 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         // [Custom for ONE Krungthai] Set constant from maxCharacterOfAboutInfo instead
         aboutTextView.maxCharacters = Constant.maxCharacterOfAboutInfo
         
-        // [Fix defect] Set font of about text field refer to AmityFontSet
+        // [Fix defect] Set font of about text field refer to AmityFontSet and delete padding left
         aboutTextView.font = AmityFontSet.body
         aboutTextView.textColor = AmityColorSet.base
+        aboutTextView.padding = UIEdgeInsets.zero
         
         // separator
         aboutSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)

@@ -48,7 +48,7 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         
         commentLabel.font = AmityFontSet.caption.withSize(14)
         commentLabel.backgroundColor = .clear
-        commentLabel.numberOfLines = 0
+        commentLabel.numberOfLines = 2
         commentLabel.lineBreakMode = .byTruncatingTail
         commentLabel.sizeToFit()
         commentLabel.textColor = .white

@@ -52,6 +52,13 @@ private extension AmityNewsfeedViewController {
     private func setupFeedView() {
         addChild(viewController: feedViewController)
         feedViewController.dataDidUpdateHandler = { [weak self] itemCount in
+            // [Custom For ONE Krungthai] [Fix-defect] Set post tab header view when update feed
+            if itemCount > 1 {
+                self?.feedViewController.postTabHeaderView = self?.postTabHeaderView
+            } else {
+                self?.feedViewController.postTabHeaderView = nil
+            }
+            
             self?.emptyView.setNeedsUpdateState()
         }
         
@@ -126,7 +133,7 @@ extension AmityNewsfeedViewController: AmityMyCommunityPreviewViewControllerDele
 
 extension AmityNewsfeedViewController: AmityPostTabbarViewControllerDelegate {
     public func viewController(_ viewController: AmityPostTabbarViewController) {
-        feedViewController.postTabHeaderView = postTabHeaderView
+//        feedViewController.postTabHeaderView = postTabHeaderView
     }
     
     public func didTapPostButton(_ viewController: AmityPostTabbarViewController) {

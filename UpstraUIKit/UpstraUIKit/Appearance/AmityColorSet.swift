@@ -66,4 +66,8 @@ struct AmityColorSet {
     static var dnaLove: UIColor {
         return UIColor(hex: "#EC4545")
     }
+    
+    static var disableTextField: UIColor {
+        return UIColor(hex: "8F9FAF")
+    }
 }
