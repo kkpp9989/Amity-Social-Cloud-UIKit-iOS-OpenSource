@@ -49,8 +49,8 @@ class AmityPostDetailCompostView: UIView {
     private enum Constant {
         static let defaultTextViewHeight: CGFloat = 40.0
         static let maxTextViewHeight: CGFloat = 120.0
-        static let textViewTopPadding: CGFloat = 10.0
-        static let textViewBottomPadding: CGFloat = 10.0
+        static let textViewTopPadding: CGFloat = 12.0
+        static let textViewBottomPadding: CGFloat = 8.0
         static let textViewLeftPadding: CGFloat = 8.0
         static let textViewRightPadding: CGFloat = 40.0
     }
