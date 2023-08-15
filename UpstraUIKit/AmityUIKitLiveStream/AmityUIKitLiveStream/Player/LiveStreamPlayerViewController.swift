@@ -26,6 +26,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet weak var statusContainer: UIView!
     @IBOutlet weak var statusLabel: UILabel!
     
+    @IBOutlet weak var viewerCountContainer: UIView!
     @IBOutlet weak var viewerCountLabel: UILabel!
 
     /// The view above renderView to intercept tap gestuere for show/hide control container.
@@ -46,6 +47,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     // MARK: - UI Comment tableView
     @IBOutlet private weak var commentTableView: UITableView!
+    @IBOutlet private weak var commentTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private weak var commentTextView: AmityTextView!
     @IBOutlet private weak var commentTextViewHeight: NSLayoutConstraint!
     @IBOutlet private weak var postCommentButton: UIButton!
@@ -146,7 +148,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         setupView()
         setupTableView()
         updateControlActionButton()
-        //
+        setupKeyboardListener()
         isStarting = true
         requestingStreamObject = true
         observeStreamObject()
@@ -193,6 +195,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         // We show "LIVE" static label while playing.
         statusContainer.isHidden = true
         
+        viewerCountContainer.clipsToBounds = true
+        viewerCountContainer.layer.cornerRadius = 4
         viewerCountLabel.font = AmityFontSet.captionBold
         viewerCountLabel.textColor = .white
         
@@ -217,6 +221,11 @@ public class LiveStreamPlayerViewController: UIViewController {
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
         longPressRecognizer.minimumPressDuration = 0.5
         reactionButton.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    func setupKeyboardListener() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func setupTableView(){
@@ -319,17 +328,34 @@ public class LiveStreamPlayerViewController: UIViewController {
             let reactionType = findReactionType()
             reactionPickerView.onSelect = { [weak self] reactionValue in
                 self?.hideReactionPicker()
-                if !reactionType.isEmpty {
-                    print("reaction: remove")
-                    self?.removeReaction(withReaction: reactionType, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                        self?.reactionButton.isSelected = false
-                        self?.setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
-                    }
+                if reactionType == reactionValue.rawValue {
+                    self?.animateReactionButton()
+                    return // Do nothing
                 }
-                self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                    self?.reactionButton.isSelected = true
-                    self?.setReactionType(reactionType: reactionValue)
-                    print("reaction: add")
+                if !reactionType.isEmpty {
+                    self?.removeReaction(withReaction: reactionType, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
+                        print("reaction remova: \(success)")
+                        self?.reactionButton.isSelected = false
+                        if success {
+                            DispatchQueue.main.async {
+                                self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
+                                    print("reaction add: \(success)")
+                                    self?.reactionButton.isSelected = true
+                                    self?.setReactionType(reactionType: reactionValue)
+                                    self?.currentReactionType = reactionValue.rawValue
+                                    self?.animateReactionButton()
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
+                        print("reaction add: \(success)")
+                        self?.reactionButton.isSelected = true
+                        self?.setReactionType(reactionType: reactionValue)
+                        self?.currentReactionType = reactionValue.rawValue
+                        self?.animateReactionButton()
+                    }
                 }
             }
             showReactionPicker()
@@ -542,25 +568,18 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     @IBAction func showReactionView() {
-        animateReactionButton()
         
         let reactionType = findReactionType()
-        if reactionType == currentReactionType {
-            print("reaction: nothing")
+        if reactionType == currentReactionType && !reactionType.isEmpty {
+            animateReactionButton()
             return // Do nothing
         }
-            
-        if reactionType.isEmpty {
-            print("reaction: add")
-            reactionPickerView.onSelect = { [weak self] reactionType in
-                self?.hideReactionPicker()
-                self?.addReaction(withReaction: reactionType.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                    self?.reactionButton.isSelected = true
-                    self?.setReactionType(reactionType: reactionType)
-                    self?.currentReactionType = reactionType.rawValue
-                }
-            }
-            showReactionPicker()
+        
+        addReaction(withReaction: "create", referanceId: postID ?? "", referenceType: .post) { [weak self] (success, error) in
+            self?.reactionButton.isSelected = true
+            self?.setReactionType(reactionType: .create)
+            self?.currentReactionType = "create"
+            self?.animateReactionButton()
         }
     }
     
@@ -586,6 +605,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         )
         
         let bubbleView = FloatingBubbleView(frame: CGRect(origin: newOrigin, size: CGSize(width: bubbleWidth, height: bubbleHeight)))
+        bubbleView.reactionType = currentReactionType
+        bubbleView.runAnimate()
         view.addSubview(bubbleView)
         
         // Set the amplitude and frequency for the wave animation
@@ -606,20 +627,28 @@ public class LiveStreamPlayerViewController: UIViewController {
         switch reactionType {
         case .create:
             reactionButton.setImage(AmityIconSet.iconBadgeDNASangsun, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNASangsun, for: .normal)
         case .honest:
             reactionButton.setImage(AmityIconSet.iconBadgeDNASatsue, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNASatsue, for: .normal)
         case .harmony:
             reactionButton.setImage(AmityIconSet.iconBadgeDNASamakki, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNASamakki, for: .normal)
         case .success:
             reactionButton.setImage(AmityIconSet.iconBadgeDNASumrej, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNASumrej, for: .normal)
         case .society:
             reactionButton.setImage(AmityIconSet.iconBadgeDNASangkom, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNASangkom, for: .normal)
         case .like:
             reactionButton.setImage(AmityIconSet.iconLikeFill, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconLikeFill, for: .normal)
         case .love:
             reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .normal)
         @unknown default:
             reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
+            reactionButton.setImage(AmityIconSet.iconBadgeDNALove, for: .normal)
         }
     }
 }
@@ -681,6 +710,11 @@ extension LiveStreamPlayerViewController: AmityTextViewDelegate {
             }
         }
     }
+    
+    public func textFieldShouldReturn(_ textField: AmityTextView) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -691,7 +725,7 @@ extension LiveStreamPlayerViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: LiveStreamCommentTableViewCell.identifier) as? LiveStreamCommentTableViewCell else { return UITableViewCell() }
-        cell.display(comment: storedComment[indexPath.row])
+        cell.display(comment: storedComment[indexPath.row], post: amityPost)
         cell.delegate = self
         return cell
         
@@ -774,6 +808,7 @@ extension LiveStreamPlayerViewController {
             } else {
                 strongSelf.storedComment = strongSelf.prepareData()
                 strongSelf.reloadData()
+                strongSelf.updateTableViewHeight()
             }
         }
     }
@@ -814,6 +849,14 @@ extension LiveStreamPlayerViewController {
             if let error = error {
                 print(error.localizedDescription)
             }
+        }
+    }
+    
+    func updateTableViewHeight() {
+        if commentCount > 5 {
+            commentTableViewHeightConstraint.constant = 270
+        } else {
+            commentTableViewHeightConstraint.constant = commentTableView.contentSize.height
         }
     }
 }
