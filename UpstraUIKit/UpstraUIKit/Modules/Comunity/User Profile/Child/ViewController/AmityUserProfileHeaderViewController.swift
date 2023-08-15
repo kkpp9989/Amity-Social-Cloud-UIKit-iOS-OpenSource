@@ -140,7 +140,9 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         attribute.setColor(for: AmityColorSet.secondary)
         followingButton.attributedString = attribute
         followingButton.isHidden = false
-        followingButton.isUserInteractionEnabled = false
+        /* [Custom For ONE Krungthai][Fix defect] Force to can interact of button for all scenario */
+        // Disable isUserInteractionEnabled statement
+//        followingButton.isUserInteractionEnabled = false
         followingButton.addTarget(self, action: #selector(followingAction(_:)), for: .touchUpInside)
         followingButton.titleLabel?.numberOfLines = 0
         followingButton.titleLabel?.textAlignment = .center
@@ -155,7 +157,9 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         attribute.setColor(for: AmityColorSet.secondary)
         followersButton.attributedString = attribute
         followersButton.isHidden = false
-        followersButton.isUserInteractionEnabled = false
+        /* [Custom For ONE Krungthai][Fix defect] Force to can interact of button for all scenario */
+        // Disable isUserInteractionEnabled statement
+//        followersButton.isUserInteractionEnabled = false
         followersButton.addTarget(self, action: #selector(followersAction(_:)), for: .touchUpInside)
         followersButton.titleLabel?.numberOfLines = 0
         followersButton.titleLabel?.textAlignment = .center
@@ -347,14 +351,17 @@ extension AmityUserProfileHeaderViewController : AmityUserProfileHeaderScreenVie
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didGetFollowInfo followInfo: AmityFollowInfo) {
         updateFollowInfo(with: followInfo)
+        
+        /* [Custom For ONE Krungthai][Fix-defect] Force to can interact of button for all scenario */
+        // Disable isUserInteractionEnabled statement
         if let pendingCount = screenViewModel.dataSource.followInfo?.pendingCount {
             updateFollowRequestsView(with: pendingCount)
-            followersButton.isUserInteractionEnabled = true
-            followingButton.isUserInteractionEnabled = true
+//            followersButton.isUserInteractionEnabled = true
+//            followingButton.isUserInteractionEnabled = true
         } else if let status = screenViewModel.dataSource.followInfo?.status {
             updateFollowButton(with: status)
-            followersButton.isUserInteractionEnabled = status == .accepted
-            followingButton.isUserInteractionEnabled = status == .accepted
+//            followersButton.isUserInteractionEnabled = status == .accepted
+//            followingButton.isUserInteractionEnabled = status == .accepted
         }
     }
     
