@@ -161,8 +161,10 @@ extension AmityFeedScreenViewModel {
             delegate?.screenViewModelScrollToTop(self)
             
             if let postId = notification.object as? String {
-                delegate?.screenViewModelRouteToPostDetail(postId, viewModel: self)
-                stopObserveFeedUpdate()
+                if feedType == .globalFeed {
+                    delegate?.screenViewModelRouteToPostDetail(postId, viewModel: self)
+                    stopObserveFeedUpdate()
+                }
             }
         }
     }

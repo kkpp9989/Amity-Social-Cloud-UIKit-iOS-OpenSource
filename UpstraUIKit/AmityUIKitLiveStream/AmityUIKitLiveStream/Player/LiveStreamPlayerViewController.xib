@@ -23,7 +23,7 @@
                 <outlet property="loadingOverlay" destination="S6e-xR-XMI" id="qPS-9T-GhM"/>
                 <outlet property="playButton" destination="eMx-8g-uCW" id="2g8-DX-d5r"/>
                 <outlet property="postCommentButton" destination="fPA-xk-Luf" id="GZf-Pd-pBc"/>
-                <outlet property="reactionButton" destination="Mzj-jp-oL8" id="oi0-rT-0HV"/>
+                <outlet property="reactionButton" destination="Mzj-jp-oL8" id="eXH-la-UOY"/>
                 <outlet property="renderGestureView" destination="rcm-LB-Fz3" id="lyU-5J-mIK"/>
                 <outlet property="renderView" destination="rha-6m-7Zi" id="B6f-hO-N5R"/>
                 <outlet property="showCommentButton" destination="ZEa-rN-snB" id="928-iu-X98"/>
@@ -51,10 +51,10 @@
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rQa-vC-jCd" userLabel="Status Container">
-                            <rect key="frame" x="15" y="63" width="90" height="28.5"/>
+                            <rect key="frame" x="15" y="15" width="90" height="28.333333333333329"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIVE 0:45" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BfH-Mk-SEa" userLabel="Status Label">
-                                    <rect key="frame" x="8" y="4" width="74" height="20.5"/>
+                                    <rect key="frame" x="8" y="4" width="74" height="20.333333333333332"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -69,7 +69,7 @@
                             </constraints>
                         </view>
                         <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FZj-M8-yaC" userLabel="Viewer Container">
-                            <rect key="frame" x="113" y="63.5" width="54.5" height="28"/>
+                            <rect key="frame" x="112.99999999999999" y="15.333333333333336" width="54.333333333333329" height="28"/>
                             <subviews>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="viewer" translatesAutoresizingMaskIntoConstraints="NO" id="o2t-tC-3IY">
                                     <rect key="frame" x="0.0" y="0.0" width="28" height="28"/>
@@ -79,7 +79,7 @@
                                     </constraints>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eMH-6x-AP1" userLabel="Viewer Count Label">
-                                    <rect key="frame" x="36" y="4" width="10.5" height="20"/>
+                                    <rect key="frame" x="36" y="3.9999999999999982" width="10.333333333333336" height="20"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
@@ -116,7 +116,7 @@
                     </constraints>
                 </view>
                 <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S6e-xR-XMI" userLabel="Loading Overlay">
-                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="oZo-fU-T19">
                             <rect key="frame" x="197" y="399" width="20" height="20"/>
@@ -127,19 +127,19 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
                 <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dWE-Vp-cX4" userLabel="Stream End Container">
-                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="SKH-tW-v3Q">
-                            <rect key="frame" x="15" y="372.5" width="384" height="69.5"/>
+                            <rect key="frame" x="15" y="413.66666666666669" width="384" height="69"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This livestream has ended." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wYP-in-Z1B">
-                                    <rect key="frame" x="0.0" y="0.0" width="384" height="20.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="384" height="20.333333333333332"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="afI-fc-1JZ">
-                                    <rect key="frame" x="0.0" y="28.5" width="384" height="41"/>
+                                    <rect key="frame" x="0.0" y="28.333333333333311" width="384" height="40.666666666666657"/>
                                     <string key="text">Playback will be available for you
 to watch shortly.</string>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -157,7 +157,7 @@ to watch shortly.</string>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aMJ-3v-4eD" userLabel="Control Container">
-                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e3Z-YA-P5g" userLabel="Close Button">
                             <rect key="frame" x="352" y="10" width="32" height="32"/>
@@ -167,7 +167,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eMx-8g-uCW" userLabel="Play Button">
-                            <rect key="frame" x="188" y="378" width="38.5" height="58"/>
+                            <rect key="frame" x="187.66666666666666" y="419" width="38.666666666666657" height="58"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" image="play.fill" catalog="system">
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="44"/>
@@ -177,7 +177,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GsN-Z4-b5d" userLabel="Stop Button">
-                            <rect key="frame" x="184" y="386.5" width="46" height="41"/>
+                            <rect key="frame" x="184" y="427.66666666666669" width="46" height="41"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" image="pause.fill" catalog="system">
                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="44"/>
@@ -200,7 +200,7 @@ to watch shortly.</string>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qKF-U3-b83" userLabel="Comment Container">
-                    <rect key="frame" x="0.0" y="512" width="414" height="350"/>
+                    <rect key="frame" x="0.0" y="546" width="414" height="350"/>
                     <subviews>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uyh-yQ-nPx" userLabel="Like Count">
                             <rect key="frame" x="186" y="114" width="42" height="21"/>

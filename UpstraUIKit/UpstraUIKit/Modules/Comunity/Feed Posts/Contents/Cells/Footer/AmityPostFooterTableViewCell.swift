@@ -198,46 +198,6 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         }
     }
     
-//    private func setReactions(reactions: [String: Int]) {
-//        let filteredReactions = reactions.filter { $1 != 0 }
-//        let reactionKeys = Array(filteredReactions.keys)
-//        if reactionKeys.count <= 0 {
-//            likeLabelIcon.isHidden = true
-//            twoReactionsView.isHidden = true
-//            threeReactionsView.isHidden = true
-//        } else if reactionKeys.count == 1 {
-//            likeLabelIcon.isHidden = false
-//            twoReactionsView.isHidden = true
-//            threeReactionsView.isHidden = true
-//
-//            let reaction: String = reactionKeys[0]
-//            likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
-//        } else if reactionKeys.count == 2 {
-//            likeLabelIcon.isHidden = true
-//            twoReactionsView.isHidden = false
-//            threeReactionsView.isHidden = true
-//
-//            let firstReaction: String = reactionKeys[0]
-//            twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
-//
-//            let secondReaction: String = reactionKeys[1]
-//            twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
-//        } else {
-//            likeLabelIcon.isHidden = true
-//            twoReactionsView.isHidden = true
-//            threeReactionsView.isHidden = false
-//
-//            let firstReaction: String = reactionKeys[0]
-//            threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: firstReaction) ?? .like)
-//
-//            let secondReaction: String = reactionKeys[1]
-//            threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: secondReaction) ?? .like)
-//
-//            let thirdReaction: String = reactionKeys[2]
-//            threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: thirdReaction) ?? .like)
-//        }
-//    }
-    
     private func dnaLabelIcon(reactionType: AmityReactionType) -> UIImage? {
         switch reactionType {
         case .create:

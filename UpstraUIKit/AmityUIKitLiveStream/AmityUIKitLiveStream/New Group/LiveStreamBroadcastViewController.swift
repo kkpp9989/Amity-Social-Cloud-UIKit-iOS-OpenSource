@@ -188,6 +188,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         observeKeyboardFrame()
         updateCoverImageSelection()
         switchToUIState(.create)
+        setupKeyboardListener()
         mentionManager.delegate = self
         mentionManager.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
         mentionManager.setColor(.white, highlightColor: .white)
@@ -219,6 +220,14 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             
             viewerCountLabel.text = String(viewerCount)
         })
+        
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     public override func viewDidLayoutSubviews() {
@@ -254,11 +263,16 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             coverImageContainer.isHidden = false
         } else {
             selectCoverButton.isHidden = false
-            coverImageContainer.isHidden = true
+            coverImageContainer.isHidden = false
         }
     }
     
     // MARK: - Private Functions
+    
+    func setupKeyboardListener() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
     func setupTableView(){
         guard let nibName = NSStringFromClass(LiveStreamCommentTableViewCell.self).components(separatedBy: ".").last else {
@@ -316,6 +330,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         titleTextField.textColor = .white
         titleTextField.returnKeyType = .done
         titleTextField.delegate = self
+        titleTextField.autocorrectionType = .no
+        titleTextField.spellCheckingType = .no
+        titleTextField.inputAccessoryView = UIView()
         
         // [Custom for ONE Krungthai] Change placeholder text and set color white
         titleTextField.attributedPlaceholder = NSAttributedString(string: "Livestream title", attributes: [NSAttributedString.Key.foregroundColor: UIColor.white] )
@@ -329,6 +346,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         descriptionTextView.returnKeyType = .done
         descriptionTextView.customTextViewDelegate = self
         descriptionTextView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: UIColor.white]
+        descriptionTextView.autocorrectionType = .no
+        descriptionTextView.spellCheckingType = .no
+        descriptionTextView.inputAccessoryView = UIView()
         
         let textViewToolbar: UIToolbar = UIToolbar()
         textViewToolbar.barStyle = .default
@@ -338,6 +358,13 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         ]
         textViewToolbar.sizeToFit()
         descriptionTextView.inputAccessoryView = textViewToolbar
+        
+        selectCoverButton.setTitle("Select cover", for: .normal)
+        selectCoverButton.setTitleColor(.white, for: .normal)
+        selectCoverButton.titleLabel?.font = AmityFontSet.body
+        selectCoverButton.backgroundColor = .black
+        selectCoverButton.layer.cornerRadius = 8
+        selectCoverButton.clipsToBounds = true
         
         coverImageView.clipsToBounds = true
         coverImageView.layer.cornerRadius = 4
@@ -464,6 +491,12 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         } else {
             
         }
+    }
+    
+    func formatTimeInterval(_ minutes: Int) -> String {
+        let hours = minutes / 60
+        let minutesRemainder = minutes % 60
+        return String(format: "%02d:%02d", hours, minutesRemainder)
     }
     
     // MARK: - IBActions
