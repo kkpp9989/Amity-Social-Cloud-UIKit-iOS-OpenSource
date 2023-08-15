@@ -62,7 +62,10 @@ open class AmityTextView: UITextView {
     private func resizePlaceholder() {
         let leftMargin = padding == .zero ? 0 : textContainer.lineFragmentPadding + padding.left
         let labelX = leftMargin
-        let labelY = textContainerInset.top - 2
+        /* [Fix-defect] Delete decrease 2 px when resize place holder */
+        let labelY = textContainerInset.top
+        // [Original]
+//        let labelY = textContainerInset.top - 2
         let labelWidth = frame.width - (labelX * 2)
         let labelHeight = placeholderLabel.frame.height
         placeholderLabel.frame = CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight)
