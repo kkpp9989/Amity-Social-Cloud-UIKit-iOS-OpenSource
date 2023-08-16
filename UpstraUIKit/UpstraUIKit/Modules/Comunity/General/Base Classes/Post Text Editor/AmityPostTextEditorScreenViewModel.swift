@@ -98,7 +98,19 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         let isMediaChanged = oldPost.medias != medias
         let isFileChanged = oldPost.files != files
         
-        if oldPost.dataTypeInternal == .image && isMediaChanged {
+        if oldPost.medias.isEmpty && isMediaChanged {
+            // Image Post
+            let imagePostBuilder = AmityImagePostBuilder()
+            imagePostBuilder.setText(text)
+            imagePostBuilder.setImages(getImagesData(from: medias))
+            postBuilder = imagePostBuilder
+        } else if oldPost.files.isEmpty && isFileChanged {
+            // File Post
+            let fileBuilder = AmityFilePostBuilder()
+            fileBuilder.setText(text)
+            fileBuilder.setFiles(getFilesData(from: files))
+            postBuilder = fileBuilder
+        } else if oldPost.dataTypeInternal == .image && isMediaChanged {
             // Image Post
             let imagePostBuilder = AmityImagePostBuilder()
             imagePostBuilder.setText(text)
@@ -134,7 +146,6 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         }
-        
     }
     
     // MARK:- Private Helpers
