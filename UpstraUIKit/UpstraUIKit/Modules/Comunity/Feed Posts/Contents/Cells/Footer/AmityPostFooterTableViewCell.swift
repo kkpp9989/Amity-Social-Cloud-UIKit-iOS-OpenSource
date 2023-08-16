@@ -126,13 +126,14 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         
         // Create a long press gesture recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
-        longPressRecognizer.minimumPressDuration = 0.5
+        longPressRecognizer.minimumPressDuration = 0.2
         likeButton.addGestureRecognizer(longPressRecognizer)
         
         // like badge
         likeLabel.textColor = AmityColorSet.base.blend(.shade2)
         likeLabel.font = AmityFontSet.caption
     }
+    
     private func setupCommentButton() {
         // comment button
         commentButton.tintColor = AmityColorSet.base.blend(.shade2)
@@ -253,6 +254,16 @@ private extension AmityPostFooterTableViewCell {
     @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
             performAction(action: .tapHoldLike, view: likeButton)
+            
+            // Animate the shake effect
+            let shakeAnimation = CABasicAnimation(keyPath: "position")
+            shakeAnimation.duration = 0.1
+            shakeAnimation.repeatCount = 2
+            shakeAnimation.autoreverses = true
+            shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: likeButton.center.x - 10, y: likeButton.center.y))
+            shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: likeButton.center.x + 10, y: likeButton.center.y))
+            
+            likeButton.layer.add(shakeAnimation, forKey: "shake")
         }
     }
 }

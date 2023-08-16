@@ -644,15 +644,22 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
             self.showReactionUserList(info: info)
         case .tapHoldLike:
-            if let reactionType = post.reacted {
-                screenViewModel.action.removeReactionPost(type: reactionType)
-            } else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeReactionPost(type: reacted)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self?.screenViewModel.action.addReactionPost(type: reactionType)
+                        }
+                    } else {
+                        self?.screenViewModel.action.addReactionPost(type: reactionType)
+                    }
                 }
-                showReactionPicker()
             }
+            showReactionPicker()
         }
     }
     

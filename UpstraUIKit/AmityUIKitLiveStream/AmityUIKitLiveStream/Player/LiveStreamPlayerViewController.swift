@@ -219,7 +219,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         // Create a long press gesture recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
-        longPressRecognizer.minimumPressDuration = 0.5
+        longPressRecognizer.minimumPressDuration = 0.2
         reactionButton.addGestureRecognizer(longPressRecognizer)
     }
     
