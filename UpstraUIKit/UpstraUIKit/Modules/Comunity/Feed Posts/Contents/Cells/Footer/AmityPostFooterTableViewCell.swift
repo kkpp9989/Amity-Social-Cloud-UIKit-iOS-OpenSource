@@ -126,7 +126,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         
         // Create a long press gesture recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
-        longPressRecognizer.minimumPressDuration = 1.5
+        longPressRecognizer.minimumPressDuration = 0.5
         likeButton.addGestureRecognizer(longPressRecognizer)
         
         // like badge
