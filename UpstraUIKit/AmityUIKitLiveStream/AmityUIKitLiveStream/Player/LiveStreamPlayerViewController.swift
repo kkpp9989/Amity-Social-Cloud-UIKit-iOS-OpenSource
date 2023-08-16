@@ -325,36 +325,41 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
-            let reactionType = findReactionType()
+            var reactionType = findReactionType()
+            if reactionType.isEmpty {
+                reactionType = currentReactionType
+            }
             reactionPickerView.onSelect = { [weak self] reactionValue in
+                self?.reactionButton.isEnabled = false
                 self?.hideReactionPicker()
                 if reactionType == reactionValue.rawValue {
                     self?.animateReactionButton()
                     return // Do nothing
                 }
-                if !reactionType.isEmpty {
+                if !reactionType.isEmpty || !(self?.currentReactionType.isEmpty ?? true) {
                     self?.removeReaction(withReaction: reactionType, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                        print("reaction remova: \(success)")
                         self?.reactionButton.isSelected = false
                         if success {
                             DispatchQueue.main.async {
                                 self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                                    print("reaction add: \(success)")
-                                    self?.reactionButton.isSelected = true
-                                    self?.setReactionType(reactionType: reactionValue)
-                                    self?.currentReactionType = reactionValue.rawValue
-                                    self?.animateReactionButton()
+                                    if success {
+                                        self?.reactionButton.isSelected = true
+                                        self?.setReactionType(reactionType: reactionValue)
+                                        self?.currentReactionType = reactionValue.rawValue
+                                        self?.animateReactionButton()
+                                    }
                                 }
                             }
                         }
                     }
                 } else {
                     self?.addReaction(withReaction: reactionValue.rawValue, referanceId: self?.postID ?? "", referenceType: .post) { [weak self] (success, error) in
-                        print("reaction add: \(success)")
-                        self?.reactionButton.isSelected = true
-                        self?.setReactionType(reactionType: reactionValue)
-                        self?.currentReactionType = reactionValue.rawValue
-                        self?.animateReactionButton()
+                        if success {
+                            self?.reactionButton.isSelected = true
+                            self?.setReactionType(reactionType: reactionValue)
+                            self?.currentReactionType = reactionValue.rawValue
+                            self?.animateReactionButton()
+                        }
                     }
                 }
             }
@@ -568,18 +573,23 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     @IBAction func showReactionView() {
-        
-        let reactionType = findReactionType()
-        if reactionType == currentReactionType && !reactionType.isEmpty {
+        reactionButton.isEnabled = false
+        var reactionType = findReactionType()
+        if reactionType.isEmpty {
+            reactionType = currentReactionType
+        }
+        if reactionType == currentReactionType && !currentReactionType.isEmpty {
             animateReactionButton()
             return // Do nothing
         }
         
         addReaction(withReaction: "create", referanceId: postID ?? "", referenceType: .post) { [weak self] (success, error) in
-            self?.reactionButton.isSelected = true
-            self?.setReactionType(reactionType: .create)
-            self?.currentReactionType = "create"
-            self?.animateReactionButton()
+            if success {
+                self?.reactionButton.isSelected = true
+                self?.setReactionType(reactionType: .create)
+                self?.currentReactionType = "create"
+                self?.animateReactionButton()
+            }
         }
     }
     
@@ -591,6 +601,8 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     private func animateReactionButton() {
+        reactionButton.isEnabled = true
+
         let bubbleWidth: CGFloat = 40
         let bubbleHeight: CGFloat = 40
         
