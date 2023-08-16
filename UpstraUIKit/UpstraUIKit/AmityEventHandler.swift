@@ -95,6 +95,17 @@ open class AmityEventHandler {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
+    open func userKTBDidTap(from source: AmityViewController, userId: String) {
+        let viewController = AmityUserProfilePageViewController.make(withUserId: userId)
+        
+        // Create a navigation controller with the view controller as the root
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        
+        // Present the navigation controller modally
+        source.present(navigationController, animated: true, completion: nil)
+    }
+    
     open func hashtagDidTap(from source: AmityViewController, keyword: String, count: Int) {
         let viewController = AmityHashtagFeedViewController.make(feedType: .globalFeed, keyword: keyword, count: count)
         source.navigationController?.pushViewController(viewController, animated: true)
