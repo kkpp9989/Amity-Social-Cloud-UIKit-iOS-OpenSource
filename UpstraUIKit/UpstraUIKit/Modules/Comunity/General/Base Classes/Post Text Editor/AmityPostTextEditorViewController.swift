@@ -184,7 +184,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             // If there is no menu to show, so we don't show postMenuView.
             postMenuView.isHidden = settings.allowPostAttachments.isEmpty
         case .edit:
-            postMenuView.isHidden = true
+            postMenuView.isHidden = false
         }
         
         NSLayoutConstraint.activate([
@@ -194,7 +194,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
             postMenuView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             postMenuView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            postMenuView.heightAnchor.constraint(equalToConstant: postMode == .create ? AmityPostTextEditorMenuView.defaultHeight : 0),
+            postMenuView.heightAnchor.constraint(equalToConstant: postMode == .create ? AmityPostTextEditorMenuView.defaultHeight : AmityPostTextEditorMenuView.defaultHeight),
             postMenuViewBottomConstraints,
             comunityPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             comunityPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -332,7 +332,6 @@ public class AmityPostTextEditorViewController: AmityViewController {
             }
             screenViewModel.createPost(text: text, medias: medias, files: files, communityId: communityId, metadata: metadata, mentionees: mentionees)
         }
-        
     }
     
     private func updateViewState() {

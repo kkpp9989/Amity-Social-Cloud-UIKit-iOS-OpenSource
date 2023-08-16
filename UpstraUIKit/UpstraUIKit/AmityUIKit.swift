@@ -73,7 +73,11 @@ public final class AmityUIKitManager {
         authToken: String? = nil,
         sessionHandler: SessionHandler,
         completion: AmityRequestCompletion? = nil) {
-        AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
+            
+        unregisterDevice()
+            DispatchQueue.main.async {
+                AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
+            }
     }
     
     /// Unregisters current user. This removes all data related to current user & terminates conenction with server. This is analogous to "logout" process.
@@ -100,6 +104,12 @@ public final class AmityUIKitManager {
     
     public static func setEnvironment(_ env: [String: Any]) {
         AmityUIKitManagerInternal.shared.env = env
+    }
+    
+    public static func isModeratorUserInCommunity(withUserId userId: String, communityId: String) -> Bool {
+        let membershipParticipation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+        let member = membershipParticipation.getMember(withId: userId)
+        return member?.hasModeratorRole ?? false
     }
     
     // MARK: - Variable

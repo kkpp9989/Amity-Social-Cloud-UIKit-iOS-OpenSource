@@ -28,6 +28,9 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
     var commentId: String = ""
     var isLike: Bool = false
 
+    private var isModeratorUserInOfficialCommunity: Bool = false
+    private var isOfficialCommunity: Bool = false
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -57,8 +60,8 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         unlikeButton.setTitle("", for: .normal)
     }
 
-    func display(comment: AmityCommentModel) {
-        avatarView.setImage(withImageURL: comment.fileURL)
+    func display(comment: AmityCommentModel, post: AmityPost? = nil) {
+        avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
         displayNameLabel.text = comment.displayName
         commentId = comment.id
         commentLabel.text = comment.text
@@ -70,6 +73,19 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         } else {
             likeButton.isHidden = false
             unlikeButton.isHidden = true
+        }
+                
+        if let community = post?.targetCommunity { // Case : Post from community
+            isModeratorUserInOfficialCommunity = AmityUIKitManager.isModeratorUserInCommunity(withUserId: comment.userId ?? "", communityId: community.communityId)
+            isOfficialCommunity = community.isOfficial
+            print("postedUserId: \(post?.postedUserId), communityId: \(community.communityId), isModeratorUserInOfficialCommunity: \(isModeratorUserInOfficialCommunity), isOfficialCommunity: \(isOfficialCommunity)")
+            if isModeratorUserInOfficialCommunity && isOfficialCommunity { // Case : Owner post is moderator and community is official
+                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                displayNameLabel.text = community.displayName
+            } else { // Case : Owner post is normal user or not official community
+                avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                displayNameLabel.text = comment.displayName
+            }
         }
     }
     

@@ -33,14 +33,14 @@ struct RequestViewerStatistics {
         
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
-                completion(.failure("Not data" as! Error))
+                completion(.failure(HandleError.notFound))
                 return
             }
             
             switch httpResponse.statusCode {
             case 200:
                 guard let dataModel = try? JSONDecoder().decode(ViewerStatisticsModel.self, from: data) else {
-                    completion(.failure("Json Decode Error" as! Error))
+                    completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
                 completion(.success(dataModel))
