@@ -69,7 +69,8 @@ extension AmityUserProfileHeaderScreenViewModel {
         followToken?.invalidate()
         
         if userId == AmityUIKitManagerInternal.shared.client.currentUserId {
-            followToken = followManager.getMyFollowInfo().observe { [weak self] liveObject, error in
+            let userRepository = userRepository.userRelationship
+            followToken = userRepository.getMyFollowInfo().observe { [weak self] liveObject, error in
                 guard let strongSelf = self else { return }
                 
                 if let object = liveObject.object {
@@ -82,7 +83,8 @@ extension AmityUserProfileHeaderScreenViewModel {
             return
         }
         
-        followToken = followManager.getUserFollowInfo(withUserId: userId).observe { [weak self] liveObject, error in
+        let userRepository = userRepository.userRelationship
+        followToken = userRepository.getFollowInfo(withUserId: userId).observe { [weak self] liveObject, error in
             
             guard let strongSelf = self else { return }
             

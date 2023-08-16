@@ -162,6 +162,10 @@ extension AmityHashtagScreenViewModel {
                     self.tokenArray.removeAll()
                 }
             }
+            
+            if posts.postIDS.isEmpty {
+                prepareComponents(posts: [])
+            }
         }
     }
     

@@ -595,15 +595,17 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
             self.showReactionUserList(info: info)
         case .tapHoldLike:
-            if let reactionType = post.reacted {
-                screenViewModel.action.removeReactionPost(type: reactionType)
-            } else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if reactionType == post.reacted {
+                    return
+                }
+                self?.screenViewModel.action.removeReactionPost(type: reactionType)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self?.screenViewModel.action.addReactionPost(type: reactionType)
                 }
-                showReactionPicker()
             }
+            showReactionPicker()
         }
     }
     
@@ -734,13 +736,13 @@ extension OneKTBActivityDetailViewController: AmityExpandableLabelDelegate {
     }
     
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
-        AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        AmityEventHandler.shared.userKTBDidTap(from: self, userId: userId)
     }
 }
 
 extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate {
     func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
-        AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        AmityEventHandler.shared.userKTBDidTap(from: self, userId: userId)
     }
     
     func commentCellDidTapReadMore(_ cell: AmityCommentTableViewCell) {
