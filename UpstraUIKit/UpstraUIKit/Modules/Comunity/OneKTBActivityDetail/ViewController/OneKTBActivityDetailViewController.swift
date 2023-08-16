@@ -597,12 +597,17 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
         case .tapHoldLike:
             reactionPickerView.onSelect = { [weak self] reactionType in
                 self?.hideReactionPicker()
-                if reactionType == post.reacted {
+                if let reacted = post.reacted, reactionType == reacted {
                     return
-                }
-                self?.screenViewModel.action.removeReactionPost(type: reactionType)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeReactionPost(type: reacted)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self?.screenViewModel.action.addReactionPost(type: reactionType)
+                        }
+                    } else {
+                        self?.screenViewModel.action.addReactionPost(type: reactionType)
+                    }
                 }
             }
             showReactionPicker()
