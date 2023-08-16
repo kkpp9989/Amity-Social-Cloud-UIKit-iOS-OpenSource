@@ -77,7 +77,8 @@ open class AmityPostDetailViewController: AmityViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        setupNavigationBar()
+        /* [Improvement] Move add option button of navigation bar to get post success data because of click post notification */
+//        setupNavigationBar()
         setupTableView()
         setupComposeBarView()
         setupProtocolHandler()
@@ -485,6 +486,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModelDidUpdateData(_ viewModel: AmityPostDetailScreenViewModelType) {
         tableView.reloadData()
         if let post = screenViewModel.post {
+            /* [Improvement] Move add option button of navigation bar to get post success data because of click post notification */
+            setupNavigationBar()
             commentComposeBarView.configure(with: post)
         }
         
