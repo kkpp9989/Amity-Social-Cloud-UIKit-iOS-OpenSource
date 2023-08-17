@@ -63,15 +63,14 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         
         // Set background app for this navigation bar
         theme?.setBackgroundApp(index: 0)
-        
-        screenViewModel.action.fetchUserData()
-        screenViewModel.action.fetchFollowInfo()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Clear setting navigation bar (normal) from ONE Krungthai custom theme
         theme?.clearNavigationBarSetting()
+        
+        handleRefreshing()
     }
     
     // MARK: - Refreshable
