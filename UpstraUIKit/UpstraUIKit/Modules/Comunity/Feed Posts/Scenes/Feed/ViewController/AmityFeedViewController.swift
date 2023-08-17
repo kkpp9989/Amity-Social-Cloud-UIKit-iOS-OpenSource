@@ -92,9 +92,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             tableView.reloadData()
         }
         
-        // [Fix defect] Set up screen view model again for update data when this view dissapeared from open other view
-        setupScreenViewModel()
-        
         // this line solves issue where refresh control sticks to the top while switching tab
         resetRefreshControlStateIfNeeded()
     }
