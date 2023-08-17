@@ -54,6 +54,10 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
         self.post = post
         self.indexPath = indexPath
         
+        /* [Fix-defect] Add check user joined in community for poll answering permission if poll from community post */
+        let isJoinedCommunity: Bool = post.targetCommunity?.isJoined ?? false
+        tableView.isUserInteractionEnabled = isJoinedCommunity
+        
         guard let poll = post.poll else { return }
         if let metadata = post.metadata, let mentionees = post.mentionees {
             let attributes = AmityMentionManager.getAttributes(fromText: poll.question, withMetadata: metadata, mentionees: mentionees)
@@ -69,7 +73,7 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
         
         statusPollLabel.text = poll.isClosed ? AmityLocalizedStringSet.Poll.Option.finalResult.localizedString : pollStatus
         voteCountLabel.text = "\(poll.voteCount.formatUsingAbbrevation()) \(AmityLocalizedStringSet.Poll.Option.voteCountTitle.localizedString)"
-        submitVoteButton.isHidden = poll.isClosed || poll.isVoted || !(post.feedType == .published)
+        submitVoteButton.isHidden = poll.isClosed || poll.isVoted || !(post.feedType == .published) || !isJoinedCommunity // [Fix-defect] Add check user joined in community for poll answering permission if poll from community post
         
         poll.answers.forEach { answer in
             answer.isSelected = selectedAnswerIds.contains(where: { $0 == answer.id})
