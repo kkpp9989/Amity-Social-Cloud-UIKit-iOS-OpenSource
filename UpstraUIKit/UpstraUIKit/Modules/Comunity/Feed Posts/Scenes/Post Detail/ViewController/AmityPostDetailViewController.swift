@@ -370,7 +370,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            _cell.configure(with: comment, layout: layout)
+            _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
             _cell.labelDelegate = self
             _cell.actionDelegate = self
             
@@ -650,10 +650,7 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
                     return
                 } else {
                     if let reacted = post.reacted, !reacted.rawValue.isEmpty {
-                        self?.screenViewModel.action.removeReactionPost(type: reacted)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self?.screenViewModel.action.addReactionPost(type: reactionType)
-                        }
+                        self?.screenViewModel.action.removeHoldReactionPost(type: reacted, typeSelect: reactionType)
                     } else {
                         self?.screenViewModel.action.addReactionPost(type: reactionType)
                     }

@@ -18,6 +18,9 @@ public class LiveStreamPlayerViewController: UIViewController {
     private let reactionRepository: AmityReactionRepository
     private let commentRepository: AmityCommentRepository
     
+    private var postObject: AmityObject<AmityPost>?
+    private var postToken: AmityNotificationToken?
+    
     private var stream: AmityStream?
     private var getStreamToken: AmityNotificationToken?
     
@@ -28,6 +31,9 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @IBOutlet weak var viewerCountContainer: UIView!
     @IBOutlet weak var viewerCountLabel: UILabel!
+    
+    @IBOutlet weak var reactionCountContainer: UIView!
+    @IBOutlet weak var reactionCountLabel: UILabel!
 
     /// The view above renderView to intercept tap gestuere for show/hide control container.
     @IBOutlet private weak var renderGestureView: UIView!
@@ -46,6 +52,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet private weak var streamEndDescriptionLabel: UILabel!
     
     // MARK: - UI Comment tableView
+    @IBOutlet private weak var commentContainer: UIView!
     @IBOutlet private weak var commentTableView: UITableView!
     @IBOutlet private weak var commentTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private weak var commentTextView: AmityTextView!
@@ -56,6 +63,9 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet private weak var streamingViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var liveCommentView: UIView!
     @IBOutlet private weak var liveCommentViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var reactionContainerView: UIView!
+    @IBOutlet private weak var reactionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private weak var reactionWidthConstraint: NSLayoutConstraint!
     @IBOutlet private weak var reactionButton: UIButton!
 
     // MARK: - Keyboard Observations
@@ -87,9 +97,12 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var createCommentToken: AmityNotificationToken?
     private var collection: AmityCollection<AmityComment>?
     private var subscriptionManager: AmityTopicSubscription?
+    private var subscriptionPostManager: AmityTopicSubscription?
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
     private var commentCount: Int = 0
+
+    private var isFirstTime: Bool = true
 
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
@@ -121,6 +134,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         self.commentRepository = AmityCommentRepository(client: AmityUIKitManager.client)
         self.streamIdToWatch = streamIdToWatch
         self.subscriptionManager = AmityTopicSubscription(client: AmityUIKitManager.client)
+        self.subscriptionPostManager = AmityTopicSubscription(client: AmityUIKitManager.client)
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
         self.postID = postID
         self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
@@ -153,14 +167,17 @@ public class LiveStreamPlayerViewController: UIViewController {
         requestingStreamObject = true
         observeStreamObject()
         setupReactionPicker()
+        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        startRealTimeEventSubscribe()
+        startRealTimeEventPostSubscribe()
+
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
-            startRealTimeEventSubscribe()
             requestSendViewerStatisticsAPI()
-            
+
             viewerCountLabel.text = String(viewerCount)
         })
     }
@@ -200,6 +217,11 @@ public class LiveStreamPlayerViewController: UIViewController {
         viewerCountLabel.font = AmityFontSet.captionBold
         viewerCountLabel.textColor = .white
         
+        reactionCountContainer.clipsToBounds = true
+        reactionCountContainer.layer.cornerRadius = 4
+        reactionCountLabel.font = AmityFontSet.captionBold
+        reactionCountLabel.textColor = .white
+        
         streamEndTitleLabel.font = AmityFontSet.title
         streamEndDescriptionLabel.font = AmityFontSet.body
         
@@ -221,6 +243,11 @@ public class LiveStreamPlayerViewController: UIViewController {
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
         longPressRecognizer.minimumPressDuration = 0.2
         reactionButton.addGestureRecognizer(longPressRecognizer)
+        
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(dismissKeyboard)
+        liveCommentView.addGestureRecognizer(dismissKeyboard)
+        commentContainer.addGestureRecognizer(dismissKeyboard)
     }
     
     func setupKeyboardListener() {
@@ -243,10 +270,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTableView.showsVerticalScrollIndicator = false
         commentTableView.showsHorizontalScrollIndicator = false
         commentTableView.tag = 1
-        commentTextView.autocorrectionType = .no
-        commentTextView.spellCheckingType = .no
-        commentTextView.inputAccessoryView = UIView()
-        commentTextView.returnKeyType = .done
         
         let textViewToolbar: UIToolbar = UIToolbar()
         textViewToolbar.barStyle = .default
@@ -264,6 +287,9 @@ public class LiveStreamPlayerViewController: UIViewController {
         commentTextView.textContainer.lineBreakMode = .byTruncatingTail
         commentTextView.placeholder = "Comment"
         commentTextView.tag = 1
+        commentTextView.autocorrectionType = .no
+        commentTextView.spellCheckingType = .no
+        commentTextView.inputAccessoryView = UIView()
         
         liveCommentView.backgroundColor = .clear
         
@@ -281,20 +307,19 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     private func setupReactionPicker() {
         reactionPickerView.alpha = 0
-        view.addSubview(reactionPickerView)
-        
+        reactionContainerView.isHidden = true
+        reactionContainerView.addSubview(reactionPickerView)
+
         // Setup tap gesture recognizer
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        liveCommentView.addGestureRecognizer(tap)
+        commentContainer.addGestureRecognizer(tap)
         
-        let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
-        // Update the `CGPoint` with the new y-coordinate.
-        let newOrigin = CGPoint(x: 16, y: likeButtonFrameInSuperview.maxY - (4 * self.liveCommentView.frame.height))
+        reactionHeightConstraint.constant = reactionPickerView.viewHeight
+        reactionWidthConstraint.constant = reactionPickerView.viewWidth
 
-        // Set the updated frame origin to the `reactionPickerView`.
-        reactionPickerView.frame.origin = newOrigin
-        
         let reactionType = findReactionType()
         if !reactionType.isEmpty {
             setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
@@ -305,6 +330,8 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     @objc private func playerContainerDidTap() {
+        dismissKeyboard()
+        hideReactionPicker()
         UIView.animate(withDuration: 0.15, animations: {
             self.controlContainer.alpha = 1
         }, completion: { finish in
@@ -314,6 +341,8 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @objc private func controlContainerDidTap() {
         controlContainer.isUserInteractionEnabled = false
+        dismissKeyboard()
+        hideReactionPicker()
         UIView.animate(withDuration: 0.15) {
             self.controlContainer.alpha = 0
         }
@@ -347,6 +376,8 @@ public class LiveStreamPlayerViewController: UIViewController {
                                         self?.setReactionType(reactionType: reactionValue)
                                         self?.currentReactionType = reactionValue.rawValue
                                         self?.animateReactionButton()
+                                    } else {
+                                        self?.reactionButton.isEnabled = true
                                     }
                                 }
                             }
@@ -359,6 +390,8 @@ public class LiveStreamPlayerViewController: UIViewController {
                             self?.setReactionType(reactionType: reactionValue)
                             self?.currentReactionType = reactionValue.rawValue
                             self?.animateReactionButton()
+                        } else {
+                            self?.reactionButton.isEnabled = true
                         }
                     }
                 }
@@ -505,6 +538,12 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     private func unobserveStreamObject() {
         getStreamToken = nil
+        subscriptionManager = nil
+        subscriptionPostManager = nil
+        postToken?.invalidate()
+        postToken = nil
+        fetchCommentToken?.invalidate()
+        fetchCommentToken = nil
     }
     
     private func playStream() {
@@ -574,11 +613,15 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @IBAction func showReactionView() {
         reactionButton.isEnabled = false
-        var reactionType = findReactionType()
-        if reactionType.isEmpty {
-            reactionType = currentReactionType
+        hideReactionPicker()
+        
+        let reactionType = findReactionType()
+        if isFirstTime && !reactionType.isEmpty {
+            currentReactionType = reactionType
+            isFirstTime = false
         }
-        if reactionType == currentReactionType && !currentReactionType.isEmpty {
+        
+        if reactionType == currentReactionType && !reactionType.isEmpty {
             animateReactionButton()
             return // Do nothing
         }
@@ -589,6 +632,8 @@ public class LiveStreamPlayerViewController: UIViewController {
                 self?.setReactionType(reactionType: .create)
                 self?.currentReactionType = "create"
                 self?.animateReactionButton()
+            } else {
+                self?.reactionButton.isEnabled = true
             }
         }
     }
@@ -678,12 +723,14 @@ extension LiveStreamPlayerViewController {
     private func showReactionPicker() {
         UIView.animate(withDuration: 0.1) {
             self.reactionPickerView.alpha = 1 // Fade in
+            self.reactionContainerView.isHidden = false
         }
     }
     
     private func hideReactionPicker() {
         UIView.animate(withDuration: 0.1) {
             self.reactionPickerView.alpha = 0 // Fade out
+            self.reactionContainerView.isHidden = true
         }
     }
 }
@@ -725,6 +772,7 @@ extension LiveStreamPlayerViewController: AmityTextViewDelegate {
     
     public func textFieldShouldReturn(_ textField: AmityTextView) -> Bool {
         textField.resignFirstResponder()
+        dismissKeyboard()
         return true
     }
 }
@@ -761,15 +809,19 @@ extension LiveStreamPlayerViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = amityPost else { return }
             let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-            subscriptionManager?.subscribeTopic(eventTopic) { success, error in
-                if let error = error {
-                    print("[RTE]Error: \(error.localizedDescription)")
-                } else {
-                    print("[RTE] Sucess")
-                }
-            }
+            subscriptionManager?.subscribeTopic(eventTopic) { _,_ in }
             
             getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
+        }
+    }
+    
+    func startRealTimeEventPostSubscribe() {
+        DispatchQueue.main.async { [self] in
+            guard let currentPost = amityPost else { return }
+            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+            subscriptionPostManager?.subscribeTopic(eventPostTopic) { _,_ in }
+            
+            getPostForPostId(withPostId: postID ?? "")
         }
     }
     
@@ -807,6 +859,27 @@ extension LiveStreamPlayerViewController {
 
 // MARK: - Repository observer
 extension LiveStreamPlayerViewController {
+    func getPostForPostId(withPostId postId: String) {
+        postToken?.invalidate()
+        postObject = postRepository.getPost(withId: postId)
+        postToken = postObject?.observe { [weak self] (_, error) in
+            guard let strongSelf = self else { return }
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                let post = strongSelf.preparePostData()
+                strongSelf.amityPost = post?.post
+                strongSelf.updateReactionCount(reactionCount: post?.reactionsCount ?? 0)
+            }
+        }
+    }
+    
+    private func preparePostData() -> AmityPostModel? {
+        guard let _post = postObject?.object else { return nil }
+        let post = AmityPostModel(post: _post)
+        return post
+    }
+    
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool) {
         
         fetchCommentToken?.invalidate()
@@ -870,6 +943,10 @@ extension LiveStreamPlayerViewController {
         } else {
             commentTableViewHeightConstraint.constant = commentTableView.contentSize.height
         }
+    }
+    
+    func updateReactionCount(reactionCount: Int) {
+        reactionCountLabel.text = String(reactionCount)
     }
 }
 

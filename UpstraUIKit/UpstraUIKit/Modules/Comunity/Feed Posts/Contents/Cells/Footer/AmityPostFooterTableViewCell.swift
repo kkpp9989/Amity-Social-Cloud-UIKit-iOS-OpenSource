@@ -254,16 +254,6 @@ private extension AmityPostFooterTableViewCell {
     @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == .began {
             performAction(action: .tapHoldLike, view: likeButton)
-            
-            // Animate the shake effect
-            let shakeAnimation = CABasicAnimation(keyPath: "position")
-            shakeAnimation.duration = 0.1
-            shakeAnimation.repeatCount = 2
-            shakeAnimation.autoreverses = true
-            shakeAnimation.fromValue = NSValue(cgPoint: CGPoint(x: likeButton.center.x - 10, y: likeButton.center.y))
-            shakeAnimation.toValue = NSValue(cgPoint: CGPoint(x: likeButton.center.x + 10, y: likeButton.center.y))
-            
-            likeButton.layer.add(shakeAnimation, forKey: "shake")
         }
     }
 }
@@ -293,7 +283,7 @@ private extension AmityPostFooterTableViewCell {
     
     private func sortReactionKeys(reactionKeys: [String]) -> [String] {
         // Define the priority of reactions using the AmityReactionType enum
-        let priorityOrder: [AmityReactionType] = [.love, .honest, .success, .harmony, .society, .create, .like]
+        let priorityOrder: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
         
         // Sort reaction keys based on priority order
         let sortedReactionKeys = reactionKeys.sorted { (key1, key2) -> Bool in

@@ -401,7 +401,9 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     func screenViewModelDidFail(_ viewModel: AmityFeedScreenViewModelType, failure error: AmityError) {
         switch error {
         case .unknown:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            //  Remove alert for case spam button
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            break
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()
@@ -511,10 +513,7 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                     return
                 } else {
                     if let reacted = post.reacted, !reacted.rawValue.isEmpty {
-                        self?.screenViewModel.action.removeReaction(id: post.postId, reaction: reacted, referenceType: .post)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
-                        }
+                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType)
                     } else {
                         self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
                     }

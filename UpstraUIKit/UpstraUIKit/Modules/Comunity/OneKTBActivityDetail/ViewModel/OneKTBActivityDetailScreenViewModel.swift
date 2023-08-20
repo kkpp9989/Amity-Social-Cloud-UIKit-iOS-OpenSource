@@ -269,6 +269,18 @@ extension OneKTBActivityDetailScreenViewModel {
         }
     }
     
+    func removeHoldReactionPost(type: AmityReactionType, typeSelect: AmityReactionType) {
+        reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
+            guard let strongSelf = self else { return }
+            if success {
+                strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
+                strongSelf.addReactionPost(type: typeSelect)
+            } else {
+                strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+            }
+        }
+    }
+    
     func deletePost() {
         postController.delete(withPostId: postId, parentId: nil) { [weak self] (success, error) in
             guard let strongSelf = self else { return }

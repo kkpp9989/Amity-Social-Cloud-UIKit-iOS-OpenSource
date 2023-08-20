@@ -29,9 +29,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     let postRepository: AmityPostRepository
     let reactionReposity: AmityReactionRepository
     var broadcaster: AmityStreamBroadcaster?
-
-    // MARK: - Internal Const Properties
     
+    // MARK: - Internal Const Properties
     /// The queue to execute go live operations.
     let goLiveOperationQueue = OperationQueue()
     
@@ -119,6 +118,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     @IBOutlet weak var liveCommentView: UIView!
     @IBOutlet private weak var liveCommentViewHeightConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var reactionCountContainer: UIView!
+    @IBOutlet weak var reactionCountLabel: UILabel!
+    
     // MARK: - Keyboard Observations
     // LiveStreamBroadcastVC+Keyboard.swift
     var keyboardIsHidden = true
@@ -126,19 +128,21 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     var keyboardObservationTokens: [NSObjectProtocol] = []
     
     // MARK: - Comment properties
-    private var timer = Timer()
+    var timer = Timer()
     private var fetchCommentToken: AmityNotificationToken?
     private var createCommentToken: AmityNotificationToken?
     private var collection: AmityCollection<AmityComment>?
     private var subscriptionManager: AmityTopicSubscription?
+    private var subscriptionPostManager: AmityTopicSubscription?
     private var commentSet: Set<String> = []
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
 
-    // MARK: - Init / Deinit
+    private var postObject: AmityObject<AmityPost>?
+    private var postToken: AmityNotificationToken?
     
+    // MARK: - Init / Deinit
     public init(client: AmityClient, targetId: String?, targetType: AmityPostTargetType) {
-        
         self.client = client
         self.targetId = targetId
         self.targetType = targetType
@@ -152,6 +156,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster = AmityStreamBroadcaster(client: client)
         reactionReposity = AmityReactionRepository(client: client)
         subscriptionManager = AmityTopicSubscription(client: client)
+        subscriptionPostManager = AmityTopicSubscription(client: client)
         mentionManager = AmityMentionManager(withType: .post(communityId: targetId))
         
         let bundle = Bundle(for: type(of: self))
@@ -178,6 +183,12 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         liveObjectQueryToken = nil
         unobserveKeyboardFrame()
         stopLiveDurationTimer()
+        subscriptionManager = nil
+        subscriptionPostManager = nil
+        postToken?.invalidate()
+        postToken = nil
+        fetchCommentToken?.invalidate()
+        fetchCommentToken = nil
     }
     
     // MARK: - View Controller Life Cycle
@@ -218,6 +229,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
+            startRealTimeEventPostSubscribe()
             requestSendViewerStatisticsAPI()
             
             viewerCountLabel.text = String(viewerCount)
@@ -319,7 +331,6 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     }
     
     private func setupViews() {
-        
         targetNameLabel.textColor = .white
         targetNameLabel.font = AmityFontSet.bodyBold
         
@@ -394,6 +405,14 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         viewerCountLabel.font = AmityFontSet.captionBold
         viewerCountLabel.textColor = .white
 
+        reactionCountContainer.clipsToBounds = true
+        reactionCountContainer.layer.cornerRadius = 4
+        reactionCountLabel.font = AmityFontSet.captionBold
+        reactionCountLabel.textColor = .white
+        
+        let dismissKeyboard = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        uiContainerStreaming.addGestureRecognizer(dismissKeyboard)
+        
         setupMentionTableView()
     }
     
@@ -498,6 +517,10 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         } else {
             commentTableViewHeightConstraint.constant = commentTableView.contentSize.height
         }
+    }
+    
+    func updateReactionCount(reactionCount: Int) {
+        reactionCountLabel.text = String(reactionCount)
     }
     
     // MARK: - IBActions
@@ -612,6 +635,7 @@ extension LiveStreamBroadcastViewController: AmityTextViewDelegate {
 extension LiveStreamBroadcastViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        dismissKeyboard()
         return true
     }
     
@@ -755,6 +779,16 @@ extension LiveStreamBroadcastViewController {
         }
     }
     
+    func startRealTimeEventPostSubscribe() {
+        DispatchQueue.main.async { [self] in
+            guard let currentPost = createdPost else { return }
+            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+            subscriptionPostManager?.subscribeTopic(eventPostTopic) { _,_ in }
+            
+            getPostForPostId(withPostId: currentPost.postId)
+        }
+    }
+    
     @objc func sendComment() {
         //Reset all constant
         self.view.endEditing(true)
@@ -791,6 +825,27 @@ extension LiveStreamBroadcastViewController {
 
 // MARK: - Repository observer
 extension LiveStreamBroadcastViewController {
+    func getPostForPostId(withPostId postId: String) {
+        postToken?.invalidate()
+        postObject = postRepository.getPost(withId: postId)
+        postToken = postObject?.observe { [weak self] (_, error) in
+            guard let strongSelf = self else { return }
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                let post = strongSelf.preparePostData()
+                strongSelf.createdPost = post?.post
+                strongSelf.updateReactionCount(reactionCount: post?.reactionsCount ?? 0)
+            }
+        }
+    }
+    
+    private func preparePostData() -> AmityPostModel? {
+        guard let _post = postObject?.object else { return nil }
+        let post = AmityPostModel(post: _post)
+        return post
+    }
+    
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool) {
         
         fetchCommentToken?.invalidate()

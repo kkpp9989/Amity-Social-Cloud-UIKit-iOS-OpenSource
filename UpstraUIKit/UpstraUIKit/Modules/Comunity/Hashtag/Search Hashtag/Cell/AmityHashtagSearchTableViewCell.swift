@@ -13,7 +13,8 @@ class AmityHashtagSearchTableViewCell: UITableViewCell, Nibbable {
     static let defaultHeight: CGFloat = 56.0
     
     @IBOutlet private var keywordLabel: UILabel!
-    
+    @IBOutlet private var keywordCountLabel: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -27,14 +28,20 @@ class AmityHashtagSearchTableViewCell: UITableViewCell, Nibbable {
         keywordLabel.font = AmityFontSet.bodyBold
         keywordLabel.textColor = AmityColorSet.base
         keywordLabel.text = ""
+        
+        keywordCountLabel.font = AmityFontSet.caption
+        keywordCountLabel.textColor = AmityColorSet.base.blend(.shade3)
+        keywordCountLabel.text = ""
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         keywordLabel.text = ""
+        keywordCountLabel.text = ""
     }
     
     func display(with community: AmityHashtagModel) {
         keywordLabel.text = "#\(community.text ?? "")"
+        keywordCountLabel.text = "\(community.count?.formatUsingAbbrevation() ?? "0") posts"
     }
 }
