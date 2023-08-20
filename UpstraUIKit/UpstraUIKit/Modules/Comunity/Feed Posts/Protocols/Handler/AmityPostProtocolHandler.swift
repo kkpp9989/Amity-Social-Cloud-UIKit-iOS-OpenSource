@@ -81,9 +81,9 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             case .image:
                 break
             }
-        case .tapViewAll, .tapExpandableLabel:
+        case .tapViewAll(_, let pollAnswers), .tapExpandableLabel( _, _, let pollAnswers):
             if let viewController = viewController {
-                AmityEventHandler.shared.postDidtap(from: viewController, postId: post.postId)
+                AmityEventHandler.shared.postDidtap(from: viewController, postId: post.postId, pollAnswers: pollAnswers)
             }
         case .willExpandExpandableLabel:
             tableView?.beginUpdates()
