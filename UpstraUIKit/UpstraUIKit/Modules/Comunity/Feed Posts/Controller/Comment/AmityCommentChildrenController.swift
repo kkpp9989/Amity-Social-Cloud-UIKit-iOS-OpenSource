@@ -42,7 +42,8 @@ final class AmityCommentChildrenController {
             }
         } else {
             commentChildrenResults[parentId] = []
-            let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: .post, filterByParentId: true, parentId: parentId, orderBy: .descending, includeDeleted: true)
+            /* [Custom for ONE Krungthai] [Fix-defect] Change sort of reply comment from descending to ascending */
+            let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: .post, filterByParentId: true, parentId: parentId, orderBy: .ascending, includeDeleted: true)
             commentChildrenCollections[parentId] = commentRepository.getComments(with: queryOptions)
             commentChildrenTokens[parentId] = commentChildrenCollections[parentId]?.observe { [weak self] collection, _, _ in
                 guard let strongSelf = self else { return }

@@ -142,11 +142,12 @@ extension AmityPostDetailScreenViewModel {
             let itemToDisplay = childrenController.numberOfDisplayingItem(for: parentId)
             let deletedItemCount = childrenController.numberOfDeletedChildren(for: parentId)
             
+            /* [Fix-defect] Disable this condition for set ascending of reply comment */
             // loadedItems will be empty on the first load.
             // set childrenComment directly to reduce number of server request.
-            if loadedItems.isEmpty {
-                loadedItems = model.childrenComment.reversed()
-            }
+//            if loadedItems.isEmpty {
+//                loadedItems = model.childrenComment.reversed()
+//            }
             
             // model.childrenNumber doesn't include deleted children.
             // so, add it directly to correct the total count.
