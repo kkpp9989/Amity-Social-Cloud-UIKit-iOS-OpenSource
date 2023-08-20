@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "default_user_profile_header.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -64,7 +64,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
         // Set background app for this navigation bar
-        theme?.setBackgroundApp(index: 0)
+        theme?.setBackgroundApp(index: 0, isUserProfile: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,9 +84,6 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        // [Fix-defect] Set navigation bar when view disappeared (Case : Is scroll view reached topper point then view diappear)
-        theme?.setBackgroundNavigationBar()
         
         /* [Fix-defect] Delete observer notification center if view diappeared for cancel handle scroll view UI processing */
         NotificationCenter.default.removeObserver(self)
