@@ -18,14 +18,14 @@ public class AmityReactionPickerView: UIView {
     
     private let reactionTypes: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
     
-    private var viewWidth: CGFloat {
+    public var viewWidth: CGFloat {
         
         let maxWidth = UIScreen.main.bounds.size.width - 16 - 16
         let contentWidth = (48*7) + (horizontalSpacing * 2)
         return min(maxWidth, contentWidth)
     }
     
-    private let viewHeight: CGFloat = 84
+    public let viewHeight: CGFloat = 84
     
     public var onSelect:((AmityReactionType) -> Void)?
     

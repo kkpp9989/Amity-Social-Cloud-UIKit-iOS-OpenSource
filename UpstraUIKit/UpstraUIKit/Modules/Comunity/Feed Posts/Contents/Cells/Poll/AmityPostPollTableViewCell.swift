@@ -29,7 +29,8 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public var indexPath: IndexPath?
     
     private(set) var selectedAnswerIds: [String] = []
-    
+    public var selectedAnswer: [String] = []
+
     public override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
@@ -53,6 +54,7 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public func display(post: AmityPostModel, indexPath: IndexPath) {
         self.post = post
         self.indexPath = indexPath
+        self.selectedAnswerIds = selectedAnswer
         
         /* [Fix-defect] Add check user joined in community for poll answering permission if poll from community post */
         let isJoinedCommunity: Bool = post.targetCommunity?.isJoined ?? false

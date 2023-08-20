@@ -28,6 +28,8 @@
                 <outlet property="mentionTableViewHeightConstraint" destination="3tO-j0-FSi" id="A6A-d6-MbD"/>
                 <outlet property="overlayView" destination="EQI-Pf-pby" id="FLT-tP-0cQ"/>
                 <outlet property="postCommentButton" destination="BHF-m3-EZs" id="Dal-UI-udq"/>
+                <outlet property="reactionCountContainer" destination="PiF-fc-dHS" id="7n3-tB-bgS"/>
+                <outlet property="reactionCountLabel" destination="Aeo-lq-uUo" id="myh-jc-7kr"/>
                 <outlet property="renderingContainer" destination="WoG-th-p7m" id="Zgg-Wo-ySh"/>
                 <outlet property="selectCoverButton" destination="OY1-jm-R20" id="jWS-5f-tAg"/>
                 <outlet property="showCommentButton" destination="aSE-Vo-F9n" id="7CE-fY-JIz"/>
@@ -150,6 +152,34 @@
                                 <constraint firstAttribute="bottom" secondItem="AZf-dd-niA" secondAttribute="bottom" constant="4" id="zRc-5z-t3Q"/>
                             </constraints>
                         </view>
+                        <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PiF-fc-dHS" userLabel="Reaction Container">
+                            <rect key="frame" x="179" y="15.5" width="54.5" height="28"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_icon_fill" translatesAutoresizingMaskIntoConstraints="NO" id="rXz-2m-dYs" userLabel="Reaction">
+                                    <rect key="frame" x="0.0" y="0.0" width="28" height="28"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="28" id="N58-4d-Yag"/>
+                                        <constraint firstAttribute="width" constant="28" id="Rbc-cM-1Ex"/>
+                                    </constraints>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aeo-lq-uUo" userLabel="Viewer Count Label">
+                                    <rect key="frame" x="36" y="4" width="10.5" height="20"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="rXz-2m-dYs" firstAttribute="top" secondItem="PiF-fc-dHS" secondAttribute="top" id="8Zw-un-FUn"/>
+                                <constraint firstAttribute="bottom" secondItem="rXz-2m-dYs" secondAttribute="bottom" id="Dja-c0-jOR"/>
+                                <constraint firstItem="Aeo-lq-uUo" firstAttribute="top" secondItem="PiF-fc-dHS" secondAttribute="top" constant="4" id="VYR-Fi-vo7"/>
+                                <constraint firstAttribute="bottom" secondItem="Aeo-lq-uUo" secondAttribute="bottom" constant="4" id="dI0-hO-B3g"/>
+                                <constraint firstItem="Aeo-lq-uUo" firstAttribute="leading" secondItem="rXz-2m-dYs" secondAttribute="trailing" constant="8" symbolic="YES" id="dyt-Yo-52B"/>
+                                <constraint firstAttribute="trailing" secondItem="Aeo-lq-uUo" secondAttribute="trailing" constant="8" id="sQV-mN-n9X"/>
+                                <constraint firstItem="rXz-2m-dYs" firstAttribute="leading" secondItem="PiF-fc-dHS" secondAttribute="leading" id="znh-RP-a9l"/>
+                            </constraints>
+                        </view>
                         <tableView clipsSubviews="YES" tag="1" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="h86-7Q-lXe" userLabel="Comment TableView">
                             <rect key="frame" x="0.0" y="408" width="414" height="270"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -217,6 +247,8 @@
                         <constraint firstItem="E72-CV-eGT" firstAttribute="width" secondItem="aSE-Vo-F9n" secondAttribute="width" multiplier="0.72" id="0P4-5J-cbf"/>
                         <constraint firstItem="aSE-Vo-F9n" firstAttribute="top" secondItem="h86-7Q-lXe" secondAttribute="bottom" constant="8" symbolic="YES" id="2yK-Gm-Npp"/>
                         <constraint firstItem="3nO-UC-L2I" firstAttribute="top" secondItem="aSE-Vo-F9n" secondAttribute="bottom" constant="8" symbolic="YES" id="GCs-j7-ATj"/>
+                        <constraint firstItem="PiF-fc-dHS" firstAttribute="centerY" secondItem="tCb-QS-fjh" secondAttribute="centerY" id="GFF-gz-zbq"/>
+                        <constraint firstItem="PiF-fc-dHS" firstAttribute="leading" secondItem="tCb-QS-fjh" secondAttribute="trailing" constant="11.5" id="SYw-ha-iNA"/>
                         <constraint firstAttribute="trailing" secondItem="hb4-4n-9QZ" secondAttribute="trailing" constant="16" id="SfJ-O5-enB"/>
                         <constraint firstItem="tUC-ur-UUT" firstAttribute="bottom" secondItem="3nO-UC-L2I" secondAttribute="bottom" id="SnS-5b-xMr"/>
                         <constraint firstItem="tCb-QS-fjh" firstAttribute="leading" secondItem="5gV-fy-gT7" secondAttribute="trailing" constant="8" symbolic="YES" id="WTb-Sr-SCM"/>
@@ -464,6 +496,7 @@
         <image name="close_button" width="28" height="28"/>
         <image name="close_icon" width="32" height="32"/>
         <image name="hide_comment" width="40" height="40"/>
+        <image name="like_icon_fill" width="20" height="20"/>
         <image name="send_comment" width="38" height="38"/>
         <image name="show_comment" width="40" height="40"/>
         <image name="switch_camera" width="28" height="28"/>

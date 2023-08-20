@@ -601,10 +601,7 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
                     return
                 } else {
                     if let reacted = post.reacted, !reacted.rawValue.isEmpty {
-                        self?.screenViewModel.action.removeReactionPost(type: reacted)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self?.screenViewModel.action.addReactionPost(type: reactionType)
-                        }
+                        self?.screenViewModel.action.removeHoldReactionPost(type: reacted, typeSelect: reactionType)
                     } else {
                         self?.screenViewModel.action.addReactionPost(type: reactionType)
                     }

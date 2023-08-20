@@ -40,7 +40,7 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
     func setupCell() {
         self.backgroundColor = .clear
         
-        commentView.backgroundColor = .black.withAlphaComponent(0.3)
+        commentView.backgroundColor = .clear
         commentView.layer.cornerRadius = 10
         
         avatarView.backgroundColor = .clear
@@ -97,9 +97,9 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         let horizontalPadding: CGFloat = 0
         actualWidth = boundingWidth - horizontalPadding
 
-        let messageHeight = AmityExpandableLabel.height(for: comment.text, font: AmityFontSet.body, boundingWidth: actualWidth, maximumLines: 0)
+        let messageHeight = AmityExpandableLabel.height(for: comment.text, font: AmityFontSet.body, boundingWidth: actualWidth, maximumLines: 2)
         height += messageHeight
-        return height
+        return height + 5
     }
     
     // MARK: - Tap avatar to show profile
