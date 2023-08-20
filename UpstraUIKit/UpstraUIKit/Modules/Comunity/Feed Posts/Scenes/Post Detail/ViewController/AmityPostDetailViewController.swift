@@ -35,6 +35,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private var expandedIds: Set<String> = []
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
+    private var pollAnswers: [String: [String]] = [:]
     
     private var livestreamId: String?
     
@@ -51,7 +52,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - Initializer
-    required public init(withPostId postId: String, withStreamId streamId: String?) {
+    required public init(withPostId postId: String, withStreamId streamId: String?, withPollAnswers pollAnswers: [String: [String]]?) {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reactionController = AmityReactionController()
@@ -61,7 +62,8 @@ open class AmityPostDetailViewController: AmityViewController {
                                                          commentController: commentController,
                                                          reactionController: reactionController,
                                                          childrenController: childrenController,
-                                                         withStreamId: streamId)
+                                                         withStreamId: streamId,
+                                                         withPollAnswers: pollAnswers ?? [:])
         super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -69,8 +71,8 @@ open class AmityPostDetailViewController: AmityViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public class func make(withPostId postId: String, withStreamId streamId: String? = nil) -> Self {
-        return self.init(withPostId: postId, withStreamId: streamId)
+    public class func make(withPostId postId: String, withStreamId streamId: String? = nil, withPollAnswers pollAnswers: [String: [String]]? = [:]) -> Self {
+        return self.init(withPostId: postId, withStreamId: streamId, withPollAnswers: pollAnswers)
     }
     
     // MARK: - View Lifecycle
@@ -88,7 +90,7 @@ open class AmityPostDetailViewController: AmityViewController {
         setupReactionPicker()
         
         // Initial ONE Krungthai Custom theme
-        theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme = ONEKrungthaiCustomTheme(viewController: self)        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -612,6 +614,10 @@ extension AmityPostDetailViewController: AmityPostHeaderProtocolHandlerDelegate 
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityPostDetailViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)

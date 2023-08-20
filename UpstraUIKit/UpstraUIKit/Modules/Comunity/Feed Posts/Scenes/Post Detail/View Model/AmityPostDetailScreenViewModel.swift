@@ -29,12 +29,15 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     
     private var streamId: String?
     
+    private var pollAnswers: [String: [String]]?
+    
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
          reactionController: AmityReactionControllerProtocol,
          childrenController: AmityCommentChildrenController,
-         withStreamId streamId: String?
+         withStreamId streamId: String?,
+         withPollAnswers pollAnswers: [String: [String]]
     ) {
         self.postId = postId
         self.postController = postController
@@ -43,6 +46,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
         self.streamId = streamId
+        self.pollAnswers = pollAnswers
     }
     
 }
@@ -119,6 +123,8 @@ extension AmityPostDetailScreenViewModel {
                 let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
+            post.pollAnswers = pollAnswers ?? [:]
+            
             let component = prepareComponents(post: post)
             viewModels.append([.post(component)])
         }

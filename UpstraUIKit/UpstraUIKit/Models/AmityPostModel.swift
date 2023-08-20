@@ -277,6 +277,8 @@ public class AmityPostModel {
     
     var commentExpandedIds: Set<String> = []
     
+    var pollAnswers: [String: [String]] = [:]
+    
     // MARK: - Internal variables
     
     var dataTypeInternal: DataType = .unknown

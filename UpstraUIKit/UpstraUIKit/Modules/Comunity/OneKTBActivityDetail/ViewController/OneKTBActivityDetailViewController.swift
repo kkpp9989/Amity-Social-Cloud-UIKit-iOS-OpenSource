@@ -559,6 +559,9 @@ extension OneKTBActivityDetailViewController: OneKTBActivityDetailScreenViewMode
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension OneKTBActivityDetailViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)

@@ -34,4 +34,5 @@ public enum AmityPostAction {
     case submit
     case tapOnMentionWithUserId(userId: String)
     case tapOnHashtagWithKeyword(keyword: String, count: Int)
+    case tapPollAnswers(postId: String, pollAnswers: [String: [String]])
 }

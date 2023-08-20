@@ -11,6 +11,7 @@ import AmitySDK
 
 protocol AmityPostProtocolHandlerDelegate: AnyObject {
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol)
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String: [String]])
 }
 
 final class AmityPostProtocolHandler {
@@ -132,6 +133,8 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             AmityEventHandler.shared.userDidTap(from: viewController!, userId: userId)
         case .tapOnHashtagWithKeyword(keyword: let keyword, count: let count):
             AmityEventHandler.shared.hashtagDidTap(from: viewController!, keyword: keyword, count: count)
+        case .tapPollAnswers(postId: let postId, pollAnswers: let pollAnswers):
+            delegate?.amityPostProtocolHandlerDidTapPollAnswers(cell, postId: postId, pollAnswers: pollAnswers)
         }
         
     }
