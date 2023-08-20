@@ -29,7 +29,7 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public var indexPath: IndexPath?
     
     private(set) var selectedAnswerIds: [String] = []
-    public var selectedAnswer: [String] = []
+    public var selectedAnswer: [String: [String]] = [:]
 
     public override func awakeFromNib() {
         super.awakeFromNib()
@@ -54,7 +54,17 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public func display(post: AmityPostModel, indexPath: IndexPath) {
         self.post = post
         self.indexPath = indexPath
-        self.selectedAnswerIds = selectedAnswer
+
+        // [Fix-defect] Set answers if user ever selected
+        if !post.pollAnswers.isEmpty {
+            if let selectedAnswerForPost = post.pollAnswers[post.postId] {
+                selectedAnswerIds = selectedAnswerForPost
+            }
+        } else {
+            if let selectedAnswerForPost = selectedAnswer[post.postId] {
+                selectedAnswerIds = selectedAnswerForPost
+            }
+        }
         
         /* [Fix-defect] Add check user joined in community for poll answering permission if poll from community post */
         let isJoinedCommunity: Bool = post.targetCommunity?.isJoined ?? false
@@ -187,6 +197,10 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
                 }
             }
             
+            if let postId = post?.postId {
+                self.selectedAnswer.removeValue(forKey: postId)
+            }
+            
             selectedAnswerIds.removeAll()
             selectAnswer(poll: poll, answer: selectedAnswer, tableView: tableView)
         } else {
@@ -198,13 +212,36 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
         answer.isSelected = !answer.isSelected
         if answer.isSelected {
             selectedAnswerIds.append(answer.id)
+            
+            // [Fix-defect] Set answers if user ever selected
+            if let postId = post?.postId {
+                if var selectedIds = selectedAnswer[postId] {
+                    if !selectedIds.contains(answer.id) {
+                        selectedIds.append(answer.id)
+                        selectedAnswer[postId] = selectedIds
+                    }
+                } else {
+                    selectedAnswer[postId] = [answer.id]
+                }
+            }
         } else {
             if let index = selectedAnswerIds.firstIndex(of: answer.id) {
                 selectedAnswerIds.remove(at: index)
             }
+            
+            // [Fix-defect] Set answers if user ever selected
+            if let postId = post?.postId {
+                if var selectedIds = selectedAnswer[postId], let index = selectedIds.firstIndex(of: answer.id) {
+                    selectedAnswer[postId]?.remove(at: index)
+                }
+            }
         }
         submitVoteButton.isEnabled = poll.answers.contains(where: { $0.isSelected })
         tableView.reloadData()
+        
+        if let postId = post?.postId {
+            performAction(action: .tapPollAnswers(postId: postId, pollAnswers: selectedAnswer))
+        }
     }
 }
 

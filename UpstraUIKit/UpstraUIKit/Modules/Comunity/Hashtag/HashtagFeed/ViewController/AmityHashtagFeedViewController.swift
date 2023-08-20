@@ -13,6 +13,7 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
+    private var pollAnswers: [String: [String]] = [:]
     
     // MARK: - Properties
     private var screenViewModel: AmityHashtagScreenViewModelType!
@@ -500,6 +501,10 @@ extension AmityHashtagFeedViewController: AmityPostHeaderProtocolHandlerDelegate
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityHashtagFeedViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)

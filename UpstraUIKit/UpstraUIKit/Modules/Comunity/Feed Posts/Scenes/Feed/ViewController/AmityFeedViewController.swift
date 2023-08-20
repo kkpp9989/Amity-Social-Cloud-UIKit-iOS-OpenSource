@@ -21,7 +21,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
-    
+    private var pollAnswers: [String: [String]] = [:]
+
     // MARK: - Properties
     private var screenViewModel: AmityFeedScreenViewModelType!
     
@@ -277,7 +278,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
         
         let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
         let postId = singleComponent._composable.post.postId
-        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -414,7 +415,7 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     }
     
     func screenViewModelRouteToPostDetail(_ postId: String, viewModel: AmityFeedScreenViewModelType) {
-        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     // MARK: - Post
@@ -481,6 +482,10 @@ extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -505,7 +510,7 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                 screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post)
             }
         case .tapComment, .tapReactionDetails:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .tapHoldLike:
             reactionPickerView.onSelect = { [weak self] reactionType in
                 self?.hideReactionPicker()
@@ -541,9 +546,9 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                 handleCommentOption(comment: comment)
             }
         case .tapReply:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .tapExpandableLabel, .tapOnReactionDetail:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .willExpandExpandableLabel:
             tableView.beginUpdates()
         case .didExpandExpandableLabel(let label):
