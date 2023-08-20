@@ -29,10 +29,16 @@ public final class AmityUIKitManager {
     /// - Parameters:
     ///   - apiKey: ApiKey provided by Amity
     ///   - region: The region to which this UIKit connects to. By default, region is .global
-    public static func setup(apiKey: String, region: AmityRegion = .global) {
-        AmityUIKitManagerInternal.shared.setup(apiKey, region: region)
+    public static func setup(apiKey: String, region: AmityRegion = .global, completion: @escaping (Result<Bool, Error>) -> Void) {
+        AmityUIKitManagerInternal.shared.setup(apiKey: apiKey, region: region) { result in
+            switch result {
+            case .success(let successValue):
+                completion(.success(successValue))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
-    
     
     /// Setup AmityUIKit instance. Internally it creates AmityClient instance from AmitySDK.
     ///
@@ -207,17 +213,25 @@ final class AmityUIKitManagerInternal: NSObject {
     
     // MARK: - Setup functions
 
-    func setup(_ apiKey: String, region: AmityRegion) {
-        guard let client = try? AmityClient(apiKey: apiKey, region: region) else { return }
+    func setup(apiKey: String, region: AmityRegion, completion: @escaping (Result<Bool, Error>) -> Void) {
+        enum SetupError: Error {
+            case clientInitializationFailed
+        }
+        guard let client = try? AmityClient(apiKey: apiKey, region: region) else {
+            completion(.failure(SetupError.clientInitializationFailed))
+            return
+        }
         
         _client = client
         _client?.delegate = self
         
         // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
         self.apiKey = apiKey
+        
+        completion(.success(true))
     }
     
-    func setup(_ apiKey: String, endpoint: AmityEndpoint) {
+    func setup(_ apiKey: String, endpoint: AmityEndpoint) { 
         guard let client = try? AmityClient(apiKey: apiKey, endpoint: endpoint) else { return }
         
         _client = client
