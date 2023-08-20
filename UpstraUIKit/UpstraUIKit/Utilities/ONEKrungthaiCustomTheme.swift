@@ -22,7 +22,7 @@ class ONEKrungthaiCustomTheme {
     // MARK: Background of navigation bar
     public func setBackgroundApp(index: Int) {
         // Get gradient background
-        let background = getGradientImageForBackgroundApp()
+        let background: UIImage? = getGradientImageForBackgroundApp()
         
         // Set background to UIImageView and add its to subview to index selected
         let backgroundImageView = UIImageView(image: background)
@@ -31,33 +31,43 @@ class ONEKrungthaiCustomTheme {
     
     public func setBackgroundNavigationBar() {
         // Get gradient background
-        let background = getGradientImageForBackgroundNavigationBar()
+        let background: UIImage? = getGradientImageForBackgroundNavigationBar()
         
-        // Create custom navigation bar setting
-        let navBarAppearance = UINavigationBarAppearance()
-        
-        // Use an extension to create an image from the gradient layer
-        navBarAppearance.backgroundImage = background
-        
-        // Apply the navigation bar appearance to the navigation bar
-        viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
-        viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+        if #available(iOS 15.0, *) {
+            // Create custom navigation bar setting
+            let navBarAppearance = UINavigationBarAppearance()
+    
+            // Use an extension to create an image from the gradient layer
+            navBarAppearance.backgroundImage = background
+    
+            // Apply the navigation bar appearance to the navigation bar
+            viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+        } else { // For iOS 14 or lower
+            viewController.navigationController?.navigationBar.isTranslucent = false
+            viewController.navigationController?.navigationBar.setBackgroundImage(background, for: .default)
+        }
     }
     
     public func clearNavigationBarSetting() {
-        // Create custom navigation bar setting
-        let navBarAppearance = UINavigationBarAppearance()
-        
-        // Set clear background
-        navBarAppearance.configureWithTransparentBackground()
-        navBarAppearance.backgroundImage = UIImage()
-        navBarAppearance.backgroundColor = .clear
-        navBarAppearance.shadowColor = .clear
-        navBarAppearance.shadowImage = UIImage()
-        
-        // Apply the navigation bar appearance to the navigation bar
-        viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
-        viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+        if #available(iOS 15.0, *) {
+            // Create custom navigation bar setting
+            let navBarAppearance = UINavigationBarAppearance()
+    
+            // Set clear background
+            navBarAppearance.configureWithTransparentBackground()
+            navBarAppearance.backgroundImage = UIImage()
+            navBarAppearance.backgroundColor = .clear
+            navBarAppearance.shadowColor = .clear
+            navBarAppearance.shadowImage = UIImage()
+    
+            // Apply the navigation bar appearance to the navigation bar
+            viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+        } else { // For iOS 14 or lower
+            viewController.navigationController?.navigationBar.isTranslucent = true
+            viewController.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        }
     }
     
     private func getGradientImageForBackgroundApp() -> UIImage? {
@@ -98,7 +108,15 @@ class ONEKrungthaiCustomTheme {
         gradientLayer.locations = [0.1, 1.0]
 
         // Adjust the frame to extend beyond the navigation bar by 50 pixels
-        gradientLayer.frame = CGRect(x: 0, y: -extendedHeight, width: viewController.navigationController?.navigationBar.bounds.width ?? 0, height: extendedHeight)
+        if #available(iOS 15.0, *) {
+            gradientLayer.frame = CGRect(x: 0, y: -extendedHeight, width: viewController.navigationController?.navigationBar.bounds.width ?? 0, height: extendedHeight)
+        } else { // For iOS 14 or lower
+            // Calculate the extended height
+            let extendedHeight = UIApplication.shared.statusBarFrame.height + (viewController.navigationController?.navigationBar.bounds.height ?? 0)
+
+            // Adjust the frame of the gradient layer
+            gradientLayer.frame = CGRect(x: 0, y: -extendedHeight, width: viewController.view.bounds.width, height: extendedHeight)
+        }
         
         // Create image
         return gradientLayer.createImage()
