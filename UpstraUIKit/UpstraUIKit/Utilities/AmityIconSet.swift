@@ -131,6 +131,7 @@ public struct AmityIconSet {
     public static var privateUserFeed = UIImage(named: "private_user_feed", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var defaultCommunity = UIImage(named: "default_community", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var defaultCommunityAvatar = UIImage(named: "default_community", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var defaultUserProfileHeader = UIImage(named: "default_user_profile_header", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add default user profile header wallpaper
     
     // MARK: - Message
     public static var defaultMessageImage = UIImage(named: "default_message_image", in: AmityUIKitManager.bundle, compatibleWith: nil)
