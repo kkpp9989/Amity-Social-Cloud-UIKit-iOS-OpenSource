@@ -97,7 +97,7 @@ extension AmityPostFileTableViewCell: AmityFileTableViewDelegate {
     }
     
     func fileTableViewDidTapViewAll(_ view: AmityFileTableView) {
-        performAction(action: .tapViewAll)
+        performAction(action: .tapViewAll())
     }
 }
 

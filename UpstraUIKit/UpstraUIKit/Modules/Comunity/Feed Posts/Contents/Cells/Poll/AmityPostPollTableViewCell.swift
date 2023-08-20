@@ -164,7 +164,7 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
             // If user taps on "x more options" button, we show
             // post detail page here.
             if row == Constant.maxPollOptionRowCountInNormalFeed {
-                delegate?.didPerformAction(self, action: .tapViewAll)
+                delegate?.didPerformAction(self, action: .tapViewAll(postId: post.postId, pollAnswers: selectedAnswer))
                 return
             }
         case .postDetail:
@@ -319,7 +319,7 @@ extension AmityPostPollTableViewCell: AmityExpandableLabelDelegate {
     }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
-        performAction(action: .tapExpandableLabel(label: label))
+        performAction(action: .tapExpandableLabel(label: label, postId: post?.postId ?? "", pollAnswers: selectedAnswer))
     }
 
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
