@@ -54,6 +54,9 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     deinit {
         screenViewModel.action.stopObserveFeedUpdate()
@@ -67,10 +70,16 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
         setupReactionPicker()
         setupNavigationBar()
         setupPostCountTitle()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
+        
         isVisible = true
         
         if isDataSourceDirty {

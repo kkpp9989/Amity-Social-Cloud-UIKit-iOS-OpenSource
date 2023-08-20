@@ -229,8 +229,10 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
 //        followButton.isHidden = true
         
         /* [Fix-defect] Set static value for check in viewWillAppear cycle and set navigation bar */
-        isScrollViewReachedLowestPoint = true
-        theme?.setBackgroundNavigationBar()
+        if !isScrollViewReachedLowestPoint {
+            theme?.setBackgroundNavigationBar()
+            isScrollViewReachedLowestPoint = true
+        }
     }
     
     @objc func handleScrollViewReachedTopperPoint() {
@@ -246,8 +248,10 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
 //        followButton.isHidden = false
         
         /* [Fix-defect] Set static value for check in viewWillAppear cycle and clear navigation bar setting */
-        isScrollViewReachedLowestPoint = false
-        theme?.clearNavigationBarSetting()
+        if isScrollViewReachedLowestPoint {
+            theme?.clearNavigationBarSetting()
+            isScrollViewReachedLowestPoint = false
+        }
     }
     
     deinit {
