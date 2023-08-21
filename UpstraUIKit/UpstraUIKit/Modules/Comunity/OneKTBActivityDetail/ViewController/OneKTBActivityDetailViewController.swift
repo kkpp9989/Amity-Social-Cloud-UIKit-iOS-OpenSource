@@ -141,6 +141,7 @@ open class OneKTBActivityDetailViewController: AmityViewController {
         screenViewModel.delegate = self
         screenViewModel.action.fetchPost()
         screenViewModel.action.fetchComments()
+        screenViewModel.action.fetchReactionList()
     }
     
     // MARK: Setup views
@@ -229,8 +230,8 @@ open class OneKTBActivityDetailViewController: AmityViewController {
         mentionManager?.resetState()
     }
     
-    private func showReactionUserList(info: AmityReactionInfo) {
-        let controller = AmityReactionPageViewController.make(info: [info])
+    private func showReactionUserList(info: AmityReactionInfo, reactionList: [String: Int]) {
+        let controller = AmityReactionPageViewController.make(info: [info], reactionList: reactionList)
         controller.modalPresentationStyle = .popover
         present(controller, animated: true, completion: nil)
     }
@@ -596,7 +597,9 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
             }
         case .tapReactionDetails:
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
-            self.showReactionUserList(info: info)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: reactionList)
         case .tapHoldLike:
             reactionPickerView.onSelect = { [weak self] reactionType in
                 self?.hideReactionPicker()
@@ -803,7 +806,9 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
             let info = AmityReactionInfo(referenceId: comment.id, referenceType: .comment, reactionsCount: comment.reactionsCount)
-            self.showReactionUserList(info: info)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: reactionList)
         case .post, .loadMoreReply:
             break
         }

@@ -37,6 +37,7 @@ protocol OneKTBActivityDetailScreenViewModelDataSource {
     func numberOfSection() -> Int
     func numberOfItems(_ tableView: AmityPostTableView, in section: Int) -> Int
     func item(at indexPath: IndexPath) -> PostDetailViewModel
+    func getReactionList() -> [String: Int]
 }
 
 protocol OneKTBActivityDetailScreenViewModelAction {
@@ -45,7 +46,8 @@ protocol OneKTBActivityDetailScreenViewModelAction {
     func fetchPost()
     func fetchComments()
     func loadMoreComments()
-    
+    func fetchReactionList()
+
     // MARK: Post
     func updatePost(withText text: String)
     func likePost()

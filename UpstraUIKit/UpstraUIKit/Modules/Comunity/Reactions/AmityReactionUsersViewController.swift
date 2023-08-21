@@ -36,13 +36,18 @@ public final class AmityReactionUsersViewController: AmityViewController {
     
     let reactionsInfo: AmityReactionInfo
     let viewModel: AmityReactionUsersScreenViewModel
-    
+        
     let emptyState = AmityEmptyView()
     let refreshControl = UIRefreshControl()
     
-    required init(info: AmityReactionInfo) {
+    let reactionType: String
+    let reactionCount: Int
+
+    required init(info: AmityReactionInfo, reactionType: String, reactionCount: Int) {
         self.reactionsInfo = info
         self.viewModel = AmityReactionUsersScreenViewModel(info: reactionsInfo)
+        self.reactionType = reactionType
+        self.reactionCount = reactionCount
         super.init(nibName: AmityReactionUsersViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -107,7 +112,7 @@ public final class AmityReactionUsersViewController: AmityViewController {
         }
         
         // Fetch list of users
-        viewModel.fetchUserList()
+        viewModel.fetchUserList(reactionType: reactionType)
     }
 
     private func setupViews() {
@@ -139,12 +144,12 @@ public final class AmityReactionUsersViewController: AmityViewController {
     }
     
     @objc private func refreshData() {
-        viewModel.fetchUserList()
+        viewModel.fetchUserList(reactionType: reactionType)
     }
     
     /// Ininitializes instance of AmityReactionUsersViewController.
-    public class func make(with info: AmityReactionInfo) -> Self {
-        return self.init(info: info)
+    public class func make(with info: AmityReactionInfo, reactionType: String, reactionCount: Int) -> Self {
+        return self.init(info: info, reactionType: reactionType, reactionCount: reactionCount)
     }
     
     private func showUserProfileScreen(for userId: String) {
@@ -160,9 +165,25 @@ extension AmityReactionUsersViewController: IndicatorInfoProvider {
         var tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString
         
         // Tab title if there is any reactions.
-        if reactionsInfo.reactionsCount > 0 {
-            tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionsInfo.reactionsCount.formatUsingAbbrevation()
+        switch reactionType {
+        case "create":
+            tabTitle = AmityLocalizedStringSet.General.generalCreate.localizedString + " " + reactionCount.formatUsingAbbrevationWithEmpty()
+        case "honest":
+            tabTitle = AmityLocalizedStringSet.General.generalHonest.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        case "harmony":
+            tabTitle = AmityLocalizedStringSet.General.generalHarmony.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        case "success":
+            tabTitle = AmityLocalizedStringSet.General.generalSuccess.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        case "society":
+            tabTitle = AmityLocalizedStringSet.General.generalSociety.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        case "like":
+            tabTitle = AmityLocalizedStringSet.General.generalLike.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        case "love":
+            tabTitle = AmityLocalizedStringSet.General.generalLove.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+        default:
+            tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         }
+        
         
         return IndicatorInfo(title: tabTitle)
     }
@@ -175,7 +196,7 @@ extension AmityReactionUsersViewController: UITableViewDataSource, UITableViewDe
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.reactionList.count
+        return viewModel.reactionListCount()
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

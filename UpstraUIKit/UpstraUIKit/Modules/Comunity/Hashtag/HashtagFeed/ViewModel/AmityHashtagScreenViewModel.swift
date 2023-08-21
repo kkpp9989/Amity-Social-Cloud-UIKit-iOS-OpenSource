@@ -211,12 +211,16 @@ extension AmityHashtagScreenViewModel {
     func fetchHashtagData(keyword: String) {
         var serviceRequest = RequestHashtag()
         serviceRequest.keyword = keyword.replacingOccurrences(of: "#", with: "")
-        serviceRequest.size = 1
+        serviceRequest.size = 20
         serviceRequest.request { result in
             switch result {
             case .success(let data):
                 if let data = data.hashtag, !data.isEmpty {
-                    self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data[0].count ?? 0)
+                    if let index = data.firstIndex(where: { $0.text == keyword.replacingOccurrences(of: "#", with: "") }) {
+                        // Index of the matching hashtag
+                        print("Matching hashtag found at index: \(index): \(data[index].count)")
+                        self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data[index].count ?? 0)
+                    }
                 } else {
                     self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: 0)
                 }
