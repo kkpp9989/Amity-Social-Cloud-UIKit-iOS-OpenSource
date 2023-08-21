@@ -18,7 +18,8 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
     private let reactionController: AmityReactionControllerProtocol
     private let childrenController: AmityCommentChildrenController
     private let pollRepository: AmityPollRepository
-    
+    private let reactionRepository: AmityReactionRepository
+
     private var postId: String
     private(set) var post: AmityPostModel?
     private var comments: [AmityCommentModel] = []
@@ -27,7 +28,13 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
     private(set) var community: AmityCommunity?
     
     private var isComment: Bool = false
-        
+     
+    public var reaction: [String: Int] = ["create": 0, "honest": 0, "harmony": 0, "success": 0, "society": 0, "like": 0, "love": 0]
+    
+    private var tokenArray: [AmityNotificationToken] = []
+
+    private let dispatchGroup = DispatchGroup()
+    
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
@@ -41,6 +48,7 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
         self.reactionController = reactionController
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.reactionRepository = AmityReactionRepository(client: AmityUIKitManagerInternal.shared.client)
         self.isComment = isComment
     }
     
@@ -88,6 +96,10 @@ extension OneKTBActivityDetailScreenViewModel {
             guard let strongSelf = self else { return }
             strongSelf.delegate?.screenViewModel(strongSelf, didReceiveReportStatus: isReported)
         }
+    }
+    
+    func getReactionList() -> [String: Int] {
+        return reaction
     }
     
     // MARK: - Helper
@@ -176,6 +188,41 @@ extension OneKTBActivityDetailScreenViewModel {
 
 // MARK: - Action
 extension OneKTBActivityDetailScreenViewModel {
+    // MARK: Reaction
+
+    func fetchReactionList() {
+        for objData in reaction {
+            dispatchGroup.enter()
+            
+            DispatchQueue.main.async { [self] in
+                var liveCollection: AmityCollection<AmityReaction>
+                let token: AmityNotificationToken
+                
+                // Query reactions
+                liveCollection = reactionRepository.getReactions(postId, referenceType: .post, reactionName: objData.key)
+                token = liveCollection.observe({ [weak self] liveCollection, _, error in
+                    guard let strongSelf = self else { return }
+                    
+                    let allObjects = liveCollection.allObjects()
+                    let count = allObjects.map { ReactionUser(reaction: $0) }.count
+                    
+                    if var oldValue = strongSelf.reaction[objData.key] {
+                        oldValue = count
+                        strongSelf.reaction[objData.key] = oldValue
+                    }
+                    
+                    strongSelf.dispatchGroup.leave()
+                })
+                
+                tokenArray.append(token)
+                
+                dispatchGroup.notify(queue: .main) { [self] in
+                    tokenArray.removeAll()
+                    print("reaction: \(reaction)")
+                }
+            }
+        }
+    }
     
     // MARK: Post
     

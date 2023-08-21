@@ -60,6 +60,13 @@
 "general_photo" = "Photo";
 "general_attachment" = "Attachment";
 "general_all" = "All";
+"general_create" = "สร้างสรรค์";
+"general_honest" = "สัตย์ซื่อ";
+"general_harmony" = "สามัคคี";
+"general_success" = "สำเร็จ";
+"general_society" = "สังคม";
+"general_like" = "Like";
+"general_love" = "Love";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";
@@ -539,3 +546,4 @@
 "reaction_screen_title" = "Reactions";
 "reaction_empty_state_title" = "Sorry, we couldn't show the content";
 "reaction_empty_state_subtitle" = "Please try again or contact the administrator for more information";
+
