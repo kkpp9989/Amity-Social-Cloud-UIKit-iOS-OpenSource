@@ -89,7 +89,9 @@
 "edit_message_title" = "Edit message";
 "view_all_comments_title" = "View all comments...";
 "view_all_files_title" = "View all files";
-"community_settings" = "Community settings";
+/* [Custom for ONE Krungthai] Change wording "community_settings" */
+//"community_settings" = "Community settings"; // [Original]
+"community_settings" = "Social settings";
 "skip_for_now" = "Skip for now";
 "no_user_found" = "No user found";
 "search_results" = "Search results";
@@ -121,13 +123,14 @@
 // MARK: - Empty
 "empty_chat_list" = "No conversations";
 "empty_newsfeed_title" = "Your feed is empty";
+/* [Custom for ONE Krungthai] Change wording "empty_newsfeed_subtitle", "empty_newsfeed_explore_button", "empty_newsfeed_create_button" */
+// [Original]
 //"empty_newsfeed_subtitle" = "Find community or create your own";
-
-// [Custom for ONE Krungthai] Set custom wording of empty news feed without creating
-"empty_newsfeed_subtitle" = "Find community";
-
-"empty_newsfeed_explore_button" = "Explore community";
-"empty_newsfeed_create_button" = "Create community";
+//"empty_newsfeed_explore_button" = "Explore community";
+//"empty_newsfeed_create_button" = "Create community";
+"empty_newsfeed_subtitle" = "Find social";
+"empty_newsfeed_explore_button" = "Explore social";
+"empty_newsfeed_create_button" = "Create social";
 "empty_newsfeed_start_your_first_post" = "Start your first post";
 "empty_title_no_posts" = "No posts yet";
 
@@ -136,20 +139,32 @@
 "private_user_feed_subtitle" = "Follow this user to see all posts";
 
 // MARK: - Amity Create Community
-"edit_community_title" = "Edit Community";
-"create_community_title" = "Create Community";
-"create_community_name_title" = "Community name";
-"create_community_name_placeholder" = "Name your community";
+/* [Custom for ONE Krungthai] Change wording "edit_community_title", "create_community_title", "create_community_name_title", "create_community_name_placeholder" */
+// [Original]
+//"edit_community_title" = "Edit Community";
+//"create_community_title" = "Create Community";
+//"create_community_name_title" = "Community name";
+//"create_community_name_placeholder" = "Name your community";
+"edit_community_title" = "Edit social";
+"create_community_title" = "Create social";
+"create_community_name_title" = "Social name";
+"create_community_name_placeholder" = "Name your social";
 "create_community_about_title" = "About";
 "create_community_about_placeholder" = "Enter description";
 "create_community_category_title" = "Category";
 "create_community_category_placeholder" = "Please select category";
 "create_community_admin_rule_title" = "Only admin can post";
-"create_community_admin_rule_desc" = "Choose to allow Only Admins to create posts in this community.";
+/* [Custom for ONE Krungthai] Change wording "create_community_admin_rule_desc" */
+//"create_community_admin_rule_desc" = "Choose to allow Only Admins to create posts in this community."; // [Original]
+"create_community_admin_rule_desc" = "Choose to allow Only Admins to create posts in this social.";
 "create_community_public_title" = "Public";
-"create_community_public_desc" = "Anyone can join, view, and search the posts in this community.";
+/* [Custom for ONE Krungthai] Change wording "create_community_public_desc" */
+//"create_community_public_desc" = "Anyone can join, view, and search the posts in this community."; // [Original]
+"create_community_public_desc" = "Anyone can join, view, and search the posts in this social.";
 "create_community_private_title" = "Private";
-"create_community_private_desc" = "Only members invited by the moderators can join, view, and search the posts in this community.";
+/* [Custom for ONE Krungthai] Change wording "create_community_private_desc" */
+//"create_community_private_desc" = "Only members invited by the moderators can join, view, and search the posts in this community."; // [Original]
+"create_community_private_desc" = "Only members invited by the moderators can join, view, and search the posts in this social.";
 "create_community_add_member_title" = "Add members";
 "create_community_name_already_taken" = "This name has already been taken.";
 "create_community_button_create" = "Create community";
@@ -165,7 +180,9 @@
 "category_selection_title_2" = "Category";
 
 // MARK: - My Community
-"my_community_title" = "My Community";
+/* [Custom for ONE Krungthai] Change wording "my_community_title" */
+//"my_community_title" = "My Community"; // [Original]
+"my_community_title" = "My social";
 "my_community_see_all" = "See all";
 // MARK: - Newsfeed
 "newsfeed_title" = "Newsfeed";
@@ -174,7 +191,9 @@
 "explore_title" = "Explore";
 
 // MARK: - Community home page
-"community_home_title" = "Community";
+/* [Custom for ONE Krungthai] Change wording "community_home_title" */
+//"community_home_title" = "Community"; // [Original]
+"community_home_title" = "Social";
 
 // MARK: - Community detail page
 "community_detail_join_button" = "Join";
@@ -204,7 +223,9 @@
 "post_creation_file_upload_icomplete_title" = "Upload incomplete";
 "post_creation_file_upload_icomplete_description" = "Some files could not be uploaded.\nPlease remove and try again";
 "post_craetion_submit_title" = "Post submitted";
-"post_creation_submit_desc" = "Your post has been submitted to the pending list. It will be reviewed by community moderator";
+/* [Custom for ONE Krungthai] Change wording "post_creation_submit_desc" */
+//"post_creation_submit_desc" = "Your post has been submitted to the pending list. It will be reviewed by community moderator"; // [Original]
+"post_creation_submit_desc" = "Your post has been submitted to the pending list. It will be reviewed by social moderator";
 "post_unable_to_post_title" = "Unable to post";
 "post_unable_to_comment_title" = "Unable to comment";
 "post_unable_to_reply_title" = "Unable to reply";
@@ -227,7 +248,9 @@
 "post_detail_text_placeholder" = "Say something nice";
 "post_detail_deleted_comment_message" = "This comment has been deleted.";
 "post_detail_view_all_replies" = "View all replies";
-"post_detail_join_community_message" = "Join community to interact with all posts";
+/* [Custom for ONE Krungthai] Change wording "post_detail_join_community_message" */
+//"post_detail_join_community_message" = "Join community to interact with all posts"; // [Original]
+"post_detail_join_community_message" = "Join social to interact with all posts";
 "post_detail_edit_post" = "Edit post";
 "post_detail_delete_post" = "Delete post";
 "post_detail_create_comment" = "Add comment";
@@ -245,7 +268,9 @@
 
 // MARK: - Post to
 "post_to_title" = "Post to";
-"post_to_post_as_community_title" = "Post as Community";
+/* [Custom for ONE Krungthai] Change wording "post_to_post_as_community_title" */
+//"post_to_post_as_community_title" = "Post as Community"; // [Original]
+"post_to_post_as_community_title" = "Post as social";
 "post_to_post_as_community_message" = "This option allows you to post on behalf of the community account.";
 
 // MARK: - Recommended Community
@@ -260,39 +285,68 @@
 
 // MARK: - Community Settings
 "community_settings_item_header_basic_info" = "Basic info";
-"community_settings_item_header_community_permissions" = "Community permissions";
+/* [Custom for ONE Krungthai] Change wording "community_settings_item_header_community_permissions" */
+//"community_settings_item_header_community_permissions" = "Community permissions"; // [Original]
+"community_settings_item_header_community_permissions" = "Social permissions";
 "community_settings_item_title_edit_profile" = "Edit profile";
 "community_settings_item_title_members" = "Members";
 "community_settings_item_title_notifications" = "Notifications";
-"community_settings_item_title_header_community_permission" = "Community permissions";
+/* [Custom for ONE Krungthai] Change wording "community_settings_item_title_header_community_permission" */
+//"community_settings_item_title_header_community_permission" = "Community permissions"; // [Original]
+"community_settings_item_title_header_community_permission" = "Social permissions";
 "community_settings_item_title_post_review" = "Post review";
-"community_settings_item_title_leave_community" = "Leave community";
-"community_settings_item_title_close_community" = "Close community";
-"community_settings_item_desc_close_community" = "Closing this community will remove the community page and all its content and comments.";
-"community_settings_alert_title_leave" = "Leave community";
-"community_settings_alert_desc_leave" = "You won’t no longer be able to post and interact in this community after leaving.";
-"community_settings_alert_desc_moderator_leave" = "Leaving community, you’ll give up your moderator status and won’t no longer be able to post and interact in this community.";
-"community_settings_alert_desc_last_moderator_leave" = "As you’re the last moderator and member, leaving will also close this community. All posts shared in community will be deleted. This cannot be undone.";
-"community_settings_alert_title_close" = "Close community?";
-"community_settings_alert_desc_close" = "All members will be removed from the community. All posts, messages, reactions, and media shared in community will be deleted. This cannot be undone.";
-"community_settings_alert_fail_title_leave" = "Unable to leave community";
-"community_settings_alert_fail_title_close" = "Unable to close community";
+/* [Custom for ONE Krungthai] Change wording "community_settings_item_title_leave_community", "community_settings_item_title_close_community", "community_settings_item_desc_close_community", "community_settings_alert_title_leave", "community_settings_alert_desc_leave", "community_settings_alert_desc_moderator_leave", "community_settings_alert_desc_last_moderator_leave", "community_settings_alert_desc_last_moderator_leave", "community_settings_alert_title_close", "community_settings_alert_desc_close", "community_settings_alert_fail_title_leave", "community_settings_alert_fail_title_close" */
+// [Original]
+//"community_settings_item_title_leave_community" = "Leave community";
+//"community_settings_item_title_close_community" = "Close community";
+//"community_settings_item_desc_close_community" = "Closing this community will remove the community page and all its content and comments.";
+//"community_settings_alert_title_leave" = "Leave community";
+//"community_settings_alert_desc_leave" = "You won’t no longer be able to post and interact in this community after leaving.";
+//"community_settings_alert_desc_moderator_leave" = "Leaving community, you’ll give up your moderator status and won’t no longer be able to post and interact in this community.";
+//"community_settings_alert_desc_last_moderator_leave" = "As you’re the last moderator and member, leaving will also close this community. All posts shared in community will be deleted. This cannot be undone.";
+//"community_settings_alert_title_close" = "Close community?";
+//"community_settings_alert_desc_close" = "All members will be removed from the community. All posts, messages, reactions, and media shared in community will be deleted. This cannot be undone.";
+//"community_settings_alert_fail_title_leave" = "Unable to leave community";
+//"community_settings_alert_fail_title_close" = "Unable to close community";
+"community_settings_item_title_leave_community" = "Leave social";
+"community_settings_item_title_close_community" = "Close social";
+"community_settings_item_desc_close_community" = "Closing this social will remove the community page and all its content and comments.";
+"community_settings_alert_title_leave" = "Leave social";
+"community_settings_alert_desc_leave" = "You won’t no longer be able to post and interact in this social after leaving.";
+"community_settings_alert_desc_moderator_leave" = "Leaving social, you’ll give up your moderator status and won’t no longer be able to post and interact in this community.";
+"community_settings_alert_desc_last_moderator_leave" = "As you’re the last moderator and member, leaving will also close this social. All posts shared in social will be deleted. This cannot be undone.";
+"community_settings_alert_title_close" = "Close social?";
+"community_settings_alert_desc_close" = "All members will be removed from the social. All posts, messages, reactions, and media shared in social will be deleted. This cannot be undone.";
+"community_settings_alert_fail_title_leave" = "Unable to leave social";
+"community_settings_alert_fail_title_close" = "Unable to close social";
 "community_settings_alert_fail_title_notification_on" = "Unable to turn on notifications";
 "community_settings_alert_fail_title_notification_off" = "Unable to turn off notifications";
 
 // MARK: - Notification Settings
 "community_notification_settings_title_notifications" = "Allow notifications";
-"community_notification_settings_description_notifications" = "Turn on to receive push notifications from this community.";
+/* [Custom for ONE Krungthai] Change wording "community_settings_item_title_leave_community" */
+//"community_notification_settings_description_notifications" = "Turn on to receive push notifications from this community."; // [Original]
+"community_notification_settings_description_notifications" = "Turn on to receive push notifications from this social.";
 "community_notification_settings_title_reacts_posts" = "React posts";
-"community_notification_settings_description_reacts_posts" = "Receive notifications when someone make a reaction to your posts in this community";
+/* [Custom for ONE Krungthai] Change wording "community_notification_settings_description_reacts_posts" */
+//"community_notification_settings_description_reacts_posts" = "Receive notifications when someone make a reaction to your posts in this community"; // [Original]
+"community_notification_settings_description_reacts_posts" = "Receive notifications when someone make a reaction to your posts in this social";
 "community_notification_settings_title_new_posts" = "New posts";
-"community_notification_settings_description_new_posts" = "Receive notifications when someone create new posts in this community";
+/* [Custom for ONE Krungthai] Change wording "community_notification_settings_description_new_posts" */
+//"community_notification_settings_description_new_posts" = "Receive notifications when someone create new posts in this community"; // [Original]
+"community_notification_settings_description_new_posts" = "Receive notifications when someone create new posts in this social";
 "community_notification_settings_title_reacts_comments" = "React comments";
-"community_notification_settings_description_reacts_comments" = "Receive notifications when someone like your comment in this community.";
+/* [Custom for ONE Krungthai] Change wording "community_notification_settings_description_reacts_comments" */
+//"community_notification_settings_description_reacts_comments" = "Receive notifications when someone like your comment in this community."; // [Original]
+"community_notification_settings_description_reacts_comments" = "Receive notifications when someone like your comment in this social.";
 "community_notification_settings_title_new_comments" = "New comments";
-"community_notification_settings_description_new_comments" = "Receive notifications when someone comment to your posts in this community.";
+/* [Custom for ONE Krungthai] Change wording "community_notification_settings_description_new_comments" */
+//"community_notification_settings_description_new_comments" = "Receive notifications when someone comment to your posts in this community."; // [Original]
+"community_notification_settings_description_new_comments" = "Receive notifications when someone comment to your posts in this social.";
 "community_notification_settings_title_replies" = "Replies";
-"community_notification_settings_description_replies" = "Receive notifications when someone comment to your comments in this community.";
+/* [Custom for ONE Krungthai] Change wording "community_notification_settings_description_replies" */
+//"community_notification_settings_description_replies" = "Receive notifications when someone comment to your comments in this community."; // [Original]
+"community_notification_settings_description_replies" = "Receive notifications when someone comment to your comments in this social.";
 "community_notification_settings_post" = "Posts";
 "community_notification_settings_comment" = "Comments";
 "community_notification_settings_everyone" = "Everyone";
@@ -320,16 +374,25 @@
 "community_member_settings_moderator_title" = "Moderators";
 "community_member_settings_options_promote_to_moderator" = "Promote to moderator";
 "community_member_settings_options_dismiss_moderator" = "Dismiss moderator";
-"community_member_settings_options_remove" = "Remove from community";
-"community_member_settings_alert_title" = "Remove user from community?";
-"community_member_settings_alert_desc" = "This user won't no longer be able to search, post and interact in this community";
+/* [Custom for ONE Krungthai] Change wording "community_member_settings_options_remove", "community_member_settings_alert_title", "community_member_settings_alert_desc" */
+// [Original]
+//"community_member_settings_options_remove" = "Remove from community";
+//"community_member_settings_alert_title" = "Remove user from community?";
+//"community_member_settings_alert_desc" = "This user won't no longer be able to search, post and interact in this community";
+"community_member_settings_options_remove" = "Remove from social";
+"community_member_settings_alert_title" = "Remove user from social?";
+"community_member_settings_alert_desc" = "This user won't no longer be able to search, post and interact in this social";
 
 // MARK: - Community
 "community_alert_unable_to_perform_action_title" = "Unable to perform this action";
-"community_alert_unable_to_perform_action_desc" = "You no longer have permission to make any changes in this community";
-"community_alert_unable_to_leave_community_title" = "Unable to leave community";
-"community_alert_unable_to_leave_community_desc" = "You’re the only moderator in this group. To leave community, nominate other members to moderator role.";
-
+/* [Custom for ONE Krungthai] Change wording "community_alert_unable_to_perform_action_desc", "community_alert_unable_to_leave_community_title", "community_alert_unable_to_leave_community_desc" */
+// [Original]
+//"community_alert_unable_to_perform_action_desc" = "You no longer have permission to make any changes in this community";
+//"community_alert_unable_to_leave_community_title" = "Unable to leave community";
+//"community_alert_unable_to_leave_community_desc" = "You’re the only moderator in this group. To leave community, nominate other members to moderator role.";
+"community_alert_unable_to_perform_action_desc" = "You no longer have permission to make any changes in this social";
+"community_alert_unable_to_leave_community_title" = "Unable to leave social";
+"community_alert_unable_to_leave_community_desc" = "You’re the only moderator in this group. To leave social, nominate other members to moderator role.";
 
 // MARK: - Edit User Profile
 "edit_user_profile_title" = "Edit Profile";
@@ -367,16 +430,24 @@
 // MARK: - Post review setting
 "post_review_settings_title" = "Post review";
 "post_review_settings_item_title_approve_member_posts" = "Approve member posts";
-"post_review_settings_item_desc_approve_member_posts" = "Posts by members have to be reviewed and approved by community moderator.";
+/* [Custom for ONE Krungthai] Change wording "post_review_settings_item_desc_approve_member_posts" */
+//"post_review_settings_item_desc_approve_member_posts" = "Posts by members have to be reviewed and approved by community moderator."; // [Original]
+"post_review_settings_item_desc_approve_member_posts" = "Posts by members have to be reviewed and approved by social moderator.";
 "post_review_settings_alert_title_turn_off_post_review" = "Turn off post review";
-"post_review_settings_alert_desc_turn_off_post_reivew" = "All pending posts will be posted in community feed. Continue?";
+/* [Custom for ONE Krungthai] Change wording "post_review_settings_alert_desc_turn_off_post_reivew" */
+//"post_review_settings_alert_desc_turn_off_post_reivew" = "All pending posts will be posted in community feed. Continue?"; // [Original]
+"post_review_settings_alert_desc_turn_off_post_reivew" = "All pending posts will be posted in social feed. Continue?";
 "post_review_settings_hud_title_turn_off_post_review" = "Pending posts\nare posted";
 "post_review_settings_alert_fail_title_turn_on" = "Unable to turn on post review";
 "post_review_settings_alert_fail_title_turn_off" = "Unable to turn off post review";
 
 // MARK: - Modal
-"modal_community_settings_title" = "Customize your community";
-"modal_community_settings_desc" = "You’ve successfully created a community! Now let's manage permissions that work best for you";
+/* [Custom for ONE Krungthai] Change wording "modal_community_settings_title", "modal_community_settings_desc" */
+// [Original]
+//"modal_community_settings_title" = "Customize your community";
+//"modal_community_settings_desc" = "You’ve successfully created a community! Now let's manage permissions that work best for you";
+"modal_community_settings_title" = "Customize your social";
+"modal_community_settings_desc" = "You’ve successfully created a social! Now let's manage permissions that work best for you";
 
 // MARK: - Member
 "member_list_title" = "Members";
@@ -417,7 +488,9 @@
 "pending_posts_status_title" = "Pending posts";
 "pending_posts_status_admin_desc" = "%d Posts need to approval";
 "pending_posts_status_member_desc" = "Your posts are pending for review";
-"pending_posts_header_title" =  "Decline pending post will permanently delete the selected post from community.";
+/* [Custom for ONE Krungthai] Change wording pending_posts_header_title" */
+//"pending_posts_header_title" =  "Decline pending post will permanently delete the selected post from community."; // [Original]
+"pending_posts_header_title" =  "Decline pending post will permanently delete the selected post from social.";
 "pending_posts_empty_title" = "No pending posts";
 "pending_posts_alert_delete_title" = "Delete post";
 "pending_posts_alert_delete_desc" = "This post will be permanently deleted from the pending list";
