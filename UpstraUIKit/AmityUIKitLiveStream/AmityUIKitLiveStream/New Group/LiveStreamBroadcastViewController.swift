@@ -711,7 +711,7 @@ extension LiveStreamBroadcastViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView.tag == 1 {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: LiveStreamCommentTableViewCell.identifier) as? LiveStreamCommentTableViewCell else { return UITableViewCell() }
-            cell.display(comment: storedComment[indexPath.row])
+            cell.display(comment: storedComment[indexPath.row], post: createdPost)
             cell.delegate = self
             return cell
         }
