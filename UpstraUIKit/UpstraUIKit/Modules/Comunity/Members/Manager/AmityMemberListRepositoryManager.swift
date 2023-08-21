@@ -36,7 +36,8 @@ final class AmityMemberListRepositoryManager: AmityMemberListRepositoryManagerPr
                     membersList.append(model)
                 }
                 completion?(membersList)
-                self?.token?.invalidate()
+                /* [Fix-defect] Disable invalidate result search observer for load more ability */
+//                self?.token?.invalidate()
             }
         }
     }

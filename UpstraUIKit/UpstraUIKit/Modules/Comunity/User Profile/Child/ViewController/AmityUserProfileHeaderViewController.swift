@@ -33,6 +33,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
+    private var isScrollViewReachedLowestPoint: Bool = false
     
     // MARK: Initializer
     static func make(withUserId userId: String, settings: AmityUserProfilePageSettings) -> AmityUserProfileHeaderViewController {
@@ -58,20 +59,34 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         setupFollowButton()
         setupFollowRequestsView()
         
+        /* [Custom for ONE Krungthai] Add viewcontroller to ONEKrungthaiCustomTheme class for set theme */
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
         // Set background app for this navigation bar
-        theme?.setBackgroundApp(index: 0)
-        
-        screenViewModel.action.fetchUserData()
-        screenViewModel.action.fetchFollowInfo()
+        theme?.setBackgroundApp(index: 0, isUserProfile: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Clear setting navigation bar (normal) from ONE Krungthai custom theme
-        theme?.clearNavigationBarSetting()
+        /* [Custom for ONE Krungthai] Check view is initialized and is scroll view reached lower point */
+        if isScrollViewReachedLowestPoint { // Case : View is initialized and is scroll view reached lower point
+            theme?.setBackgroundNavigationBar()
+        } else { // Case : View isn't initialize or is scroll view reached topper point
+            theme?.clearNavigationBarSetting()
+        }
+        
+        /* [Fix-defect] Setup notification center observer if view appear for handle scroll view UI */
+        setupNotificationCenter()
+        
+        handleRefreshing()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        /* [Fix-defect] Delete observer notification center if view diappeared for cancel handle scroll view UI processing */
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Refreshable
@@ -203,27 +218,41 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     @objc func handleScrollViewReachedLowestPoint() {
-        titleNameLabel.isHidden = false
+        /* [Original] */
+//        titleNameLabel.isHidden = false
+//
+//        //  Hide all don't to show
+//        avatarView.isHidden = true
+//        displayNameLabel.isHidden = true
+//        descriptionLabel.isHidden = true
+//        followingButton.isHidden = true
+//        followersButton.isHidden = true
+//        followButton.isHidden = true
         
-        //  Hide all don't to show
-        avatarView.isHidden = true
-        displayNameLabel.isHidden = true
-        descriptionLabel.isHidden = true
-        followingButton.isHidden = true
-        followersButton.isHidden = true
-        followButton.isHidden = true
+        /* [Fix-defect] Set static value for check in viewWillAppear cycle and set navigation bar */
+        if !isScrollViewReachedLowestPoint {
+            theme?.setBackgroundNavigationBar()
+            isScrollViewReachedLowestPoint = true
+        }
     }
     
     @objc func handleScrollViewReachedTopperPoint() {
-        titleNameLabel.isHidden = true
+        /* [Original] */
+//        titleNameLabel.isHidden = true
+//
+//        //  Show all
+//        avatarView.isHidden = false
+//        displayNameLabel.isHidden = false
+//        descriptionLabel.isHidden = false
+//        followingButton.isHidden = false
+//        followersButton.isHidden = false
+//        followButton.isHidden = false
         
-        //  Show all
-        avatarView.isHidden = false
-        displayNameLabel.isHidden = false
-        descriptionLabel.isHidden = false
-        followingButton.isHidden = false
-        followersButton.isHidden = false
-        followButton.isHidden = false
+        /* [Fix-defect] Set static value for check in viewWillAppear cycle and clear navigation bar setting */
+        if isScrollViewReachedLowestPoint {
+            theme?.clearNavigationBarSetting()
+            isScrollViewReachedLowestPoint = false
+        }
     }
     
     deinit {

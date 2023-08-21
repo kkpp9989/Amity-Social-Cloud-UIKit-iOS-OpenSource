@@ -23,6 +23,8 @@ extension LiveStreamBroadcastViewController {
     func stopLiveDurationTimer() {
         liveDurationTimer?.invalidate()
         liveDurationTimer = nil
+        
+        timer.invalidate()
     }
     
     func updateStreamingStatusText() {

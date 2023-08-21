@@ -13,6 +13,7 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
+    private var pollAnswers: [String: [String]] = [:]
     
     // MARK: - Properties
     private var screenViewModel: AmityHashtagScreenViewModelType!
@@ -54,6 +55,9 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     deinit {
         screenViewModel.action.stopObserveFeedUpdate()
@@ -67,10 +71,16 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
         setupReactionPicker()
         setupNavigationBar()
         setupPostCountTitle()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
+        
         isVisible = true
         
         if isDataSourceDirty {
@@ -500,6 +510,10 @@ extension AmityHashtagFeedViewController: AmityPostHeaderProtocolHandlerDelegate
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityHashtagFeedViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)

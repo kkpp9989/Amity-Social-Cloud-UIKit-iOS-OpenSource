@@ -126,13 +126,14 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         
         // Create a long press gesture recognizer
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
-        longPressRecognizer.minimumPressDuration = 0.5
+        longPressRecognizer.minimumPressDuration = 0.2
         likeButton.addGestureRecognizer(longPressRecognizer)
         
         // like badge
         likeLabel.textColor = AmityColorSet.base.blend(.shade2)
         likeLabel.font = AmityFontSet.caption
     }
+    
     private func setupCommentButton() {
         // comment button
         commentButton.tintColor = AmityColorSet.base.blend(.shade2)
@@ -282,7 +283,7 @@ private extension AmityPostFooterTableViewCell {
     
     private func sortReactionKeys(reactionKeys: [String]) -> [String] {
         // Define the priority of reactions using the AmityReactionType enum
-        let priorityOrder: [AmityReactionType] = [.love, .honest, .success, .harmony, .society, .create, .like]
+        let priorityOrder: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
         
         // Sort reaction keys based on priority order
         let sortedReactionKeys = reactionKeys.sorted { (key1, key2) -> Bool in

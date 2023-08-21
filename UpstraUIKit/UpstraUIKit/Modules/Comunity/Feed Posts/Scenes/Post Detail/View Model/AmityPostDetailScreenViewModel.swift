@@ -29,12 +29,15 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     
     private var streamId: String?
     
+    private var pollAnswers: [String: [String]]?
+    
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
          reactionController: AmityReactionControllerProtocol,
          childrenController: AmityCommentChildrenController,
-         withStreamId streamId: String?
+         withStreamId streamId: String?,
+         withPollAnswers pollAnswers: [String: [String]]
     ) {
         self.postId = postId
         self.postController = postController
@@ -43,6 +46,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
         self.streamId = streamId
+        self.pollAnswers = pollAnswers
     }
     
 }
@@ -119,6 +123,8 @@ extension AmityPostDetailScreenViewModel {
                 let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
+            post.pollAnswers = pollAnswers ?? [:]
+            
             let component = prepareComponents(post: post)
             viewModels.append([.post(component)])
         }
@@ -142,11 +148,12 @@ extension AmityPostDetailScreenViewModel {
             let itemToDisplay = childrenController.numberOfDisplayingItem(for: parentId)
             let deletedItemCount = childrenController.numberOfDeletedChildren(for: parentId)
             
+            /* [Fix-defect] Disable this condition for set ascending of reply comment */
             // loadedItems will be empty on the first load.
             // set childrenComment directly to reduce number of server request.
-            if loadedItems.isEmpty {
-                loadedItems = model.childrenComment.reversed()
-            }
+//            if loadedItems.isEmpty {
+//                loadedItems = model.childrenComment.reversed()
+//            }
             
             // model.childrenNumber doesn't include deleted children.
             // so, add it directly to correct the total count.
@@ -335,6 +342,18 @@ extension AmityPostDetailScreenViewModel {
             guard let strongSelf = self else { return }
             if success {
                 strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
+            } else {
+                strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+            }
+        }
+    }
+    
+    func removeHoldReactionPost(type: AmityReactionType, typeSelect: AmityReactionType) {
+        reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
+            guard let strongSelf = self else { return }
+            if success {
+                strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
+                strongSelf.addReactionPost(type: typeSelect)
             } else {
                 strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
             }

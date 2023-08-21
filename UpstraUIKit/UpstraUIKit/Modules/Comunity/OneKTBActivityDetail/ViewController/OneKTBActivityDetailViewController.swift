@@ -559,6 +559,9 @@ extension OneKTBActivityDetailViewController: OneKTBActivityDetailScreenViewMode
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension OneKTBActivityDetailViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -597,12 +600,14 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
         case .tapHoldLike:
             reactionPickerView.onSelect = { [weak self] reactionType in
                 self?.hideReactionPicker()
-                if reactionType == post.reacted {
+                if let reacted = post.reacted, reactionType == reacted {
                     return
-                }
-                self?.screenViewModel.action.removeReactionPost(type: reactionType)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReactionPost(type: reacted, typeSelect: reactionType)
+                    } else {
+                        self?.screenViewModel.action.addReactionPost(type: reactionType)
+                    }
                 }
             }
             showReactionPicker()

@@ -141,7 +141,7 @@ extension AmityHashtagScreenViewModel {
                 let postCollection = repository.getPost(withId: postId)
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
-                    if let error = AmityError(error: error) {
+                    if let _ = AmityError(error: error) {
                         self?.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
@@ -163,8 +163,9 @@ extension AmityHashtagScreenViewModel {
                 }
             }
             
-            if posts.postIDS.isEmpty {
-                prepareComponents(posts: [])
+            if dummyList.postIDS.isEmpty {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
+                prepareComponents(posts: sortedArray)
             }
         }
     }

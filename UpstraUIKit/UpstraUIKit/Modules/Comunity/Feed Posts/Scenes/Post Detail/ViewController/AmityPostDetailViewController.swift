@@ -35,6 +35,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private var expandedIds: Set<String> = []
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
+    private var pollAnswers: [String: [String]] = [:]
     
     private var livestreamId: String?
     
@@ -51,7 +52,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - Initializer
-    required public init(withPostId postId: String, withStreamId streamId: String?) {
+    required public init(withPostId postId: String, withStreamId streamId: String?, withPollAnswers pollAnswers: [String: [String]]?) {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reactionController = AmityReactionController()
@@ -61,7 +62,8 @@ open class AmityPostDetailViewController: AmityViewController {
                                                          commentController: commentController,
                                                          reactionController: reactionController,
                                                          childrenController: childrenController,
-                                                         withStreamId: streamId)
+                                                         withStreamId: streamId,
+                                                         withPollAnswers: pollAnswers ?? [:])
         super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -69,8 +71,8 @@ open class AmityPostDetailViewController: AmityViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public class func make(withPostId postId: String, withStreamId streamId: String? = nil) -> Self {
-        return self.init(withPostId: postId, withStreamId: streamId)
+    public class func make(withPostId postId: String, withStreamId streamId: String? = nil, withPollAnswers pollAnswers: [String: [String]]? = [:]) -> Self {
+        return self.init(withPostId: postId, withStreamId: streamId, withPollAnswers: pollAnswers)
     }
     
     // MARK: - View Lifecycle
@@ -88,7 +90,7 @@ open class AmityPostDetailViewController: AmityViewController {
         setupReactionPicker()
         
         // Initial ONE Krungthai Custom theme
-        theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme = ONEKrungthaiCustomTheme(viewController: self)        
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -370,7 +372,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            _cell.configure(with: comment, layout: layout)
+            _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
             _cell.labelDelegate = self
             _cell.actionDelegate = self
             
@@ -612,6 +614,10 @@ extension AmityPostDetailViewController: AmityPostHeaderProtocolHandlerDelegate 
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityPostDetailViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -644,15 +650,19 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
             self.showReactionUserList(info: info)
         case .tapHoldLike:
-            if let reactionType = post.reacted {
-                screenViewModel.action.removeReactionPost(type: reactionType)
-            } else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReactionPost(type: reactionType)
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReactionPost(type: reacted, typeSelect: reactionType)
+                    } else {
+                        self?.screenViewModel.action.addReactionPost(type: reactionType)
+                    }
                 }
-                showReactionPicker()
             }
+            showReactionPicker()
         }
     }
     

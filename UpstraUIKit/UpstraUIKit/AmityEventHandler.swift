@@ -78,11 +78,11 @@ open class AmityEventHandler {
     /// It will be triggered when post or comment on feed is tapped
     ///
     /// A default behavior is navigating to `AmityPostDetailViewController`
-    open func postDidtap(from source: AmityViewController, postId: String) {
+    open func postDidtap(from source: AmityViewController, postId: String, pollAnswers: [String: [String]]? = [:]) {
         // if post is tapped from AmityPostDetailViewController, ignores the event to avoid page stacking.
         guard !(source is AmityPostDetailViewController) else { return }
         
-        let viewController = AmityPostDetailViewController.make(withPostId: postId)
+        let viewController = AmityPostDetailViewController.make(withPostId: postId, withPollAnswers: pollAnswers)
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 

@@ -21,7 +21,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
-    
+    private var pollAnswers: [String: [String]] = [:]
+
     // MARK: - Properties
     private var screenViewModel: AmityFeedScreenViewModelType!
     
@@ -91,9 +92,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             isDataSourceDirty = false
             tableView.reloadData()
         }
-        
-        // [Fix defect] Set up screen view model again for update data when this view dissapeared from open other view
-        setupScreenViewModel()
         
         // this line solves issue where refresh control sticks to the top while switching tab
         resetRefreshControlStateIfNeeded()
@@ -280,7 +278,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
         
         let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
         let postId = singleComponent._composable.post.postId
-        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -404,7 +402,9 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     func screenViewModelDidFail(_ viewModel: AmityFeedScreenViewModelType, failure error: AmityError) {
         switch error {
         case .unknown:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            //  Remove alert for case spam button
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            break
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()
@@ -415,7 +415,7 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     }
     
     func screenViewModelRouteToPostDetail(_ postId: String, viewModel: AmityFeedScreenViewModelType) {
-        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     // MARK: - Post
@@ -482,6 +482,10 @@ extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -506,18 +510,21 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                 screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post)
             }
         case .tapComment, .tapReactionDetails:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .tapHoldLike:
-            if let reactionType = post.reacted {
-                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
-            }
-            else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType)
+                    } else {
+                        self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+                    }
                 }
-                showReactionPicker()
             }
+            showReactionPicker()
         }
     }
 }
@@ -539,9 +546,9 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                 handleCommentOption(comment: comment)
             }
         case .tapReply:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .tapExpandableLabel, .tapOnReactionDetail:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .willExpandExpandableLabel:
             tableView.beginUpdates()
         case .didExpandExpandableLabel(let label):

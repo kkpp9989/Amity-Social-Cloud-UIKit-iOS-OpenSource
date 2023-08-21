@@ -775,6 +775,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
         
         setupMentionManager(withPost: postModel)
         updateConstraints()
+        updateViewState()
     }
     
     func screenViewModelDidCreatePost(_ viewModel: AmityPostTextEditorScreenViewModel, post: AmityPost?, error: Error?) {

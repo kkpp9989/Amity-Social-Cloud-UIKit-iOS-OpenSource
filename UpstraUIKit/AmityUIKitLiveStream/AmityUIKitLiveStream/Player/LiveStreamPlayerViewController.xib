@@ -12,6 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LiveStreamPlayerViewController" customModule="AmityUIKitLiveStream" customModuleProvider="target">
             <connections>
+                <outlet property="commentContainer" destination="qKF-U3-b83" id="zDo-FE-y5V"/>
                 <outlet property="commentTableView" destination="LHh-yY-eFb" id="QHB-f1-hQy"/>
                 <outlet property="commentTableViewHeightConstraint" destination="aQF-aL-Vao" id="tbV-dC-KNZ"/>
                 <outlet property="commentTextView" destination="Jdi-Hh-Lad" id="8IS-eO-k7U"/>
@@ -25,6 +26,11 @@
                 <outlet property="playButton" destination="eMx-8g-uCW" id="2g8-DX-d5r"/>
                 <outlet property="postCommentButton" destination="fPA-xk-Luf" id="GZf-Pd-pBc"/>
                 <outlet property="reactionButton" destination="Mzj-jp-oL8" id="eXH-la-UOY"/>
+                <outlet property="reactionContainerView" destination="dBl-hy-8dx" id="iQX-Cf-yBg"/>
+                <outlet property="reactionCountContainer" destination="Tr3-7Y-ox8" id="svO-rI-nBj"/>
+                <outlet property="reactionCountLabel" destination="ize-Ca-Tc4" id="1OM-cj-dKP"/>
+                <outlet property="reactionHeightConstraint" destination="90T-nv-2ZO" id="eCo-bd-Yh6"/>
+                <outlet property="reactionWidthConstraint" destination="4ko-OT-HUW" id="sEe-HH-hBU"/>
                 <outlet property="renderGestureView" destination="rcm-LB-Fz3" id="lyU-5J-mIK"/>
                 <outlet property="renderView" destination="rha-6m-7Zi" id="B6f-hO-N5R"/>
                 <outlet property="showCommentButton" destination="ZEa-rN-snB" id="928-iu-X98"/>
@@ -98,6 +104,34 @@
                                 <constraint firstAttribute="trailing" secondItem="eMH-6x-AP1" secondAttribute="trailing" constant="8" id="vST-S7-e0H"/>
                             </constraints>
                         </view>
+                        <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tr3-7Y-ox8" userLabel="Reaction Container">
+                            <rect key="frame" x="179" y="63.5" width="54.5" height="28"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="like_icon_fill" translatesAutoresizingMaskIntoConstraints="NO" id="6bx-OI-QId" userLabel="Reaction">
+                                    <rect key="frame" x="0.0" y="0.0" width="28" height="28"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="28" id="Eue-iZ-HSN"/>
+                                        <constraint firstAttribute="height" constant="28" id="oaq-WZ-6w7"/>
+                                    </constraints>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ize-Ca-Tc4" userLabel="Viewer Count Label">
+                                    <rect key="frame" x="36" y="4" width="10.5" height="20"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="6bx-OI-QId" firstAttribute="top" secondItem="Tr3-7Y-ox8" secondAttribute="top" id="Psc-lO-60e"/>
+                                <constraint firstAttribute="bottom" secondItem="6bx-OI-QId" secondAttribute="bottom" id="nbf-2R-7tz"/>
+                                <constraint firstAttribute="trailing" secondItem="ize-Ca-Tc4" secondAttribute="trailing" constant="8" id="pD5-Y0-IN3"/>
+                                <constraint firstItem="ize-Ca-Tc4" firstAttribute="top" secondItem="Tr3-7Y-ox8" secondAttribute="top" constant="4" id="sZx-EL-2cG"/>
+                                <constraint firstAttribute="bottom" secondItem="ize-Ca-Tc4" secondAttribute="bottom" constant="4" id="y5L-ER-wnp"/>
+                                <constraint firstItem="6bx-OI-QId" firstAttribute="leading" secondItem="Tr3-7Y-ox8" secondAttribute="leading" id="yyU-5E-fWw"/>
+                                <constraint firstItem="ize-Ca-Tc4" firstAttribute="leading" secondItem="6bx-OI-QId" secondAttribute="trailing" constant="8" symbolic="YES" id="zmu-kZ-TTt"/>
+                            </constraints>
+                        </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rcm-LB-Fz3" userLabel="Gesture View">
                             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -111,8 +145,10 @@
                         <constraint firstAttribute="trailing" secondItem="rcm-LB-Fz3" secondAttribute="trailing" id="H0J-xn-Ud8"/>
                         <constraint firstItem="FZj-M8-yaC" firstAttribute="leading" secondItem="rQa-vC-jCd" secondAttribute="trailing" constant="8" symbolic="YES" id="Kt9-x6-aBJ"/>
                         <constraint firstItem="rha-6m-7Zi" firstAttribute="top" secondItem="VsJ-qj-eVf" secondAttribute="top" id="MaA-1A-smH"/>
+                        <constraint firstItem="Tr3-7Y-ox8" firstAttribute="centerY" secondItem="FZj-M8-yaC" secondAttribute="centerY" id="OIg-Ye-UDq"/>
                         <constraint firstAttribute="trailing" secondItem="rha-6m-7Zi" secondAttribute="trailing" id="QIY-jG-IuT"/>
                         <constraint firstItem="rcm-LB-Fz3" firstAttribute="leading" secondItem="VsJ-qj-eVf" secondAttribute="leading" id="chJ-p2-Wcs"/>
+                        <constraint firstItem="Tr3-7Y-ox8" firstAttribute="leading" secondItem="FZj-M8-yaC" secondAttribute="trailing" constant="11.5" id="kZX-UM-Xn2"/>
                         <constraint firstAttribute="bottom" secondItem="rcm-LB-Fz3" secondAttribute="bottom" id="qMH-Mi-kx8"/>
                         <constraint firstItem="FZj-M8-yaC" firstAttribute="centerY" secondItem="rQa-vC-jCd" secondAttribute="centerY" id="uQN-4a-3Mw"/>
                     </constraints>
@@ -189,7 +225,6 @@ to watch shortly.</string>
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="eMx-8g-uCW" firstAttribute="centerY" secondItem="aMJ-3v-4eD" secondAttribute="centerY" id="2r6-Lb-ybp"/>
                         <constraint firstItem="GsN-Z4-b5d" firstAttribute="centerY" secondItem="eMx-8g-uCW" secondAttribute="centerY" id="AeY-lc-8lG"/>
@@ -202,24 +237,17 @@ to watch shortly.</string>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qKF-U3-b83" userLabel="Comment Container">
-                    <rect key="frame" x="0.0" y="512" width="414" height="350"/>
+                    <rect key="frame" x="0.0" y="470" width="414" height="392"/>
                     <subviews>
-                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uyh-yQ-nPx" userLabel="Like Count">
-                            <rect key="frame" x="186" y="114" width="42" height="21"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="textColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="LHh-yY-eFb" userLabel="Comment TableView">
-                            <rect key="frame" x="0.0" y="-42" width="414" height="270"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="270"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="270" id="aQF-aL-Vao"/>
                             </constraints>
                         </tableView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55e-rX-D0h" userLabel="Hide Button">
-                            <rect key="frame" x="353" y="236" width="36" height="36"/>
+                            <rect key="frame" x="353" y="278" width="36" height="36"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="36" id="2xq-Dv-27U"/>
                                 <constraint firstAttribute="height" constant="36" id="vP3-cn-3MO"/>
@@ -231,7 +259,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZEa-rN-snB" userLabel="Show Button">
-                            <rect key="frame" x="353" y="236" width="36" height="36"/>
+                            <rect key="frame" x="353" y="278" width="36" height="36"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="show_comment">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -241,7 +269,7 @@ to watch shortly.</string>
                             </connections>
                         </button>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jjN-LL-zMG" userLabel="Live comment view">
-                            <rect key="frame" x="0.0" y="280" width="414" height="70"/>
+                            <rect key="frame" x="0.0" y="322" width="414" height="70"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jdi-Hh-Lad" userLabel="Comment TextView" customClass="AmityTextView" customModule="AmityUIKit">
                                     <rect key="frame" x="20" y="17" width="277" height="36"/>
@@ -297,7 +325,14 @@ to watch shortly.</string>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="width" secondItem="55e-rX-D0h" secondAttribute="width" id="lre-As-97c"/>
                         <constraint firstItem="ZEa-rN-snB" firstAttribute="centerX" secondItem="55e-rX-D0h" secondAttribute="centerX" id="p7Z-Zf-f9y"/>
                         <constraint firstAttribute="trailing" secondItem="LHh-yY-eFb" secondAttribute="trailing" id="sG7-ZH-rNu"/>
-                        <constraint firstAttribute="height" constant="350" id="uKq-mW-eov"/>
+                        <constraint firstItem="LHh-yY-eFb" firstAttribute="top" secondItem="qKF-U3-b83" secondAttribute="top" id="syJ-zg-hlV"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dBl-hy-8dx">
+                    <rect key="frame" x="149" y="673" width="240" height="128"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="240" id="4ko-OT-HUW"/>
+                        <constraint firstAttribute="height" constant="128" id="90T-nv-2ZO"/>
                     </constraints>
                 </view>
             </subviews>
@@ -319,8 +354,10 @@ to watch shortly.</string>
                 <constraint firstItem="dWE-Vp-cX4" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="VzO-aY-fZH"/>
                 <constraint firstItem="VsJ-qj-eVf" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="bnl-53-sfY"/>
                 <constraint firstAttribute="bottom" secondItem="VsJ-qj-eVf" secondAttribute="bottom" id="dUB-pY-NA2"/>
+                <constraint firstItem="Mzj-jp-oL8" firstAttribute="top" secondItem="dBl-hy-8dx" secondAttribute="bottom" constant="8" id="hNe-in-bDN"/>
                 <constraint firstItem="dWE-Vp-cX4" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="l3b-bd-Ere"/>
                 <constraint firstItem="VsJ-qj-eVf" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="s8C-pq-moO"/>
+                <constraint firstItem="dBl-hy-8dx" firstAttribute="trailing" secondItem="Mzj-jp-oL8" secondAttribute="trailing" id="t6i-6H-O4L"/>
                 <constraint firstItem="qKF-U3-b83" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="tEl-AY-6AO"/>
                 <constraint firstItem="rQa-vC-jCd" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="15" id="wGf-iI-IsC"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="aMJ-3v-4eD" secondAttribute="trailing" id="wIv-Mj-Ieb"/>
@@ -333,6 +370,7 @@ to watch shortly.</string>
         <image name="close_icon" width="32" height="32"/>
         <image name="hide_comment" width="40" height="40"/>
         <image name="like_dna_icon" width="38" height="38"/>
+        <image name="like_icon_fill" width="20" height="20"/>
         <image name="pause.fill" catalog="system" width="117" height="128"/>
         <image name="play.fill" catalog="system" width="117" height="128"/>
         <image name="send_comment" width="38" height="38"/>

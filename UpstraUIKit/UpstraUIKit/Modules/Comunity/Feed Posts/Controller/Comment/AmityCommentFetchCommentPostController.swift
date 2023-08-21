@@ -24,7 +24,7 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
     private var collection: AmityCollection<AmityComment>?
     
     var hasMoreComments: Bool {
-        return collection?.hasPrevious ?? false
+        return collection?.hasNext ?? false
     }
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool, completion: ((Result<[AmityCommentModel], AmityError>) -> Void)?) {
@@ -47,7 +47,7 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
         guard let collection = collection else { return }
         switch collection.loadingStatus {
         case .loaded:
-            collection.previousPage()
+            collection.nextPage()
         default:
             break
         }

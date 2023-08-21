@@ -157,7 +157,8 @@ open class AmityExpandableLabel: UILabel {
         set(text) {
             if let text = text {
                 let attributedString = NSMutableAttributedString(string: text)
-                
+                attributedString.addAttributes([.font: AmityFontSet.body], range: NSMakeRange(0, text.utf16.count))
+
                 // Detect URLs
                 let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
                 let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
@@ -668,7 +669,8 @@ extension AmityExpandableLabel {
     
     func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
         let attributedString = NSMutableAttributedString(string: text)
-        
+        attributedString.addAttributes([.font: AmityFontSet.body], range: NSMakeRange(0, text.utf16.count))
+
         // Detect URLs
         let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
