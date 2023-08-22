@@ -40,6 +40,9 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
     private let dispatchGroup = DispatchGroup()
     private var postLists: [AmityPostModel] = []
     private var dummyList: AmitySearchPostsModel = AmitySearchPostsModel(postIDS: [])
+    
+    private var isReactionLoading: Bool = false
+    private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
 
     init(withFeedType feedType: AmityPostFeedType,
          postController: AmityPostControllerProtocol,
@@ -293,37 +296,66 @@ extension AmityHashtagScreenViewModel {
     }
     
     func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
-        reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                switch referenceType {
-                case .post:
-                    strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
-                case .comment:
-                    strongSelf.delegate?.screenViewModelDidLikeCommentSuccess(strongSelf)
-                default:
-                    break
+        if !isReactionLoading {
+            isReactionLoading = true
+            reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                if success {
+                    strongSelf.fetchPosts(keyword: strongSelf.keyword)
+                    strongSelf.isReactionLoading = false
+                    switch referenceType {
+                    case .post:
+                        strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
+                    case .comment:
+                        strongSelf.delegate?.screenViewModelDidLikeCommentSuccess(strongSelf)
+                    default:
+                        break
+                    }
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
                 }
-            } else {
-                strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
             }
         }
     }
     
     func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
-        reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                switch referenceType {
-                case .post:
-                    strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
-                case .comment:
-                    strongSelf.delegate?.screenViewModelDidUnLikeCommentSuccess(strongSelf)
-                default:
-                    break
+        if !isReactionLoading {
+            isReactionLoading = true
+            reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                if success {
+                    strongSelf.fetchPosts(keyword: strongSelf.keyword)
+                    switch referenceType {
+                    case .post:
+                        strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                    case .comment:
+                        strongSelf.delegate?.screenViewModelDidUnLikeCommentSuccess(strongSelf)
+                    default:
+                        break
+                    }
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
                 }
-            } else {
-                strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+            }
+        }
+    }
+    
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType) {
+        if !isReactionLoading {
+            isReactionLoading = true
+            isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
+            reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
+                if success {
+                    strongSelf.fetchPosts(keyword: strongSelf.keyword)
+                    strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                    self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType)
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                }
             }
         }
     }
