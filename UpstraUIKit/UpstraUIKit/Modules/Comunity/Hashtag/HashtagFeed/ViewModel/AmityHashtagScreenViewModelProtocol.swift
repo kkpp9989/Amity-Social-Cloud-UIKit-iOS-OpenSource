@@ -56,6 +56,7 @@ protocol AmityHashtagScreenViewModelAction {
     
     func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType)
     func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType)
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType)
     
     // MARK: Post
     func delete(withPostId postId: String)

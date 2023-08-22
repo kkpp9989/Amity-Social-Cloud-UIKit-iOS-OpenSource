@@ -882,7 +882,9 @@ extension LiveStreamPlayerViewController {
             } else {
                 strongSelf.storedComment = strongSelf.prepareData()
                 strongSelf.reloadData()
-                strongSelf.updateTableViewHeight()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    strongSelf.updateTableViewHeight()
+                }
             }
         }
     }
