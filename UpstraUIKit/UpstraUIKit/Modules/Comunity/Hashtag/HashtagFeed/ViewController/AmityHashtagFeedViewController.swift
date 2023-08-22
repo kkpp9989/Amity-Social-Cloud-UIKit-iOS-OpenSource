@@ -540,16 +540,19 @@ extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate
         case .tapComment, .tapReactionDetails:
             AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
         case .tapHoldLike:
-            if let reactionType = post.reacted {
-                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
-            }
-            else {
-                reactionPickerView.onSelect = { [weak self] reactionType in
-                    self?.hideReactionPicker()
-                    self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType)
+                    } else {
+                        self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+                    }
                 }
-                showReactionPicker()
             }
+            showReactionPicker()
         }
     }
 }

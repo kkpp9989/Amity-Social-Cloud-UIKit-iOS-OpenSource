@@ -89,7 +89,7 @@ class AmityReactionUsersScreenViewModel {
         
         // Query reactions
         liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: reactionType.isEmpty ? nil : reactionType)
-        token = liveCollection?.observe({ [weak self] liveCollection, _, error in
+        token = liveCollection?.observeOnce({ [weak self] liveCollection, _, error in
             guard let weakSelf = self else { return }
 
             if let error {
@@ -100,8 +100,18 @@ class AmityReactionUsersScreenViewModel {
                 weakSelf.isLoadingDummyData = false
             } else {
                 let allObjects = liveCollection.allObjects()
-                weakSelf.reactionList = allObjects.map { ReactionUser(reaction: $0) }
+                let dummyList = allObjects.map { ReactionUser(reaction: $0) }
+                var filteredList: [ReactionUser] = []  // Replace ObjectType with the actual type of objects in your collection
                 
+                for object in dummyList {
+                    // Assuming you want to perform case-insensitive search
+                    if !filteredList.contains(where: { $0.userId == object.userId }) {
+                        filteredList.append(object)
+                    }
+                }
+                
+                weakSelf.reactionList = filteredList
+                                
                 // Change state
                 weakSelf.setupScreenState(state: .loaded(data: weakSelf.reactionList, error: nil))
                 weakSelf.isLoadingDummyData = false
