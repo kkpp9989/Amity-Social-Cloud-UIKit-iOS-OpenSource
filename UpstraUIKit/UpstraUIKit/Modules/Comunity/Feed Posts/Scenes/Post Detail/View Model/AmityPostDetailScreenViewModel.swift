@@ -243,7 +243,6 @@ extension AmityPostDetailScreenViewModel {
         
         dispatchGroup.notify(queue: .main) { [self] in
             tokenArray.removeAll()
-            print("reaction: \(reaction)")
         }
     }
     
