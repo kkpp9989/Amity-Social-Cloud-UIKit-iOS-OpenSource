@@ -33,6 +33,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     }
     
     private var isReactionLoading: Bool = false
+    private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
     init(withFeedType feedType: AmityPostFeedType,
         postController: AmityPostControllerProtocol,
@@ -112,27 +113,31 @@ extension AmityFeedScreenViewModel {
         isLoading = true
         postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
             guard let strongSelf = self else { return }
-            switch result {
-            case .success(let posts):
-                strongSelf.debouncer.run {
-                    strongSelf.prepareComponents(posts: posts)
-                }
-            case .failure(let error):
-                strongSelf.debouncer.run {
-                    strongSelf.prepareComponents(posts: [])
-                }
-                if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
-                    switch strongSelf.feedType {
-                    case .userFeed:
-                        strongSelf.isPrivate = true
-                    default:
-                        strongSelf.isPrivate = false
+            /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
+            if !strongSelf.isReactionChanging {
+                switch result {
+                case .success(let posts):
+                    strongSelf.debouncer.run {
+                        strongSelf.prepareComponents(posts: posts)
                     }
-                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
-                } else {
-                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                case .failure(let error):
+                    strongSelf.debouncer.run {
+                        strongSelf.prepareComponents(posts: [])
+                    }
+                    if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
+                        switch strongSelf.feedType {
+                        case .userFeed:
+                            strongSelf.isPrivate = true
+                        default:
+                            strongSelf.isPrivate = false
+                        }
+                        strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
+                    } else {
+                        strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                    }
                 }
             }
+            strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
         }
     }
     
@@ -257,9 +262,11 @@ extension AmityFeedScreenViewModel {
     func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType) {
         if !isReactionLoading {
             isReactionLoading = true
+            isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
             reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
                 guard let strongSelf = self else { return }
                 strongSelf.isReactionLoading = false
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
                 if success {
                     strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
                     self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType)
