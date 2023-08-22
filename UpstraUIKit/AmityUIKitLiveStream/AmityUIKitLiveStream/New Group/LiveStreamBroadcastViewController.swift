@@ -133,10 +133,10 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     private var createCommentToken: AmityNotificationToken?
     private var collection: AmityCollection<AmityComment>?
     private var subscriptionManager: AmityTopicSubscription?
-    private var subscriptionPostManager: AmityTopicSubscription?
     private var commentSet: Set<String> = []
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
+    private var commentCount: Int = 0
 
     private var postObject: AmityObject<AmityPost>?
     private var postToken: AmityNotificationToken?
@@ -156,7 +156,6 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster = AmityStreamBroadcaster(client: client)
         reactionReposity = AmityReactionRepository(client: client)
         subscriptionManager = AmityTopicSubscription(client: client)
-        subscriptionPostManager = AmityTopicSubscription(client: client)
         mentionManager = AmityMentionManager(withType: .post(communityId: targetId))
         
         let bundle = Bundle(for: type(of: self))
@@ -184,7 +183,6 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         unobserveKeyboardFrame()
         stopLiveDurationTimer()
         subscriptionManager = nil
-        subscriptionPostManager = nil
         postToken?.invalidate()
         postToken = nil
         fetchCommentToken?.invalidate()
@@ -227,9 +225,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             presentPermissionRequiredDialogue()
         }
         
+        startRealTimeEventSubscribe()
+
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
-            startRealTimeEventSubscribe()
-            startRealTimeEventPostSubscribe()
             requestSendViewerStatisticsAPI()
             
             viewerCountLabel.text = String(viewerCount)
@@ -767,24 +765,11 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = createdPost else { return }
             let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-            subscriptionManager?.subscribeTopic(eventTopic) { success, error in
-                if let error = error {
-                    print("[RTE]Error: \(error.localizedDescription)")
-                } else {
-                    print("[RTE] Sucess")
-                }
-            }
+            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+            subscriptionManager?.subscribeTopic(eventTopic) { _, _ in}
+            subscriptionManager?.subscribeTopic(eventPostTopic) { _,_ in }
             
             getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-        }
-    }
-    
-    func startRealTimeEventPostSubscribe() {
-        DispatchQueue.main.async { [self] in
-            guard let currentPost = createdPost else { return }
-            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-            subscriptionPostManager?.subscribeTopic(eventPostTopic) { _,_ in }
-            
             getPostForPostId(withPostId: currentPost.postId)
         }
     }
@@ -870,6 +855,12 @@ extension LiveStreamBroadcastViewController {
         for i in 0..<collection.count() {
             guard let comment = collection.object(at: i) else { continue }
             let model = AmityCommentModel(comment: comment)
+            
+            // Check if a model with the same id already exists in the models array
+            if models.contains(where: { $0.id == model.id }) {
+                continue  // Skip appending the model if the id already exists
+            }
+            
             models.append(model)
         }
         return models
@@ -879,10 +870,11 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.commentTableView.reloadData()
-            
             if !strongSelf.storedComment.isEmpty {
-                strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
-
+                if strongSelf.commentCount != strongSelf.storedComment.count {
+                    strongSelf.commentCount = strongSelf.storedComment.count
+                    strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                }
                 guard let collection = strongSelf.collection else { return }
                 if collection.hasNext {
                     collection.nextPage()

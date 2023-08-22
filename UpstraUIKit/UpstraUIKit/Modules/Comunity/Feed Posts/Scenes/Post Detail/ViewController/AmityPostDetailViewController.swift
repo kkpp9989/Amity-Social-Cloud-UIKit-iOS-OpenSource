@@ -583,7 +583,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModel(_ viewModel: AmityPostDetailScreenViewModelType, didFinishWithError error: AmityError) {
         switch error {
         case .unknown:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            break
         case .bannedWord:
             AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString))
         default:

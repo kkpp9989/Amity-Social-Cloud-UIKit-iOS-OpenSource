@@ -33,7 +33,7 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
         let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: referenceType, filterByParentId: isParent, parentId: parentId, orderBy: orderBy, includeDeleted: includeDeleted)
         collection = repository.getComments(with: queryOptions)
         
-        token = collection?.observe { [weak self] (commentCollection, _, error) in
+        token = collection?.observeOnce { [weak self] (commentCollection, _, error) in
             guard let strongSelf = self else { return }
             if let error = AmityError(error: error) {
                 completion?(.failure(error))
