@@ -21,7 +21,7 @@ final class AmityPostFetchPostController: AmityPostFetchPostControllerProtocol {
     
     func getPostForPostId(withPostId postId: String, completion: ((Result<AmityPostModel, AmityError>) -> Void)?) {
         postObject = repository.getPost(withId: postId)
-        token = postObject?.observe { [weak self] (_, error) in
+        token = postObject?.observeOnce { [weak self] (_, error) in
             guard let strongSelf = self else { return }
             if let error = AmityError(error: error) {
                 completion?(.failure(error))

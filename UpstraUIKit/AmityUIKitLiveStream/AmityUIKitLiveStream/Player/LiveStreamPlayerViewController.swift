@@ -97,7 +97,6 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var createCommentToken: AmityNotificationToken?
     private var collection: AmityCollection<AmityComment>?
     private var subscriptionManager: AmityTopicSubscription?
-    private var subscriptionPostManager: AmityTopicSubscription?
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
     private var commentCount: Int = 0
@@ -134,7 +133,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         self.commentRepository = AmityCommentRepository(client: AmityUIKitManager.client)
         self.streamIdToWatch = streamIdToWatch
         self.subscriptionManager = AmityTopicSubscription(client: AmityUIKitManager.client)
-        self.subscriptionPostManager = AmityTopicSubscription(client: AmityUIKitManager.client)
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
         self.postID = postID
         self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
@@ -173,7 +171,6 @@ public class LiveStreamPlayerViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         startRealTimeEventSubscribe()
-        startRealTimeEventPostSubscribe()
 
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             requestSendViewerStatisticsAPI()
@@ -539,7 +536,6 @@ public class LiveStreamPlayerViewController: UIViewController {
     private func unobserveStreamObject() {
         getStreamToken = nil
         subscriptionManager = nil
-        subscriptionPostManager = nil
         postToken?.invalidate()
         postToken = nil
         fetchCommentToken?.invalidate()
@@ -809,18 +805,11 @@ extension LiveStreamPlayerViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = amityPost else { return }
             let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-            subscriptionManager?.subscribeTopic(eventTopic) { _,_ in }
-            
-            getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-        }
-    }
-    
-    func startRealTimeEventPostSubscribe() {
-        DispatchQueue.main.async { [self] in
-            guard let currentPost = amityPost else { return }
             let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-            subscriptionPostManager?.subscribeTopic(eventPostTopic) { _,_ in }
-            
+            subscriptionManager?.subscribeTopic(eventTopic) { _,_ in }
+            subscriptionManager?.subscribeTopic(eventPostTopic) { _,_ in }
+
+            getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
             getPostForPostId(withPostId: postID ?? "")
         }
     }
@@ -904,6 +893,12 @@ extension LiveStreamPlayerViewController {
         for i in 0..<collection.count() {
             guard let comment = collection.object(at: i) else { continue }
             let model = AmityCommentModel(comment: comment)
+            
+            // Check if a model with the same id already exists in the models array
+            if models.contains(where: { $0.id == model.id }) {
+                continue  // Skip appending the model if the id already exists
+            }
+            
             models.append(model)
         }
         return models
