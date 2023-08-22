@@ -17,25 +17,16 @@ public final class AmityCommunityMemberSettingsViewController: AmityPageViewCont
     private var memberVC: AmityCommunityMemberViewController?
     private var moderatorVC: AmityCommunityMemberViewController?
     
-    // MARK: - Custom Theme Properties [Additional]
-    private var theme: ONEKrungthaiCustomTheme?
-    
     // MARK: - View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         title = AmityLocalizedStringSet.CommunityMembreSetting.title.localizedString
         screenViewModel.delegate = self
         screenViewModel.action.getUserRoles()
-        
-        // Initial ONE Krungthai Custom theme
-        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Set color navigation bar by custom theme
-        theme?.setBackgroundNavigationBar()
         
         // [Custom for ONE Krungthai] Add condition for output tabbar of moderator user in official community permission
         let community = screenViewModel.dataSource.community
