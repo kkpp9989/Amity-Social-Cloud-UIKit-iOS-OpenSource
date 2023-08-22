@@ -220,7 +220,7 @@ extension AmityPostDetailScreenViewModel {
                 
                 // Query reactions
                 liveCollection = reactionRepository.getReactions(postId, referenceType: .post, reactionName: objData.key)
-                token = liveCollection.observe({ [weak self] liveCollection, _, error in
+                token = liveCollection.observeOnce({ [weak self] liveCollection, _, error in
                     guard let strongSelf = self else { return }
                     
                     let allObjects = liveCollection.allObjects()
@@ -235,12 +235,12 @@ extension AmityPostDetailScreenViewModel {
                 })
                 
                 tokenArray.append(token)
-                
-                dispatchGroup.notify(queue: .main) { [self] in
-                    tokenArray.removeAll()
-                    print("reaction: \(reaction)")
-                }
             }
+        }
+        
+        dispatchGroup.notify(queue: .main) { [self] in
+            tokenArray.removeAll()
+            print("reaction: \(reaction)")
         }
     }
     
