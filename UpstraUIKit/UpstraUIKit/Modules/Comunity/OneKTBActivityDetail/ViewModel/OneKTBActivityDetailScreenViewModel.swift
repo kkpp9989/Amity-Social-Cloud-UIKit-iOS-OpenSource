@@ -35,6 +35,9 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
 
     private let dispatchGroup = DispatchGroup()
     
+    private var isReactionLoading: Bool = false
+    private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
+    
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
          commentController: AmityCommentControllerProtocol,
@@ -200,7 +203,7 @@ extension OneKTBActivityDetailScreenViewModel {
                 
                 // Query reactions
                 liveCollection = reactionRepository.getReactions(postId, referenceType: .post, reactionName: objData.key)
-                token = liveCollection.observe({ [weak self] liveCollection, _, error in
+                token = liveCollection.observeOnce({ [weak self] liveCollection, _, error in
                     guard let strongSelf = self else { return }
                     
                     let allObjects = liveCollection.allObjects()
@@ -215,12 +218,11 @@ extension OneKTBActivityDetailScreenViewModel {
                 })
                 
                 tokenArray.append(token)
-                
-                dispatchGroup.notify(queue: .main) { [self] in
-                    tokenArray.removeAll()
-                    print("reaction: \(reaction)")
-                }
             }
+        }
+        
+        dispatchGroup.notify(queue: .main) { [self] in
+            tokenArray.removeAll()
         }
     }
     
@@ -231,9 +233,15 @@ extension OneKTBActivityDetailScreenViewModel {
             switch result {
             case .success(let post):
                 self?.post = post
-                self?.debouncer.run {
-                    self?.prepareData()
+                
+                /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
+                let isReactionChanging = self?.isReactionChanging ?? false
+                if !isReactionChanging {
+                    self?.debouncer.run {
+                        self?.prepareData()
+                    }
                 }
+                self?.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
             case .failure:
                 break
             }
@@ -295,35 +303,47 @@ extension OneKTBActivityDetailScreenViewModel {
     }
     
     func addReactionPost(type: AmityReactionType) {
-        reactionController.addReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModelDidLikePost(strongSelf)
-            } else {
-                strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+        if !isReactionLoading {
+            reactionController.addReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                if success {
+                    strongSelf.delegate?.screenViewModelDidLikePost(strongSelf)
+                } else {
+                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+                }
             }
         }
     }
     
     func removeReactionPost(type: AmityReactionType) {
-        reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
-            } else {
-                strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+        if !isReactionLoading {
+            reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                if success {
+                    strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
+                } else {
+                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+                }
             }
         }
     }
     
     func removeHoldReactionPost(type: AmityReactionType, typeSelect: AmityReactionType) {
-        reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
-                strongSelf.addReactionPost(type: typeSelect)
-            } else {
-                strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+        if !isReactionLoading {
+            isReactionLoading = true
+            isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
+            reactionController.removeReaction(withReaction: type, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
+                if success {
+                    strongSelf.delegate?.screenViewModelDidUnLikePost(strongSelf)
+                    strongSelf.addReactionPost(type: typeSelect)
+                } else {
+                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
+                }
             }
         }
     }

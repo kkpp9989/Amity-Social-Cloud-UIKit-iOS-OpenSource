@@ -40,8 +40,9 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
     private let dispatchGroup = DispatchGroup()
     private var postLists: [AmityPostModel] = []
     private var dummyList: AmitySearchPostsModel = AmitySearchPostsModel(postIDS: [])
-
+    
     private var isReactionLoading: Bool = false
+    private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
     init(withFeedType feedType: AmityPostFeedType,
          postController: AmityPostControllerProtocol,
@@ -327,8 +328,8 @@ extension AmityHashtagScreenViewModel {
             isReactionLoading = true
             reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
                 guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
                 if success {
-                    strongSelf.isReactionLoading = false
                     switch referenceType {
                     case .post:
                         strongSelf.fetchByPost(postId: id)
@@ -369,9 +370,11 @@ extension AmityHashtagScreenViewModel {
     func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType) {
         if !isReactionLoading {
             isReactionLoading = true
+            isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
             reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
                 guard let strongSelf = self else { return }
                 strongSelf.isReactionLoading = false
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
                 if success {
                     strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
                     self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType)

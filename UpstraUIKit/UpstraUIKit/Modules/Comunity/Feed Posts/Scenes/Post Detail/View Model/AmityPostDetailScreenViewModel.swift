@@ -243,7 +243,6 @@ extension AmityPostDetailScreenViewModel {
         
         dispatchGroup.notify(queue: .main) { [self] in
             tokenArray.removeAll()
-            print("reaction: \(reaction)")
         }
     }
     
@@ -293,7 +292,7 @@ extension AmityPostDetailScreenViewModel {
                                 self?.prepareData()
                             }
                         }
-                        self?.isReactionChanging = false
+                        self?.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
                     case .failure:
                         break
                     }
