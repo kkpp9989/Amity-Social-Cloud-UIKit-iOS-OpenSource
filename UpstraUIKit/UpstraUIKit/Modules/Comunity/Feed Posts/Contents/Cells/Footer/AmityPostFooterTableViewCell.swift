@@ -68,10 +68,10 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         setReactions(reactions: post.reactions)
         
         likeDetailButton.isEnabled = post.reactionsCount != 0
-//        let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
+        let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
 //        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
 //                                                          post.reactionsCount.formatUsingAbbrevation())
-        likeLabel.text = post.reactionsCount.formatUsingAbbrevation()
+        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix, post.reactionsCount.formatUsingAbbrevation())  //post.reactionsCount.formatUsingAbbrevation()
         commentLabel.isHidden = post.allCommentCount == 0
         let commentPrefix = post.allCommentCount == 1 ? AmityLocalizedStringSet.Unit.commentSingular.localizedString : AmityLocalizedStringSet.Unit.commentPlural.localizedString
         commentLabel.text = String.localizedStringWithFormat(commentPrefix,

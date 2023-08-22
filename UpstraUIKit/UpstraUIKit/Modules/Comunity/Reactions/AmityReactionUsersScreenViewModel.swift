@@ -70,13 +70,13 @@ class AmityReactionUsersScreenViewModel {
     private var token: AmityNotificationToken?
     
     private var isLoadingDummyData = false
-    
+        
     init(info: AmityReactionInfo) {
         self.reactionInfo = info
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
-    func fetchUserList() {
+    func fetchUserList(reactionType: String) {
         // Check if we can fetch data in current screen state
         guard currentScreenState.canFetchData else { return }
         
@@ -88,7 +88,7 @@ class AmityReactionUsersScreenViewModel {
         liveCollection = nil
         
         // Query reactions
-        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: nil)
+        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: reactionType.isEmpty ? nil : reactionType)
         token = liveCollection?.observe({ [weak self] liveCollection, _, error in
             guard let weakSelf = self else { return }
 
@@ -132,5 +132,9 @@ class AmityReactionUsersScreenViewModel {
     func loadDummyDataSet() {
         self.reactionList = Array(repeating: ReactionUser(userId: "", displayName: "", avatarURL: ""), count: 15)
         self.isLoadingDummyData = true
+    }
+    
+    func reactionListCount() -> Int {
+        return reactionList.count
     }
 }
