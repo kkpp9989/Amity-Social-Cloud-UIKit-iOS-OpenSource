@@ -14,6 +14,7 @@ struct RequestHashtag {
     let currentUserToken = AmityUIKitManager.currentUserToken
     var keyword: String = ""
     var size: Int = 3
+    var from: Int = 0
 
     func request(_ completion: @escaping(Result<HashtagModel,Error>) -> ()) {
         let domainURL = "https://beta.amity.services"
@@ -23,7 +24,7 @@ struct RequestHashtag {
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
         requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["text": keyword, "ignoreCase": true], "from": 0, "size": size]
+        requestMeta.params = ["query": ["text": keyword, "ignoreCase": true], "from": from, "size": size]
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
