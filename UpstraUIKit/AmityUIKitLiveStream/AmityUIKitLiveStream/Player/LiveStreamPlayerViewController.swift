@@ -102,6 +102,8 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var commentCount: Int = 0
 
     private var isFirstTime: Bool = true
+    private var isPostSubscribe: Bool = false
+    private var isCommentSubscribe: Bool = false
 
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
@@ -173,6 +175,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         startRealTimeEventSubscribe()
 
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
+            startRealTimeEventSubscribe()
             requestSendViewerStatisticsAPI()
 
             viewerCountLabel.text = String(viewerCount)
@@ -803,14 +806,19 @@ extension LiveStreamPlayerViewController: UITableViewDelegate {
 extension LiveStreamPlayerViewController {
     func startRealTimeEventSubscribe() {
         DispatchQueue.main.async { [self] in
-            guard let currentPost = amityPost else { return }
-            let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-            subscriptionManager?.subscribeTopic(eventTopic) { _,_ in }
-            subscriptionManager?.subscribeTopic(eventPostTopic) { _,_ in }
-
-            getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-            getPostForPostId(withPostId: postID ?? "")
+            if !isPostSubscribe && !isCommentSubscribe {
+                guard let currentPost = amityPost else { return }
+                if !isCommentSubscribe {
+                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
+                }
+                if !isPostSubscribe {
+                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
+                }
+                getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
+                getPostForPostId(withPostId: postID ?? "")
+            }
         }
     }
     
@@ -871,7 +879,7 @@ extension LiveStreamPlayerViewController {
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool) {
         
-        fetchCommentToken?.invalidate()
+//        fetchCommentToken?.invalidate()
         let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: referenceType, filterByParentId: isParent, parentId: parentId, orderBy: orderBy, includeDeleted: includeDeleted)
         collection = commentRepository.getComments(with: queryOptions)
         
@@ -909,20 +917,35 @@ extension LiveStreamPlayerViewController {
     func reloadData() {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
+
+            // Get the initial number of rows before reloading
+            let initNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
+            
+            // Update stored comments based on the new collection data
+            strongSelf.storedComment = strongSelf.prepareData()
+            
+            // Update comment count based on the stored comment count
+            strongSelf.commentCount = strongSelf.storedComment.count
+            
+            // Reload the table view
             strongSelf.commentTableView.reloadData()
-            if !strongSelf.storedComment.isEmpty {
-                if strongSelf.commentCount != strongSelf.storedComment.count {
-                    strongSelf.commentCount = strongSelf.storedComment.count
-                    strongSelf.commentTableView.scrollToRow(at: IndexPath(row: strongSelf.commentTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
-                }
-                guard let collection = strongSelf.collection else { return }
-                if collection.hasNext {
-                    collection.nextPage()
-                }
+
+            // Get the updated number of rows after reloading
+            let updatedNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
+            
+            // Check if new comments were added (scroll only in that case)
+            if updatedNumberOfRows > initNumberOfRows {
+                // Scroll to the last row if necessary
+                strongSelf.commentTableView.scrollToRow(at: IndexPath(row: updatedNumberOfRows - 1, section: 0), at: .bottom, animated: true)
+            }
+            
+            guard let collection = strongSelf.collection else { return }
+            if collection.hasNext {
+                collection.nextPage()
             }
         }
     }
-    
+
     func createComment(withReferenceId postId: String, referenceType: AmityCommentReferenceType, parentId: String?, text: String) {
         let createOptions: AmityCommentCreateOptions
         createOptions = AmityCommentCreateOptions(referenceId: postId, referenceType: referenceType, text: text, parentId: parentId)
@@ -935,7 +958,7 @@ extension LiveStreamPlayerViewController {
     }
     
     func updateTableViewHeight() {
-        if commentCount > 5 {
+        if storedComment.count > 5 {
             commentTableViewHeightConstraint.constant = 270
         } else {
             commentTableViewHeightConstraint.constant = commentTableView.contentSize.height
@@ -993,15 +1016,9 @@ extension LiveStreamPlayerViewController: LiveStreamCommentTableViewCellProtocol
     func didReactionTap(reaction: String, isLike: Bool) {
         DispatchQueue.main.async { [self] in
             if isLike {
-                removeReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in
-                    guard let strongSelf = self else { return }
-                    strongSelf.startRealTimeEventSubscribe()
-                }
+                removeReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in }
             } else {
-                addReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in
-                    guard let strongSelf = self else { return }
-                    strongSelf.startRealTimeEventSubscribe()
-                }
+                addReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in }
             }
         }
     }

@@ -184,7 +184,6 @@ extension AmityReactionUsersViewController: IndicatorInfoProvider {
             tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         }
         
-        
         return IndicatorInfo(title: tabTitle)
     }
 }
