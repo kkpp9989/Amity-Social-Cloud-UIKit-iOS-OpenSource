@@ -165,7 +165,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         requestingStreamObject = true
         observeStreamObject()
         setupReactionPicker()
-        
+        setBackgroundListener()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -193,6 +193,14 @@ public class LiveStreamPlayerViewController: UIViewController {
        // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
        timer?.invalidate()
        timer = nil
+        
+        guard let currentPost = amityPost else { return }
+        currentPost.unsubscribeEvent(.comments) { _, _ in }
+    }
+    
+    func setBackgroundListener() {
+        NotificationCenter.default.addObserver(self, selector: #selector(stopStream), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playStream), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
        
     private func setupStreamView() {
@@ -550,9 +558,10 @@ public class LiveStreamPlayerViewController: UIViewController {
         postToken = nil
         fetchCommentToken?.invalidate()
         fetchCommentToken = nil
+        NotificationCenter.default.removeObserver(self)
     }
     
-    private func playStream() {
+    @objc private func playStream() {
         
         isStarting = true
         
@@ -589,7 +598,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         })
     }
     
-    private func stopStream() {
+    @objc private func stopStream() {
         player.stop()
     }
     
