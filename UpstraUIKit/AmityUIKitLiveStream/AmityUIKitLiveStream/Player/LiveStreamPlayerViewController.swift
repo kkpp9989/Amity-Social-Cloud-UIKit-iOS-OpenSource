@@ -167,7 +167,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         requestingStreamObject = true
         observeStreamObject()
         setupReactionPicker()
-        
+        setBackgroundListener()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -183,11 +183,29 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        timer?.invalidate()
-        timer = nil
+       super.viewDidDisappear(animated)
+       // Invalidate all token
+       unobserveStreamObject()
+
+       // Stop the playing stream.
+       stopStream()
+       // Once we know that the stream has already end, we clean up requestToPlay / playing states.
+       isStarting = false
+       requestingStreamObject = false
+
+       // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
+       timer?.invalidate()
+       timer = nil
+        
+        guard let currentPost = amityPost else { return }
+        currentPost.unsubscribeEvent(.comments) { _, _ in }
     }
     
+    func setBackgroundListener() {
+        NotificationCenter.default.addObserver(self, selector: #selector(stopStream), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playStream), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+       
     private func setupStreamView() {
         // Create video view and embed in playerContainer
         videoView = UIView(frame: renderView.bounds)
@@ -543,9 +561,10 @@ public class LiveStreamPlayerViewController: UIViewController {
         postToken = nil
         fetchCommentToken?.invalidate()
         fetchCommentToken = nil
+        NotificationCenter.default.removeObserver(self)
     }
     
-    private func playStream() {
+    @objc private func playStream() {
         
         isStarting = true
         
@@ -582,7 +601,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         })
     }
     
-    private func stopStream() {
+    @objc private func stopStream() {
         player.stop()
     }
     
