@@ -262,46 +262,49 @@ private extension AmityPostFooterTableViewCell {
     
     private func setReactions(reactions: [String: Int]) {
         let filteredReactions = reactions.filter { $1 != 0 }
-        let reactionKeys = Array(filteredReactions.keys)
-        let totalReactionsCount = reactionKeys.count
+        let sortedKeys = filteredReactions.keys.sorted { (key1, key2) in
+            if filteredReactions[key1]! == filteredReactions[key2]! {
+                // If the integer values are the same, sort based on priority
+                guard let reactionType1 = AmityReactionType(rawValue: key1),
+                      let reactionType2 = AmityReactionType(rawValue: key2) else {
+                    return false // Default sorting behavior if reaction types are not valid
+                }
+                
+                return sortReactionPriority(reactionType1) < sortReactionPriority(reactionType2)
+            } else {
+                // If the integer values are different, sort by integer value
+                return filteredReactions[key1]! > filteredReactions[key2]!
+            }
+        }
+        
+        let totalReactionsCount = sortedKeys.count
         
         if totalReactionsCount <= 0 {
             hideAllReactionViews()
         } else if totalReactionsCount == 1 {
-            showSingleReactionView(reaction: reactionKeys[0])
+            showSingleReactionView(reaction: sortedKeys[0])
         } else {
-            // Sort reaction keys based on priority (add your priority logic here)
-            let sortedReactionKeys = sortReactionKeys(reactionKeys: reactionKeys)
+            // Handle multiple reactions
             
             if totalReactionsCount == 2 {
-                showTwoReactionsView(reactions: sortedReactionKeys)
+                showTwoReactionsView(reactions: sortedKeys)
             } else {
-                showThreeReactionsView(reactions: sortedReactionKeys)
+                showThreeReactionsView(reactions: sortedKeys)
             }
         }
     }
     
-    private func sortReactionKeys(reactionKeys: [String]) -> [String] {
-        // Define the priority of reactions using the AmityReactionType enum
+    private func sortReactionPriority(_ reactionType: AmityReactionType) -> Int {
+        // Define the priority order using the AmityReactionType enum
         let priorityOrder: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
         
-        // Sort reaction keys based on priority order
-        let sortedReactionKeys = reactionKeys.sorted { (key1, key2) -> Bool in
-            guard let reactionType1 = AmityReactionType(rawValue: key1),
-                  let reactionType2 = AmityReactionType(rawValue: key2) else {
-                return false // Default sorting behavior if reaction types are not valid
-            }
-            
-            guard let index1 = priorityOrder.firstIndex(of: reactionType1),
-                  let index2 = priorityOrder.firstIndex(of: reactionType2) else {
-                return false // Default sorting behavior if reaction types are not found in priorityOrder
-            }
-            
-            return index1 < index2
+        if let index = priorityOrder.firstIndex(of: reactionType) {
+            return index
+        } else {
+            return Int.max // Default priority for unknown reaction types
         }
-        
-        return sortedReactionKeys
     }
+
     
     private func hideAllReactionViews() {
         likeLabelIcon.isHidden = true
