@@ -85,10 +85,12 @@ extension AmityUserProfileHeaderScreenViewModel {
         
         let userRepository = userRepository.userRelationship
         followToken = userRepository.getFollowInfo(withUserId: userId).observe { [weak self] liveObject, error in
-            
             guard let strongSelf = self else { return }
             
+            print("[followInfo] userId: \(strongSelf.userId)")
+            
             if let result = liveObject.object {
+                print("[followInfo] result: \(result.model)")
                 strongSelf.handleFollowInfo(followInfo: AmityFollowInfo(followInfo: result))
             } else {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
