@@ -94,7 +94,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
         
         var postBuilder: AmityPostBuilder
-        
+
         let isMediaChanged = oldPost.medias != medias
         let isFileChanged = oldPost.files != files
         
@@ -104,46 +104,106 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             imagePostBuilder.setText(text)
             imagePostBuilder.setImages(getImagesData(from: medias))
             postBuilder = imagePostBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: imagePostBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: imagePostBuilder)
+            }
         } else if oldPost.files.isEmpty && isFileChanged {
             // File Post
             let fileBuilder = AmityFilePostBuilder()
             fileBuilder.setText(text)
             fileBuilder.setFiles(getFilesData(from: files))
             postBuilder = fileBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: fileBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: fileBuilder)
+            }
         } else if oldPost.dataTypeInternal == .image && isMediaChanged {
             // Image Post
             let imagePostBuilder = AmityImagePostBuilder()
             imagePostBuilder.setText(text)
             imagePostBuilder.setImages(getImagesData(from: medias))
             postBuilder = imagePostBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: imagePostBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: imagePostBuilder)
+            }
         } else if oldPost.dataTypeInternal == .video && isMediaChanged {
             // Video Post
             let videoPostBuilder = AmityVideoPostBuilder()
             videoPostBuilder.setText(text)
             videoPostBuilder.setVideos(getVideosData(from: medias))
             postBuilder = videoPostBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: videoPostBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: videoPostBuilder)
+            }
         } else if oldPost.dataTypeInternal == .file && isFileChanged {
             // File Post
             let fileBuilder = AmityFilePostBuilder()
             fileBuilder.setText(text)
             fileBuilder.setFiles(getFilesData(from: files))
             postBuilder = fileBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: fileBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: fileBuilder)
+            }
         } else {
             // Text Post
             let textPostBuilder = AmityTextPostBuilder()
             textPostBuilder.setText(text)
             postBuilder = textPostBuilder
+            
+            if let mentionees = mentionees {
+                editPostWithMentionees(withId: oldPost.postId, builder: textPostBuilder, metadata: metadata, mentionees: mentionees)
+            } else {
+                editPost(withId: oldPost.postId, builder: textPostBuilder)
+            }
         }
         
-        if let mentionees = mentionees {
-            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
-                guard let strongSelf = self else { return }
-                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+//        if let mentionees = mentionees {
+//            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
+//                guard let strongSelf = self else { return }
+//                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+//            }
+//        } else {
+//            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder) { [weak self] (post, error) in
+//                guard let strongSelf = self else { return }
+//                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+//            }
+//        }
+    }
+    
+    private func editPostWithMentionees(withId: String, builder: AmityPostBuilder, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder) {
+        Task { @MainActor in
+            do {
+                let amityPost = try await postrepository.editPost(withId: withId, builder: builder, metadata: metadata, mentionees: mentionees)
+                updatePostResponseHandler(forPost: amityPost, error: nil)
+            } catch {
+                print("error: \(error.localizedDescription)")
+                updatePostResponseHandler(forPost: nil, error: error)
             }
-        } else {
-            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder) { [weak self] (post, error) in
-                guard let strongSelf = self else { return }
-                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+        }
+    }
+    
+    private func editPost(withId: String, builder: AmityPostBuilder) {
+        Task { @MainActor in
+            do {
+                let amityPost = try await postrepository.editPost(withId: withId, builder: builder)
+                updatePostResponseHandler(forPost: amityPost, error: nil)
+            } catch {
+                print("error: \(error.localizedDescription)")
+                updatePostResponseHandler(forPost: nil, error: error)
             }
         }
     }
