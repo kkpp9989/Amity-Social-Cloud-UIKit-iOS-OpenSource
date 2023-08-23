@@ -65,6 +65,10 @@ extension AmityMemberSearchScreenViewModel {
     }
     
     func loadMore() {
-        memberListRepositoryManager.loadMore()
+        delegate?.screenViewModel(self, loadingState: .loading)
+        let isEndPagination = memberListRepositoryManager.loadMore()
+        if isEndPagination {
+            delegate?.screenViewModel(self, loadingState: .loaded)
+        }
     }
 }

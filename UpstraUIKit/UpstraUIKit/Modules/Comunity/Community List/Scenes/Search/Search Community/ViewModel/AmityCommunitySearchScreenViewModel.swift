@@ -67,7 +67,11 @@ extension AmityCommunitySearchScreenViewModel {
     }
     
     func loadMore() {
-        communityListRepositoryManager.loadMore()
+        delegate?.screenViewModel(self, loadingState: .loading)
+        let isEndPagination = communityListRepositoryManager.loadMore()
+        if isEndPagination {
+            delegate?.screenViewModel(self, loadingState: .loaded)
+        }
     }
     
 }
