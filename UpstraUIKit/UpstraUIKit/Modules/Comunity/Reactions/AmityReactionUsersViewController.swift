@@ -161,31 +161,39 @@ public final class AmityReactionUsersViewController: AmityViewController {
 extension AmityReactionUsersViewController: IndicatorInfoProvider {
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
-        // Default tab title
-        var tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString
+        // Default tab properties
+		var icon: UIImage?
+		var tabTitle: String?
         
         // Tab title if there is any reactions.
         switch reactionType {
         case "create":
+			icon = AmityIconSet.iconBadgeDNASangsun
             tabTitle = AmityLocalizedStringSet.General.generalCreate.localizedString + " " + reactionCount.formatUsingAbbrevationWithEmpty()
         case "honest":
+			icon = AmityIconSet.iconBadgeDNASatsue
             tabTitle = AmityLocalizedStringSet.General.generalHonest.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         case "harmony":
+			icon = AmityIconSet.iconBadgeDNASamakki
             tabTitle = AmityLocalizedStringSet.General.generalHarmony.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         case "success":
+			icon = AmityIconSet.iconBadgeDNASumrej
             tabTitle = AmityLocalizedStringSet.General.generalSuccess.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         case "society":
+			icon = AmityIconSet.iconBadgeDNASangkom
             tabTitle = AmityLocalizedStringSet.General.generalSociety.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         case "like":
+			icon = AmityIconSet.iconBadgeDNALike
             tabTitle = AmityLocalizedStringSet.General.generalLike.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         case "love":
+			icon = AmityIconSet.iconBadgeDNALove
             tabTitle = AmityLocalizedStringSet.General.generalLove.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         default:
             tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			break
         }
-        
-        
-        return IndicatorInfo(title: tabTitle)
+		
+        return IndicatorInfo(title: tabTitle, image: icon)
     }
 }
 
