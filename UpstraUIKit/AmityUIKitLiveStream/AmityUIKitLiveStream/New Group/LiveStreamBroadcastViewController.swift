@@ -138,6 +138,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     private var viewerCount: Int = 0
     private var commentCount: Int = 0
 
+    private var isPostSubscribe: Bool = false
+    private var isCommentSubscribe: Bool = false
+    
     private var postObject: AmityObject<AmityPost>?
     private var postToken: AmityNotificationToken?
     
@@ -226,8 +229,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         }
         
         startRealTimeEventSubscribe()
-
+        
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
+            startRealTimeEventSubscribe()
             requestSendViewerStatisticsAPI()
             
             viewerCountLabel.text = String(viewerCount)
@@ -763,14 +767,19 @@ extension LiveStreamBroadcastViewController: UITableViewDelegate {
 extension LiveStreamBroadcastViewController {
     func startRealTimeEventSubscribe() {
         DispatchQueue.main.async { [self] in
-            guard let currentPost = createdPost else { return }
-            let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-            let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-            subscriptionManager?.subscribeTopic(eventTopic) { _, _ in}
-            subscriptionManager?.subscribeTopic(eventPostTopic) { _,_ in }
-            
-            getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-            getPostForPostId(withPostId: currentPost.postId)
+            if !isPostSubscribe && !isCommentSubscribe {
+                guard let currentPost = createdPost else { return }
+                if !isCommentSubscribe {
+                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
+                }
+                if !isPostSubscribe {
+                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
+                }
+                getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
+                getPostForPostId(withPostId: currentPost.postId)
+            }
         }
     }
     
@@ -944,15 +953,9 @@ extension LiveStreamBroadcastViewController: LiveStreamCommentTableViewCellProto
     func didReactionTap(reaction: String, isLike: Bool) {
         DispatchQueue.main.async { [self] in
             if isLike {
-                removeReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in
-                    guard let strongSelf = self else { return }
-                    strongSelf.startRealTimeEventSubscribe()
-                }
+                removeReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in }
             } else {
-                addReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in
-                    guard let strongSelf = self else { return }
-                    strongSelf.startRealTimeEventSubscribe()
-                }
+                addReaction(withReaction: "like", referanceId: reaction, referenceType: .comment) { [weak self] (success, error) in }
             }
         }
     }    
