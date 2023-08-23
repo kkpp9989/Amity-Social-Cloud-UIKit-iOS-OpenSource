@@ -180,11 +180,21 @@ public class LiveStreamPlayerViewController: UIViewController {
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        timer?.invalidate()
-        timer = nil
+       super.viewDidDisappear(animated)
+       // Invalidate all token
+       unobserveStreamObject()
+
+       // Stop the playing stream.
+       stopStream()
+       // Once we know that the stream has already end, we clean up requestToPlay / playing states.
+       isStarting = false
+       requestingStreamObject = false
+
+       // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
+       timer?.invalidate()
+       timer = nil
     }
-    
+       
     private func setupStreamView() {
         // Create video view and embed in playerContainer
         videoView = UIView(frame: renderView.bounds)
