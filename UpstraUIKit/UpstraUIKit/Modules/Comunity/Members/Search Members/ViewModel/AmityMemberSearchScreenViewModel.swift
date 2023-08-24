@@ -15,7 +15,7 @@ final class AmityMemberSearchScreenViewModel: AmityMemberSearchScreenViewModelTy
     private let memberListRepositoryManager: AmityMemberListRepositoryManagerProtocol
     
     // MARK: - Properties
-    private let debouncer = Debouncer(delay: 0.3)
+    private let debouncer = Debouncer(delay: 0.5)
     private var memberList: [AmityUserModel] = []
     
     init(memberListRepositoryManager: AmityMemberListRepositoryManagerProtocol) {
@@ -56,6 +56,7 @@ extension AmityMemberSearchScreenViewModel {
     
     private func prepareData(memberList: [AmityUserModel]) {
         self.memberList = memberList
+//        print("[Search][member] memberList: \(memberList)")
         if memberList.isEmpty {
             delegate?.screenViewModelDidSearchNotFound(self)
         } else {
@@ -65,10 +66,13 @@ extension AmityMemberSearchScreenViewModel {
     }
     
     func loadMore() {
+        /* Get data next section */
         delegate?.screenViewModel(self, loadingState: .loading)
-        let isEndPagination = memberListRepositoryManager.loadMore()
-        if isEndPagination {
-            delegate?.screenViewModel(self, loadingState: .loaded)
+        debouncer.run { [self] in
+            let isEndingResult = memberListRepositoryManager.loadMore()
+            if isEndingResult {
+                delegate?.screenViewModel(self, loadingState: .loaded)
+            }
         }
     }
 }

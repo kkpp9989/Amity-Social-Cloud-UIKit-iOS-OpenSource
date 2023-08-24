@@ -63,9 +63,22 @@ extension AmityHashtagSearchViewController: UITableViewDelegate {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
         AmityEventHandler.shared.hashtagDidTap(from: self, keyword: "#\(model.text ?? "")", count: model.count ?? 0)
     }
+//    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if tableView.isBottomReached {
+//            screenViewModel.action.loadMore()
+//        }
+//    }
     
-    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.isBottomReached {
+    /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Calculate the current scroll position and content height
+        let currentOffset = scrollView.contentOffset.y
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+        
+        // Check if the user has scrolled to the bottom
+        if maximumOffset - currentOffset <= 0 {
+            // User has reached the bottom of the table view
+            // You can load more data or perform any action you need
             screenViewModel.action.loadMore()
         }
     }
