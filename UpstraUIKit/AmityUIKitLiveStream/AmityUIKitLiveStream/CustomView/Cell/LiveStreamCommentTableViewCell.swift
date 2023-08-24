@@ -61,8 +61,6 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
     }
 
     func display(comment: AmityCommentModel, post: AmityPost? = nil) {
-        avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
-        displayNameLabel.text = comment.displayName
         commentId = comment.id
         commentLabel.text = comment.text
         isLike = comment.isLiked
