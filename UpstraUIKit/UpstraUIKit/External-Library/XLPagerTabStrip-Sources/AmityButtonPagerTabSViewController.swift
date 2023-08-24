@@ -348,7 +348,9 @@ public class AmityButtonPagerTabSViewController: AmityPagerTabViewController, Pa
         cell.backgroundColor = settings.style.buttonBarItemBackgroundColor ?? cell.backgroundColor
         if let image = indicatorInfo.image {
             cell.imageView.image = image
-        }
+		} else {
+			cell.imageViewWidth.constant = 0
+		}
         if let highlightedImage = indicatorInfo.highlightedImage {
             cell.imageView.highlightedImage = highlightedImage
         }
