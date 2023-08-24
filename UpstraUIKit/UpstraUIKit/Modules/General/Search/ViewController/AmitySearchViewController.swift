@@ -24,6 +24,8 @@ public class AmitySearchViewController: AmityPageViewController {
 
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
+    
+    private let debouncer = Debouncer(delay: 0.5)
 
     private init() {
         super.init(nibName: AmitySearchViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -110,18 +112,21 @@ public class AmitySearchViewController: AmityPageViewController {
     }
     
     @IBAction func cancelAction(_ sender: UIButton) {
-        handelSearch(with: nil)
+        handleSearch(with: nil)
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func textFieldEditingChanged(_ sender: UITextField) {
-        setButtonBarHidden(hidden: false)
-        handelSearch(with: sender.text)
+        debouncer.run {
+//            print("[Search] textFieldEditingChanged| text: \(sender.text ?? "")")
+            self.setButtonBarHidden(hidden: false)
+            self.handleSearch(with: sender.text)
+        }
     }
 }
 
 private extension AmitySearchViewController {
-    func handelSearch(with key: String?) {
+    func handleSearch(with key: String?) {
         if viewControllers[currentIndex] == communitiesVC {
             communitiesVC.search(with: key)
         } else if viewControllers[currentIndex] == hashtagVC {
@@ -144,8 +149,9 @@ private extension AmitySearchViewController {
 
 extension AmitySearchViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+//        print("[Search] textFieldShouldReturn")
         setButtonBarHidden(hidden: false)
-        handelSearch(with: textField.text)
+        handleSearch(with: textField.text)
         textField.resignFirstResponder()
         return true
     }
