@@ -133,19 +133,25 @@ extension AmityHashtagSearchScreenViewModel {
         let updatedHashtagListName = updatedHashtagList.map { hashtag in
             return hashtag.text ?? ""
         }
+        print("[hashtaglist] updatedHashtagListName: \(updatedHashtagListName)")
         
-        /* Check name of hashtag from updated data with previous data by filtered */
-        let checkIsSamePrevious = previousResponseHashtagsList.filter { previousResponseHashtag in
-            return updatedHashtagListName.contains(previousResponseHashtag.text ?? "")
+        /* Get name of hashtag from previous data */
+        let previousHashtagListName = previousResponseHashtagsList.map { previousResponseHashtag in
+            return previousResponseHashtag.text ?? ""
         }
+        print("[hashtaglist] previousHashtagListName: \(previousHashtagListName)")
+        
+        /* Check data between updated and previous data is same data */
+        let isSameData = updatedHashtagListName == previousHashtagListName
+        print("[hashtaglist] isSameData: \(isSameData)")
         
         /* Check count between hashtag from updated data and result filtered is same for conclude to same data or not */
-        print("[hashtaglist] checkDuplicateResponseOfHashtagList: \(updatedHashtagListName.count == checkIsSamePrevious.count)")
-        if updatedHashtagListName.count == checkIsSamePrevious.count {
+        if (updatedHashtagListName.count == previousHashtagListName.count) && isSameData {
+            print("[hashtaglist] checkDuplicateResponseOfHashtagList: true")
             return true
         } else {
+            print("[hashtaglist] checkDuplicateResponseOfHashtagList: false")
             return false
         }
     }
-    
 }
