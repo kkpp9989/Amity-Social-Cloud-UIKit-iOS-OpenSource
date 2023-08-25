@@ -91,7 +91,7 @@ public class AmitySearchViewController: AmityPageViewController {
     private func setupSearchController() {
         searchTextField.delegate = self
         searchTextField.placeholder = AmityLocalizedStringSet.General.search.localizedString
-        searchTextField.returnKeyType = .search
+        searchTextField.returnKeyType = .done
         searchTextField.clearButtonMode = .always
         searchTextField.setupWithoutSuggestions()
         
@@ -151,7 +151,6 @@ extension AmitySearchViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 //        print("[Search] textFieldShouldReturn")
         setButtonBarHidden(hidden: false)
-        handleSearch(with: textField.text)
         textField.resignFirstResponder()
         return true
     }

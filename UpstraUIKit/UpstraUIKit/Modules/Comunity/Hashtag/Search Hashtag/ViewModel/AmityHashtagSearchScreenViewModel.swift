@@ -19,6 +19,7 @@ final class AmityHashtagSearchScreenViewModel: AmityHashtagSearchScreenViewModel
     private var size: Int = 20
     private var currentKeyword: String = ""
     private var isEndingResult: Bool = false
+    private var isLoadingMore: Bool = false
     
     init() {
     }
@@ -42,12 +43,16 @@ extension AmityHashtagSearchScreenViewModel {
 extension AmityHashtagSearchScreenViewModel {
     
     func search(withText text: String?) {
+        /* Check text is nil or is searching for ignore searching */
+        guard let newKeyword = text else { return }
+        
         /* Check is current keyword with input text for clear data and reset static value or not */
-        if currentKeyword != text {
+        if currentKeyword != newKeyword {
             hashtagsList = []
-            currentKeyword = text ?? ""
+            currentKeyword = newKeyword
             fromIndex = 0
             isEndingResult = false
+            isLoadingMore = false
         }
         
         delegate?.screenViewModel(self, loadingState: .loading)
@@ -56,6 +61,7 @@ extension AmityHashtagSearchScreenViewModel {
         serviceRequest.size = size
         serviceRequest.from = fromIndex
 //        print(#"[Search] Start search hashtag with keyword "\#(currentKeyword)" from \#(fromIndex) size 20"#)
+        /* Set static value to true for block new searching in this time */
         serviceRequest.request { [self] result in
             switch result {
             case .success(let dataResponse):
@@ -79,8 +85,14 @@ extension AmityHashtagSearchScreenViewModel {
     
     private func prepareData(updatedHashtagList: [AmityHashtagModel]) {
         DispatchQueue.main.async { [self] in
-            self.hashtagsList += updatedHashtagList
-            if self.hashtagsList.isEmpty {
+            /* Check is loading result more from current keyword or result from new keyword */
+            if isLoadingMore {
+                self.hashtagsList += updatedHashtagList
+            } else {
+                self.hashtagsList = updatedHashtagList
+            }
+            
+            if hashtagsList.isEmpty {
                 delegate?.screenViewModelDidSearchNotFound(self)
             } else {
                 delegate?.screenViewModelDidSearch(self)
@@ -92,10 +104,11 @@ extension AmityHashtagSearchScreenViewModel {
     }
     
     func loadMore() {
-        /* Check is ending result for ignore load more */
-        if isEndingResult {
-            return
-        }
+        /* Check is ending result or result not found for ignore load more */
+        if isEndingResult || hashtagsList.isEmpty { return }
+        
+        /* Set static value to true for prepare data in loading more case */
+        isLoadingMore = true
         
         /* Get data next section */
         delegate?.screenViewModel(self, loadingState: .loading)

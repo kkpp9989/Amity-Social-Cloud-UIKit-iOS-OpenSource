@@ -17,6 +17,8 @@ final class AmityCommunitySearchScreenViewModel: AmityCommunitySearchScreenViewM
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
     private var communityList: [AmityCommunityModel] = []
+    private var isEndingResult: Bool = false
+    private let size: Int = 20
     
     init(communityListRepositoryManager: AmityCommunityListRepositoryManagerProtocol) {
         self.communityListRepositoryManager = communityListRepositoryManager
@@ -42,6 +44,7 @@ extension AmityCommunitySearchScreenViewModel {
     
     func search(withText text: String?) {
         communityList = []
+        isEndingResult = false
         guard let text = text, !text.isEmpty else {
             delegate?.screenViewModelDidClearText(self)
             delegate?.screenViewModel(self, loadingState: .loaded)
@@ -49,9 +52,15 @@ extension AmityCommunitySearchScreenViewModel {
         }
 
         delegate?.screenViewModel(self, loadingState: .loading)
-        communityListRepositoryManager.search(withText: text, filter: .all) { [weak self] (communityList) in
+        communityListRepositoryManager.search(withText: text, filter: .all) { [weak self] (updatedCommunityList) in
+            /* Set is ending result static value to true if result is not more than 20 */
+            guard let strongSelf = self else { return }
+            if updatedCommunityList.count < strongSelf.size {
+                strongSelf.isEndingResult = true
+            }
+            
             self?.debouncer.run {
-                self?.prepareData(communityList: communityList)
+                self?.prepareData(communityList: updatedCommunityList)
             }
         }
     }
@@ -68,11 +77,15 @@ extension AmityCommunitySearchScreenViewModel {
     }
     
     func loadMore() {
+        /* Check is ending result or result not found for ignore load more */
+        if isEndingResult || communityList.isEmpty { return }
+        
         /* Get data next section */
         delegate?.screenViewModel(self, loadingState: .loading)
         debouncer.run { [self] in
-            let isEndingResult = communityListRepositoryManager.loadMore()
-            if isEndingResult {
+            let isEndingPage = communityListRepositoryManager.loadMore()
+            if isEndingPage {
+                isEndingResult = true
                 delegate?.screenViewModel(self, loadingState: .loaded)
             }
         }
