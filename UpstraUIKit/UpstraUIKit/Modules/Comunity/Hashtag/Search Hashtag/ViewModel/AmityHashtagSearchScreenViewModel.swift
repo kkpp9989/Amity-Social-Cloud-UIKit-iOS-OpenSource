@@ -104,10 +104,8 @@ extension AmityHashtagSearchScreenViewModel {
     }
     
     func loadMore() {
-        /* Check is ending result or is searching for ignore load more */
-        if isEndingResult {
-            return
-        }
+        /* Check is ending result or result not found for ignore load more */
+        if isEndingResult || hashtagsList.isEmpty { return }
         
         /* Set static value to true for prepare data in loading more case */
         isLoadingMore = true
