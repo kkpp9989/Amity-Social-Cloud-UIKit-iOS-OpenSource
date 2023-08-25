@@ -17,13 +17,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s7f-rk-sQl">
-                        <rect key="frame" x="43" y="11.5" width="33" height="17"/>
+                        <rect key="frame" x="39" y="11.5" width="37" height="17"/>
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tFG-yJ-6Th">
-                        <rect key="frame" x="4" y="2.5" width="35" height="35"/>
+                        <rect key="frame" x="0.0" y="2.5" width="35" height="35"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="35" id="VRw-5F-5WY"/>
                             <constraint firstAttribute="height" constant="35" id="ojk-Ug-Lgh"/>
@@ -35,7 +35,7 @@
             <constraints>
                 <constraint firstItem="tFG-yJ-6Th" firstAttribute="centerY" secondItem="zg4-fX-zUF" secondAttribute="centerY" id="5so-ZP-gRs"/>
                 <constraint firstAttribute="trailing" secondItem="s7f-rk-sQl" secondAttribute="trailing" constant="4" id="F7L-iK-bMd"/>
-                <constraint firstItem="tFG-yJ-6Th" firstAttribute="leading" secondItem="zg4-fX-zUF" secondAttribute="leading" constant="4" id="NIT-vw-WOI"/>
+                <constraint firstItem="tFG-yJ-6Th" firstAttribute="leading" secondItem="zg4-fX-zUF" secondAttribute="leading" id="NIT-vw-WOI"/>
                 <constraint firstItem="s7f-rk-sQl" firstAttribute="centerY" secondItem="zg4-fX-zUF" secondAttribute="centerY" id="ZeP-6I-AXE"/>
                 <constraint firstItem="s7f-rk-sQl" firstAttribute="leading" secondItem="tFG-yJ-6Th" secondAttribute="trailing" constant="4" id="ySl-lt-cPR"/>
             </constraints>
