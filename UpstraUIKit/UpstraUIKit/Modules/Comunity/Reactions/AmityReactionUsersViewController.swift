@@ -161,30 +161,31 @@ public final class AmityReactionUsersViewController: AmityViewController {
 extension AmityReactionUsersViewController: IndicatorInfoProvider {
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
-        // Default tab title
-        var tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString
-        
+        // Default tab properties
+		var icon: UIImage?
+		var tabTitle: String = reactionCount.formatUsingAbbrevationWithEmpty()
+		
         // Tab title if there is any reactions.
         switch reactionType {
         case "create":
-            tabTitle = AmityLocalizedStringSet.General.generalCreate.localizedString + " " + reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNASangsun
         case "honest":
-            tabTitle = AmityLocalizedStringSet.General.generalHonest.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNASatsue
         case "harmony":
-            tabTitle = AmityLocalizedStringSet.General.generalHarmony.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNASamakki
         case "success":
-            tabTitle = AmityLocalizedStringSet.General.generalSuccess.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNASumrej
         case "society":
-            tabTitle = AmityLocalizedStringSet.General.generalSociety.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNASangkom
         case "like":
-            tabTitle = AmityLocalizedStringSet.General.generalLike.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNALike
         case "love":
-            tabTitle = AmityLocalizedStringSet.General.generalLove.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
+			icon = AmityIconSet.iconBadgeDNALove
         default:
             tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         }
-        
-        return IndicatorInfo(title: tabTitle)
+		
+        return IndicatorInfo(title: tabTitle, image: icon)
     }
 }
 

@@ -107,12 +107,14 @@ public class AmityButtonPagerTabSViewController: AmityPagerTabViewController, Pa
         }
         
         buttonBarItemSpec = .nibFile(nibName: "ButtonCell", bundle: bundle, width: { [weak self] (childItemInfo) -> CGFloat in
-                let label = UILabel()
-                label.translatesAutoresizingMaskIntoConstraints = false
-                label.font = self?.settings.style.buttonBarItemFont
-                label.text = childItemInfo.title
-                let labelSize = label.intrinsicContentSize
-                return labelSize.width + (self?.settings.style.buttonBarItemLeftRightMargin ?? 8) * 2
+			let image: UIImage = childItemInfo.image ?? UIImage()
+			let imageSize = image.size.width
+			let label = UILabel()
+			label.translatesAutoresizingMaskIntoConstraints = false
+			label.font = self?.settings.style.buttonBarItemFont
+			label.text = childItemInfo.title
+			let labelSize = label.intrinsicContentSize.width
+			return imageSize + labelSize + (self?.settings.style.buttonBarItemLeftRightMargin ?? 8) * 3
         })
 
         let buttonBarViewAux = buttonBarView ?? {
@@ -348,7 +350,12 @@ public class AmityButtonPagerTabSViewController: AmityPagerTabViewController, Pa
         cell.backgroundColor = settings.style.buttonBarItemBackgroundColor ?? cell.backgroundColor
         if let image = indicatorInfo.image {
             cell.imageView.image = image
-        }
+			cell.imageView.isHidden = false
+			cell.imageViewWidth.constant = 35
+		} else {
+			cell.imageView.isHidden = true
+			cell.imageViewWidth.constant = 0
+		}
         if let highlightedImage = indicatorInfo.highlightedImage {
             cell.imageView.highlightedImage = highlightedImage
         }
