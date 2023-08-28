@@ -181,16 +181,16 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    deinit {
-        liveObjectQueryToken = nil
-        unobserveKeyboardFrame()
-        stopLiveDurationTimer()
-        subscriptionManager = nil
-        postToken?.invalidate()
-        postToken = nil
-        fetchCommentToken?.invalidate()
-        fetchCommentToken = nil
-    }
+//    deinit {
+//        liveObjectQueryToken = nil
+//        unobserveKeyboardFrame()
+//        stopLiveDurationTimer()
+//        subscriptionManager = nil
+//        postToken?.invalidate()
+//        postToken = nil
+//        fetchCommentToken?.invalidate()
+//        fetchCommentToken = nil
+//    }
     
     // MARK: - View Controller Life Cycle
     
