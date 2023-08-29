@@ -36,6 +36,7 @@
 		DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0182A4E80880045FFD6 /* NetworkManager.swift */; };
 		DF04C01F2A4E80880045FFD6 /* RequestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C0192A4E80880045FFD6 /* RequestError.swift */; };
 		DF04C0202A4E80880045FFD6 /* RequestMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */; };
+		DF68BDBC2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BDBB2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift */; };
 		DF68BEA92A699EFD004C901F /* RequestViewerStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */; };
 		DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */; };
 		FA6276D22A53B825003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276D12A53B825003DFE4E /* AmitySDK */; };
@@ -79,6 +80,7 @@
 		DF04C0182A4E80880045FFD6 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		DF04C0192A4E80880045FFD6 /* RequestError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestError.swift; sourceTree = "<group>"; };
 		DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestMeta.swift; sourceTree = "<group>"; };
+		DF68BDBB2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController + Notification Extension.swift"; sourceTree = "<group>"; };
 		DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestViewerStatistics.swift; sourceTree = "<group>"; };
 		DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStatisticsModel.swift; sourceTree = "<group>"; };
 		FA6276C72A53B727003DFE4E /* AmitySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AmitySDK.xcframework; path = ../Shared/AmitySDK.xcframework; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 		A0BD0B5426DE22E60054088B /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				DF68BDBA2A9DEF8400CF47EF /* Notification */,
 				DF04C0122A4E80880045FFD6 /* Services */,
 				A0B68B3426E077CD007D7B5B /* Operation */,
 				A0BD0B5826DE26700054088B /* Error */,
@@ -277,6 +280,14 @@
 				DF04C01A2A4E80880045FFD6 /* RequestMeta.swift */,
 			);
 			path = Request;
+			sourceTree = "<group>";
+		};
+		DF68BDBA2A9DEF8400CF47EF /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				DF68BDBB2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 		DF68BEA42A699D50004C901F /* ServiceModel */ = {
@@ -388,6 +399,7 @@
 				A0B68B5626E0C9AC007D7B5B /* LiveStreamBroadcastVC+TargetDetail.swift in Sources */,
 				A0BD0B2F26DCE5800054088B /* LiveStreamBroadcastViewController.swift in Sources */,
 				A0B68B4326E07928007D7B5B /* CreateStream.swift in Sources */,
+				DF68BDBC2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift in Sources */,
 				DF04C01E2A4E80880045FFD6 /* NetworkManager.swift in Sources */,
 				AA7972462A6D8F2D00ED3BC9 /* UIColor + Extension.swift in Sources */,
 				DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */,

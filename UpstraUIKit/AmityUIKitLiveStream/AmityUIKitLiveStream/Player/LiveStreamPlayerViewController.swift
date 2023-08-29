@@ -9,6 +9,7 @@ import UIKit
 import AmityUIKit
 import AmitySDK
 import AmityVideoPlayerKit
+import UserNotifications
 
 public class LiveStreamPlayerViewController: UIViewController {
     
@@ -34,7 +35,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     @IBOutlet weak var reactionCountContainer: UIView!
     @IBOutlet weak var reactionCountLabel: UILabel!
-
+    
     /// The view above renderView to intercept tap gestuere for show/hide control container.
     @IBOutlet private weak var renderGestureView: UIView!
     
@@ -67,7 +68,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet private weak var reactionHeightConstraint: NSLayoutConstraint!
     @IBOutlet private weak var reactionWidthConstraint: NSLayoutConstraint!
     @IBOutlet private weak var reactionButton: UIButton!
-
+    
     // MARK: - Keyboard Observations
     var keyboardIsHidden = true
     var keyboardHeight: CGFloat = 0
@@ -100,15 +101,15 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var storedComment: [AmityCommentModel] = []
     private var viewerCount: Int = 0
     private var commentCount: Int = 0
-
+    
     private var isFirstTime: Bool = true
     private var isPostSubscribe: Bool = false
     private var isCommentSubscribe: Bool = false
-
+    
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
     private var currentReactionType: String = ""
-
+    
     /// Indicate that the user request to play the stream
     private var isStarting = true {
         didSet {
@@ -168,44 +169,61 @@ public class LiveStreamPlayerViewController: UIViewController {
         observeStreamObject()
         setupReactionPicker()
         setBackgroundListener()
+        
+        // [Custom for ONE Krunthai][Improvement] Set this view controller as the current notification center delegate for show or hide notification in this viewcontroller
+        UNUserNotificationCenter.current().delegate = self
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         startRealTimeEventSubscribe()
-
+        
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
             requestSendViewerStatisticsAPI()
-
+            
             viewerCountLabel.text = String(viewerCount)
         })
+        
+        // [Custom for ONE Krunthai][Improvement] disable show notification when player will appear
+        disableNotifications()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
-       super.viewDidDisappear(animated)
-       // Invalidate all token
-       unobserveStreamObject()
-
-       // Stop the playing stream.
-       stopStream()
-       // Once we know that the stream has already end, we clean up requestToPlay / playing states.
-       isStarting = false
-       requestingStreamObject = false
-
-       // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
-       timer?.invalidate()
-       timer = nil
+        super.viewDidDisappear(animated)
+        // Invalidate all token
+        unobserveStreamObject()
+        
+        // Stop the playing stream.
+        stopStream()
+        // Once we know that the stream has already end, we clean up requestToPlay / playing states.
+        isStarting = false
+        requestingStreamObject = false
+        
+        // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
+        timer?.invalidate()
+        timer = nil
+        
+        // [Custom for ONE Krunthai][Improvement] re-enable show notification when player disappear
+        enableNotifications()
         
         guard let currentPost = amityPost else { return }
         currentPost.unsubscribeEvent(.comments) { _, _ in }
+    }
+    
+    func enableNotifications() {
+        AmityNotificationUtilities.pauseNotifications = false
+    }
+    
+    func disableNotifications() {
+        AmityNotificationUtilities.pauseNotifications = true
     }
     
     func setBackgroundListener() {
         NotificationCenter.default.addObserver(self, selector: #selector(stopStream), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playStream), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
-       
+    
     private func setupStreamView() {
         // Create video view and embed in playerContainer
         videoView = UIView(frame: renderView.bounds)
@@ -313,7 +331,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         postCommentButton.titleLabel?.font = AmityFontSet.body
         postCommentButton.addTarget(self, action: #selector(self.sendComment), for: .touchUpInside)
-                
+        
         let reactionType = findReactionType()
         if !reactionType.isEmpty {
             reactionButton.isSelected = false
@@ -327,7 +345,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         reactionPickerView.alpha = 0
         reactionContainerView.isHidden = true
         reactionContainerView.addSubview(reactionPickerView)
-
+        
         // Setup tap gesture recognizer
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
         tap.cancelsTouchesInView = false
@@ -337,7 +355,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         reactionHeightConstraint.constant = reactionPickerView.viewHeight
         reactionWidthConstraint.constant = reactionPickerView.viewWidth
-
+        
         let reactionType = findReactionType()
         if !reactionType.isEmpty {
             setReactionType(reactionType: AmityReactionType(rawValue: reactionType) ?? .like)
@@ -443,7 +461,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     private func updateContainer() {
         let status: AmityStreamStatus?
-            
+        
         if let isDeleted = stream?.isDeleted, isDeleted {
             // NOTE: If stream is deleted, we show the idle state UI.
             status = .idle
@@ -665,7 +683,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     
     private func animateReactionButton() {
         reactionButton.isEnabled = true
-
+        
         let bubbleWidth: CGFloat = 40
         let bubbleHeight: CGFloat = 40
         
@@ -898,7 +916,7 @@ extension LiveStreamPlayerViewController {
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool) {
         
-//        fetchCommentToken?.invalidate()
+        //        fetchCommentToken?.invalidate()
         let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: referenceType, filterByParentId: isParent, parentId: parentId, orderBy: orderBy, includeDeleted: includeDeleted)
         collection = commentRepository.getComments(with: queryOptions)
         
@@ -915,7 +933,7 @@ extension LiveStreamPlayerViewController {
             }
         }
     }
-        
+    
     private func prepareData() -> [AmityCommentModel] {
         guard let collection = collection else { return [] }
         var models = [AmityCommentModel]()
@@ -936,7 +954,7 @@ extension LiveStreamPlayerViewController {
     func reloadData() {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
-
+            
             // Get the initial number of rows before reloading
             let initNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
             
@@ -948,7 +966,7 @@ extension LiveStreamPlayerViewController {
             
             // Reload the table view
             strongSelf.commentTableView.reloadData()
-
+            
             // Get the updated number of rows after reloading
             let updatedNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
             
@@ -964,7 +982,7 @@ extension LiveStreamPlayerViewController {
             }
         }
     }
-
+    
     func createComment(withReferenceId postId: String, referenceType: AmityCommentReferenceType, parentId: String?, text: String) {
         let createOptions: AmityCommentCreateOptions
         createOptions = AmityCommentCreateOptions(referenceId: postId, referenceType: referenceType, text: text, parentId: parentId)
@@ -1007,7 +1025,7 @@ extension LiveStreamPlayerViewController {
             self.view.layoutIfNeeded()
         }
     }
-
+    
     @objc func keyboardWillHide(notification: NSNotification) {
         if streamingViewBottomConstraint.constant != 0.0 {
             streamingViewBottomConstraint.constant = 0.0
