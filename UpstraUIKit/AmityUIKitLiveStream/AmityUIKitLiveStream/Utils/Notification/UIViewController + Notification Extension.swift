@@ -5,7 +5,7 @@
 //  Created by Thanaphat Thanawatpanya on 29/8/2566 BE.
 //
 
-// [Custom for ONE Krunthai][Improvement] Add UNUserNotificationCenterDelegate function for handle show notification in each viewcontroller
+// [Custom for ONE Krungthai][Improvement] Add UNUserNotificationCenterDelegate function for handle show notification in each viewcontroller
 
 import UIKit
 import UserNotifications
@@ -25,7 +25,7 @@ extension UIViewController: UNUserNotificationCenterDelegate {
                 completionHandler([.badge]) // Do not show the notification but still effect to badge for iOS 12 - 13
             }
         } else {
-            print("[Notification] Set pauseNotifications is \(AmityNotificationUtilities.pauseNotifications) -> Show notification with alert, badge and sound")
+            print("[Notification] Set pauseNotifications is \(AmityNotificationUtilities.pauseNotifications) -> Show notification")
             completionHandler([.alert, .badge, .sound]) // Show the notification
         }
     }

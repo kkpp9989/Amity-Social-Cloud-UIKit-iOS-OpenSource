@@ -9,6 +9,7 @@ import UIKit
 import AmitySDK
 import AmityLiveVideoBroadcastKit
 import AmityUIKit
+import UserNotifications
 
 final public class LiveStreamBroadcastViewController: UIViewController {
     
@@ -206,6 +207,9 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         mentionManager.delegate = self
         mentionManager.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
         mentionManager.setColor(.white, highlightColor: .white)
+        
+        // [Custom for ONE Krungthai][Improvement] Set this view controller as the current notification center delegate for show or hide notification in this viewcontroller
+        UNUserNotificationCenter.current().delegate = self
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -238,17 +242,31 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         })
         
         UIApplication.shared.isIdleTimerDisabled = true
+        
+        // [Custom for ONE Krunthai][Improvement] disable show notification when boardcaster view appear
+        disableNotifications()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         UIApplication.shared.isIdleTimerDisabled = false
+        
+        // [Custom for ONE Krungthai][Improvement] re-enable show notification when boardcaster view disappear
+        enableNotifications()
     }
     
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateUIBaseOnKeyboardFrame()
+    }
+    
+    func enableNotifications() {
+        AmityNotificationUtilities.pauseNotifications = false
+    }
+    
+    func disableNotifications() {
+        AmityNotificationUtilities.pauseNotifications = true
     }
     
     // MARK: - Internal Functions

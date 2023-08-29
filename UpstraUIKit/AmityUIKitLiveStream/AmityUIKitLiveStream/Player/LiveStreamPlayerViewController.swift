@@ -9,7 +9,6 @@ import UIKit
 import AmityUIKit
 import AmitySDK
 import AmityVideoPlayerKit
-import UserNotifications
 
 public class LiveStreamPlayerViewController: UIViewController {
     
@@ -169,9 +168,6 @@ public class LiveStreamPlayerViewController: UIViewController {
         observeStreamObject()
         setupReactionPicker()
         setBackgroundListener()
-        
-        // [Custom for ONE Krunthai][Improvement] Set this view controller as the current notification center delegate for show or hide notification in this viewcontroller
-        UNUserNotificationCenter.current().delegate = self
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -184,9 +180,6 @@ public class LiveStreamPlayerViewController: UIViewController {
             
             viewerCountLabel.text = String(viewerCount)
         })
-        
-        // [Custom for ONE Krunthai][Improvement] disable show notification when player will appear
-        disableNotifications()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
@@ -204,19 +197,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         timer?.invalidate()
         timer = nil
         
-        // [Custom for ONE Krunthai][Improvement] re-enable show notification when player disappear
-        enableNotifications()
-        
         guard let currentPost = amityPost else { return }
         currentPost.unsubscribeEvent(.comments) { _, _ in }
-    }
-    
-    func enableNotifications() {
-        AmityNotificationUtilities.pauseNotifications = false
-    }
-    
-    func disableNotifications() {
-        AmityNotificationUtilities.pauseNotifications = true
     }
     
     func setBackgroundListener() {
