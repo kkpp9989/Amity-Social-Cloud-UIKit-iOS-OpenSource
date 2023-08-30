@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import AVFoundation
 
 class PostGalleryItemCell: UICollectionViewCell, Nibbable {
     
@@ -46,6 +47,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = AmityThemeManager.currentTheme.base.blend(.shade4)
         // Duration View
+        durationView.isHidden = true
         durationView.backgroundColor = UIColor(hex: "000000", alpha: 0.7)
         durationView.clipsToBounds = true
         durationView.layer.cornerRadius = 4
@@ -93,14 +95,14 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
             imageUrl = thumbnailInfo?.fileURL
             placeholder = nil
             // Extract duration from video meta
-            let duration: TimeInterval
-            if let attributes = videoInfo?.attributes,
-               let meta = attributes["metadata"] as? [String: Any],
-               let videoMeta = meta["video"] as? [String: Any],
-               let _duration = videoMeta["duration"] as? TimeInterval {
+            var duration: TimeInterval = 0
+            if let videoURLString = videoInfo?.fileURL, let videoUrl = URL(string: videoURLString) {
+                duration = getVideoDurationSync(from: videoUrl)
+            } else if let attributes = videoInfo?.attributes,
+                      let meta = attributes["metadata"] as? [String: Any],
+                      let videoMeta = meta["video"] as? [String: Any],
+                      let _duration = videoMeta["duration"] as? TimeInterval {
                 duration = _duration
-            } else {
-                duration = .zero
             }
             durationText = PostGalleryItemCell.durationFormatter.string(from: duration)
             mediaTitle = nil
@@ -233,6 +235,20 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
             }
         )
         
+    }
+    
+    func getVideoDurationSync(from videoUrl: URL) -> TimeInterval {
+        let asset = AVAsset(url: videoUrl)
+        let duration = asset.duration
+        
+        // Convert the duration to seconds
+        let durationInSeconds = CMTimeGetSeconds(duration)
+        
+        if durationInSeconds.isFinite {
+            return durationInSeconds
+        } else {
+            return .zero
+        }
     }
 
 }

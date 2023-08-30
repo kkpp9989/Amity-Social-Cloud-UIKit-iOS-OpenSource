@@ -138,7 +138,7 @@ class AmityCommentView: AmityView {
                     break
                 }
                 
-                avatarView.setImage(withImageURL: currentPost.targetCommunity?.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                avatarView.setImage(withImageURL: currentPost.targetCommunity?.avatar?.fileURL, placeholder: AmityIconSet.defaultCommunity)
                 titleLabel.text = currentPost.targetCommunity?.displayName ?? comment.displayName
                 titleLabel.setImageWithText(position: .right(image: AmityIconSet.iconBadgeCheckmark), size: CGSize(width: 18, height: 18), tintColor: AmityColorSet.highlight) // Badge
             } else { // Case : Comment owner isn't moderator or not official community
