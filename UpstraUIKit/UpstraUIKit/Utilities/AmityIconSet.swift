@@ -177,6 +177,8 @@ public struct AmityIconSet {
         public static var iconItemUnfollowUser = UIImage(named: "icon_item_unfollow_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconItemReportUser = UIImage(named: "icon_item_report_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconItemEditProfile = UIImage(named: "icon_item_edit_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconNotification = UIImage(named: "icon_item_notification", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai][Improvement] Set icon notification for notification settings in user settings
+        public static var iconNotificationSettings = UIImage(named: "icon_notification_settings", in: AmityUIKitManager.bundle, compatibleWith: nil)  // [Custom for ONE Krungthai][Improvement] Set icon notification settings
     }
     
     enum Follow {

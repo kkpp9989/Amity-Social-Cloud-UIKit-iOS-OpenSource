@@ -29,6 +29,8 @@ final class AmityUserSettingsScreenViewModel: AmityUserSettingsScreenViewModelTy
     private var followStatus: AmityFollowStatus?
     private var dispatchGroup = DispatchGroup()
     private var followToken: AmityNotificationToken?
+    private var isSocialUserEnabled: Bool = false // [Custom for ONE Krungthai][Improvement] Use for handle notification settings item outputing
+    private var isRetrieveUserNotifcationSettingsComplete: Bool = false // [Custom for ONE Krungthai][Improvement] Use for handle notification settings item outputing
     
     init(userId: String, userNotificationController: AmityUserNotificationSettingsControllerProtocol) {
         self.userId = userId
@@ -106,6 +108,23 @@ extension AmityUserSettingsScreenViewModel {
             strongSelf.userToken?.invalidate()
         }
     }
+    
+    func retrieveNotifcationSettings() {
+        userNotificationController.retrieveNotificationSettings { [weak self] (result) in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let notification):
+                if let socialModule = notification.modules.first(where: { $0.moduleType == .social }) {
+                    strongSelf.isSocialUserEnabled = socialModule.isEnabled
+                    strongSelf.isRetrieveUserNotifcationSettingsComplete = true // [Custom for ONE Krungthai][Improvement] Use for handle notification settings item outputing
+                    strongSelf.retrieveSettingsMenu()
+                }
+                break
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
 private extension AmityUserSettingsScreenViewModel {
@@ -130,8 +149,10 @@ private extension AmityUserSettingsScreenViewModel {
     }
     
     func createMenuViewModel() {
+        // [Custom for ONE Krungthai][Improvement] Set new arguments value of shouldNotificationItemShow and isNotificationEnabled
+        let isOwner = userId == AmityUIKitManagerInternal.shared.client.currentUserId
         menuViewModel = AmityUserSettingsCreateMenuViewModel()
-        menuViewModel?.createSettingsItems(shouldNotificationItemShow: false, isNotificationEnabled: false, isOwner: userId == AmityUIKitManagerInternal.shared.client.currentUserId, isReported: isFlaggedByMe ?? false, isFollowing: followStatus == .accepted, { [weak self] (items) in
+        menuViewModel?.createSettingsItems(shouldNotificationItemShow: isOwner && isRetrieveUserNotifcationSettingsComplete ? true : false, isNotificationEnabled: isSocialUserEnabled, isOwner: isOwner, isReported: isFlaggedByMe ?? false, isFollowing: followStatus == .accepted, { [weak self] (items) in
             guard let strongSelf = self else { return }
             strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
         })

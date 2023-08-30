@@ -29,6 +29,7 @@ protocol AmityUserSettingsScreenViewModelAction {
     func reportUser()
     func unreportUser()
     func fetchUserSettings()
+    func retrieveNotifcationSettings() // [Custom for ONE Krungthai][Improvement] Add retrieveNotifcationSettings function for get notification setting for output in user settings
 }
 
 protocol AmityUserSettingsScreenViewModelType: AmityUserSettingsScreenViewModelAction, AmityUserSettingsScreenViewModelDataSource {

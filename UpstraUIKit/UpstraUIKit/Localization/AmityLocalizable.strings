@@ -366,11 +366,15 @@
 "user_settings_item_report_user" = "Report user";
 "user_settings_item_unreport_user" = "Unreport user";
 "user_settings_item_edit_profile" = "Edit profile";
+"user_settings_item_notifications" = "Notification"; // [Custom for ONE Krungthai][Improvement] Set title for notification settings in user settings
 "user_settings_unfollow_message" = "You’ll have to send a request again to follow %@. Continue?";
 "user_settings_unfollow_fail_title" = "Unable to unfollow %@";
 "user_settings_remove_user" = "Remove user";
 "user_settings_remove_user_title" = "Remove %@ from follwers?";
 "user_settings_remove_user_description" = "We won’t notify %@ that they’ve been remove from your followers";
+"user_notifications_settings_title_navigation_bar" = "Notification Settings"; // [Custom for ONE Krungthai][Improvement] Set title navigation bar in user notification settings
+"user_notifications_settings_title_notifications" = "Allow notifications"; // [Custom for ONE Krungthai][Improvement] Set detail of item in user notification settings
+"user_notifications_settings_description_notifications" = "Turn on to receive push notifications from this social.";  // [Custom for ONE Krungthai][Improvement] Set detail of item in user notification settings
 
 
 // MARK: - Not support role

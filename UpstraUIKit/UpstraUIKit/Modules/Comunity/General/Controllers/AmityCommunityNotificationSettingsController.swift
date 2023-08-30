@@ -11,8 +11,8 @@ import UIKit
 
 protocol AmityUserNotificationSettingsControllerProtocol {
     func retrieveNotificationSettings(completion: ((Result<AmityUserNotificationSettings, Error>) -> Void)?)
-    func enableNotificationSettings(modules: [AmityUserNotificationModule]?)
-    func disableNotificationSettings()
+    func enableNotificationSettings(modules: [AmityUserNotificationModule]?, completion: AmityRequestCompletion?) // [Improvement] Add completion for handle in screenviewmodel
+    func disableNotificationSettings(modules: [AmityUserNotificationModule]?, completion: AmityRequestCompletion?) // [Improvement] Add completion for handle in screenviewmodel
 }
 
 class AmityUserNotificationSettingsController: AmityUserNotificationSettingsControllerProtocol {
@@ -29,12 +29,12 @@ class AmityUserNotificationSettingsController: AmityUserNotificationSettingsCont
         }
     }
     
-    func enableNotificationSettings(modules: [AmityUserNotificationModule]?) {
-        notificationManager.enable(for: modules, completion: nil)
+    func enableNotificationSettings(modules: [AmityUserNotificationModule]?, completion: AmityRequestCompletion?) {
+        notificationManager.enable(for: modules, completion: completion) // [Improvement] Add completion for handle in screenviewmodel
     }
     
-    func disableNotificationSettings() {
-        notificationManager.disable(completion: nil)
+    func disableNotificationSettings(modules: [AmityUserNotificationModule]?, completion: AmityRequestCompletion?) {
+        notificationManager.enable(for: modules, completion: completion) // [Improvement] Change disable function to enable and recive input modules with isEnabled = false instead
     }
     
 }
