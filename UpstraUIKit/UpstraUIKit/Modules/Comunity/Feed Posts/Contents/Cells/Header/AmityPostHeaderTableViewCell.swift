@@ -46,7 +46,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: post.postedUserId, communityId: community.communityId)
             isOfficialCommunity = community.isOfficial
             if isModeratorUserInOfficialCommunity && isOfficialCommunity { // Case : Owner post is moderator and community is official
-                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultCommunity)
                 avatarView.actionHandler = { [weak self] in
                     // Check source of post
                     switch post.appearance.amitySocialPostDisplayStyle {
