@@ -17,7 +17,10 @@ struct AmityMemberCommunityUtilities {
     }
     
     static func isImportantCommunityByCommunityModel(community: AmityCommunityModel) -> Bool {
-        if let metadata = community.metadata, let isImportant = metadata["isImportant"] as? Bool, isImportant {
+//        print("[Notification] community model: \(community)")
+//        print("[Notification] community object: \(community.object)")
+//        print("[Notification] community object metadata: \(community.object.metadata)")
+        if let metadata = community.object.metadata, let isImportant = metadata["isImportant"] as? Int, isImportant == 1 {
             return true
         } else {
             return false
