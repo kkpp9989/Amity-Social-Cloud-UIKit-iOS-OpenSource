@@ -334,6 +334,7 @@ public struct AmityLocalizedStringSet {
         static let itemReportUser = "user_settings_item_report_user"
         static let itemUnreportUser = "user_settings_item_unreport_user"
         static let itemEditProfile = "user_settings_item_edit_profile"
+        static let itemNotifications = "user_settings_item_notifications" // [Custom for ONE Krungthai][Improvement] Set title for notification settings in user settings
         
         enum UserSettingsMessages {
             static let unfollowMessage = "user_settings_unfollow_message"
@@ -344,6 +345,13 @@ public struct AmityLocalizedStringSet {
             static let removeUser = "user_settings_remove_user"
             static let removeUserTitle = "user_settings_remove_user_title"
             static let removeUserDescription = "user_settings_remove_user_description"
+        }
+        
+        // [Custom for ONE Krungthai][Improvement] Add localize of UserNotificationsSettings group
+        enum UserNotificationsSettings {
+            static let titleNavigationbar = "user_notifications_settings_title_navigation_bar"
+            static let titleNotifications = "user_notifications_settings_title_notifications"
+            static let descriptionNotifications = "user_notifications_settings_description_notifications"
         }
     }
     

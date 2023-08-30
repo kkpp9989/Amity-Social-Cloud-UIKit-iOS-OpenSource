@@ -15,4 +15,12 @@ struct AmityMemberCommunityUtilities {
         let member = membershipParticipation.getMember(withId: userId)
         return member?.hasModeratorRole ?? false
     }
+    
+    static func isImportantCommunityByCommunityModel(community: AmityCommunityModel) -> Bool {
+        if let metadata = community.metadata, let isImportant = metadata["isImportant"] as? Bool, isImportant {
+            return true
+        } else {
+            return false
+        }
+    }
 }

@@ -46,9 +46,7 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
         }
         
         dispatchCounter.notify(queue: .main) { [weak self] in
-            // [Custom for ONE Krungthai] Hide community notification setting
-//            self?.prepareDataSource(shouldNotificationItemShow: shouldNotificationItemShow, isNotificationEnabled: isNotificationEnabled, completion)
-            self?.prepareDataSource(shouldNotificationItemShow: false, isNotificationEnabled: isNotificationEnabled, completion)
+            self?.prepareDataSource(shouldNotificationItemShow: shouldNotificationItemShow, isNotificationEnabled: isNotificationEnabled, completion)
         }
     }
     

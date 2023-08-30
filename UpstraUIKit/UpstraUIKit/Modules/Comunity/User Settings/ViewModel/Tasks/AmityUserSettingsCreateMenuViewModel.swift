@@ -27,6 +27,18 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
             
             settingsItems.append(.navigationContent(content: editProfileItem))
             
+            // MARK: Create notification item
+            // [Custom for ONE Krungthai][Improvement] Add create notification setting item
+            if shouldNotificationItemShow {
+                let itemNotificationDesc = isNotificationEnabled ? AmityLocalizedStringSet.General.on : AmityLocalizedStringSet.General.off
+                let itemNotificationContent = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.notification.identifier,
+                                                                                icon: AmityUserSettingsItem.notification.icon,
+                                                                                title: AmityUserSettingsItem.notification.title,
+                                                                                description: itemNotificationDesc.localizedString)
+                settingsItems.append(.navigationContent(content: itemNotificationContent))
+            }
+            
+            // add separator
             settingsItems.append(.separator)
             
             completion?(settingsItems)
