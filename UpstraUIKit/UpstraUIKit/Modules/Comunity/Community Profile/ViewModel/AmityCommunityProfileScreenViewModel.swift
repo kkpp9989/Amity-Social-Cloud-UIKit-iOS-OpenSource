@@ -83,13 +83,13 @@ extension AmityCommunityProfileScreenViewModel {
                     print("[Notification] Is joining community -> Check is important community")
                     let isImportantCommunity = AmityMemberCommunityUtilities.isImportantCommunityByCommunityModel(community: community)
                     if !isImportantCommunity {
-                        print("[Notification] Is joining community and is important community -> Set disable community notification")
+                        print("[Notification] Is joining community and is not important community -> Disable community notification")
                         self?.setDisableNotificationOfCommunity(community: community)
                     } else {
-                        print("[Notification] Is joining community but is not important community -> Skip disable community notification")
+                        print("[Notification] Is joining community but is important community -> Enable community notification")
                     }
                 } else {
-                    print("[Notification] Is not joining community -> Skip set disable community notification")
+                    print("[Notification] Is not joining community -> Skip check or set disable community notification")
                 }
             case .failure:
                 break
