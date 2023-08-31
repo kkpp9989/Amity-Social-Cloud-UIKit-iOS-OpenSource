@@ -15,17 +15,17 @@ extension LiveStreamBroadcastViewController {
         switch targetType {
         case .community:
             guard let targetId = targetId else {
-                setTargetDetail(name: nil, avatarUrl: nil)
+                setTargetDetail(name: nil, avatarUrl: nil, isCommunityTarget: true) // [Improvement] Set is community target to true for set default avatar to default category
                 assertionFailure("community target must have targetId.")
                 return
             }
             liveObjectQueryToken = communityRepository.getCommunity(withId: targetId).observeOnce { [weak self] result, error in
                 self?.liveObjectQueryToken = nil
                 guard let community = result.object else {
-                    self?.setTargetDetail(name: nil, avatarUrl: nil)
+                    self?.setTargetDetail(name: nil, avatarUrl: nil, isCommunityTarget: true) // [Improvement] Set is community target to true for set default avatar to default category
                     return
                 }
-                self?.setTargetDetail(name: community.displayName, avatarUrl: community.avatar?.fileURL)
+                self?.setTargetDetail(name: community.displayName, avatarUrl: community.avatar?.fileURL, isCommunityTarget: true) // [Improvement] Set is community target to true for set default avatar to default category
             }
         case .user:
             if let targetId = targetId {
@@ -50,8 +50,8 @@ extension LiveStreamBroadcastViewController {
         }
         
     }
-    
-    private func setTargetDetail(name: String?, avatarUrl: String?) {
+    // [Improvement] Modify function for check is community target for set default avatar if don't have or can't get image
+    private func setTargetDetail(name: String?, avatarUrl: String?, isCommunityTarget: Bool = false) {
         if let name = name {
             targetNameLabel.text = name
         } else {
@@ -60,9 +60,22 @@ extension LiveStreamBroadcastViewController {
         if let avatarUrl = avatarUrl {
             fileRepository.downloadImageAsData(fromURL: avatarUrl, size: .small) { [weak self] image, size, error in
                 guard let image = image else {
+                    // [Improvement] Add set default avatar if don't have or can't get image
+                    if isCommunityTarget {
+                        self?.targetImageView.image = AmityIconSet.defaultCommunity
+                    } else {
+                        self?.targetImageView.image = AmityIconSet.defaultAvatar
+                    }
                     return
                 }
                 self?.targetImageView.image = image
+            }
+        } else {
+            // [Improvement] Add set default avatar if don't have or can't get image
+            if isCommunityTarget {
+                targetImageView.image = AmityIconSet.defaultCommunity
+            } else {
+                targetImageView.image = AmityIconSet.defaultAvatar
             }
         }
     }
