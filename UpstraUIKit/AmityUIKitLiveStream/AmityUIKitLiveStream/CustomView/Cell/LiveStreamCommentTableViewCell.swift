@@ -83,6 +83,9 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
                 avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
                 displayNameLabel.text = comment.displayName
             }
+        } else { // Case : Post from user (user profile, my timeline)
+            avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
+            displayNameLabel.text = comment.displayName
         }
     }
     
