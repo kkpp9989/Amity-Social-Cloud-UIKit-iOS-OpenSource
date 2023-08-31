@@ -688,8 +688,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         let amplitude: CGFloat = 10 // Adjust the amplitude of the wave
         let frequency: CGFloat = 0.5 // Adjust the frequency of the wave
         
-        UIView.animate(withDuration: 5.0, delay: 0, options: [.curveEaseInOut], animations: {
-            bubbleView.center.y -= 200
+        UIView.animate(withDuration: 3.0, delay: 0, options: [.curveEaseInOut], animations: {
+            bubbleView.center.y -= 600
             bubbleView.center.x += amplitude * sin(bubbleView.center.y * frequency)
             bubbleView.center.y -= amplitude * sin(bubbleView.center.x * frequency)
             bubbleView.alpha = 0.0

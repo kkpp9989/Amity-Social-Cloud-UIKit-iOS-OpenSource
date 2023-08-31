@@ -168,7 +168,7 @@
                     <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="SKH-tW-v3Q">
-                            <rect key="frame" x="15" y="372.5" width="384" height="69.5"/>
+                            <rect key="frame" x="15" y="301.5" width="384" height="69.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This livestream has ended." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wYP-in-Z1B">
                                     <rect key="frame" x="0.0" y="0.0" width="384" height="20.5"/>
@@ -190,7 +190,7 @@ to watch shortly.</string>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="SKH-tW-v3Q" secondAttribute="trailing" constant="15" id="0UC-oO-c9i"/>
-                        <constraint firstItem="SKH-tW-v3Q" firstAttribute="centerY" secondItem="dWE-Vp-cX4" secondAttribute="centerY" id="64g-5u-K8k"/>
+                        <constraint firstItem="SKH-tW-v3Q" firstAttribute="centerY" secondItem="dWE-Vp-cX4" secondAttribute="centerY" constant="-70.75" id="64g-5u-K8k"/>
                         <constraint firstItem="SKH-tW-v3Q" firstAttribute="leading" secondItem="dWE-Vp-cX4" secondAttribute="leading" constant="15" id="Syg-lO-rYb"/>
                     </constraints>
                 </view>

@@ -97,7 +97,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
             // Extract duration from video meta
             var duration: TimeInterval = 0
             if let videoURLString = videoInfo?.fileURL, let videoUrl = URL(string: videoURLString) {
-                duration = getVideoDurationSync(from: videoUrl)
+//                duration = getVideoDurationSync(from: videoUrl)
             } else if let attributes = videoInfo?.attributes,
                       let meta = attributes["metadata"] as? [String: Any],
                       let videoMeta = meta["video"] as? [String: Any],
@@ -141,7 +141,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         
         // durationText
         if let durationText = durationText {
-            durationView.isHidden = false
+            durationView.isHidden = true
             durationLabel.text = durationText
         } else {
             durationView.isHidden = true
