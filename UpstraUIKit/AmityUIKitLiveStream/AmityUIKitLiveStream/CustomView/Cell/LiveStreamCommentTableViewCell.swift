@@ -77,13 +77,13 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
             isModeratorUserInOfficialCommunity = AmityUIKitManager.isModeratorUserInCommunity(withUserId: comment.userId , communityId: community.communityId)
             isOfficialCommunity = community.isOfficial
             if isModeratorUserInOfficialCommunity && isOfficialCommunity { // Case : Owner post is moderator and community is official
-                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultCommunity)
                 displayNameLabel.text = community.displayName
             } else { // Case : Owner post is normal user or not official community
                 avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
                 displayNameLabel.text = comment.displayName
             }
-        } else { // Case : Post from user (user profile, my timeline)
+        } else { // Case : Post from user profile
             avatarView.setImage(withImageURL: comment.fileURL, placeholder: AmityIconSet.defaultAvatar)
             displayNameLabel.text = comment.displayName
         }
