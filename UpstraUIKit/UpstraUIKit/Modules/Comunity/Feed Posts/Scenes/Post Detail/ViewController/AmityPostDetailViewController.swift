@@ -41,7 +41,22 @@ open class AmityPostDetailViewController: AmityViewController {
     
     private var parentComment: AmityCommentModel? {
         didSet {
-            commentComposeBarView.replyingUsername = parentComment?.displayName
+            // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
+            if let currentPost = screenViewModel.post, let community = currentPost.targetCommunity, let comment = parentComment { // Case : Comment from post community
+                let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: comment.userId, communityId: community.communityId)
+                let isOfficialCommunity = community.isOfficial
+                if isModeratorUserInOfficialCommunity, isOfficialCommunity { // Case : Comment owner is moderator in official community
+                    commentComposeBarView.replyingUsername = community.displayName
+                } else { // Case : Comment owner isn't moderator or not official community
+                    // Original
+                    commentComposeBarView.replyingUsername = parentComment?.displayName
+                }
+            } else { // Case : Comment from user profile post
+                // Original
+                commentComposeBarView.replyingUsername = parentComment?.displayName
+            }
+            // [Original]
+//            commentComposeBarView.replyingUsername = parentComment?.displayName
         }
     }
     
