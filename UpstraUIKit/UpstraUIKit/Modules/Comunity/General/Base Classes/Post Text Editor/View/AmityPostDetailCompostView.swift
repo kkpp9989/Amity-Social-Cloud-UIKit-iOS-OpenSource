@@ -106,8 +106,23 @@ class AmityPostDetailCompostView: UIView {
     }
     
     func configure(with post: AmityPostModel) {
-        avatarView.setImage(withImageURL: AmityUIKitManagerInternal.shared.client.currentUser?.object?.getAvatarInfo()?.fileURL,
-                            placeholder: AmityIconSet.defaultAvatar)
+        // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
+        if let community = post.targetCommunity { // Case : Post from community
+            let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: AmityUIKitManagerInternal.shared.currentUserId, communityId: community.communityId)
+            let isOfficialCommunity = community.isOfficial
+            if isModeratorUserInOfficialCommunity, isOfficialCommunity { // Case : Comment owner is moderator in official community
+                avatarView.setImage(withImageURL: community.avatar?.fileURL, placeholder: AmityIconSet.defaultCommunity)
+            } else { // Case : Comment owner isn't moderator or not official community
+                // Original
+                avatarView.setImage(withImageURL: AmityUIKitManagerInternal.shared.client.user?.object?.getAvatarInfo()?.fileURL,
+                                    placeholder: AmityIconSet.defaultAvatar)
+            }
+        } else { // Case : Post from user
+            // Original
+            avatarView.setImage(withImageURL: AmityUIKitManagerInternal.shared.client.user?.object?.getAvatarInfo()?.fileURL,
+                                placeholder: AmityIconSet.defaultAvatar)
+        }
+        
         isHidden = !post.isCommentable
         textContainerView.isHidden = !post.isCommentable
     }
