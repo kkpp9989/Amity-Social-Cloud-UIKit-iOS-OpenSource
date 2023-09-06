@@ -32,6 +32,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
     private var streamId: String?
+    private var uniqueCommentIds = Set<String>()
     
     private var pollAnswers: [String: [String]]?
     
@@ -151,6 +152,13 @@ extension AmityPostDetailScreenViewModel {
             // parent comment
             commentsModels.append(.comment(model))
             
+            // Check if commentId is unique
+            if !uniqueCommentIds.contains(model.id) {
+                uniqueCommentIds.insert(model.id)
+            } else {
+                continue
+            }
+            
             // if parent is deleted, don't show its children.
             guard !model.isDeleted else {
                 viewModels.append(commentsModels)
@@ -193,6 +201,7 @@ extension AmityPostDetailScreenViewModel {
         }
         
         self.viewModelArrays = viewModels
+        self.uniqueCommentIds = []
         delegate?.screenViewModelDidUpdateData(self)
         delegate?.screenViewModel(self, didUpdateloadingState: .loaded)
     }
