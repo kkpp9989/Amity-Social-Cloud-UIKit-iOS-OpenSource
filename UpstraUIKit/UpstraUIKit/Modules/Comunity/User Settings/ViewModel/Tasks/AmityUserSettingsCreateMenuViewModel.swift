@@ -35,7 +35,7 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
                                                                                 icon: AmityUserSettingsItem.notification.icon,
                                                                                 title: AmityUserSettingsItem.notification.title,
                                                                                 description: itemNotificationDesc.localizedString)
-                settingsItems.append(.navigationContent(content: itemNotificationContent))
+//                settingsItems.append(.navigationContent(content: itemNotificationContent))
             }
             
             // add separator

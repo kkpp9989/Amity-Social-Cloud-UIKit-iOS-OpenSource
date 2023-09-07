@@ -939,7 +939,7 @@ extension LiveStreamPlayerViewController {
             
             // Get the initial number of rows before reloading
             let initNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
-            
+                        
             // Update stored comments based on the new collection data
             strongSelf.storedComment = strongSelf.prepareData()
             
