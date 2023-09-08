@@ -348,7 +348,6 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
     }
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
         if tableView.isBottomReached {
             screenViewModel.loadMoreComments()
         }
