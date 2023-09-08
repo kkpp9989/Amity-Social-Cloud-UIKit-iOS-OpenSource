@@ -27,9 +27,9 @@ public struct AmityPostTextComponent: AmityPostComposable {
     public func getComponentCount(for index: Int) -> Int {
         switch post.appearance.displayType {
         case .feed:
-            return AmityPostConstant.defaultNumberComponent + post.maximumLastestComments + post.viewAllCommentSection
+            return AmityPostConstant.defaultNumberComponent + 1 + post.maximumLastestComments + post.viewAllCommentSection
         case .postDetail:
-            return AmityPostConstant.defaultNumberComponent
+            return AmityPostConstant.defaultNumberComponent + 1
         }
     }
     
@@ -44,6 +44,10 @@ public struct AmityPostTextComponent: AmityPostComposable {
             cell.display(post: post, indexPath: indexPath)
             return cell
         case 2:
+            let cell: AmityPostURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.display(post: post, indexPath: indexPath)
+            return cell
+        case 3:
             let cell: AmityPostFooterTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             cell.display(post: post)
             return cell
