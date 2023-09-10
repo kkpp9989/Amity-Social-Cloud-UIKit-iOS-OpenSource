@@ -867,6 +867,38 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             strongSelf.filePicker.present(from: strongSelf.postMenuView, files: strongSelf.fileView.files)
         }
         
+        // NOTE: Once the currentAttachmentState has changed from `none` to something else.
+        // We still show the buttons, but we disable them based on the currentAttachmentState.
+        if currentAttachmentState != .none {
+            // Disable gallery option if currentAttachmentState is not .image or .video
+            if currentAttachmentState != .image && currentAttachmentState != .video {
+                galleryOption.image = AmityIconSet.iconPhoto?.setTintColor(disabledColor)
+                galleryOption.textColor = disabledColor
+                galleryOption.completion = nil
+            }
+            
+            // Disable camera option if currentAttachmentState is not .image or .video
+            if currentAttachmentState != .image && currentAttachmentState != .video {
+                cameraOption.image = AmityIconSet.iconCameraSmall?.setTintColor(disabledColor)
+                cameraOption.textColor = disabledColor
+                cameraOption.completion = nil
+            }
+            
+            // Disable video option if currentAttachmentState is not .video
+            if currentAttachmentState != .video {
+                videoOption.image = AmityIconSet.iconPlayVideo?.setTintColor(disabledColor)
+                videoOption.textColor = disabledColor
+                videoOption.completion = nil
+            }
+            
+            // Disable file option if currentAttachmentState is not .file
+            if currentAttachmentState != .file {
+                fileOption.image = AmityIconSet.iconAttach?.setTintColor(disabledColor)
+                fileOption.textColor = disabledColor
+                fileOption.completion = nil
+            }
+        }
+        
         // Each option will be added, based on allowPostAttachments.
         var items: [ImageItemOption] = []
         if settings.allowPostAttachments.contains(.image) || settings.allowPostAttachments.contains(.video) {
@@ -878,33 +910,6 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         }
         if settings.allowPostAttachments.contains(.video) {
             items.append(videoOption)
-        }
-        
-        // NOTE: Once the currentAttachmentState has changed from `none` to something else.
-        // We still show the buttons, but we disable them based on the currentAttachmentState.
-        if currentAttachmentState != .none {
-            if currentAttachmentState != .image || currentAttachmentState != .video {
-                // Disable gallery option
-                galleryOption.image = AmityIconSet.iconPhoto?.setTintColor(disabledColor)
-                galleryOption.textColor = disabledColor
-                galleryOption.completion = nil
-                // Disable camera option
-                cameraOption.image = AmityIconSet.iconCameraSmall?.setTintColor(disabledColor)
-                cameraOption.textColor = disabledColor
-                cameraOption.completion = nil
-            }
-            if currentAttachmentState != .video {
-                // Disable video option
-                videoOption.image = AmityIconSet.iconPlayVideo?.setTintColor(disabledColor)
-                videoOption.textColor = disabledColor
-                videoOption.completion = nil
-            }
-            if currentAttachmentState != .file {
-                // Disable file option
-                fileOption.image = AmityIconSet.iconAttach?.setTintColor(disabledColor)
-                fileOption.textColor = disabledColor
-                fileOption.completion = nil
-            }
         }
         
         contentView.configure(items: items, selectedItem: nil)

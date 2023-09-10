@@ -175,10 +175,6 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         liveDurationFormatter.allowedUnits = [.minute, .second]
         liveDurationFormatter.unitsStyle = .positional
         liveDurationFormatter.zeroFormattingBehavior = .pad
-        
-        // Observe app life cycle notfications
-        NotificationCenter.default.addObserver(self, selector: #selector(suspendLiveStream), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(resumeLiveStream), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -213,6 +209,10 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         
         // [Custom for ONE Krungthai][Improvement] Set this view controller as the current notification center delegate for show or hide notification in this viewcontroller
         UNUserNotificationCenter.current().delegate = self
+        
+        // Observe app life cycle notfications
+        NotificationCenter.default.addObserver(self, selector: #selector(suspendLiveStream), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(resumeLiveStream), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     public override func viewDidAppear(_ animated: Bool) {
