@@ -805,20 +805,18 @@ extension LiveStreamBroadcastViewController: UITableViewDelegate {
 // MARK: - Observer comment repository
 extension LiveStreamBroadcastViewController {
     func startRealTimeEventSubscribe() {
-        DispatchQueue.main.async { [self] in
-            if !isPostSubscribe && !isCommentSubscribe {
-                guard let currentPost = createdPost else { return }
-                if !isCommentSubscribe {
-                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
-                }
-                if !isPostSubscribe {
-                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
-                }
-                getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-                getPostForPostId(withPostId: currentPost.postId)
+        if !isPostSubscribe && !isCommentSubscribe {
+            guard let currentPost = createdPost else { return }
+            if !isCommentSubscribe {
+                let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
             }
+            if !isPostSubscribe {
+                let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
+            }
+            getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
+            getPostForPostId(withPostId: currentPost.postId)
         }
     }
     

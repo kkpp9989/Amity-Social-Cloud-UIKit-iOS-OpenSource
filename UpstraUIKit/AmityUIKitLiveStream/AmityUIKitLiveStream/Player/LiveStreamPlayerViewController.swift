@@ -824,23 +824,18 @@ extension LiveStreamPlayerViewController: UITableViewDelegate {
 // MARK: - Observer comment repository
 extension LiveStreamPlayerViewController {
     func startRealTimeEventSubscribe() {
-        DispatchQueue.main.async { [self] in
-            print("--------> isCommentSubscribe: \(isCommentSubscribe) || isPostSubscribe: \(isPostSubscribe)")
-            if !isPostSubscribe && !isCommentSubscribe {
-                guard let currentPost = amityPost else { return }
-                if !isCommentSubscribe {
-                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
-                    print("--------> result isCommentSubscribe: \(isCommentSubscribe)")
-                }
-                if !isPostSubscribe {
-                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
-                    print("--------> result isPostSubscribe: \(isPostSubscribe)")
-                }
-                getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .descending, includeDeleted: false)
-                getPostForPostId(withPostId: postID ?? "")
+        if !isPostSubscribe && !isCommentSubscribe {
+            guard let currentPost = amityPost else { return }
+            if !isCommentSubscribe {
+                let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
             }
+            if !isPostSubscribe {
+                let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in }
+            }
+            getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .descending, includeDeleted: false)
+            getPostForPostId(withPostId: postID ?? "")
         }
     }
     
@@ -906,7 +901,6 @@ extension LiveStreamPlayerViewController {
 
         fetchCommentToken = collection?.observe { [weak self] (commentCollection, _, error) in
             guard let strongSelf = self else { return }
-            print("--------> fetchCommentToken: active")
             if let error = error {
                 print(error.localizedDescription)
             } else {
@@ -943,7 +937,6 @@ extension LiveStreamPlayerViewController {
             
             guard let collection = strongSelf.collection else { return }
             if collection.hasPrevious {
-                print("--------> previousPage: \(collection.hasPrevious)")
                 collection.previousPage()
             } else {
                 // Get the initial number of rows before reloading
