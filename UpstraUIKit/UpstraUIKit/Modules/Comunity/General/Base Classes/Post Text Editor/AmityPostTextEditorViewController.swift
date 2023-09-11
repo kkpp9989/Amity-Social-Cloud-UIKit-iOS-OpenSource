@@ -871,7 +871,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         // We still show the buttons, but we disable them based on the currentAttachmentState.
         if currentAttachmentState != .none {
             // Disable gallery option if currentAttachmentState is not .image or .video
-            if currentAttachmentState != .image && currentAttachmentState != .video {
+            if currentAttachmentState != .image {
                 galleryOption.image = AmityIconSet.iconPhoto?.setTintColor(disabledColor)
                 galleryOption.textColor = disabledColor
                 galleryOption.completion = nil
