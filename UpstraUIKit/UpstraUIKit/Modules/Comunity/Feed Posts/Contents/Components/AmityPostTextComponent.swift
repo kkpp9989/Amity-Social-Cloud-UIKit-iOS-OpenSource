@@ -63,32 +63,4 @@ public struct AmityPostTextComponent: AmityPostComposable {
     public func getComponentHeight(indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
-    private func getURLInText(text: String) -> String? {
-        // Detect URLs
-        let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-        let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-        var hyperLinkTextRange: [Hyperlink] = []
-        
-        for match in urlMatches {
-            guard let textRange = Range(match.range, in: text) else { continue }
-            let urlString = String(text[textRange])
-            let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-            guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                  let url = URL(string: formattedString) else { continue }
-            hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
-        }
-        
-        if hyperLinkTextRange.count > 0 {
-            guard let firstHyperLink = hyperLinkTextRange.first?.type else { return nil }
-            switch firstHyperLink {
-            case .url(let url):
-                return url.absoluteString
-            default:
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
 }

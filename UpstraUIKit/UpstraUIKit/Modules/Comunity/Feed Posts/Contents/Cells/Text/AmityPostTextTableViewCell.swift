@@ -140,6 +140,8 @@ public final class AmityPostTextTableViewCell: UITableViewCell, Nibbable, AmityP
                                 }
                             }
                         }
+                    } else {
+                        self?.urlPreviewView.isHidden = true
                     }
                 }
             }
@@ -211,7 +213,7 @@ public final class AmityPostTextTableViewCell: UITableViewCell, Nibbable, AmityP
         urlPreviewTitle.textColor = AmityColorSet.base
         
         // Setup ishidden status of view
-        urlPreviewView.isHidden = false
+        urlPreviewView.isHidden = true
         urlPreviewView.alpha = 0.0
     }
     
