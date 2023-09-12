@@ -24,7 +24,7 @@ struct RequestHashtag {
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
         requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["text": keyword, "ignoreCase": true], "from": from, "size": size, "sort": ["count": "desc"]]
+        requestMeta.params = ["query": ["text": keyword, "ignoreCase": true], "from": from, "size": size, "sort": [["count": "desc"]]]
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))

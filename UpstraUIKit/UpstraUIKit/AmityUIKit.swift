@@ -177,6 +177,28 @@ public final class AmityUIKitManager {
     public static func updateFileRepository() {
         AmityUIKitManagerInternal.shared.didUpdateClient()
     }
+    
+    public static func retrieveNotifcationSettings(completion: @escaping (Result<AmityUserNotificationSettings, Error>) -> Void) {
+        let userNotificationController = AmityUserNotificationSettingsController()
+        userNotificationController.retrieveNotificationSettings { result in
+            switch result {
+            case .success(let notification):
+                completion(.success(notification))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    public static func enableSocialNotificationSetting() {
+        let userNotificationManager = client.notificationManager
+        userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .social, isEnabled: true, roleFilter: nil)]) { _, _ in }
+    }
+    
+    public static func disableSocialNotificationSetting() {
+        let userNotificationManager = client.notificationManager
+        userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .social, isEnabled: false, roleFilter: nil)]) { _, _ in }
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -328,7 +350,6 @@ final class AmityUIKitManagerInternal: NSObject {
         fileService.fileRepository = AmityFileRepository(client: client)
         messageMediaService.fileRepository = AmityFileRepository(client: client)
     }
-    
 }
 
 extension AmityUIKitManagerInternal: AmityClientDelegate {

@@ -29,7 +29,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     let streamRepository: AmityStreamRepository
     let postRepository: AmityPostRepository
     let reactionReposity: AmityReactionRepository
-    var broadcaster: AmityStreamBroadcaster?
+    var broadcaster: AmityVideoBroadcaster?
     
     // MARK: - Internal Const Properties
     /// The queue to execute go live operations.
@@ -157,7 +157,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         fileRepository = AmityFileRepository(client: client)
         streamRepository = AmityStreamRepository(client: client)
         postRepository = AmityPostRepository(client: client)
-        broadcaster = AmityStreamBroadcaster(client: client)
+        broadcaster = AmityVideoBroadcaster(client: client)
         reactionReposity = AmityReactionRepository(client: client)
         subscriptionManager = AmityTopicSubscription(client: client)
         mentionManager = AmityMentionManager(withType: .post(communityId: targetId))
@@ -175,7 +175,6 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         liveDurationFormatter.allowedUnits = [.minute, .second]
         liveDurationFormatter.unitsStyle = .positional
         liveDurationFormatter.zeroFormattingBehavior = .pad
-        
     }
     
     required init?(coder: NSCoder) {
@@ -210,6 +209,10 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         
         // [Custom for ONE Krungthai][Improvement] Set this view controller as the current notification center delegate for show or hide notification in this viewcontroller
         UNUserNotificationCenter.current().delegate = self
+        
+        // Observe app life cycle notfications
+        NotificationCenter.default.addObserver(self, selector: #selector(suspendLiveStream), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(resumeLiveStream), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -267,6 +270,26 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     
     func disableNotifications() {
         AmityNotificationUtilities.pauseNotifications = true
+    }
+    
+    @objc func suspendLiveStream() {
+        guard let _ = createdPost,
+              let broadcaster else {
+            return
+        }
+        
+        broadcaster.suspendPublish()
+    }
+    
+    @objc func resumeLiveStream() {
+        guard let createdPost,
+              let broadcaster,
+              let firstChildPost = createdPost.childrenPosts.first,
+              let stream = firstChildPost.getLiveStreamInfo() else {
+            return
+        }
+        
+        broadcaster.startPublish(existingStreamId: stream.streamId)
     }
     
     // MARK: - Internal Functions
@@ -460,7 +483,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         broadcaster.setup(with: config)
         
         // [Custom for ONE Krungthai] Set default to front camera same as Android
-        broadcaster.cameraPosition = .front
+        broadcaster.switchCamera = .front
         
         // Embed broadcaster.previewView
         broadcaster.previewView.translatesAutoresizingMaskIntoConstraints = false
@@ -482,11 +505,11 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             return
         }
         
-        switch broadcaster.cameraPosition {
+        switch broadcaster.switchCamera {
         case .front:
-            broadcaster.cameraPosition = .back
+            broadcaster.switchCamera = .back
         case .back:
-            broadcaster.cameraPosition = .front
+            broadcaster.switchCamera = .front
         @unknown default:
             assertionFailure("Unhandled case")
         }
@@ -672,12 +695,10 @@ extension LiveStreamBroadcastViewController: UITextFieldDelegate {
     
 }
 
-extension LiveStreamBroadcastViewController: AmityStreamBroadcasterDelegate {
-    
-    public func amityStreamBroadcasterDidUpdateState(_ broadcaster: AmityStreamBroadcaster) {
+extension LiveStreamBroadcastViewController: AmityVideoBroadcasterDelegate {
+    public func amityVideoBroadcasterDidUpdateState(_ broadcaster: AmityLiveVideoBroadcastKit.AmityVideoBroadcaster) {
         updateStreamingStatusText()
     }
-    
 }
 
 // MARK: - AmityMentionManagerDelegate
@@ -784,20 +805,18 @@ extension LiveStreamBroadcastViewController: UITableViewDelegate {
 // MARK: - Observer comment repository
 extension LiveStreamBroadcastViewController {
     func startRealTimeEventSubscribe() {
-        DispatchQueue.main.async { [self] in
-            if !isPostSubscribe && !isCommentSubscribe {
-                guard let currentPost = createdPost else { return }
-                if !isCommentSubscribe {
-                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
-                }
-                if !isPostSubscribe {
-                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
-                }
-                getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-                getPostForPostId(withPostId: currentPost.postId)
+        if !isPostSubscribe && !isCommentSubscribe {
+            guard let currentPost = createdPost else { return }
+            if !isCommentSubscribe {
+                let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
             }
+            if !isPostSubscribe {
+                let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
+            }
+            getCommentsForPostId(withReferenceId: currentPost.postId, referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
+            getPostForPostId(withPostId: currentPost.postId)
         }
     }
     

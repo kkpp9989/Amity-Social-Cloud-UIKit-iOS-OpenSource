@@ -824,20 +824,18 @@ extension LiveStreamPlayerViewController: UITableViewDelegate {
 // MARK: - Observer comment repository
 extension LiveStreamPlayerViewController {
     func startRealTimeEventSubscribe() {
-        DispatchQueue.main.async { [self] in
-            if !isPostSubscribe && !isCommentSubscribe {
-                guard let currentPost = amityPost else { return }
-                if !isCommentSubscribe {
-                    let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
-                    subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
-                }
-                if !isPostSubscribe {
-                    let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
-                    subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in self.isPostSubscribe = isSuccess }
-                }
-                getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .ascending, includeDeleted: false)
-                getPostForPostId(withPostId: postID ?? "")
+        if !isPostSubscribe && !isCommentSubscribe {
+            guard let currentPost = amityPost else { return }
+            if !isCommentSubscribe {
+                let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+                subscriptionManager?.subscribeTopic(eventTopic) { isSuccess,_ in self.isCommentSubscribe = isSuccess }
             }
+            if !isPostSubscribe {
+                let eventPostTopic = AmityPostTopic(post: currentPost, andEvent: .post)
+                subscriptionManager?.subscribeTopic(eventPostTopic) { isSuccess,_ in }
+            }
+            getCommentsForPostId(withReferenceId: postID ?? "", referenceType: .post, filterByParentId: false, parentId: currentPost.parentPostId, orderBy: .descending, includeDeleted: false)
+            getPostForPostId(withPostId: postID ?? "")
         }
     }
     
@@ -898,10 +896,9 @@ extension LiveStreamPlayerViewController {
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool) {
         
-        //        fetchCommentToken?.invalidate()
         let queryOptions = AmityCommentQueryOptions(referenceId: postId, referenceType: referenceType, filterByParentId: isParent, parentId: parentId, orderBy: orderBy, includeDeleted: includeDeleted)
         collection = commentRepository.getComments(with: queryOptions)
-        
+
         fetchCommentToken = collection?.observe { [weak self] (commentCollection, _, error) in
             guard let strongSelf = self else { return }
             if let error = error {
@@ -928,7 +925,8 @@ extension LiveStreamPlayerViewController {
                 continue  // Skip appending the model if the id already exists
             }
             
-            models.append(model)
+//            models.append(model)
+            models.insert(model, at: 0)
         }
         return models
     }
@@ -937,31 +935,35 @@ extension LiveStreamPlayerViewController {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             
-            // Get the initial number of rows before reloading
-            let initNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
-            
-            // Update stored comments based on the new collection data
-            strongSelf.storedComment = strongSelf.prepareData()
-            
-            // Update comment count based on the stored comment count
-            strongSelf.commentCount = strongSelf.storedComment.count
-            
-            // Reload the table view
-            strongSelf.commentTableView.reloadData()
-            
-            // Get the updated number of rows after reloading
-            let updatedNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
-            
-            // Check if new comments were added (scroll only in that case)
-            if updatedNumberOfRows > initNumberOfRows {
-                // Scroll to the last row if necessary
-                strongSelf.commentTableView.scrollToRow(at: IndexPath(row: updatedNumberOfRows - 1, section: 0), at: .bottom, animated: true)
-            }
-            
             guard let collection = strongSelf.collection else { return }
-            if collection.hasNext {
-                collection.nextPage()
+            if collection.hasPrevious {
+                collection.previousPage()
+            } else {
+                // Get the initial number of rows before reloading
+                let initNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
+                
+                // Update stored comments based on the new collection data
+                strongSelf.storedComment = strongSelf.prepareData()
+                
+                // Update comment count based on the stored comment count
+                strongSelf.commentCount = strongSelf.storedComment.count
+                
+                // Reload the table view
+                strongSelf.commentTableView.reloadData()
+                
+                // Get the updated number of rows after reloading
+                let updatedNumberOfRows = strongSelf.commentTableView.numberOfRows(inSection: 0)
+                
+                // Check if new comments were added (scroll only in that case)
+                if updatedNumberOfRows > initNumberOfRows {
+                    // Scroll to the last row if necessary
+                    strongSelf.commentTableView.scrollToRow(at: IndexPath(row: updatedNumberOfRows - 1, section: 0), at: .bottom, animated: true)
+                }
             }
+//            guard let collection = strongSelf.collection else { return }
+//            if collection.hasNext {
+//                collection.nextPage()
+//            }
         }
     }
     

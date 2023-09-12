@@ -30,13 +30,13 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
     
     private var session = UUID().uuidString
     
-    static var durationFormatter: DateComponentsFormatter = {
+    static func getDurationFormatter(showHour: Bool) -> DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
+        formatter.allowedUnits = showHour ? [.hour, .minute, .second] : [.minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
-    } ()
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -95,16 +95,16 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
             imageUrl = thumbnailInfo?.fileURL
             placeholder = nil
             // Extract duration from video meta
-            var duration: TimeInterval = 0
-            if let videoURLString = videoInfo?.fileURL, let videoUrl = URL(string: videoURLString) {
-//                duration = getVideoDurationSync(from: videoUrl)
-            } else if let attributes = videoInfo?.attributes,
-                      let meta = attributes["metadata"] as? [String: Any],
-                      let videoMeta = meta["video"] as? [String: Any],
-                      let _duration = videoMeta["duration"] as? TimeInterval {
+            let duration: TimeInterval
+            if let attributes = videoInfo?.attributes,
+               let meta = attributes["metadata"] as? [String: Any],
+               let videoMeta = meta["video"] as? [String: Any],
+               let _duration = videoMeta["duration"] as? TimeInterval {
                 duration = _duration
+            } else {
+                duration = .zero
             }
-            durationText = PostGalleryItemCell.durationFormatter.string(from: duration)
+            durationText = PostGalleryItemCell.getDurationFormatter(showHour: duration >= 3600).string(from: duration)
             mediaTitle = nil
             streamStatus = nil
         case "liveStream":
@@ -141,7 +141,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         
         // durationText
         if let durationText = durationText {
-            durationView.isHidden = true
+            durationView.isHidden = false
             durationLabel.text = durationText
         } else {
             durationView.isHidden = true
@@ -236,19 +236,4 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         )
         
     }
-    
-    func getVideoDurationSync(from videoUrl: URL) -> TimeInterval {
-        let asset = AVAsset(url: videoUrl)
-        let duration = asset.duration
-        
-        // Convert the duration to seconds
-        let durationInSeconds = CMTimeGetSeconds(duration)
-        
-        if durationInSeconds.isFinite {
-            return durationInSeconds
-        } else {
-            return .zero
-        }
-    }
-
 }
