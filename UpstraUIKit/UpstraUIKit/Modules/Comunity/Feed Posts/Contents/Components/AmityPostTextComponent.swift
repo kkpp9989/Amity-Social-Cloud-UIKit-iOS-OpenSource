@@ -17,7 +17,7 @@ import UIKit
  - `AmityPostPreviewCommentTableViewCell`
  */
 public struct AmityPostTextComponent: AmityPostComposable {
-
+    
     private(set) public var post: AmityPostModel
     
     public init(post: AmityPostModel) {
@@ -42,6 +42,29 @@ public struct AmityPostTextComponent: AmityPostComposable {
         case 1:
             let cell: AmityPostTextTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             cell.display(post: post, indexPath: indexPath)
+            
+            /* [Custom for ONE Krungthai][URL Preview] Add check URL in text for show URL preview or not */
+            if let urlString = AmityURLCustomManager.getURLInText(text: post.text) { // Case : Have URL in text
+                if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
+                    cell.displayURLPreview(metadata: cachedMetadata)
+                } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
+                    AmityURLCustomManager.fetchAmityURLMetadata(url: urlString) { metadata in
+                        DispatchQueue.main.async {
+                            if let urlMetadata: AmityURLMetadata = metadata { // Case : Can get new URL metadata -> set display URL preview
+                                AmityURLPreviewCacheManager.shared.cacheMetadata(urlMetadata, forURL: urlString)
+                                cell.displayURLPreview(metadata: urlMetadata)
+                            } else { // Case : Can get new URL metadata -> hide URL preview
+                                cell.hideURLPreview()
+                            }
+                            tableView.reloadRows(at: [indexPath], with: .automatic)
+                        }
+                    }
+                }
+            } else { // Case : Don't have URL in text
+                cell.hideURLPreview()
+            }
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+            
             return cell
         case 2:
             let cell: AmityPostFooterTableViewCell = tableView.dequeueReusableCell(for: indexPath)
@@ -64,3 +87,4 @@ public struct AmityPostTextComponent: AmityPostComposable {
         return UITableView.automaticDimension
     }
 }
+
