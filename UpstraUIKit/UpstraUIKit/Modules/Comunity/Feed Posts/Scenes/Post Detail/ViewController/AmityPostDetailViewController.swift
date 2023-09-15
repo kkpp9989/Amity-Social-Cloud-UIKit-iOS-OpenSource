@@ -105,7 +105,11 @@ open class AmityPostDetailViewController: AmityViewController {
         setupReactionPicker()
         
         // Initial ONE Krungthai Custom theme
-        theme = ONEKrungthaiCustomTheme(viewController: self)        
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [self] in
+            tableView.reloadData()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -371,7 +375,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                     shouldLineShow: viewModel.isReplyType
                 )
                 // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-                _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
+                _cell.configure(with: comment, layout: layout, tableView: tableView, indexPath: indexPath, post: screenViewModel.post)
                 _cell.labelDelegate = self
                 _cell.actionDelegate = self
             }
@@ -387,7 +391,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            _cell.configure(with: comment, layout: layout, post: screenViewModel.post)
+            _cell.configure(with: comment, layout: layout, tableView: tableView, indexPath: indexPath, post: screenViewModel.post)
             _cell.labelDelegate = self
             _cell.actionDelegate = self
             

@@ -100,7 +100,7 @@ public final class AmityPostTextTableViewCell: UITableViewCell, Nibbable, AmityP
     }
 }
 
-// MARK: URLPreview [Custom For ONE Krungthai]
+// MARK: URL Preview [Custom For ONE Krungthai]
 extension AmityPostTextTableViewCell {
     // MARK: - Setup URL Preview
     private func setupURLPreviewView() {
