@@ -272,10 +272,7 @@ class AmityCommentView: AmityView {
                 boundingWidth: labelBoundingWidth,
                 maximumLines: maximumLines
             )
-
-            let latestHeight = isHaveURLPreview ? height + 300 : height
-            print("[Post][URL Preview] comment: \(comment.text) | isHaveURLPreview: \(isHaveURLPreview) | Height: \(latestHeight)")
-            
+            let latestHeight = isHaveURLPreview ? height + 100 : height
             return latestHeight
         } ()
         
@@ -296,7 +293,6 @@ class AmityCommentView: AmityView {
             let bottomStackViewHeight = bottomStackViews.reduce(0, +) + (spaceBetweenElement * numberOfSpaceBetweenElements)
             return bottomStackViewHeight
         } ()
-
         
         return topSpace
         + contentHeight

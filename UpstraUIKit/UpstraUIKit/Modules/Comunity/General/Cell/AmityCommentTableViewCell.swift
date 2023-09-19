@@ -20,11 +20,11 @@ protocol AmityCommentTableViewCellDelegate: AnyObject {
 class AmityCommentTableViewCell: UITableViewCell, Nibbable {
 
     @IBOutlet private var commentView: AmityCommentView!
+    @IBOutlet var heightDynamicCommentViewConstraint: NSLayoutConstraint!
     
     // [Custom for ONE Krungthai] Add properties for for check moderator user in official community for outputing
     public private(set) var post: AmityPostModel?
     public private(set) var comment: AmityCommentModel?
-    public private(set) var isHaveURLPreview: Bool = false
     
     weak var actionDelegate: AmityCommentTableViewCellDelegate?
     
@@ -37,7 +37,7 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, tableView: UITableView, indexPath: IndexPath, post: AmityPostModel? = nil) {
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, post: AmityPostModel? = nil, completion: ((_ isHaveURLPreview: Bool, _ cellHeight: CGFloat) -> Void)? = nil) {
         // [Custom for ONE Krungthai] Add properties for for check moderator user in official community for outputing
         self.post = post
         self.comment = comment
@@ -49,49 +49,46 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         if let urlString = AmityURLCustomManager.getURLInText(text: comment.text) { // Case : Have URL in text
             if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
                 commentView.displayURLPreview(metadata: cachedMetadata)
-                isHaveURLPreview = true
-                self.updateCellHeight(layout: layout, isHaveURLPreview: true) // Update cell height here
-                print("[Post][URL Preview] Use cache data for show URL Preview | comment: \(comment.text)")
+                let latestHeight = updateCellHeight(layout: layout, isHaveURLPreview: true) // Update cell height here
+                completion?(true, latestHeight)
+//                print("[Post][URL Preview] Use cache data for show URL Preview | comment: \(comment.text)")
             } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                 AmityURLCustomManager.fetchAmityURLMetadata(url: urlString) { metadata in
                     DispatchQueue.main.async {
                         if let urlMetadata: AmityURLMetadata = metadata { // Case : Can get new URL metadata -> set display URL preview
                             AmityURLPreviewCacheManager.shared.cacheMetadata(urlMetadata, forURL: urlString)
                             self.commentView.displayURLPreview(metadata: urlMetadata)
-                            self.isHaveURLPreview = true
-                            self.updateCellHeight(layout: layout, isHaveURLPreview: true) // Update cell height here
-                            print("[Post][URL Preview] Use new data for show URL Preview | comment: \(comment.text)")
+                            let latestHeight = self.updateCellHeight(layout: layout, isHaveURLPreview: true) // Update cell height here
+                            completion?(true, latestHeight)
+//                            print("[Post][URL Preview] Use new data for show URL Preview | comment: \(comment.text)")
                         } else { // Case : Can get new URL metadata -> hide URL preview
                             self.commentView.hideURLPreview()
-                            self.isHaveURLPreview = false
-                            self.updateCellHeight(layout: layout) // Update cell height here
-                            print("[Post][URL Preview] Hide URL Preview | comment: \(comment.text)")
+                            let latestHeight = self.updateCellHeight(layout: layout, isHaveURLPreview: false) // Update cell height here
+                            completion?(false, latestHeight)
+//                            print("[Post][URL Preview] Hide URL Preview | comment: \(comment.text)")
                         }
-                        tableView.reloadRows(at: [indexPath], with: .automatic)
                     }
                 }
             }
         } else { // Case : Don't have URL in text
             commentView.hideURLPreview()
-            isHaveURLPreview = false
-            self.updateCellHeight(layout: layout) // Update cell height here
-            print("[Post][URL Preview] Hide URL Preview | comment: \(comment.text)")
+            let latestHeight = updateCellHeight(layout: layout, isHaveURLPreview: false) // Update cell height here
+            completion?(false, latestHeight)
+//            print("[Post][URL Preview] Hide URL Preview | comment: \(comment.text)")
         }
-        tableView.reloadRows(at: [indexPath], with: .automatic)
         
         commentView.delegate = self
     }
     
     // Function to update cell height
-    private func updateCellHeight(layout: AmityCommentView.Layout, isHaveURLPreview: Bool = false) {
+    private func updateCellHeight(layout: AmityCommentView.Layout, isHaveURLPreview: Bool = false) -> CGFloat {
         // Calculate the new cell height based on the content after URL preview is shown/hidden
         if let comment = self.comment {
             let newHeight = AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: self.contentView.bounds.width, isHaveURLPreview: isHaveURLPreview)
-            // Update the cell's height constraint or any other layout logic you are using
-            // Example: self.heightConstraint.constant = newHeight
-            // Ensure you call layoutIfNeeded() to update the UI
-            // Example: self.contentView.layoutIfNeeded()
-            layoutIfNeeded()
+            heightDynamicCommentViewConstraint.constant = newHeight
+            return newHeight
+        } else {
+            return 0.0
         }
     }
     

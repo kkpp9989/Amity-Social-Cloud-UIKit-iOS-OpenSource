@@ -106,10 +106,6 @@ open class AmityPostDetailViewController: AmityViewController {
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [self] in
-            tableView.reloadData()
-        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -375,7 +371,12 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                     shouldLineShow: viewModel.isReplyType
                 )
                 // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-                _cell.configure(with: comment, layout: layout, tableView: tableView, indexPath: indexPath, post: screenViewModel.post)
+                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+                _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+                    _cell.frame.size.height = cellHeight
+                    _cell.layoutIfNeeded()
+                }
                 _cell.labelDelegate = self
                 _cell.actionDelegate = self
             }
@@ -391,7 +392,13 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            _cell.configure(with: comment, layout: layout, tableView: tableView, indexPath: indexPath, post: screenViewModel.post)
+            // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+            print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+            _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+                print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+                _cell.frame.size.height = cellHeight
+                _cell.layoutIfNeeded()
+            }
             _cell.labelDelegate = self
             _cell.actionDelegate = self
             

@@ -16,7 +16,6 @@
                 <outlet property="bannedImageView" destination="30j-zx-d2A" id="jEy-aE-606"/>
                 <outlet property="bannedImageViewWidthConstraint" destination="ufK-o4-Q45" id="NeJ-al-Dvx"/>
                 <outlet property="contentLabel" destination="3js-u5-f3w" id="fAk-QB-jih"/>
-                <outlet property="heightOfContentConstraint" destination="ZNF-YG-8aE" id="hmX-BW-43j"/>
                 <outlet property="labelContainerView" destination="ffW-Ew-Kj3" id="t0Y-yq-uXX"/>
                 <outlet property="leadingAvatarImageViewConstraint" destination="QQS-Sp-FlV" id="8ej-7a-Hj3"/>
                 <outlet property="likeButton" destination="cdk-6j-3dY" id="QwM-FZ-zrU"/>
@@ -134,7 +133,6 @@
                             <constraints>
                                 <constraint firstItem="ous-9s-fgt" firstAttribute="leading" secondItem="zx9-Bh-IUp" secondAttribute="leading" id="3eb-To-nwN"/>
                                 <constraint firstItem="3js-u5-f3w" firstAttribute="top" secondItem="zx9-Bh-IUp" secondAttribute="top" id="IHC-MS-nL5"/>
-                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="ZNF-YG-8aE"/>
                                 <constraint firstItem="3js-u5-f3w" firstAttribute="leading" secondItem="zx9-Bh-IUp" secondAttribute="leading" id="bBB-jt-Xex"/>
                                 <constraint firstAttribute="trailing" secondItem="3js-u5-f3w" secondAttribute="trailing" id="dSy-7W-Rc5"/>
                                 <constraint firstAttribute="trailing" secondItem="ous-9s-fgt" secondAttribute="trailing" id="fkH-mq-14A"/>
@@ -145,6 +143,7 @@
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstItem="zx9-Bh-IUp" firstAttribute="top" secondItem="ffW-Ew-Kj3" secondAttribute="top" constant="12" id="06k-qv-LfT"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="OVa-0R-pxa"/>
                         <constraint firstItem="zx9-Bh-IUp" firstAttribute="leading" secondItem="ffW-Ew-Kj3" secondAttribute="leading" constant="12" id="ZZz-Rz-F3X"/>
                         <constraint firstAttribute="bottom" secondItem="zx9-Bh-IUp" secondAttribute="bottom" constant="12" id="euG-3X-yVy"/>
                         <constraint firstAttribute="trailing" secondItem="zx9-Bh-IUp" secondAttribute="trailing" constant="12" id="l8R-zA-dKu"/>
