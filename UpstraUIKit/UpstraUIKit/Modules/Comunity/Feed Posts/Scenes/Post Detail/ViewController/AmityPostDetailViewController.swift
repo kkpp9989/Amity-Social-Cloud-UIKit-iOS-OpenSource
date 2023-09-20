@@ -352,6 +352,12 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
             screenViewModel.loadMoreComments()
         }
         
+        // [Custom for ONE Krungthai][Improvement][URL Preview] Set protocol handler to willDisplay same as AmityFeedViewController
+        (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
+        (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
+        (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
+        
+        // [Original] -> Move to cellForRowAt
 //        let viewModel = screenViewModel.item(at: indexPath)
 //        switch viewModel {
 //        case .post(let postComponent):
@@ -409,39 +415,42 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let viewModel = screenViewModel.item(at: indexPath)
-        switch viewModel {
-        case .post, .loadMoreReply:
-            return UITableView.automaticDimension
-        case .comment(let comment):
-            if comment.isDeleted {
-                return AmityPostDetailDeletedTableViewCell.height
-            }
-            // Although AmityCommentTableViewCell is a self-sizing cell.
-            // Due to the layout glitch, we need to calculate cell height manually here.
-            let layout = AmityCommentView.Layout(
-                type: .comment,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
+        // [Original]
+//        let viewModel = screenViewModel.item(at: indexPath)
+//        switch viewModel {
+//        case .post, .loadMoreReply:
+//            return UITableView.automaticDimension
+//        case .comment(let comment):
+//            if comment.isDeleted {
+//                return AmityPostDetailDeletedTableViewCell.height
+//            }
+//            // Although AmityCommentTableViewCell is a self-sizing cell.
+//            // Due to the layout glitch, we need to calculate cell height manually here.
+//            let layout = AmityCommentView.Layout(
+//                type: .comment,
+//                isExpanded: expandedIds.contains(comment.id),
+//                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+//                shouldLineShow: viewModel.isReplyType
+//            )
 //            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
-            
-            return UITableView.automaticDimension
-        case .replyComment(let comment):
-            if comment.isDeleted {
-                return AmityPostDetailDeletedTableViewCell.height
-            }
-            // Although AmityCommentTableViewCell is a self-sizing cell.
-            // Due to the layout glitch, we need to calculate cell height manually here.
-            let layout = AmityCommentView.Layout(
-                type: .reply,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
-            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
-        }
+//
+//        case .replyComment(let comment):
+//            if comment.isDeleted {
+//                return AmityPostDetailDeletedTableViewCell.height
+//            }
+//            // Although AmityCommentTableViewCell is a self-sizing cell.
+//            // Due to the layout glitch, we need to calculate cell height manually here.
+//            let layout = AmityCommentView.Layout(
+//                type: .reply,
+//                isExpanded: expandedIds.contains(comment.id),
+//                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+//                shouldLineShow: viewModel.isReplyType
+//            )
+//            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
+//        }
+        
+        // [Custom for ONE Krungthai][Improvement][URL Preview] Change height of row to automatic dimension for url preview can show success
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: AmityPostTableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -476,13 +485,9 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
                 cell = postComponent.getComponentCell(tableView, at: indexPath)
             }
             
-            // Add on
-            (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
-            (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
-            (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
-            
             return cell
         case .comment(let comment):
+            // [Original]
 //            if comment.isDeleted {
 //                let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 //                return cell
@@ -491,6 +496,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
 //            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 //            return cell
             
+            // [Custom for ONE Krungthai][Improvement][URL Preview] Move configure cell to cellForRowAt same as AmityFeedViewController for can adjust size with url preview success
             if comment.isDeleted {
                 let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.configure(deletedAt: comment.updatedAt)
@@ -505,16 +511,18 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
                 )
                 // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
                 print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
-                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
-                    cell.frame.size.height = cellHeight
+                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview in
+                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text)")
                     cell.layoutIfNeeded()
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
                 cell.labelDelegate = self
                 cell.actionDelegate = self
+                
                 return cell
             }
         case .replyComment(let comment):
+            // [Original]
 //            if comment.isDeleted {
 //                let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 //                return cell
@@ -522,6 +530,7 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
 //            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
 //            return cell
             
+            // [Custom for ONE Krungthai][Improvement][URL Preview] Move configure cell to cellForRowAt same as AmityFeedViewController for can adjust size with url preview success
             if comment.isDeleted {
                 let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 return cell
@@ -535,10 +544,10 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
                 )
                 // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
                 print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
-                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
-                    cell.frame.size.height = cellHeight
+                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview in
+                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text)")
                     cell.layoutIfNeeded()
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
                 }
                 cell.labelDelegate = self
                 cell.actionDelegate = self
