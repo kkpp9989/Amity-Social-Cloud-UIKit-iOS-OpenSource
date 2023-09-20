@@ -352,59 +352,59 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
             screenViewModel.loadMoreComments()
         }
         
-        let viewModel = screenViewModel.item(at: indexPath)
-        switch viewModel {
-        case .post(let postComponent):
-            (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
-            (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
-            (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
-        case .comment(let comment):
-            if comment.isDeleted {
-                let _cell = cell as! AmityPostDetailDeletedTableViewCell
-                _cell.configure(deletedAt: comment.updatedAt)
-            } else {
-                let _cell = cell as! AmityCommentTableViewCell
-                let layout = AmityCommentView.Layout(
-                    type: .comment,
-                    isExpanded: expandedIds.contains(comment.id),
-                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                    shouldLineShow: viewModel.isReplyType
-                )
-                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-                _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
-                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
-                    _cell.frame.size.height = cellHeight
-                    _cell.layoutIfNeeded()
-                }
-                _cell.labelDelegate = self
-                _cell.actionDelegate = self
-            }
-            
-        case .replyComment(let comment):
-            if comment.isDeleted {
-                return
-            }
-            let _cell = cell as! AmityCommentTableViewCell
-            let layout = AmityCommentView.Layout(
-                type: .reply,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
-            // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-            print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-            _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
-                print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
-                _cell.frame.size.height = cellHeight
-                _cell.layoutIfNeeded()
-            }
-            _cell.labelDelegate = self
-            _cell.actionDelegate = self
-            
-        case .loadMoreReply:
-            break
-        }
+//        let viewModel = screenViewModel.item(at: indexPath)
+//        switch viewModel {
+//        case .post(let postComponent):
+//            (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
+//            (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
+//            (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
+//        case .comment(let comment):
+//            if comment.isDeleted {
+//                let _cell = cell as! AmityPostDetailDeletedTableViewCell
+//                _cell.configure(deletedAt: comment.updatedAt)
+//            } else {
+//                let _cell = cell as! AmityCommentTableViewCell
+//                let layout = AmityCommentView.Layout(
+//                    type: .comment,
+//                    isExpanded: expandedIds.contains(comment.id),
+//                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+//                    shouldLineShow: viewModel.isReplyType
+//                )
+//                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+//                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+//                _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+//                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+//                    _cell.frame.size.height = cellHeight
+//                    _cell.layoutIfNeeded()
+//                }
+//                _cell.labelDelegate = self
+//                _cell.actionDelegate = self
+//            }
+//
+//        case .replyComment(let comment):
+//            if comment.isDeleted {
+//                return
+//            }
+//            let _cell = cell as! AmityCommentTableViewCell
+//            let layout = AmityCommentView.Layout(
+//                type: .reply,
+//                isExpanded: expandedIds.contains(comment.id),
+//                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+//                shouldLineShow: viewModel.isReplyType
+//            )
+//            // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+//            print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+//            _cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+//                print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+//                _cell.frame.size.height = cellHeight
+//                _cell.layoutIfNeeded()
+//            }
+//            _cell.labelDelegate = self
+//            _cell.actionDelegate = self
+//
+//        case .loadMoreReply:
+//            break
+//        }
         
     }
     
@@ -425,7 +425,9 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
+//            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
+            
+            return UITableView.automaticDimension
         case .replyComment(let comment):
             if comment.isDeleted {
                 return AmityPostDetailDeletedTableViewCell.height
@@ -473,22 +475,77 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
             } else {
                 cell = postComponent.getComponentCell(tableView, at: indexPath)
             }
+            
+            // Add on
+            (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
+            (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
+            (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
+            
             return cell
         case .comment(let comment):
+//            if comment.isDeleted {
+//                let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+//                return cell
+//            }
+//
+//            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+//            return cell
+            
             if comment.isDeleted {
                 let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.configure(deletedAt: comment.updatedAt)
+                return cell
+            } else {
+                let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                let layout = AmityCommentView.Layout(
+                    type: .comment,
+                    isExpanded: expandedIds.contains(comment.id),
+                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                    shouldLineShow: viewModel.isReplyType
+                )
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+                    cell.frame.size.height = cellHeight
+                    cell.layoutIfNeeded()
+                }
+                cell.labelDelegate = self
+                cell.actionDelegate = self
                 return cell
             }
-            
-            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            return cell
         case .replyComment(let comment):
+//            if comment.isDeleted {
+//                let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+//                return cell
+//            }
+//            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+//            return cell
+            
             if comment.isDeleted {
                 let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 return cell
+            } else {
+                let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                let layout = AmityCommentView.Layout(
+                    type: .reply,
+                    isExpanded: expandedIds.contains(comment.id),
+                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                    shouldLineShow: viewModel.isReplyType
+                )
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
+                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
+                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview, cellHeight in
+                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text) | will update height to \(cellHeight) px and layout")
+                    cell.frame.size.height = cellHeight
+                    cell.layoutIfNeeded()
+                }
+                cell.labelDelegate = self
+                cell.actionDelegate = self
+                
+                return cell
             }
-            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            return cell
+            
         case .loadMoreReply:
             let cell: AmityViewMoreReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             return cell
