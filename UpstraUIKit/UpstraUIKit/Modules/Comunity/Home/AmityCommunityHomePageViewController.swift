@@ -72,6 +72,13 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         var rightButtonItems: [UIButton] = []
         
         // Create post button
+        let notificationButton: UIButton = UIButton.init(type: .custom)
+        notificationButton.setImage(AmityIconSet.iconNotificationNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        notificationButton.addTarget(self, action: #selector(notificationTap), for: .touchUpInside)
+        notificationButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(notificationButton)
+        
+        // Create post button
         let createPostButton: UIButton = UIButton.init(type: .custom)
         createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
         createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
@@ -102,8 +109,13 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         backButton.tintColor = AmityColorSet.base
         leftBarButtons = backButton
         
-        // Add all component to left navigation items
-        navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
+        if self.navigationController?.viewControllers.first != self {
+            // Add all component to left navigation items
+            navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
+        } else {
+            // This controller is the root view controller, so you don't need to set a back button
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: title) // Title of navigation bar
+        }
     }
 }
 
@@ -119,6 +131,11 @@ private extension AmityCommunityHomePageViewController {
     
     @objc func createPostTap() {
         AmityEventHandler.shared.createPostBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
+    }
+    
+    @objc func notificationTap() {
+        let notificationVC = AmityNotificationTrayViewController.make()
+        navigationController?.pushViewController(notificationVC, animated: true)
     }
     
     /* [Custom for ONE Krungthai] [Temp] Set all notification off (top-level) */

@@ -486,6 +486,14 @@
 		AA3A24842A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */; };
 		AA3A24862A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24852A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift */; };
 		AA3A24892A6BB542004CEEA0 /* AmityPostContentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24882A6BB542004CEEA0 /* AmityPostContentComponent.swift */; };
+		AA5B3DA52ABBFDB1006192D6 /* AmityNotificationTrayScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3D9B2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModel.swift */; };
+		AA5B3DA62ABBFDB1006192D6 /* AmityNotificationTrayScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3D9C2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModelProtocol.swift */; };
+		AA5B3DA72ABBFDB1006192D6 /* AmityNotificationTrayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3D9E2ABBFDB0006192D6 /* AmityNotificationTrayModel.swift */; };
+		AA5B3DA82ABBFDB1006192D6 /* NotificationTrayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA5B3D9F2ABBFDB0006192D6 /* NotificationTrayTableViewCell.xib */; };
+		AA5B3DA92ABBFDB1006192D6 /* NotificationTrayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DA12ABBFDB0006192D6 /* NotificationTrayTableViewCell.swift */; };
+		AA5B3DAA2ABBFDB1006192D6 /* AmityNotificationTrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DA32ABBFDB0006192D6 /* AmityNotificationTrayViewController.swift */; };
+		AA5B3DAB2ABBFDB1006192D6 /* AmityNotificationTrayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA5B3DA42ABBFDB0006192D6 /* AmityNotificationTrayViewController.xib */; };
+		AA5B3DAD2ABC0ACF006192D6 /* RequestGetNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DAC2ABC0ACF006192D6 /* RequestGetNotification.swift */; };
 		AA7972522A6E2DD600ED3BC9 /* RequestGetViewerCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */; };
 		AA7972542A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972532A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift */; };
 		AA7972562A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972552A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift */; };
@@ -1183,6 +1191,14 @@
 		AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		AA3A24852A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailScreenViewModel.swift; sourceTree = "<group>"; };
 		AA3A24882A6BB542004CEEA0 /* AmityPostContentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostContentComponent.swift; sourceTree = "<group>"; };
+		AA5B3D9B2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityNotificationTrayScreenViewModel.swift; sourceTree = "<group>"; };
+		AA5B3D9C2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModelProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityNotificationTrayScreenViewModelProtocol.swift; sourceTree = "<group>"; };
+		AA5B3D9E2ABBFDB0006192D6 /* AmityNotificationTrayModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityNotificationTrayModel.swift; sourceTree = "<group>"; };
+		AA5B3D9F2ABBFDB0006192D6 /* NotificationTrayTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationTrayTableViewCell.xib; sourceTree = "<group>"; };
+		AA5B3DA12ABBFDB0006192D6 /* NotificationTrayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTrayTableViewCell.swift; sourceTree = "<group>"; };
+		AA5B3DA32ABBFDB0006192D6 /* AmityNotificationTrayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityNotificationTrayViewController.swift; sourceTree = "<group>"; };
+		AA5B3DA42ABBFDB0006192D6 /* AmityNotificationTrayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityNotificationTrayViewController.xib; sourceTree = "<group>"; };
+		AA5B3DAC2ABC0ACF006192D6 /* RequestGetNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetNotification.swift; sourceTree = "<group>"; };
 		AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetViewerCount.swift; sourceTree = "<group>"; };
 		AA7972532A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGetViewerCountModel.swift; sourceTree = "<group>"; };
 		AA7972552A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostTabbarViewController.swift; sourceTree = "<group>"; };
@@ -2556,6 +2572,7 @@
 		72A350F524EA820800DA9D46 /* Comunity */ = {
 			isa = PBXGroup;
 			children = (
+				AA5B3D992ABBFDB0006192D6 /* NotificationTray */,
 				AAB210932A66CE9F00F0B653 /* Hashtag */,
 				A9E890F329F8F3E300A22B35 /* Reactions */,
 				D4376E4427385C7A00109D97 /* Mention */,
@@ -3845,6 +3862,43 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		AA5B3D992ABBFDB0006192D6 /* NotificationTray */ = {
+			isa = PBXGroup;
+			children = (
+				AA5B3DA02ABBFDB0006192D6 /* Cell */,
+				AA5B3DA22ABBFDB0006192D6 /* ViewController */,
+				AA5B3D9A2ABBFDB0006192D6 /* ViewModel */,
+			);
+			path = NotificationTray;
+			sourceTree = "<group>";
+		};
+		AA5B3D9A2ABBFDB0006192D6 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				AA5B3D9B2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModel.swift */,
+				AA5B3D9C2ABBFDB0006192D6 /* AmityNotificationTrayScreenViewModelProtocol.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		AA5B3DA02ABBFDB0006192D6 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				AA5B3DA12ABBFDB0006192D6 /* NotificationTrayTableViewCell.swift */,
+				AA5B3D9F2ABBFDB0006192D6 /* NotificationTrayTableViewCell.xib */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		AA5B3DA22ABBFDB0006192D6 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				AA5B3DA32ABBFDB0006192D6 /* AmityNotificationTrayViewController.swift */,
+				AA5B3DA42ABBFDB0006192D6 /* AmityNotificationTrayViewController.xib */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		AA7972592A6E943E00ED3BC9 /* AmityPostTabbar */ = {
 			isa = PBXGroup;
 			children = (
@@ -3857,6 +3911,7 @@
 		AA8CC6C52A6827F7003F8B8E /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
+				AA5B3D9E2ABBFDB0006192D6 /* AmityNotificationTrayModel.swift */,
 				AAC55D7D2A6976C00030A0BD /* ResponseGetPostModel.swift */,
 				AA8CC6C62A6827F7003F8B8E /* AmitySearchPostsModel.swift */,
 				AA7972532A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift */,
@@ -3960,6 +4015,7 @@
 				AACF116F2A67CB0E006C2907 /* RequestHashtag.swift */,
 				AAC25F312A68243800741A5C /* RequestSearchingPosts.swift */,
 				AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */,
+				AA5B3DAC2ABC0ACF006192D6 /* RequestGetNotification.swift */,
 			);
 			path = ServiceModel;
 			sourceTree = "<group>";
@@ -4866,11 +4922,13 @@
 				B71AD6582537F9E400AFB3D0 /* AmityCommunityMemberSettingsTableViewCell.xib in Resources */,
 				723B6A85251B3A6200EAE8D3 /* AmityCommentView.xib in Resources */,
 				7218BEE025D3E783002F5132 /* AmityDeletedReplyTableViewCell.xib in Resources */,
+				AA5B3DA82ABBFDB1006192D6 /* NotificationTrayTableViewCell.xib in Resources */,
 				B789C0BE254F12F700C1DB05 /* AmityMessageListHeaderView.xib in Resources */,
 				D404015A25FF88FE00311C83 /* AmityCommunityNotificationSettingsViewController.xib in Resources */,
 				7858D3A626DAD83600A0090E /* AmityPostPollTableViewCell.xib in Resources */,
 				97D7C49D264BF90000EA24F5 /* AmityChannelMemberSettingsTableViewCell.xib in Resources */,
 				AACF11872A680930006C2907 /* AmityHashtagSearchTableViewCell.xib in Resources */,
+				AA5B3DAB2ABBFDB1006192D6 /* AmityNotificationTrayViewController.xib in Resources */,
 				B76A101E252B7E1D00AFC7A8 /* AmityTrendingCommunityViewController.xib in Resources */,
 				B70D2BB52577144500E2D56B /* AmityMessageAudioOutgoingTableViewCell.xib in Resources */,
 				A0A903A926BA6E61002949B2 /* PostGalleryItemCell.xib in Resources */,
@@ -4993,6 +5051,7 @@
 				97D0EBB926A14ADE00E9FE6A /* AmityPostReviewSettingsCommunityViewModel.swift in Sources */,
 				782EDA6F25F3E3790056FC48 /* AmitySettingsTableView.swift in Sources */,
 				B797ED1024F6C3C500F3B411 /* NSMutableAttributedString+Extension.swift in Sources */,
+				AA5B3DA92ABBFDB1006192D6 /* NotificationTrayTableViewCell.swift in Sources */,
 				0D43B17225D82EAF00E6B604 /* AmityReactionController.swift in Sources */,
 				72A3518324EA820800DA9D46 /* AssetCollectionViewCell.swift in Sources */,
 				B788B933252D8B55002F4F12 /* AmityTrendingCommunityScreenViewModel.swift in Sources */,
@@ -5002,6 +5061,7 @@
 				789F820A26E3B9F100C16C68 /* AmityPollCreatorAddOptionTableViewCell.swift in Sources */,
 				78561A7C25F9D5E800A1403E /* AmityPostReviewSettingsScreenViewModelProtocol.swift in Sources */,
 				72A3516624EA820800DA9D46 /* AmityImagePickerController.swift in Sources */,
+				AA5B3DAA2ABBFDB1006192D6 /* AmityNotificationTrayViewController.swift in Sources */,
 				979199992689C67B0057468F /* AmityComposeBarOnlyTextViewController.swift in Sources */,
 				B790CFEC251BBA1B001DB7C9 /* AmityMyCommunityCollectionViewCell.swift in Sources */,
 				7221E42B254A8DA600756E61 /* AmityCommunityCategoryModel.swift in Sources */,
@@ -5048,6 +5108,7 @@
 				72A3511224EA820800DA9D46 /* AmityViewController.swift in Sources */,
 				0DBC356425A32EE00064D138 /* AmitySelectUserController.swift in Sources */,
 				72A3517D24EA820800DA9D46 /* SelectionView.swift in Sources */,
+				AA5B3DA52ABBFDB1006192D6 /* AmityNotificationTrayScreenViewModel.swift in Sources */,
 				72A3513E24EA820800DA9D46 /* UITableView+Extension.swift in Sources */,
 				B7A7F7BC252C3F07000F07DF /* AmityCategoryPreviewCollectionViewCell.swift in Sources */,
 				72A351A924EA821900DA9D46 /* AmityLocalizedStringSet.swift in Sources */,
@@ -5200,6 +5261,7 @@
 				B7B0262F256FB4D900CD9242 /* AmityMessageListRecordingViewController.swift in Sources */,
 				782E737A26DD2FF600B7E228 /* AmityPostPollComponent.swift in Sources */,
 				7809D64726374BD900C5B517 /* AmityMyCommunityScreenViewModelProtocol.swift in Sources */,
+				AA5B3DA72ABBFDB1006192D6 /* AmityNotificationTrayModel.swift in Sources */,
 				D42E1B8A274CED5C006C41ED /* AmityMentionManager.swift in Sources */,
 				72A3516A24EA820800DA9D46 /* ImagePickerController+Closure.swift in Sources */,
 				B7B604FE24FBA410005FB53D /* AmityDynamicHeightCollectionView.swift in Sources */,
@@ -5230,6 +5292,7 @@
 				7221E42825499FEA00756E61 /* UICollectionView+Extension.swift in Sources */,
 				72931CBB24F7A27A008D6DBD /* AmityPostTargetPickerScreenViewModelType.swift in Sources */,
 				72A3510F24EA820800DA9D46 /* AmityBadgeView.swift in Sources */,
+				AA5B3DA62ABBFDB1006192D6 /* AmityNotificationTrayScreenViewModelProtocol.swift in Sources */,
 				97D7C4D8264BFE7F00EA24F5 /* AmityChannelMembership+Extension.swift in Sources */,
 				725849582608D94A006AC65F /* AmityPostNotificationSettingsViewController.swift in Sources */,
 				7258495D2608DC45006AC65F /* AmityPostNotificationSettingsScreenViewModelType.swift in Sources */,
@@ -5292,6 +5355,7 @@
 				72A3517C24EA820800DA9D46 /* CameraCollectionViewCell.swift in Sources */,
 				78561A8225F9D86C00A1403E /* AmityPostReviewSettingsItem.swift in Sources */,
 				A0A903F126BFC2D0002949B2 /* PostGalleryFakeItemCell.swift in Sources */,
+				AA5B3DAD2ABC0ACF006192D6 /* RequestGetNotification.swift in Sources */,
 				72A3518B24EA820800DA9D46 /* ZoomInteractionController.swift in Sources */,
 				A0B68B5C26E7187B007D7B5B /* AmityPostLiveStreamComponent.swift in Sources */,
 				97D0EBC326A14BB600E9FE6A /* UIPanGestureRecognizer+Extension.swift in Sources */,
