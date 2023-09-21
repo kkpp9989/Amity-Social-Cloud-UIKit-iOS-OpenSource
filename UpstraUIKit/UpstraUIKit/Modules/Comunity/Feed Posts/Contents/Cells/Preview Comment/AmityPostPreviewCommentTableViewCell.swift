@@ -43,20 +43,26 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         /* [Custom for ONE Krungthai][URL Preview] Add check URL in text for show URL preview or not */
         if let urlString = AmityURLCustomManager.getURLInText(text: comment.text) { // Case : Have URL in text
             if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
+                // Display URL Preview from cache URL metadata
                 commentView.displayURLPreview(metadata: cachedMetadata)
             } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
+                // Get new URL metadata
                 AmityURLCustomManager.fetchAmityURLMetadata(url: urlString) { metadata in
                     DispatchQueue.main.async {
                         if let urlMetadata: AmityURLMetadata = metadata { // Case : Can get new URL metadata -> set display URL preview
+                            // Save new URL metadata to cache
                             AmityURLPreviewCacheManager.shared.cacheMetadata(urlMetadata, forURL: urlString)
+                            // Display URL Preview from new URL metadata
                             self.commentView.displayURLPreview(metadata: urlMetadata)
                         } else { // Case : Can get new URL metadata -> hide URL preview
+                            // Hide URL Preview
                             self.commentView.hideURLPreview()
                         }
                     }
                 }
             }
         } else { // Case : Don't have URL in text
+            // Hide URL Preview
             commentView.hideURLPreview()
         }
         

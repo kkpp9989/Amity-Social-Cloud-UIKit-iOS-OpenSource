@@ -509,13 +509,13 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
                     shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                     shouldLineShow: viewModel.isReplyType
                 )
-                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview in
-                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text)")
-                    cell.layoutIfNeeded()
-                    tableView.reloadRows(at: [indexPath], with: .automatic)
-                }
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing and handle after displaying URL preview
+                cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post) { isHaveURLPreview, indexPath in
+                    // Reload row if display URL Preview and row is visible
+                    if isHaveURLPreview, let indexPathOfCell = cell.indexPath, let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
+                        tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
+                    }
+                } 
                 cell.labelDelegate = self
                 cell.actionDelegate = self
                 
@@ -542,12 +542,12 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
                     shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                     shouldLineShow: viewModel.isReplyType
                 )
-                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-                print("[Post][URL Preview][\(indexPath)] Start configure | comment: \(comment.text)")
-                cell.configure(with: comment, layout: layout, post: screenViewModel.post) { isHaveURLPreview in
-                    print("[Post][URL Preview][\(indexPath)] isHaveURLPreview : \(isHaveURLPreview) | comment: \(comment.text)")
-                    cell.layoutIfNeeded()
-                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing and handle after displaying URL preview
+                cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post) { isHaveURLPreview, indexPath  in
+                    // Reload row if display URL Preview and row is visible
+                    if let indexPathOfCell = cell.indexPath, let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
+                        tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
+                    }
                 }
                 cell.labelDelegate = self
                 cell.actionDelegate = self

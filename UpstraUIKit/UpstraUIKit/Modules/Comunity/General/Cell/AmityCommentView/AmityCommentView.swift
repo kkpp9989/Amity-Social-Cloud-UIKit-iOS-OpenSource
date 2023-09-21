@@ -56,6 +56,8 @@ class AmityCommentView: AmityView {
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
     
+    
+    
     // MARK: - URLPreview Properties
     private var urlData: URL? // [Custom for ONE Krungthai][URL Preview] Add URL data property for use tap action
     static let heightURLPreview: CGFloat = 80
