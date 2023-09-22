@@ -123,7 +123,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         optionButton.setImage(AmityIconSet.iconOption, for: .normal)
         
         // pin post
-        pinPostIconImageView.image = AmityIconSet.iconRadioCheck
+        pinPostIconImageView.image = AmityIconSet.iconPinpost
     }
     
     // MARK: - Perform Action

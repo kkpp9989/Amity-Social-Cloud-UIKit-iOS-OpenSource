@@ -71,6 +71,7 @@ public struct AmityIconSet {
     public static var iconDropdown = UIImage(named: "icon_dropdown", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconDownChevron = UIImage(named: "Icon_down_chevron", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconPlayVideo = UIImage(named: "icon_play_video", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconPinpost = UIImage(named: "icon_pinpost", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconNotificationNavigationBar = UIImage(named: "icon_notification_button", in: AmityUIKitManager.bundle, compatibleWith: nil)
     
     public static var iconBadgeDNALike = UIImage(named: "icon_badge_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
