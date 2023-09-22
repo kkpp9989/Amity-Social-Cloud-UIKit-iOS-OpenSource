@@ -310,7 +310,7 @@ extension AmityCommentView {
     private func setupURLPreviewView() {
         // Setup image
         urlPreviewImage.image = nil
-        urlPreviewImage.backgroundColor = .gray
+        urlPreviewImage.backgroundColor = .white
         urlPreviewImage.contentMode = .scaleAspectFill
 
         // Setup domain
