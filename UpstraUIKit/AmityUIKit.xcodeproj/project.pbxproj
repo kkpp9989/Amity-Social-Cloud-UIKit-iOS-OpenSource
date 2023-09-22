@@ -486,6 +486,7 @@
 		AA3A24842A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */; };
 		AA3A24862A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24852A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift */; };
 		AA3A24892A6BB542004CEEA0 /* AmityPostContentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24882A6BB542004CEEA0 /* AmityPostContentComponent.swift */; };
+		AA5B3DAF2ABC3CB8006192D6 /* RequestGetPinPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DAE2ABC3CB8006192D6 /* RequestGetPinPost.swift */; };
 		AA7972522A6E2DD600ED3BC9 /* RequestGetViewerCount.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */; };
 		AA7972542A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972532A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift */; };
 		AA7972562A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7972552A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift */; };
@@ -1183,6 +1184,7 @@
 		AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		AA3A24852A6BA62D004CEEA0 /* OneKTBActivityDetailScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailScreenViewModel.swift; sourceTree = "<group>"; };
 		AA3A24882A6BB542004CEEA0 /* AmityPostContentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostContentComponent.swift; sourceTree = "<group>"; };
+		AA5B3DAE2ABC3CB8006192D6 /* RequestGetPinPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetPinPost.swift; sourceTree = "<group>"; };
 		AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetViewerCount.swift; sourceTree = "<group>"; };
 		AA7972532A6E2E2500ED3BC9 /* ResponseGetViewerCountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseGetViewerCountModel.swift; sourceTree = "<group>"; };
 		AA7972552A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostTabbarViewController.swift; sourceTree = "<group>"; };
@@ -3960,6 +3962,7 @@
 				AACF116F2A67CB0E006C2907 /* RequestHashtag.swift */,
 				AAC25F312A68243800741A5C /* RequestSearchingPosts.swift */,
 				AA7972512A6E2DD600ED3BC9 /* RequestGetViewerCount.swift */,
+				AA5B3DAE2ABC3CB8006192D6 /* RequestGetPinPost.swift */,
 			);
 			path = ServiceModel;
 			sourceTree = "<group>";
@@ -5313,6 +5316,7 @@
 				97D7C4A9264BF91000EA24F5 /* AmityChannelMemberViewController.swift in Sources */,
 				97D0EBB026A14A8800E9FE6A /* AmityPendingPostsDetailScreenViewModel.swift in Sources */,
 				78C1C4AD25F3EE0500D6F092 /* AmitySettingsItemTextContentTableViewCell.swift in Sources */,
+				AA5B3DAF2ABC3CB8006192D6 /* RequestGetPinPost.swift in Sources */,
 				0D95687A25D58F1C00DE98FD /* AmityPostComposable.swift in Sources */,
 				0DD94A6325A783250066FA0B /* AmityCommunityProfileScreenViewModel.swift in Sources */,
 				72A3515624EA820800DA9D46 /* AmityMessageListConstant.swift in Sources */,

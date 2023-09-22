@@ -67,6 +67,8 @@
 "general_society" = "สังคม";
 "general_like" = "Like";
 "general_love" = "Love";
+"general_pinpost" = "Pinpost";
+"general_unpinpost" = "Unpinpost";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";
