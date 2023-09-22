@@ -82,16 +82,11 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         warningLabel.isHidden = post.isCommentable
         topContainerView.isHidden = isReactionExisted
         
-        // [Custom for ONE Krungthai] Disable default setting share button for ONE Krungthai
-//        shareButton.isHidden = !AmityPostSharePermission.canSharePost(post: post)
-//        shareLabel.isHidden = post.sharedCount == 0
-//        let sharePrefix = post.sharedCount > 1 ? AmityLocalizedStringSet.Unit.sharesPlural.localizedString :
-//            AmityLocalizedStringSet.Unit.sharesSingular.localizedString
-//        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount)
-        
-        // [Custom for ONE Krungthai] Hide share button for ONE Krungthai
-        shareButton.isHidden = true
-        shareLabel.isHidden = true
+        shareButton.isHidden = !AmityPostSharePermission.canSharePost(post: post)
+        shareLabel.isHidden = post.sharedCount == 0
+        let sharePrefix = post.sharedCount > 1 ? AmityLocalizedStringSet.Unit.sharesPlural.localizedString :
+            AmityLocalizedStringSet.Unit.sharesSingular.localizedString
+        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount)
     }
     
     // MARK: - Setup views
