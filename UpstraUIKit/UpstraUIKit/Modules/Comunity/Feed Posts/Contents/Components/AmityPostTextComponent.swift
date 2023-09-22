@@ -45,7 +45,7 @@ public struct AmityPostTextComponent: AmityPostComposable {
             cell.display(post: post, indexPath: indexPath)
             
             /* [Custom for ONE Krungthai][URL Preview] Add check URL in text for show URL preview or not */
-            if let urlString = AmityURLCustomManager.getURLInText(text: post.text) { // Case : Have URL in text
+            if let urlString = AmityURLCustomManager.Utilities.getURLInText(text: post.text) { // Case : Have URL in text
                 if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
                     // Display URL Preview from cache URL metadata
                     cell.displayURLPreview(metadata: cachedMetadata)
@@ -55,7 +55,7 @@ public struct AmityPostTextComponent: AmityPostComposable {
                     }
                 } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                     // Get new URL metadata
-                    AmityURLCustomManager.fetchAmityURLMetadata(url: urlString) { metadata in
+                    AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlString) { metadata in
                         DispatchQueue.main.async {
                             if let urlMetadata: AmityURLMetadata = metadata { // Case : Can get new URL metadata -> set display URL preview
                                 // Save new URL metadata to cache
