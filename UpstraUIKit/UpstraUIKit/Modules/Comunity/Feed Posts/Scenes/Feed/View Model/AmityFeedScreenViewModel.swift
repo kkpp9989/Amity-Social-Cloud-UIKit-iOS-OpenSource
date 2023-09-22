@@ -19,6 +19,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     private let commentController: AmityCommentControllerProtocol
     private let reactionController: AmityReactionControllerProtocol
     private let pollRepository: AmityPollRepository
+    private let postRepository: AmityPostRepository
     
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.3)
@@ -48,6 +49,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
         self.isPrivate = false
         self.isLoading = false
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.postRepository = AmityPostRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
 }
@@ -130,7 +132,7 @@ extension AmityFeedScreenViewModel {
                 }
             case .failure(let error):
                 print(error)
-//                strongSelf.fetchFeedPosts()
+                //                strongSelf.fetchFeedPosts()
                 
                 strongSelf.getPostId(withpostId: "64fed4955acb9c3f752ce4ed") { (result) in
                     switch result {
@@ -143,6 +145,34 @@ extension AmityFeedScreenViewModel {
                 }
             }
         }
+    }
+    
+//    func getPostbyPostIDsList(posts: AmitySearchPostsModel, completion: @escaping (Result<AmityPostModel,AmityError>) -> Void) {
+//        DispatchQueue.main.async { [self] in
+//            let postCollection = postRepository.getPost(withId: "64fed4955acb9c3f752ce4ed")
+//            let token = postCollection.observe { [weak self] (_, error) in
+//                guard let strongSelf = self else { return }
+//                if let error = AmityError(error: error) {
+//                    completion(.failure(error))
+//                } else {
+//                    if let model = strongSelf.prepareData(amityObject: postCollection) {
+//                        completion(.success(model))
+//                    } else {
+//                        completion(.failure(error))
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
+    private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
+        guard let _post = amityObject.object else { return nil }
+        let post = AmityPostModel(post: _post)
+        if let communityId = post.targetCommunity?.communityId {
+            let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+            post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
+        }
+        return post
     }
     
     private func getPostId(withpostId postId: String, completion: @escaping (Result<AmityPostModel,AmityError>) -> Void) {

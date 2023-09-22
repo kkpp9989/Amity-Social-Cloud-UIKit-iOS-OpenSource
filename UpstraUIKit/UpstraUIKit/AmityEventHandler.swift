@@ -47,6 +47,7 @@ open class AmityEventHandler {
     /// A default behavior is navigating to `AmityCommunityProfilePageViewController`
     open func communityDidTap(from source: AmityViewController, communityId: String) {
         let viewController = AmityCommunityProfilePageViewController.make(withCommunityId: communityId)
+        viewController.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -83,6 +84,7 @@ open class AmityEventHandler {
         guard !(source is AmityPostDetailViewController) else { return }
         
         let viewController = AmityPostDetailViewController.make(withPostId: postId, withPollAnswers: pollAnswers)
+        viewController.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -92,6 +94,7 @@ open class AmityEventHandler {
     /// A default behavior is navigating to `AmityUserProfilePageViewController`
     open func userDidTap(from source: AmityViewController, userId: String) {
         let viewController = AmityUserProfilePageViewController.make(withUserId: userId)
+        viewController.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -108,6 +111,7 @@ open class AmityEventHandler {
     
     open func hashtagDidTap(from source: AmityViewController, keyword: String, count: Int) {
         let viewController = AmityHashtagFeedViewController.make(feedType: .globalFeed, keyword: keyword, count: count)
+        viewController.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -117,6 +121,7 @@ open class AmityEventHandler {
     /// A default behavior is navigating to `AmityEditUserProfileViewController`
     open func editUserDidTap(from source: AmityViewController, userId: String) {
         let editProfileViewController = AmityUserProfileEditorViewController.make()
+        editProfileViewController.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(editProfileViewController, animated: true)
     }
     
