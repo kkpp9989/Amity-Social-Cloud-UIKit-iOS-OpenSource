@@ -206,7 +206,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             return
         }
         pullRefreshHandler?()
-        screenViewModel.action.fetchPosts()
+        screenViewModel.action.clearOldPosts()
+//        screenViewModel.action.fetchPosts()
     }
     
 }
@@ -365,6 +366,14 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
 
 // MARK: - AmityFeedScreenViewModelDelegate
 extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
+    // [Improvement] add did clear data success function for fetch post when scroll refresh from feed have post with URL Preview
+    func screenViewModelDidClearDataSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+        debouncer.run { [weak self] in
+            self?.tableView.reloadData()
+        }
+        refreshControl.endRefreshing()
+        screenViewModel.action.fetchPosts()
+    }
     
     func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityFeedScreenViewModelType) {
         // When view is invisible but data source request updates, mark it as a dirty data source.

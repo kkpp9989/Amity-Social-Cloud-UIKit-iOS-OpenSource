@@ -144,6 +144,12 @@ extension AmityFeedScreenViewModel {
     func loadMore() {
         postController.loadMore()
     }
+    
+    // [Improvement] clear old post function for scroll to refresh with post URL preview for fix app crash because of invalid batch updates detected
+    func clearOldPosts() {
+        postComponents = []
+        delegate?.screenViewModelDidClearDataSuccess(self)
+    }
 }
 
 // MARK: Observer
