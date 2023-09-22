@@ -47,20 +47,17 @@ class AmityCommentView: AmityView {
     // MARK: - URLPreview IBOutlet Properties
     /* [Custom for ONE Krungthai][URL Preview] Component for URL Preview */
     @IBOutlet var urlPreviewImage: UIImageView!
-    @IBOutlet var urlPreviewDomain: AmityLabel!
-    @IBOutlet var urlPreviewTitle: AmityLabel!
-    @IBOutlet var urlPreviewView: AmityView!
-    @IBOutlet var heightOfContentConstraint: NSLayoutConstraint!
-    static var heightOfConstraint: CGFloat = 20
+    @IBOutlet var urlPreviewDomain: UILabel!
+    @IBOutlet var urlPreviewTitle: UILabel!
+    @IBOutlet var urlPreviewView: UIView!
+    @IBOutlet var trailingStaticOfContentView: NSLayoutConstraint!
+    @IBOutlet var trailingStaticOfURLPreviewDetailView: NSLayoutConstraint!
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
-    
-    
-    
+
     // MARK: - URLPreview Properties
     private var urlData: URL? // [Custom for ONE Krungthai][URL Preview] Add URL data property for use tap action
-    static let heightURLPreview: CGFloat = 80
     
     // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
     public var isModeratorUserInOfficialCommunity: Bool = false
@@ -323,11 +320,13 @@ extension AmityCommentView {
 
         // Setup title
         urlPreviewTitle.text = " "
-        urlPreviewTitle.font = AmityFontSet.bodyBold
+        urlPreviewTitle.font = AmityFontSet.captionBold
         urlPreviewTitle.textColor = AmityColorSet.base
 
-        // Setup ishidden status of view
+        // Setup ishidden status of view & constant for URL preview
         urlPreviewView.isHidden = true
+        trailingStaticOfContentView.isActive = false
+        trailingStaticOfURLPreviewDetailView.isActive = false
 
         // Setup tap gesture
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openURLTapAction(_:)))
@@ -339,8 +338,11 @@ extension AmityCommentView {
         urlPreviewTitle.text = metadata.title
         urlPreviewDomain.text = metadata.domain
         urlPreviewImage.image = metadata.imagePreview
-        urlPreviewView.isHidden = false
         urlData = metadata.urlData
+        
+        urlPreviewView.isHidden = false
+        trailingStaticOfContentView.isActive = true
+        trailingStaticOfURLPreviewDetailView.isActive = true
     }
 
     // MARK: - Hide URL Preview
@@ -351,6 +353,8 @@ extension AmityCommentView {
     // MARK: - Clear URL Preview
     private func clearURLPreviewView() {
         urlPreviewView.isHidden = true
+        trailingStaticOfContentView.isActive = false
+        trailingStaticOfURLPreviewDetailView.isActive = false
         urlPreviewTitle.text = " "
         urlPreviewDomain.text = " "
         urlPreviewImage.image = nil

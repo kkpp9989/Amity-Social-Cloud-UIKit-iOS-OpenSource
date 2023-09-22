@@ -34,6 +34,7 @@ public struct AmityPostTextComponent: AmityPostComposable {
     }
     
     public func getComponentCell(_ tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
+        
         switch indexPath.row {
         case 0:
             let cell: AmityPostHeaderTableViewCell = tableView.dequeueReusableCell(for: indexPath)
@@ -90,7 +91,12 @@ public struct AmityPostTextComponent: AmityPostComposable {
             let comment = post.getComment(at: indexPath, totalComponent: AmityPostConstant.defaultNumberComponent)
             let isExpanded = post.commentExpandedIds.contains(comment?.id ?? "absolutely-cannot-found-xc")
             cell.setIsExpanded(isExpanded)
-            cell.display(post: post, comment: comment)
+            cell.display(post: post, comment: comment, indexPath: indexPath) { isHaveURLPreview, indexPathOfCell in
+                // Reload row if row is visible (reload all preview cell because some cell show URL preview same other cell even though don't have URL in text)
+                if let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
+                    tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
+                }
+            }
             return cell
         }
     }

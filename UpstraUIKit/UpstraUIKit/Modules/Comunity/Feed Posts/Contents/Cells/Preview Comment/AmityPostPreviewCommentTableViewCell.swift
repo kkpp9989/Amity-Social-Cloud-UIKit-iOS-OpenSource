@@ -26,7 +26,12 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         setupView()
     }
     
-    public func display(post: AmityPostModel, comment: AmityCommentModel?) {
+    // [Improvement] Add trigger prepareForReuse for clear old data in comment view
+    public override func prepareForReuse() {
+        commentView.prepareForReuse()
+    }
+    
+    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isHaveURLPreview: Bool, _ indexPath: IndexPath) -> Void)?) {
         self.comment = comment
         self.post = post
         guard let comment = comment else { return }
@@ -45,6 +50,8 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
             if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
                 // Display URL Preview from cache URL metadata
                 commentView.displayURLPreview(metadata: cachedMetadata)
+                // Handle cell after display URL Preview
+                completion?(true, indexPath)
             } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                 // Get new URL metadata
                 AmityURLCustomManager.fetchAmityURLMetadata(url: urlString) { metadata in
@@ -54,9 +61,13 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
                             AmityURLPreviewCacheManager.shared.cacheMetadata(urlMetadata, forURL: urlString)
                             // Display URL Preview from new URL metadata
                             self.commentView.displayURLPreview(metadata: urlMetadata)
+                            // Handle cell after display URL Preview
+                            completion?(true, indexPath)
                         } else { // Case : Can get new URL metadata -> hide URL preview
                             // Hide URL Preview
                             self.commentView.hideURLPreview()
+                            // Handle cell after display URL Preview
+                            completion?(false, indexPath)
                         }
                     }
                 }
@@ -64,6 +75,8 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         } else { // Case : Don't have URL in text
             // Hide URL Preview
             commentView.hideURLPreview()
+            // Handle cell after display URL Preview
+            completion?(false, indexPath)
         }
         
         commentView.delegate = self
