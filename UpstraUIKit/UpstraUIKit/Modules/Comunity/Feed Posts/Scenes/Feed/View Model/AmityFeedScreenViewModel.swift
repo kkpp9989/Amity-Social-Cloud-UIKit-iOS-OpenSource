@@ -76,7 +76,9 @@ extension AmityFeedScreenViewModel {
     
     private func prepareComponents(posts: [AmityPostModel]) {
         postComponents = []
-        for post in posts {
+        var postsData = pinPostData
+        postsData += posts
+        for post in postsData {
             post.appearance.displayType = .feed
 
             // [Custom for ONE Krungthai] Assign custom source post display type for use in moderator user in official community condition to outputing and prepare action
@@ -185,9 +187,8 @@ extension AmityFeedScreenViewModel {
                 if !strongSelf.isReactionChanging {
                     switch result {
                     case .success(let posts):
-                        strongSelf.pinPostData += posts
                         strongSelf.debouncer.run {
-                            strongSelf.prepareComponents(posts: strongSelf.pinPostData)
+                            strongSelf.prepareComponents(posts: posts)
                         }
                     case .failure(let error):
                         strongSelf.debouncer.run {
