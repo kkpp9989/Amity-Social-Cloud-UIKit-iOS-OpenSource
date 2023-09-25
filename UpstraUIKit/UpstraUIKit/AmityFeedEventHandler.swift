@@ -25,7 +25,11 @@ open class AmityFeedEventHandler {
     ///
     /// A default behavior is presenting a `AmityActivityController`
     open func sharePostDidTap(from source: AmityViewController, postId: String) {
-        let viewController = AmityActivityController.make(activityItems: [postId])
+        // [Custom For ONE Krungthai][Share Post By URL] Change share postId to external URL of post
+        // [Original]
+//        let viewController = AmityActivityController.make(activityItems: [postId])
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(postId: postId)
+        let viewController = AmityActivityController.make(activityItems: [externalURL])
         source.present(viewController, animated: true, completion: nil)
     }
     

@@ -32,6 +32,8 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
         }
     }
     
+    private var pinPostData: [AmityPostModel] = []
+    
     private var isReactionLoading: Bool = false
     private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
@@ -110,15 +112,63 @@ extension AmityFeedScreenViewModel {
 extension AmityFeedScreenViewModel {
     
     func fetchPosts() {
+        pinPostData = []
         isLoading = true
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestGetPinPost() { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(_):
+                strongSelf.getPostId(withpostId: "64fed4955acb9c3f752ce4ed") { (result) in
+                    switch result {
+                    case .success(let post):
+                        strongSelf.pinPostData.append(post)
+                        strongSelf.fetchFeedPosts()
+                    case .failure(_):
+                        strongSelf.fetchFeedPosts()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+//                strongSelf.fetchFeedPosts()
+                
+                strongSelf.getPostId(withpostId: "64fed4955acb9c3f752ce4ed") { (result) in
+                    switch result {
+                    case .success(let post):
+                        strongSelf.pinPostData.append(post)
+                        strongSelf.fetchFeedPosts()
+                    case .failure(_):
+                        strongSelf.fetchFeedPosts()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func getPostId(withpostId postId: String, completion: @escaping (Result<AmityPostModel,AmityError>) -> Void) {
+        DispatchQueue.main.async { [self] in
+            postController.getPostForPostId(withPostId: postId) { (result) in
+                switch result {
+                case .success(let post):
+                    post.isPinPost = true
+                    completion(.success(post))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    private func fetchFeedPosts() {
         postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
             guard let strongSelf = self else { return }
             /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
             if !strongSelf.isReactionChanging {
                 switch result {
                 case .success(let posts):
+                    strongSelf.pinPostData += posts
                     strongSelf.debouncer.run {
-                        strongSelf.prepareComponents(posts: posts)
+                        strongSelf.prepareComponents(posts: strongSelf.pinPostData)
                     }
                 case .failure(let error):
                     strongSelf.debouncer.run {

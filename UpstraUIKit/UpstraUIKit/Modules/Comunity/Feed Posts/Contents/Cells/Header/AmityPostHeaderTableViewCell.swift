@@ -21,7 +21,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var badgeLabel: UILabel!
     @IBOutlet private var datetimeLabel: UILabel!
     @IBOutlet private var optionButton: UIButton!
-    
+    @IBOutlet private var pinPostIconImageView: UIImageView!
+
     private(set) public var post: AmityPostModel?
     
     // [Custom for ONE Krungthai] Add these properties for check condition of moderator user in official community for outputing
@@ -40,6 +41,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     
     public func display(post: AmityPostModel) {
         self.post = post
+        
+        pinPostIconImageView.isHidden = !post.isPinPost
         
         // [Custom for ONE Krungthai] Add condition of moderator user in official community for set avatar view and displayname interaction
         if let community = post.targetCommunity { // Case : Post from community
@@ -118,6 +121,9 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         // option
         optionButton.tintColor = AmityColorSet.base
         optionButton.setImage(AmityIconSet.iconOption, for: .normal)
+        
+        // pin post
+        pinPostIconImageView.image = AmityIconSet.iconPinpost
     }
     
     // MARK: - Perform Action

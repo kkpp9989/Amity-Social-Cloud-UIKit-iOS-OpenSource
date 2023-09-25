@@ -41,6 +41,17 @@ class NetworkManager {
                     httpRequest.setValue(dicDataValue.element.value as? String, forHTTPHeaderField: dicDataValue.element.key)
                 }
             }
+        case .jsonParam:
+            httpRequest = URLRequest(url: URL(string: requestMeta.urlRequest)!)
+            httpRequest.httpMethod = requestMeta.method.rawValue
+            httpRequest.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
+            for value in requestMeta.header {
+                for dicDataValue in value.enumerated() {
+                    httpRequest.setValue(dicDataValue.element.value as? String, forHTTPHeaderField: dicDataValue.element.key)
+                }
+            }
+            let jsonData = try? JSONSerialization.data(withJSONObject: requestMeta.params)
+            httpRequest.httpBody = jsonData
         }
         let task = session.dataTask(with: httpRequest) { (data, response, error) in
             completion(data, response, error)

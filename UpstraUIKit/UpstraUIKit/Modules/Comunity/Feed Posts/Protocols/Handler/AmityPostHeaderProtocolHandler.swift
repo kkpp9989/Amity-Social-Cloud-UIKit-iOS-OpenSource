@@ -82,6 +82,15 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
             strongSelf.delegate?.headerProtocolHandlerDidPerformAction(strongSelf, action: .tapReport, withPost: post)
         }
         
+        // check permission pinpost
+        let community = post.targetCommunity // Case : Post from community
+        let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: post.postedUserId, communityId: community?.communityId ?? "")
+        
+        let pinpostOption = TextItemOption(title: AmityLocalizedStringSet.General.pinpost.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+//            strongSelf.delegate?.headerProtocolHandlerDidPerformAction(strongSelf, action: .tapUnreport, withPost: post)
+        }
+        
         if post.isOwner {
             switch post.dataTypeInternal {
             case .poll:
@@ -117,6 +126,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
             // if it is in community feed, check permission before options
             if let communityId = post.targetCommunity?.communityId {
                 var items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                if isModeratorUserInOfficialCommunity {
+                    items.append(pinpostOption)
+                }
                 AmityUIKitManagerInternal.shared.client.hasPermission(.editCommunity, forCommunity: communityId) { [weak self] (hasPermission) in
                     if hasPermission {
                         items.insert(deleteOption, at: 0)
@@ -125,7 +137,10 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                     self?.viewController?.present(bottomSheet, animated: false, completion: nil)
                 }
             } else {
-                let items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                var items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                if isModeratorUserInOfficialCommunity {
+                    items.append(pinpostOption)
+                }
                 contentView.configure(items: items, selectedItem: nil)
                 viewController.present(bottomSheet, animated: false, completion: nil)
             }

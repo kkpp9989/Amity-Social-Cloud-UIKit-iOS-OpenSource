@@ -80,6 +80,8 @@ public struct AmityLocalizedStringSet {
         static let generalSociety = "general_society";
         static let generalLike = "general_like";
         static let generalLove = "general_love";
+        static let pinpost = "general_pinpost"
+        static let unPinpost = "general_unpinpost"
     }
     
     static let communitySettings = "community_settings"

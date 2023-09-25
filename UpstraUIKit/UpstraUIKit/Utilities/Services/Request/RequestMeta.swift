@@ -22,6 +22,7 @@ enum HTTPMethod: String {
 enum EnCoding {
     case jsonEncoding
     case urlEncoding
+    case jsonParam
 }
 
 protocol RequestMeta {
