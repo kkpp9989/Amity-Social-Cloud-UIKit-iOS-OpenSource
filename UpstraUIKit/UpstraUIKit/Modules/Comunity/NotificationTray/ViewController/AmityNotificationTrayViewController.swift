@@ -46,7 +46,9 @@ class AmityNotificationTrayViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        AmityHUD.show(.loading)
         screenViewModel.fetchData()
+        screenViewModel.updateReadTray()
     }
     
     // MARK: - Private functions
@@ -56,6 +58,7 @@ class AmityNotificationTrayViewController: AmityViewController {
         tableView.register(NotificationTrayTableViewCell.nib, forCellReuseIdentifier: NotificationTrayTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.separatorStyle = .singleLine
         tableView.rowHeight = UITableView.automaticDimension
     }
     
@@ -87,29 +90,35 @@ extension AmityNotificationTrayViewController: UITableViewDataSource {
         }
         return cell
     }
-
+    
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
 }
 
 extension AmityNotificationTrayViewController: UITableViewDelegate {
-
+    
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? NotificationTrayTableViewCell else { return }
-//        if let item = screenViewModel.item(at: indexPath) {
-//            cell.configure(model: item)
-//        }
+        if let item = screenViewModel.item(at: indexPath) {
+            cell.configure(model: item)
+        }
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = screenViewModel.item(at: indexPath) else { return }
         screenViewModel.updateReadItem(model: item)
-        if item.targetType != "community" {
-//            AmityEventHandler.shared.postDidtap(from: self, postId: item.targetId ?? "")
+        if item.targetType == "post" {
+            AmityEventHandler.shared.postDidtap(from: self, postId: item.targetID)
+        } else if item.targetType == "comment" {
+            AmityEventHandler.shared.postDidtap(from: self, postId: item.parentTargetID)
         } else {
-//            AmityEventHandler.shared.communityDidTap(from: self, communityId: item.targetId ?? "")
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: item.targetID)
         }
     }
 
-    func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {
             if isLoadmore {
                 isLoadmore = false
@@ -124,6 +133,7 @@ extension AmityNotificationTrayViewController: AmityNotificationTrayScreenViewMo
         DispatchQueue.main.async {
             self.tableView.reloadData()
             self.isLoadmore = true
+            AmityHUD.hide()
         }
     }
 }

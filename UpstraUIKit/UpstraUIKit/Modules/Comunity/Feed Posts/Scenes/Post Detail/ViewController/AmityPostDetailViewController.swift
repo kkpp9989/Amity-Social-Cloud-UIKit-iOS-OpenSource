@@ -700,6 +700,12 @@ extension AmityPostDetailViewController: AmityPostHeaderProtocolHandlerDelegate 
             screenViewModel.action.reportPost()
         case .tapClosePoll:
             screenViewModel.action.close(withPollId: post.poll?.id)
+        case .TapPinpost:
+            if post.isPinPost {
+//                screenViewModel.action.unpinpost(withpostId: postId)
+            } else {
+//                screenViewModel.action.pinpost(withpostId: postId)
+            }
         }
     }
     

@@ -10,36 +10,40 @@ import Foundation
 
 // MARK: - AmityNotificationTray
 public struct AmityNotificationTrayModel: Codable {
-    let totalPages, nextPage: Int
+    let totalPages: Int
     let data: [NotificationTray]
 }
 
 // MARK: - Datum
 public struct NotificationTray: Codable {
-    let vTaridUid, description, verb, imageURL: String
-    let avatarCustomURL, targetType, targetName: String
     let hasRead: Bool
     let lastUpdate: Int
-    let actors: Actors
+    let parentTargetID, lastActionID: String
+    let lastActionSegmentNo: Int?
+    let verb, avatarCustomURL, description: String
+    let imageURL: String
+    let vTaridUid, targetType: String
     let actorsCount: Int
-    let parentTargetID, targetID, lastActionID: String
-    let lastActionSegmentNo: Int
+    let targetName: String
+    let actors: [Actor]
+    let targetID: String
 
     enum CodingKeys: String, CodingKey {
-        case vTaridUid = "v_tarid_uid"
-        case description, verb
-        case imageURL = "imageUrl"
-        case avatarCustomURL = "avatarCustomUrl"
-        case targetType, targetName, hasRead, lastUpdate, actors, actorsCount
+        case hasRead, lastUpdate
         case parentTargetID = "parentTargetId"
-        case targetID = "targetId"
         case lastActionID = "lastActionId"
-        case lastActionSegmentNo
+        case lastActionSegmentNo, verb
+        case avatarCustomURL = "avatarCustomUrl"
+        case description
+        case imageURL = "imageUrl"
+        case vTaridUid = "v_tarid_uid"
+        case targetType, actorsCount, targetName, actors
+        case targetID = "targetId"
     }
 }
 
-// MARK: - Actors
-public struct Actors: Codable {
+// MARK: - Actor
+public struct Actor: Codable {
     let name: String
 }
 
@@ -51,4 +55,30 @@ struct AmityNotificationUnreadCount: Codable {
 // MARK: - DataClass
 struct DataClass: Codable {
     let totalUnreadCount: Int
+}
+
+// MARK: - Encode/decode helpers
+class JSONNull: Codable, Hashable {
+
+    public static func == (lhs: JSONNull, rhs: JSONNull) -> Bool {
+        return true
+    }
+
+    public var hashValue: Int {
+        return 0
+    }
+
+    public init() {}
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if !container.decodeNil() {
+            throw DecodingError.typeMismatch(JSONNull.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for JSONNull"))
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encodeNil()
+    }
 }

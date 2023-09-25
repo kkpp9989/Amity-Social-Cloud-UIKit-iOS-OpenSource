@@ -11,52 +11,58 @@ import UIKit
 class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
     
     @IBOutlet private weak var avatarView: AmityAvatarView!
-    @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descLabel: UILabel!
     @IBOutlet private weak var dateLabel: UILabel!
-    @IBOutlet private weak var readMark: UIView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
         backgroundColor = AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
-        titleLabel.font = AmityFontSet.bodyBold
-        titleLabel.textColor = AmityColorSet.base
         descLabel.font = AmityFontSet.bodyBold
         descLabel.textColor = AmityColorSet.base
+        descLabel.numberOfLines = 0
         dateLabel.font = AmityFontSet.caption
-        dateLabel.textColor = .gray
-        readMark.layer.cornerRadius = readMark.frame.size.width/2
-        readMark.clipsToBounds = true
-        readMark.isHidden = true
-        contentView.backgroundColor = .white
+        dateLabel.textColor = AmityColorSet.base.blend(.shade3)
     }
     
     func configure(model: NotificationTray) {
-//        if !(model.customImageUrl?.isEmpty ?? false) {
-//            avatarView.setImage(withCustomURL: model.customImageUrl, placeholder: AmityIconSet.defaultAvatar)
-//        } else {
         avatarView.setImage(withImageURL: model.imageURL, placeholder: AmityIconSet.defaultAvatar)
-//        }
         avatarView.placeholderPostion = .fullSize
-        titleLabel.text = model.targetType == "community" ? "Community" : "Post"
         descLabel.text = model.description
+        dateLabel.text = relativeTime(from: model.lastUpdate)
         
-        let date = Date(timeIntervalSince1970: Double(model.lastUpdate ?? 0) / 1000.0)
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "GMT+7") //Set timezone that you want
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "dd MMM yyyy HH:mm" //Specify your format that you want
-        let strDate = dateFormatter.string(from: date)
-        dateLabel.text = strDate
-        
-        if (model.hasRead != nil) {
-            readMark.isHidden = true
+        if model.hasRead {
             contentView.backgroundColor = .white
         } else {
-            readMark.isHidden = false
-            contentView.backgroundColor = UIColor(hex: "E1E1E1")
+            contentView.backgroundColor = UIColor(hex: "F0FBFF")
+        }
+    }
+    
+    func relativeTime(from timestamp: Int) -> String {
+        let currentTimestamp = Int(Date().timeIntervalSince1970)
+        let timeDifference = currentTimestamp - (timestamp / 1000)
+
+        if timeDifference < 60 {
+            return "now"
+        } else if timeDifference < 3600 {
+            let minutes = timeDifference / 60
+            return "\(minutes)m"
+        } else if timeDifference < 86400 {
+            let hours = timeDifference / 3600
+            return "\(hours)h"
+        } else if timeDifference < 604800 {
+            let days = timeDifference / 86400
+            return "\(days)d"
+        } else if timeDifference < 2419200 { // 4 weeks
+            let weeks = timeDifference / 604800
+            return "\(weeks)w"
+        } else if timeDifference < 29030400 { // 11 months
+            let months = timeDifference / 2419200
+            return "\(months)m"
+        } else {
+            let years = timeDifference / 29030400
+            return "\(years)y"
         }
     }
 }

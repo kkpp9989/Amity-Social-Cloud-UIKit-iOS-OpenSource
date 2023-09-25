@@ -19,15 +19,20 @@ struct RequestGetNotification {
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.method = .get
-        requestMeta.encoding = .jsonParam
-        requestMeta.params = ["startAfter": timeStamp]
+        requestMeta.encoding = .withQueryParameters(queryParameters: [:])
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
                 return
             }
             
+            // Print the JSON response
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
+               let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("-------> JSON Response: \(jsonString)")
+            }
+
             switch httpResponse.statusCode {
             case 200:
                 guard let dataModel = try? JSONDecoder().decode(AmityNotificationTrayModel.self, from: data) else {
@@ -50,6 +55,7 @@ struct RequestGetNotification {
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .get
+        requestMeta.encoding = .withQueryParameters(queryParameters: [:])
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))

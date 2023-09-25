@@ -41,8 +41,8 @@ class NetworkManager {
                     httpRequest.setValue(dicDataValue.element.value as? String, forHTTPHeaderField: dicDataValue.element.key)
                 }
             }
-        case .jsonParam:
-            httpRequest = URLRequest(url: URL(string: requestMeta.urlRequest)!)
+        case let .withQueryParameters(queryParameters):
+            httpRequest = URLRequest(url: URL(string: requestMeta.urlRequest.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")!)
             httpRequest.httpMethod = requestMeta.method.rawValue
             httpRequest.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
             for value in requestMeta.header {
@@ -50,13 +50,19 @@ class NetworkManager {
                     httpRequest.setValue(dicDataValue.element.value as? String, forHTTPHeaderField: dicDataValue.element.key)
                 }
             }
-            let jsonData = try? JSONSerialization.data(withJSONObject: requestMeta.params)
-            httpRequest.httpBody = jsonData
+            // Set query parameters for GET requests
+            if var components = URLComponents(url: httpRequest.url!, resolvingAgainstBaseURL: false) {
+                var queryItems = [URLQueryItem]()
+                for (key, value) in queryParameters {
+                    queryItems.append(URLQueryItem(name: key, value: value))
+                }
+                components.queryItems = queryItems
+                httpRequest.url = components.url
+            }
         }
         let task = session.dataTask(with: httpRequest) { (data, response, error) in
             completion(data, response, error)
         }
         task.resume()
     }
-    
 }

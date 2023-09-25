@@ -19,6 +19,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     private let commentController: AmityCommentControllerProtocol
     private let reactionController: AmityReactionControllerProtocol
     private let pollRepository: AmityPollRepository
+    private let postRepository: AmityPostRepository
     
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.3)
@@ -33,7 +34,10 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     }
     
     private var pinPostData: [AmityPostModel] = []
-    
+    private var dummyList: [String] = []
+    private var tokenArray: [AmityNotificationToken?] = []
+    private let dispatchGroup = DispatchGroup()
+
     private var isReactionLoading: Bool = false
     private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
@@ -48,6 +52,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
         self.isPrivate = false
         self.isLoading = false
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.postRepository = AmityPostRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
 }
@@ -71,9 +76,11 @@ extension AmityFeedScreenViewModel {
     
     private func prepareComponents(posts: [AmityPostModel]) {
         postComponents = []
-        for post in posts {
+        var postsData = pinPostData
+        postsData += posts
+        for post in postsData {
             post.appearance.displayType = .feed
-            
+
             // [Custom for ONE Krungthai] Assign custom source post display type for use in moderator user in official community condition to outputing and prepare action
             switch feedType {
             case .communityFeed(_):
@@ -81,6 +88,11 @@ extension AmityFeedScreenViewModel {
                 break
             default:
                 post.appearance.amitySocialPostDisplayStyle = .feed
+            }
+            
+            if let communityId = post.targetCommunity?.communityId {
+                let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
             
             switch post.dataTypeInternal {
@@ -113,81 +125,90 @@ extension AmityFeedScreenViewModel {
     
     func fetchPosts() {
         pinPostData = []
+        dummyList = []
         isLoading = true
         let serviceRequest = RequestGetPinPost()
-        serviceRequest.requestGetPinPost() { [weak self] result in
+        serviceRequest.requestGetPinPost(feedType) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
-            case .success(_):
-                strongSelf.getPostId(withpostId: "64fed4955acb9c3f752ce4ed") { (result) in
-                    switch result {
-                    case .success(let post):
-                        strongSelf.pinPostData.append(post)
-                        strongSelf.fetchFeedPosts()
-                    case .failure(_):
-                        strongSelf.fetchFeedPosts()
-                    }
-                }
+            case .success(let data):
+                strongSelf.getPostId(withpostIds: data.pinposts)
             case .failure(let error):
                 print(error)
-//                strongSelf.fetchFeedPosts()
-                
-                strongSelf.getPostId(withpostId: "64fed4955acb9c3f752ce4ed") { (result) in
-                    switch result {
-                    case .success(let post):
-                        strongSelf.pinPostData.append(post)
-                        strongSelf.fetchFeedPosts()
-                    case .failure(_):
-                        strongSelf.fetchFeedPosts()
-                    }
-                }
+                strongSelf.fetchFeedPosts()
             }
         }
     }
     
-    private func getPostId(withpostId postId: String, completion: @escaping (Result<AmityPostModel,AmityError>) -> Void) {
+    private func getPostId(withpostIds postIds: [String]) {
+        dummyList += postIds
         DispatchQueue.main.async { [self] in
-            postController.getPostForPostId(withPostId: postId) { (result) in
-                switch result {
-                case .success(let post):
-                    post.isPinPost = true
-                    completion(.success(post))
-                case .failure(let error):
-                    completion(.failure(error))
+            for postId in postIds {
+                dispatchGroup.enter()
+                let postCollection = postRepository.getPost(withId: postId)
+                let token = postCollection.observe { [weak self] (_, error) in
+                    guard let strongSelf = self else { return }
+                    if let _ = AmityError(error: error) {
+                        self?.nextData()
+                    } else {
+                        if let model = strongSelf.prepareData(amityObject: postCollection) {
+                            if !model.isDelete {
+                                self?.appendData(post: model)
+                            }
+                        } else {
+                            self?.nextData()
+                        }
+                    }
                 }
+                
+                tokenArray.append(token)
+                
+                dispatchGroup.notify(queue: .main) {
+                    let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
+                    self.pinPostData = sortedArray
+                    self.tokenArray.removeAll()
+                    self.fetchFeedPosts()
+                }
+            }
+            
+            if dummyList.isEmpty {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
+                self.pinPostData = sortedArray
+                self.fetchFeedPosts()
             }
         }
     }
     
     private func fetchFeedPosts() {
-        postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
-            guard let strongSelf = self else { return }
-            /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
-            if !strongSelf.isReactionChanging {
-                switch result {
-                case .success(let posts):
-                    strongSelf.pinPostData += posts
-                    strongSelf.debouncer.run {
-                        strongSelf.prepareComponents(posts: strongSelf.pinPostData)
-                    }
-                case .failure(let error):
-                    strongSelf.debouncer.run {
-                        strongSelf.prepareComponents(posts: [])
-                    }
-                    if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
-                        switch strongSelf.feedType {
-                        case .userFeed:
-                            strongSelf.isPrivate = true
-                        default:
-                            strongSelf.isPrivate = false
+        DispatchQueue.main.async { [self] in
+            postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
+                if !strongSelf.isReactionChanging {
+                    switch result {
+                    case .success(let posts):
+                        strongSelf.debouncer.run {
+                            strongSelf.prepareComponents(posts: posts)
                         }
-                        strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
-                    } else {
-                        strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                    case .failure(let error):
+                        strongSelf.debouncer.run {
+                            strongSelf.prepareComponents(posts: [])
+                        }
+                        if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
+                            switch strongSelf.feedType {
+                            case .userFeed:
+                                strongSelf.isPrivate = true
+                            default:
+                                strongSelf.isPrivate = false
+                            }
+                            strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                        }
                     }
                 }
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
             }
-            strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
         }
     }
     
@@ -195,10 +216,39 @@ extension AmityFeedScreenViewModel {
         postController.loadMore()
     }
     
-    // [Improvement] clear old post function for scroll to refresh with post URL preview for fix app crash because of invalid batch updates detected
-    func clearOldPosts() {
-        postComponents = []
-        delegate?.screenViewModelDidClearDataSuccess(self)
+    private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
+        guard let _post = amityObject.object else { return nil }
+        let post = AmityPostModel(post: _post)
+        post.isPinPost = true
+        return post
+    }
+    
+    func appendData(post: AmityPostModel) {
+        let containsPostId = pinPostData.contains { dataArray in
+            dataArray.postId == post.postId
+        }
+        
+        if !containsPostId {
+            pinPostData.append(post)
+        }
+        dispatchGroup.leave()
+    }
+    
+    func nextData() {
+        dispatchGroup.leave()
+    }
+    
+    //  Sort function by list from fetchPosts
+    func sortArrayPositions(array1: [String], array2: [AmityPostModel]) -> [AmityPostModel] {
+        var sortedArray: [AmityPostModel] = []
+        
+        for postId in array1 {
+            if let index = array2.firstIndex(where: { $0.postId == postId }) {
+                sortedArray.append(array2[index])
+            }
+        }
+        
+        return sortedArray
     }
 }
 
@@ -471,4 +521,34 @@ extension AmityFeedScreenViewModel {
         }
     }
     
+}
+
+// MARK: Pin Post
+extension AmityFeedScreenViewModel {
+    
+    func pinpost(withpostId postId: String) {
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestPinPost(postId, type: feedType, isPinned: true) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success():
+                print("Create Pin-Post Success")
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func unpinpost(withpostId postId: String) {
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestPinPost(postId, type: feedType, isPinned: false) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success():
+                print("Delete Pin-Post Success")
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 }
