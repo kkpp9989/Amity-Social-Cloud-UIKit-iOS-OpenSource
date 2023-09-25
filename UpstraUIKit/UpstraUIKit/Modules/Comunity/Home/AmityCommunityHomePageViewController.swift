@@ -19,6 +19,8 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     public var rightBarButtons: UIBarButtonItem = UIBarButtonItem()
     public var leftBarButtons: UIBarButtonItem = UIBarButtonItem()
     
+    private var totalUnreadCount: Int = 0
+    
     private init() {
         super.init(nibName: AmityCommunityHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
         /* [Custom for ONE Krungthai] Set title of navigation bar to nil and add title to left navigation item at setupNavigationBar() instead */
@@ -53,6 +55,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         
         /* [Custom for ONE Krungthai] Clear setting navigation bar (normal) from ONE Krungthai custom theme */
         theme?.clearNavigationBarSetting()
+        getUnreadCount()
     }
     
     public static func make() -> AmityCommunityHomePageViewController {
@@ -67,54 +70,67 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     // MARK: - Setup views
     private func setupNavigationBar() {
-        /* Right items */
-        // [Improvement] Change set button solution to use custom stack view
-        var rightButtonItems: [UIButton] = []
-        
-        // Create post button
-        let notificationButton: UIButton = UIButton.init(type: .custom)
-        notificationButton.setImage(AmityIconSet.iconNotificationNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
-        notificationButton.addTarget(self, action: #selector(notificationTap), for: .touchUpInside)
-        notificationButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
-        rightButtonItems.append(notificationButton)
-        
-        // Create post button
-        let createPostButton: UIButton = UIButton.init(type: .custom)
-        createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
-        createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
-        createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
-        rightButtonItems.append(createPostButton)
-        
-        // Search Button
-        let searchButton: UIButton = UIButton.init(type: .custom)
-        searchButton.setImage(AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
-        searchButton.addTarget(self, action: #selector(searchTap), for: .touchUpInside)
-        searchButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
-        rightButtonItems.append(searchButton)
-        
-        // Group all button to UIBarButtonItem
-        rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
-        
-        // Set custom stack view to UIBarButtonItem
-        navigationItem.rightBarButtonItem = rightBarButtons
-        
-        /* Left items */
-        // Title
-        // [Custom for ONE Krungthai] Move title to left navigation bar item
-        let title = UILabel()
-        title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
-        title.font = AmityFontSet.headerLine
-        // Back button (Refer default leftBarButtonItem from AmityViewController)
-        let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
-        backButton.tintColor = AmityColorSet.base
-        leftBarButtons = backButton
-        
-        if self.navigationController?.viewControllers.first != self {
-            // Add all component to left navigation items
-            navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
-        } else {
-            // This controller is the root view controller, so you don't need to set a back button
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: title) // Title of navigation bar
+        DispatchQueue.main.async { [self] in
+            /* Right items */
+            // [Improvement] Change set button solution to use custom stack view
+            var rightButtonItems: [UIButton] = []
+            
+            // Create post button
+            let notificationButton: UIButton = UIButton.init(type: .custom)
+            notificationButton.setImage(AmityIconSet.iconNotificationNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            notificationButton.addTarget(self, action: #selector(notificationTap), for: .touchUpInside)
+            notificationButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(notificationButton)
+            
+            // Create a red dot view
+            let redDotView = UIView()
+            redDotView.backgroundColor = UIColor.red
+            redDotView.layer.cornerRadius = 4 // Adjust the corner radius as needed
+            redDotView.frame = CGRect(x: notificationButton.frame.width - 10, y: 0, width: 8, height: 8) // Adjust the position and size as needed
+            
+            // Add the red dot view to the notificationButton
+            if totalUnreadCount > 0 {
+                notificationButton.addSubview(redDotView)
+            }
+            
+            // Create post button
+            let createPostButton: UIButton = UIButton.init(type: .custom)
+            createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+            createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(createPostButton)
+            
+            // Search Button
+            let searchButton: UIButton = UIButton.init(type: .custom)
+            searchButton.setImage(AmityIconSet.iconSearchNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            searchButton.addTarget(self, action: #selector(searchTap), for: .touchUpInside)
+            searchButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(searchButton)
+            
+            // Group all button to UIBarButtonItem
+            rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
+            
+            // Set custom stack view to UIBarButtonItem
+            navigationItem.rightBarButtonItem = rightBarButtons
+            
+            /* Left items */
+            // Title
+            // [Custom for ONE Krungthai] Move title to left navigation bar item
+            let title = UILabel()
+            title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
+            title.font = AmityFontSet.headerLine
+            // Back button (Refer default leftBarButtonItem from AmityViewController)
+            let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
+            backButton.tintColor = AmityColorSet.base
+            leftBarButtons = backButton
+            
+            if self.navigationController?.viewControllers.first != self {
+                // Add all component to left navigation items
+                navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
+            } else {
+                // This controller is the root view controller, so you don't need to set a back button
+                navigationItem.leftBarButtonItem = UIBarButtonItem(customView: title) // Title of navigation bar
+            }
         }
     }
 }
@@ -159,6 +175,20 @@ private extension AmityCommunityHomePageViewController {
         do {
             let result = try await userNotificationManager.enable(for: [])
         } catch {
+        }
+    }
+    
+    func getUnreadCount() {
+        let serviceRequest = RequestGetNotification()
+        serviceRequest.requestNotificationTotalUnreadCount() { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let unreadCountData):
+                strongSelf.totalUnreadCount = unreadCountData.data.totalUnreadCount
+                strongSelf.setupNavigationBar()
+            case .failure(let error):
+                print(error)
+            }
         }
     }
 }

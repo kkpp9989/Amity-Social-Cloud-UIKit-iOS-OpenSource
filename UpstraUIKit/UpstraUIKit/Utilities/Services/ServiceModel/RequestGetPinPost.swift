@@ -12,9 +12,8 @@ struct RequestGetPinPost {
     
     let requestMeta = BaseRequestMeta()
     let currentUserToken = AmityUIKitManager.currentUserToken
-    var streamId: String = ""
     
-    func requestGetPinPost(_ completion: @escaping(Result<ResponseGetPostModel,Error>) -> ()) {
+    func requestGetPinPost(_ type: AmityPostFeedType,_ completion: @escaping(Result<AmityPinPostModel,Error>) -> ()) {
         var domainURL = ""
         if let envKey = AmityUIKitManager.env["env_key"] as? String {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
@@ -22,7 +21,17 @@ struct RequestGetPinPost {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
         
-        requestMeta.urlRequest = "\(domainURL)/getPostId?streamId="
+        var endpointUrl: String = ""
+        switch type {
+        case .globalFeed:
+            endpointUrl = "\(domainURL)/pin-post?targetType=global"
+        case .communityFeed(let communityId):
+            endpointUrl = "\(domainURL)/pin-post?targetType=community?targetId=\(communityId)"
+        default:
+            endpointUrl = "\(domainURL)/pin-post"
+        }
+        
+        requestMeta.urlRequest = endpointUrl
         requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .get
         requestMeta.encoding = .urlEncoding
@@ -33,9 +42,16 @@ struct RequestGetPinPost {
                 return
             }
             
+            // Print the JSON response
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
+               let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("-------> JSON Response: \(jsonString)")
+            }
+            
             switch httpResponse.statusCode {
             case 200:
-                guard let dataModel = try? JSONDecoder().decode(ResponseGetPostModel.self, from: data) else {
+                guard let dataModel = try? JSONDecoder().decode(AmityPinPostModel.self, from: data) else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
@@ -48,7 +64,7 @@ struct RequestGetPinPost {
         }
     }
     
-    func requestPin(_ completion: @escaping(Result<ResponseGetPostModel,Error>) -> ()) {
+    func requestPinPost(_ postId: String, type: AmityPostFeedType, isPinned: Bool, _ completion: @escaping(Result<Void, Error>) -> ()) {
         var domainURL = ""
         if let envKey = AmityUIKitManager.env["env_key"] as? String {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
@@ -56,10 +72,20 @@ struct RequestGetPinPost {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
         
+        //  Set params body
+        var paramsBody: [String:Any] = [:]
+        switch type {
+        case .communityFeed(let communityId):
+            paramsBody = ["postId": postId, "targetId": communityId, "targetType": "community", "isPiined": isPinned]
+        default:
+            paramsBody = ["postId": postId, "targetType": "global", "isPiined": isPinned]
+        }
+        
         requestMeta.urlRequest = "\(domainURL)/getPostId?streamId="
         requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.method = .get
+        requestMeta.method = .post
         requestMeta.encoding = .urlEncoding
+        requestMeta.params = paramsBody
         
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
@@ -69,45 +95,7 @@ struct RequestGetPinPost {
             
             switch httpResponse.statusCode {
             case 200:
-                guard let dataModel = try? JSONDecoder().decode(ResponseGetPostModel.self, from: data) else {
-                    completion(.failure(HandleError.JsonDecodeError))
-                    return
-                }
-                completion(.success(dataModel))
-            case 400...499:
-                completion(.failure(HandleError.notFound))
-            default:
-                completion(.failure(HandleError.connectionError))
-            }
-        }
-    }
-    
-    func requestUnPin(_ completion: @escaping(Result<ResponseGetPostModel,Error>) -> ()) {
-        var domainURL = ""
-        if let envKey = AmityUIKitManager.env["env_key"] as? String {
-            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
-        } else {
-            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
-        }
-        
-        requestMeta.urlRequest = "\(domainURL)/getPostId?streamId="
-        requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.method = .get
-        requestMeta.encoding = .urlEncoding
-        
-        NetworkManager().request(requestMeta) { (data, response, error) in
-            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
-                completion(.failure(HandleError.notFound))
-                return
-            }
-            
-            switch httpResponse.statusCode {
-            case 200:
-                guard let dataModel = try? JSONDecoder().decode(ResponseGetPostModel.self, from: data) else {
-                    completion(.failure(HandleError.JsonDecodeError))
-                    return
-                }
-                completion(.success(dataModel))
+                completion(.success(()))
             case 400...499:
                 completion(.failure(HandleError.notFound))
             default:
