@@ -79,6 +79,10 @@ protocol AmityFeedScreenViewModelAction {
     
     // MARK: User Settings
     func fetchUserSettings()
+    
+    // MARK: Pin Post
+    func pinpost(withpostId postId: String)
+    func unpinpost(withpostId postId: String)
 }
 
 protocol AmityFeedScreenViewModelType: AmityFeedScreenViewModelAction, AmityFeedScreenViewModelDataSource {

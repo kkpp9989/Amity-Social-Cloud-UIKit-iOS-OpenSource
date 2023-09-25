@@ -34,22 +34,39 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
         }
     }
 
-    private func updateReadTray() {
+    func updateReadTray() {
         let serviceRequest = RequestGetNotification()
-        serviceRequest.requestNotificationLastRead() { [self] result in
+        serviceRequest.requestNotificationLastRead() { result in
             switch result {
             case .success(_):
-                delegate?.screenViewModelDidUpdateData(self)
+                break
             case .failure(let error):
                 print(error)
-                delegate?.screenViewModelDidUpdateData(self)
             }
         }
     }
     
     private func getCurrentTimestamp() -> Int {
-        let timestamp = Int(Date().timeIntervalSince1970)
-        return timestamp
+        // Get the current date and time in the user's local time zone
+        let currentDate = Date()
+
+        // Create a DateFormatter to specify the time zone as local
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone.current
+
+        // Format the current date as a Unix timestamp string
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let timestampString = dateFormatter.string(from: currentDate)
+
+        // Convert the timestamp string to a Date object
+        if let timestampDate = dateFormatter.date(from: timestampString) {
+            // Get the Unix timestamp as an integer (number of seconds since 1970)
+            let unixTimestamp = Int(timestampDate.timeIntervalSince1970)
+            return unixTimestamp
+        } else {
+            // Return a default value or handle the error as needed
+            return Int(currentDate.timeIntervalSince1970)
+        }
     }
     
     // MARK: - Data Source
