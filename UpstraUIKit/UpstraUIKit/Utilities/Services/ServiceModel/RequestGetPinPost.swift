@@ -76,21 +76,30 @@ struct RequestGetPinPost {
         var paramsBody: [String:Any] = [:]
         switch type {
         case .communityFeed(let communityId):
-            paramsBody = ["postId": postId, "targetId": communityId, "targetType": "community", "isPiined": isPinned]
+            paramsBody = ["postId": postId, "targetId": communityId, "targetType": "community", "isPinned": isPinned]
         default:
-            paramsBody = ["postId": postId, "targetType": "global", "isPiined": isPinned]
+            paramsBody = ["postId": postId, "targetType": "global", "isPinned": isPinned]
         }
         
-        requestMeta.urlRequest = "\(domainURL)/getPostId?streamId="
-        requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
+        requestMeta.urlRequest = "\(domainURL)/pin-post"
+        requestMeta.header = [["Content-Type": "application/json",
+                               "Accept": "application/json",
+                               "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
-        requestMeta.encoding = .urlEncoding
+        requestMeta.encoding = .jsonEncoding
         requestMeta.params = paramsBody
         
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
                 return
+            }
+            
+            // Print the JSON response
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
+               let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("-------> JSON Response: \(jsonString)")
             }
             
             switch httpResponse.statusCode {

@@ -81,7 +81,7 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
     
     func loadMore() {
         page += 1
-        fetchData()
+//        fetchData()
     }
     
     func updateReadItem(model: NotificationTray) {
