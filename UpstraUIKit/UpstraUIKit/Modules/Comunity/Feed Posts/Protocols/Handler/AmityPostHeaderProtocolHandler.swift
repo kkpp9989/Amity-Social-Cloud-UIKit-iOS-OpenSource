@@ -88,6 +88,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
             strongSelf.delegate?.headerProtocolHandlerDidPerformAction(strongSelf, action: .TapPinpost, withPost: post)
         }
         
+        let role = AmityUIKitManagerInternal.shared.client.user?.snapshot?.roles
+        let isModerator = role?.contains("moderator") ?? false
+
         if post.isOwner {
             switch post.dataTypeInternal {
             case .poll:
@@ -118,11 +121,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.append(pinpostOption)
                     }
                 default:
-                    AmityUIKitManagerInternal.shared.client.hasPermission(.banUser, completion: { hasPermission in
-                        if hasPermission {
-                            items.append(pinpostOption)
-                        }
-                    })
+                    if isModerator {
+                        items.append(pinpostOption)
+                    }
                 }
                 
                 contentView.configure(items: items, selectedItem: nil)
@@ -135,11 +136,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.append(pinpostOption)
                     }
                 default:
-                    AmityUIKitManagerInternal.shared.client.hasPermission(.banUser, completion: { hasPermission in
-                        if hasPermission {
-                            items.append(pinpostOption)
-                        }
-                    })
+                    if isModerator {
+                        items.append(pinpostOption)
+                    }
                 }
                 contentView.configure(items: items, selectedItem: nil)
             case .liveStream:
@@ -151,11 +150,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.append(pinpostOption)
                     }
                 default:
-                    AmityUIKitManagerInternal.shared.client.hasPermission(.banUser, completion: { hasPermission in
-                        if hasPermission {
-                            items.append(pinpostOption)
-                        }
-                    })
+                    if isModerator {
+                        items.append(pinpostOption)
+                    }
                 }
                 
                 // Currently we don't support edit live stream post.
@@ -174,11 +171,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.append(pinpostOption)
                     }
                 default:
-                    AmityUIKitManagerInternal.shared.client.hasPermission(.banUser, completion: { hasPermission in
-                        if hasPermission {
-                            items.append(pinpostOption)
-                        }
-                    })
+                    if isModerator {
+                        items.append(pinpostOption)
+                    }
                 }
                 AmityUIKitManagerInternal.shared.client.hasPermission(.editCommunity, forCommunity: communityId) { [weak self] (hasPermission) in
                     if hasPermission {
@@ -197,11 +192,9 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.append(pinpostOption)
                     }
                 default:
-                    AmityUIKitManagerInternal.shared.client.hasPermission(.banUser, completion: { hasPermission in
-                        if hasPermission {
-                            items.append(pinpostOption)
-                        }
-                    })
+                    if isModerator {
+                        items.append(pinpostOption)
+                    }
                 }
                 contentView.configure(items: items, selectedItem: nil)
                 viewController.present(bottomSheet, animated: false, completion: nil)

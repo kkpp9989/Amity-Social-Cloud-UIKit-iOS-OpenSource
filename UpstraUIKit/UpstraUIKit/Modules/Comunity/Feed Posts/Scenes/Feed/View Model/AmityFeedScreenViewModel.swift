@@ -94,7 +94,7 @@ extension AmityFeedScreenViewModel {
                 let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
-            
+                        
             switch post.dataTypeInternal {
             case .text:
                 addComponent(component: AmityPostTextComponent(post: post))
