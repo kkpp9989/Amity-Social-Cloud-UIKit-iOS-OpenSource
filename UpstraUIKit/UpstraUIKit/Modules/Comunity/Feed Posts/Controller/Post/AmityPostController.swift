@@ -16,7 +16,7 @@ protocol AmityPostControllerProtocol: AmityFeedRepositoryManagerProtocol,
                                       AmityPostUpdateControllerProtocol { }
 
 final class AmityPostController: AmityPostControllerProtocol {
-
+    
     private let feedRepositoryManager: AmityFeedRepositoryManagerProtocol = AmityFeedRepositoryManager()
     private let fetchPostController: AmityPostFetchPostControllerProtocol = AmityPostFetchPostController()
     private let deleteController: AmityPostDeleteControllerProtocol = AmityPostDeleteController()
@@ -40,6 +40,10 @@ extension AmityPostController {
 extension AmityPostController {
     func getPostForPostId(withPostId postId: String, completion: ((Result<AmityPostModel, AmityError>) -> Void)?) {
         fetchPostController.getPostForPostId(withPostId: postId, completion: completion)
+    }
+    
+    func getPinPostForPostId(withPostId postId: String, completion: ((Result<AmityPostModel, AmityError>) -> Void)?) {
+        fetchPostController.getPinPostForPostId(withPostId: postId, completion: completion)
     }
 }
 
