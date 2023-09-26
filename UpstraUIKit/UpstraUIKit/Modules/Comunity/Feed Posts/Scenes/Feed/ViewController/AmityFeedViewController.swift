@@ -206,8 +206,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             return
         }
         pullRefreshHandler?()
-        screenViewModel.action.clearOldPosts()
-//        screenViewModel.action.fetchPosts()
+        screenViewModel.action.fetchPosts()
+//        screenViewModel.action.clearOldPosts()
     }
     
 }
@@ -371,7 +371,6 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
-        refreshControl.endRefreshing()
         screenViewModel.action.fetchPosts()
     }
     

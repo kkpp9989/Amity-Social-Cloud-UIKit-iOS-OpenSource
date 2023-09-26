@@ -216,6 +216,11 @@ extension AmityFeedScreenViewModel {
         postController.loadMore()
     }
     
+    func clearOldPosts() {
+        postComponents = []
+        delegate?.screenViewModelDidClearDataSuccess(self)
+    }
+    
     private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
         guard let _post = amityObject.object else { return nil }
         let post = AmityPostModel(post: _post)

@@ -129,14 +129,25 @@ class AmityURLPreviewCacheManager {
     static let shared = AmityURLPreviewCacheManager() // Singleton instance
     
     private var urlPreviewCache: [String: AmityURLMetadata] = [:]
+    private var urlCannotPreviewCache: [String] = []
     
     // Function to retrieve cached metadata
     func getCachedMetadata(forURL url: String) -> AmityURLMetadata? {
         return urlPreviewCache[url]
     }
     
+    // Function to check URL is checked cannot preview
+    func isCheckedURLCannotPreview(forURL url: String) -> Bool {
+        return urlCannotPreviewCache.firstIndex(of: url) != nil ? true : false
+    }
+    
     // Function to cache metadata
     func cacheMetadata(_ metadata: AmityURLMetadata, forURL url: String) {
         urlPreviewCache[url] = metadata
+    }
+    
+    // Function to cache URL cannot preview
+    func cacheURLCannotPreview(forURL url: String) {
+        urlCannotPreviewCache.append(url)
     }
 }

@@ -37,7 +37,7 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, indexPath: IndexPath, post: AmityPostModel? = nil, completion: ((_ isHaveURLPreview: Bool, _ indexPath: IndexPath) -> Void)? = nil) {
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, indexPath: IndexPath, post: AmityPostModel? = nil, completion: ((_ isMustToReloadCell: Bool, _ indexPath: IndexPath) -> Void)? = nil) {
         // [Custom for ONE Krungthai] Add properties for for check moderator user in official community for outputing
         self.post = post
         self.comment = comment
@@ -52,7 +52,7 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
                 // Display URL Preview from cache URL metadata
                 commentView.displayURLPreview(metadata: cachedMetadata)
                 // Handle cell (reload row if display URL Preview and row is visible)
-                completion?(true, indexPath)
+                completion?(false, indexPath)
             } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                 // Get new URL metadata
                 AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlString) { metadata in

@@ -48,8 +48,8 @@ protocol AmityFeedScreenViewModelAction {
     // MARK: Fetch data
     func fetchPosts()
     func loadMore()
-    func clearOldPosts() // [Improvement] clear old post function for scroll to refresh with post URL preview for fix app crash because of invalid batch updates detected
-    
+    func clearOldPosts()
+
     // MARK: PostId / CommentId
     func like(id: String, referenceType: AmityReactionReferenceType)
     func unlike(id: String, referenceType: AmityReactionReferenceType)

@@ -49,10 +49,6 @@ public struct AmityPostTextComponent: AmityPostComposable {
                 if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
                     // Display URL Preview from cache URL metadata
                     cell.displayURLPreview(metadata: cachedMetadata)
-                    // Reload row if row is visible
-                    if let indexPathOfCell = cell.indexPath, let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
-                        tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
-                    }
                 } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                     // Get new URL metadata
                     AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlString) { metadata in
@@ -91,9 +87,9 @@ public struct AmityPostTextComponent: AmityPostComposable {
             let comment = post.getComment(at: indexPath, totalComponent: AmityPostConstant.defaultNumberComponent)
             let isExpanded = post.commentExpandedIds.contains(comment?.id ?? "absolutely-cannot-found-xc")
             cell.setIsExpanded(isExpanded)
-            cell.display(post: post, comment: comment, indexPath: indexPath) { isHaveURLPreview, indexPathOfCell in
+            cell.display(post: post, comment: comment, indexPath: indexPath) { isMustToReloadCell, indexPathOfCell in
                 // Reload row if row is visible (reload all preview cell because some cell show URL preview same other cell even though don't have URL in text)
-                if let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
+                if isMustToReloadCell, let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
                     tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
                 }
             }

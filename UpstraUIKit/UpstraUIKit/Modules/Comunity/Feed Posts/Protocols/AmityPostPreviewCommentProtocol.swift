@@ -13,7 +13,7 @@ public protocol AmityPostPreviewCommentProtocol: UITableViewCell, AmityCellIdent
     var post: AmityPostModel? { get }
     
     // [Custom for ONE Krungthai] Add indexPath and completion to parameter for handle cell after display URL preview
-    func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isHaveURLPreview: Bool, _ indexPath: IndexPath) -> Void)?)
+    func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isMustToReloadCell: Bool, _ indexPath: IndexPath) -> Void)?)
 }
 
 public protocol AmityPostPreviewCommentDelegate: AnyObject {

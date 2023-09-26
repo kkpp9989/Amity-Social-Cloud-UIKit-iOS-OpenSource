@@ -26,12 +26,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         setupView()
     }
     
-    // [Improvement] Add trigger prepareForReuse for clear old data in comment view
-    public override func prepareForReuse() {
-        commentView.prepareForReuse()
-    }
-    
-    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isHaveURLPreview: Bool, _ indexPath: IndexPath) -> Void)?) {
+    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isMustToReloadCell: Bool, _ indexPath: IndexPath) -> Void)?) {
         self.comment = comment
         self.post = post
         guard let comment = comment else { return }
@@ -51,7 +46,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
                 // Display URL Preview from cache URL metadata
                 commentView.displayURLPreview(metadata: cachedMetadata)
                 // Handle cell after display URL Preview
-                completion?(true, indexPath)
+                completion?(false, indexPath)
             } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
                 // Get new URL metadata
                 AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlString) { metadata in
@@ -66,8 +61,12 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
                         } else { // Case : Can get new URL metadata -> hide URL preview
                             // Hide URL Preview
                             self.commentView.hideURLPreview()
-                            // Handle cell after display URL Preview
-                            completion?(false, indexPath)
+                            // Handle cell after Hide URL Preview
+                            if indexPath.section <= 1 { // Case : indexPath section is 0-1 because must to reload row for fix cell in these section show other URL preview
+                                completion?(true, indexPath)
+                            } else { // Case : indexPath is more than 1 -> don't reload row
+                                completion?(false, indexPath)
+                            }
                         }
                     }
                 }
@@ -75,9 +74,14 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         } else { // Case : Don't have URL in text
             // Hide URL Preview
             commentView.hideURLPreview()
-            // Handle cell after display URL Preview
-            completion?(false, indexPath)
+            // Handle cell after Hide URL Preview
+            if indexPath.section <= 1 { // Case : indexPath section is 0-1 because must to reload row for fix cell in these section show other URL preview
+                completion?(true, indexPath)
+            } else { // Case : indexPath is more than 1 -> don't reload row
+                completion?(false, indexPath)
+            }
         }
+        print("[Post] comment: \(comment.text) | indexPath: \(indexPath)")
         
         commentView.delegate = self
         commentView.contentLabel.delegate = self
