@@ -264,4 +264,7 @@ open class AmityEventHandler {
         }
         source.presentVideoPlayer(at: videoUrl)
     }
+    
+    /// Behavior for present contact ktb page.
+    open func openKTBContact( from source: AmityViewController, id: String) { }
 }

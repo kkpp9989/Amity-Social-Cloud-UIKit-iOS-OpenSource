@@ -250,6 +250,35 @@ extension AmityFeedScreenViewModel {
         
         return sortedArray
     }
+    
+    func fetchByPost(postId: String) {
+        //Get Post data
+        self.postController.getPinPostForPostId(withPostId: postId) { [weak self] (result) in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let post):
+                guard let index = strongSelf.postComponents.firstIndex(where: { $0._composable.post.postId == postId }) else { return }
+                post.isPinPost = true
+                switch post.dataTypeInternal {
+                case .text:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostTextComponent(post: post))
+                case .image, .video:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostMediaComponent(post: post))
+                case .file:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostFileComponent(post: post))
+                case .poll:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostPollComponent(post: post))
+                case .liveStream:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostLiveStreamComponent(post: post))
+                case .unknown:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostTextComponent(post: post))
+                }
+                strongSelf.delegate?.screenViewModelDidUpdateDataSuccess(strongSelf)
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
 // MARK: Observer
@@ -321,7 +350,7 @@ extension AmityFeedScreenViewModel {
         }
     }
     
-    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool) {
         if !isReactionLoading {
             isReactionLoading = true
             reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
@@ -330,7 +359,11 @@ extension AmityFeedScreenViewModel {
                     strongSelf.isReactionLoading = false
                     switch referenceType {
                     case .post:
-                        strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
+                        if isPinPost {
+                            strongSelf.fetchByPost(postId: id)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
+                        }
                     case .comment:
                         strongSelf.delegate?.screenViewModelDidLikeCommentSuccess(strongSelf)
                     default:
@@ -343,7 +376,7 @@ extension AmityFeedScreenViewModel {
         }
     }
     
-    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType) {
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool) {
         if !isReactionLoading {
             isReactionLoading = true
             reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
@@ -352,7 +385,11 @@ extension AmityFeedScreenViewModel {
                 if success {
                     switch referenceType {
                     case .post:
-                        strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                        if isPinPost {
+                            strongSelf.fetchByPost(postId: id)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                        }
                     case .comment:
                         strongSelf.delegate?.screenViewModelDidUnLikeCommentSuccess(strongSelf)
                     default:
@@ -365,7 +402,7 @@ extension AmityFeedScreenViewModel {
         }
     }
     
-    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType) {
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType, isPinPost: Bool) {
         if !isReactionLoading {
             isReactionLoading = true
             isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
@@ -375,7 +412,7 @@ extension AmityFeedScreenViewModel {
                 strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
                 if success {
                     strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
-                    self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType)
+                    self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType, isPinPost: isPinPost)
                 } else {
                     strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
                 }
