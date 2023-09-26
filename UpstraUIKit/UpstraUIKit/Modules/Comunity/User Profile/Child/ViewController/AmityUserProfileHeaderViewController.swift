@@ -25,22 +25,28 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     @IBOutlet weak private var followingButton: AmityButton!
     @IBOutlet weak private var followersButton: AmityButton!
     @IBOutlet weak private var followButton: AmityButton!
+    @IBOutlet weak private var messageFriendButton: AmityButton!
+    @IBOutlet weak private var contactFriendButton: AmityButton!
     @IBOutlet weak private var followRequestsStackView: UIStackView!
     @IBOutlet weak private var followRequestBackgroundView: UIView!
     @IBOutlet weak private var dotView: UIView!
     @IBOutlet weak private var pendingRequestsLabel: UILabel!
     @IBOutlet weak private var followRequestDescriptionLabel: UILabel!
+    @IBOutlet weak private var ktbContainerView: UIView!
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     private var isScrollViewReachedLowestPoint: Bool = false
     
+    private var userId: String = ""
+
     // MARK: Initializer
     static func make(withUserId userId: String, settings: AmityUserProfilePageSettings) -> AmityUserProfileHeaderViewController {
         let viewModel = AmityUserProfileHeaderScreenViewModel(userId: userId)
         let vc = AmityUserProfileHeaderViewController(nibName: AmityUserProfileHeaderViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.settings = settings
+        vc.userId = userId
         return vc
     }
     
@@ -58,6 +64,8 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         setupFollowersButton()
         setupFollowButton()
         setupFollowRequestsView()
+        setupMessageButton()
+        setupContactButton()
         
         /* [Custom for ONE Krungthai] Add viewcontroller to ONEKrungthaiCustomTheme class for set theme */
         // Initial ONE Krungthai Custom theme
@@ -208,6 +216,26 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         followRequestDescriptionLabel.text = AmityLocalizedStringSet.userDetailsPendingRequestsDescription.localizedString
     }
     
+    private func setupMessageButton() {
+        messageFriendButton.setImage(AmityIconSet.iconMessageProfile, position: .left)
+        messageFriendButton.setTitle("Message", for: .normal)
+        messageFriendButton.tintColor = AmityColorSet.base
+        messageFriendButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
+        messageFriendButton.layer.borderWidth = 1
+        messageFriendButton.layer.cornerRadius = messageFriendButton.frame.height / 2
+        messageFriendButton.setTitleFont(AmityFontSet.bodyBold)
+    }
+    
+    private func setupContactButton() {
+        contactFriendButton.setImage(AmityIconSet.iconContactProfile, position: .left)
+        contactFriendButton.setTitle("Contact", for: .normal)
+        contactFriendButton.tintColor = AmityColorSet.base
+        contactFriendButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
+        contactFriendButton.layer.borderWidth = 1
+        contactFriendButton.layer.cornerRadius = messageFriendButton.frame.height / 2
+        contactFriendButton.setTitleFont(AmityFontSet.bodyBold)
+    }
+    
     private func setupNotificationCenter() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedLowestPoint), name: .scrollViewReachedLowestPoint, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedTopperPoint), name: .scrollViewReachedTopperPoint, object: nil)
@@ -262,6 +290,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         descriptionLabel.text = user.about
         editProfileButton.isHidden = !user.isCurrentUser
         messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser
+        ktbContainerView.isHidden = !user.isCurrentUser
     }
     
     private func updateFollowInfo(with model: AmityFollowInfo) {
@@ -347,6 +376,14 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     @IBAction func followRequestsAction(_ sender: UIButton) {
         let requestsViewController = AmityFollowRequestsViewController.make(withUserId: screenViewModel.dataSource.userId)
         navigationController?.pushViewController(requestsViewController, animated: true)
+    }
+    
+    @IBAction func messageFriendAction(_ sender: UIButton) {
+    }
+    
+    @IBAction func contachFriendAction(_ sender: UIButton) {
+        let userId = userId.replacingOccurrences(of: "1001", with: "")
+        AmityEventHandler.shared.openKTBContact(from: self, id: userId)
     }
 }
 

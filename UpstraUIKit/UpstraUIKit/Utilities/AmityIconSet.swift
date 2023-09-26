@@ -73,7 +73,9 @@ public struct AmityIconSet {
     public static var iconPlayVideo = UIImage(named: "icon_play_video", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconPinpost = UIImage(named: "icon_pinpost", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconNotificationNavigationBar = UIImage(named: "icon_notification_button", in: AmityUIKitManager.bundle, compatibleWith: nil)
-    
+    public static var iconContactProfile = UIImage(named: "icon_contact_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconMessageProfile = UIImage(named: "icon_message_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
+
     public static var iconBadgeDNALike = UIImage(named: "icon_badge_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeDNALove = UIImage(named: "icon_badge_dna_love", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeDNASamakki = UIImage(named: "icon_badge_dna_samakki", in: AmityUIKitManager.bundle, compatibleWith: nil)

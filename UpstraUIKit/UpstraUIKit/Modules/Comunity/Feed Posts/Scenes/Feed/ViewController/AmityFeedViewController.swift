@@ -520,9 +520,9 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
         switch action {
         case .tapLike:
             if let reactionType = post.reacted {
-                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post, isPinPost: post.isPinPost)
             } else {
-                screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post)
+                screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post, isPinPost: post.isPinPost)
             }
         case .tapComment, .tapReactionDetails:
             AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
@@ -533,9 +533,9 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                     return
                 } else {
                     if let reacted = post.reacted, !reacted.rawValue.isEmpty {
-                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType)
+                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType, isPinPost: post.isPinPost)
                     } else {
-                        self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post)
+                        self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post, isPinPost: post.isPinPost)
                     }
                 }
             }
