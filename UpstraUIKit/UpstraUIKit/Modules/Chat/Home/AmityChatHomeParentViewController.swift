@@ -12,9 +12,18 @@ public class AmityChatHomeParentViewController: AmityViewController {
     
     var currentChildViewController: UIViewController?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         title = AmityLocalizedStringSet.chatTitle.localizedString
+        
+        /* [Custom for ONE Krungthai] Set custom navigation bar theme */
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        // Set background app for this navigation bar from ONE Krungthai custom theme
+        theme?.setBackgroundApp(index: 0)
 
         // Load the initial child view controller
         if AmityUIKitManagerInternal.shared.client != nil {

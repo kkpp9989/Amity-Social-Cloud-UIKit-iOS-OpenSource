@@ -91,9 +91,11 @@
 "unit_minute_singular" = "%@ minute";
 "unit_minute_plural" = "%@ minutes";
 
-"chat_title" = "Chat";
+"chat_title" = "Chats";
 "recent_title" = "Recent";
 "directory_title" = "Directory";
+"following_title" = "Following";
+"followers_title" = "Followers";
 
 "edit_message_title" = "Edit message";
 "view_all_comments_title" = "View all comments...";
