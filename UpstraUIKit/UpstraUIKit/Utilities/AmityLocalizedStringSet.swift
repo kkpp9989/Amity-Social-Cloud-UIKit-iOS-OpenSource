@@ -115,7 +115,9 @@ public struct AmityLocalizedStringSet {
     static let editMessageTitle = "edit_message_title"
     static let viewAllCommentsTitle = "view_all_comments_title"
     static let viewAllFilesTitle = "view_all_files_title"
-    
+    static let followingTitle = "following_title"
+    static let followersTitle = "followers_title"
+
     static let textMessagePlaceholder = "text_message_placeholder"
     static let messageReadmore = "message_readmore"
     static let noUserFound = "no_user_found"
