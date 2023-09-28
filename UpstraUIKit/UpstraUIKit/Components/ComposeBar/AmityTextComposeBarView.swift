@@ -81,11 +81,15 @@ class AmityTextComposeBarView: AmityView {
     
     private func setupView() {
         contentView.backgroundColor = AmityColorSet.backgroundColor
-        textView.backgroundColor = AmityColorSet.backgroundColor
+        /* [Custom for ONE Krungthai] Set new design of text compose bar view refer to ONE KTB figma */
+//        textView.backgroundColor = AmityColorSet.backgroundColor // [Original]
+        textView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         textView.layer.borderWidth = 1
         textView.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
-        textView.layer.cornerRadius = 4
+//        textView.layer.cornerRadius = 4 // [Original]
+        textView.layer.cornerRadius = textView.frame.height / 2
         textView.customTextViewDelegate = self
+        textView.inputAccessoryView = UIView() // [Improvement] Delete done button view in keyboard
         
         defaultHeightTextView = textView.frame.height
     }

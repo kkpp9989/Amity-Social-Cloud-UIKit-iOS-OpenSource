@@ -112,7 +112,9 @@
 "accounts" = "Accounts";
 "hashtags" = "Hashtags";
 
-"text_message_placeholder" = "Type message";
+/* [Custom for ONE Krungthai] Change wording "text_message_placeholder" */
+//"text_message_placeholder" = "Type message"; // [Original]
+"text_message_placeholder" = "Write a message";
 
 "message_delete" = "Message deleted • %@";
 "message_edit" = "Edited • %@";
@@ -129,6 +131,7 @@
 "message_list_alert_delete_desc" = "Message will be also be permanently removed from your friend's devices.";
 "message_list_sending" = "Sending...";
 "message_list_hold_to_record" = "Hold to record";
+"message_list_tap_to_record" = "Tap to record"; // [Custom for ONE Krungthai] Add tap to record localized string for use in chat detail refer design in ONE KTB figma
 "message_list_release_to_send" = "Release to send";
 
 // MARK: - Empty

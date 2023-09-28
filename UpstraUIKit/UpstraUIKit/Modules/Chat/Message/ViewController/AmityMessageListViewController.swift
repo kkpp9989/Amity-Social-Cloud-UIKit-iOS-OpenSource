@@ -90,6 +90,10 @@ public final class AmityMessageListViewController: AmityViewController {
         
         bottomConstraint.constant = .zero
         view.endEditing(true)
+        
+        
+        /* [Custom for ONE Krungthai] Hide tabber when open chat detail view */
+        tabBarController?.tabBar.isHidden = true
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -103,6 +107,9 @@ public final class AmityMessageListViewController: AmityViewController {
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
         view.endEditing(true)
+        
+        /* [Custom for ONE Krungthai] Hide tabber when go to another view */
+        tabBarController?.tabBar.isHidden = false
     }
     
     /// Create `AmityMessageListViewController` instance.

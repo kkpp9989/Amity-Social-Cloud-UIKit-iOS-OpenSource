@@ -133,6 +133,7 @@ public struct AmityLocalizedStringSet {
     // MARK: - Message List
     enum MessageList {
         static let holdToRecord = "message_list_hold_to_record"
+        static let tapToRecord = "message_list_tap_to_record" // [Custom for ONE Krungthai] Add tap to record localized string for use in chat detail refer design in ONE KTB figma
         static let releaseToSend = "message_list_release_to_send"
         static let alertErrorMessageTitle = "message_list_alert_error_message_title"
         static let alertErrorMessageDesc = "message_list_alert_error_message_desc"
