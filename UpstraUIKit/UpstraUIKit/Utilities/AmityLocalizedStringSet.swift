@@ -459,6 +459,19 @@ public struct AmityLocalizedStringSet {
         static let removeMemberAlertBody = "chat_setting_remove_member_alert_body"
     }
     
+    // MARK: - Chat status
+    /* [Custom for ONE Krungthai] Localized string of chat status */
+    enum ChatStatus {
+        static let available = "chat_status_available"
+        static let offline = "chat_status_offline"
+        static let doNotDisturb = "chat_status_do_not_disturb"
+        static let inTheOffice = "chat_status_in_the_office"
+        static let workFromHome = "chat_status_work_from_home"
+        static let inAMeeting = "chat_status_in_a_meeting"
+        static let onLeave = "chat_status_on_leave"
+        static let outSick = "chat_status_out_sick"
+    }
+    
     enum CommunityChannelCreation {
         static let failedToCreate = "chat_create_failed"
     }

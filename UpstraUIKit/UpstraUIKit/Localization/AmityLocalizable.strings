@@ -487,6 +487,17 @@
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
 "chat_setting_remove_member_alert_body" = "The user won't no longer be able to see this group chat";
 
+// MARK: - Chat Status
+/* [Custom for ONE Krungthai] Localized string of chat status */
+"chat_status_available" = "Available";
+"chat_status_offline" = "Offline";
+"chat_status_do_not_disturb" = "Do not disturb";
+"chat_status_in_the_office" = "In the office";
+"chat_status_work_from_home" = "Work from home";
+"chat_status_in_a_meeting" = "In a meeting";
+"chat_status_on_leave" = "On leave";
+"chat_status_out_sick" = "Out sick";
+
 /// MARK: - Create Community Channel
 "chat_create_failed" = "Something went wrong while creating the chat.";
 
