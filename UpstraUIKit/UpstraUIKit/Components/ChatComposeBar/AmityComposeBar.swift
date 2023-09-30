@@ -19,21 +19,14 @@ import UIKit
 /// To properly make compose bar easily replaceable, the `AmityComposeBar` protocol and the flow  of `AmityMessageListViewController` need be refactored.
 ///
 protocol AmityComposeBar: AnyObject {
-    
     func updateViewDidTextChanged(_ text: String)
-    
     func rotateMoreButton(canRotate: Bool)
-    
     func showPopoverMessage()
-    
     func clearText()
-    
     func showRecordButton(show: Bool)
     
     var deletingTarget: UIView? { get set }
-    
     var isTimeout: Bool { get set }
-    
     var selectedMenuHandler: ((AmityKeyboardComposeBarModel.MenuType) -> Void)? { get set }
-    
+	var textView: AmityTextView { get set }
 }

@@ -52,9 +52,13 @@ public final class AmityMessageListViewController: AmityViewController {
     @IBOutlet weak var connectionStatusBarTopSpace: NSLayoutConstraint!
     @IBOutlet weak var connectionStatusBarHeight: NSLayoutConstraint!
     
+	@IBOutlet private var mentionTableView: AmityMentionTableView!
+	@IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
+	
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var connectionStatatusObservation: NSKeyValueObservation?
+	private var mentionManager: AmityMentionManager?
     
     // MARK: - Container View
     private var navigationHeaderViewController: AmityMessageListHeaderView!
@@ -81,10 +85,16 @@ public final class AmityMessageListViewController: AmityViewController {
         setupConnectionStatusBar()
         buildViewModel()
         shouldCellOverride()
+		
+		setupMentionTableView()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+		mentionManager?.delegate = self
+		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
+		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
+		
         AmityKeyboardService.shared.delegate = self
         screenViewModel.startReading()
         
@@ -94,6 +104,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+		mentionManager?.delegate = nil
         AmityKeyboardService.shared.delegate = nil
         
         screenViewModel.action.toggleKeyboardVisible(visible: false)
@@ -119,6 +130,7 @@ public final class AmityMessageListViewController: AmityViewController {
         let vc = AmityMessageListViewController(nibName: AmityMessageListViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.settings = settings
+		vc.mentionManager = AmityMentionManager(withType: .message(channelId: channelId))
         return vc
     }
     
@@ -130,6 +142,13 @@ public final class AmityMessageListViewController: AmityViewController {
         }
         messageViewController.setupView()
     }
+	
+	private func setupMentionTableView() {
+		mentionTableView.isHidden = true
+		mentionTableView.delegate = self
+		mentionTableView.dataSource = self
+		mentionTableView.register(AmityMentionTableViewCell.nib, forCellReuseIdentifier: AmityMentionTableViewCell.identifier)
+	}
 }
 
 // MARK: - Action
@@ -281,9 +300,14 @@ private extension AmityMessageListViewController {
         let composeBarViewController: UIViewController & AmityComposeBar
         switch settings.composeBarStyle {
         case .default:
-            composeBarViewController = AmityMessageListComposeBarViewController.make(viewModel: screenViewModel, setting: settings)
+            composeBarViewController = AmityMessageListComposeBarViewController.make(
+				viewModel: screenViewModel,
+				setting: settings,
+				delegate: self)
         case .textOnly:
-            composeBarViewController = AmityComposeBarOnlyTextViewController.make(viewModel: screenViewModel)
+            composeBarViewController = AmityComposeBarOnlyTextViewController.make(
+				viewModel: screenViewModel,
+				delegate: self)
         }
         
         // Manage view controller
@@ -504,8 +528,12 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             editTextVC.dismissHandler = {
                 editTextVC.dismiss(animated: true, completion: nil)
             }
-            editTextVC.editHandler = { [weak self] newMessage, _, _ in
-                self?.screenViewModel.action.editText(with: newMessage, messageId: message.messageId)
+            editTextVC.editHandler = { [weak self] newMessage, metadata, mentionees in
+                self?.screenViewModel.action.editText(
+					with: newMessage,
+					messageId: message.messageId,
+					metadata: metadata,
+					mentionees: mentionees)
             }
             let nav = UINavigationController(rootViewController: editTextVC)
             nav.modalPresentationStyle = .fullScreen
@@ -574,5 +602,106 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelIsRefreshing(_ isRefreshing: Bool) {
         setRefreshOverlay(visible: isRefreshing)
     }
-    
+	
+	func screenViewModelDidTapOnMention(with userId: String) {
+		AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+	}
+}
+
+// MARK: - UITableViewDataSource
+extension AmityMessageListViewController: UITableViewDataSource {
+	public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return mentionManager?.users.count ?? 1
+	}
+	
+	public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+		cell.display(with: model)
+		return cell
+	}
+}
+
+// MARK: - UITableViewDelegate
+extension AmityMessageListViewController: UITableViewDelegate {
+	public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		return AmityMentionTableViewCell.height
+	}
+	
+	public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		mentionManager?.addMention(from: composeBar.textView, in: composeBar.textView.text, at: indexPath)
+	}
+	
+	public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+		if tableView.isBottomReached {
+			mentionManager?.loadMore()
+		}
+	}
+}
+
+// MARK: - AmityMentionManagerDelegate
+extension AmityMessageListViewController: AmityMentionManagerDelegate {
+	public func didGetHashtag(keywords: [AmityHashtagModel]) {
+		// do something
+	}
+	
+	public func didCreateAttributedString(attributedString: NSAttributedString) {
+		composeBar.textView.attributedText = attributedString
+		composeBar.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+	}
+	
+	public func didGetUsers(users: [AmityMentionUserModel]) {
+		if users.isEmpty {
+			mentionTableViewHeightConstraint.constant = 0
+			mentionTableView.isHidden = true
+		} else {
+			var heightConstant:CGFloat = 240.0
+			if users.count < 5 {
+				heightConstant = CGFloat(users.count) * 52.0
+			}
+			mentionTableViewHeightConstraint.constant = heightConstant
+			mentionTableView.isHidden = false
+			mentionTableView.reloadData()
+		}
+	}
+	
+	public func didMentionsReachToMaximumLimit() {
+		let alertController = UIAlertController(title: AmityLocalizedStringSet.Mention.unableToMentionTitle.localizedString, message: AmityLocalizedStringSet.Mention.unableToMentionReplyDescription.localizedString, preferredStyle: .alert)
+		let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.done.localizedString, style: .cancel, handler: nil)
+		alertController.addAction(cancelAction)
+		present(alertController, animated: true, completion: nil)
+	}
+	
+	public func didCharactersReachToMaximumLimit() {
+		showAlertForMaximumCharacters()
+	}
+	
+	func showAlertForMaximumCharacters() {
+		let alertController = UIAlertController(title: AmityLocalizedStringSet.Mention.unableToMentionTitle.localizedString, message: AmityLocalizedStringSet.Mention.unableToMentionReplyDescription.localizedString, preferredStyle: .alert)
+		let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.done.localizedString, style: .cancel, handler: nil)
+		alertController.addAction(cancelAction)
+		present(alertController, animated: true, completion: nil)
+	}
+}
+
+extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, AmityComposeBarOnlyTextDelegate {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		if view.textView.text.count > AmityMentionManager.maximumCharacterCountForPost {
+			showAlertForMaximumCharacters()
+			return false
+		}
+		return mentionManager?.shouldChangeTextIn(view.textView, inRange: range, replacementText: text, currentText: view.textView.text) ?? true
+	}
+	
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
+		mentionManager?.changeSelection(view.textView)
+	}
+	
+	func sendMessageTap() {
+		let metadata = mentionManager?.getMetadata()
+		let mentionees = mentionManager?.getMentionees()
+		screenViewModel.action.send(withText: composeBar.textView.text,
+									metadata: metadata,
+									mentionees: mentionees)
+		mentionManager?.resetState()
+	}
 }

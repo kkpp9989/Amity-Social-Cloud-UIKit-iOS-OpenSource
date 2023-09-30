@@ -29,6 +29,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     func screenViewModelDidFailToReportMessage(at indexPath: IndexPath, with error: Error?)
     
     func screenViewModelIsRefreshing(_ isRefreshing: Bool)
+	func screenViewModelDidTapOnMention(with userId: String)
     
 }
 
@@ -51,11 +52,11 @@ protocol AmityMessageListScreenViewModelAction {
     func getChannel()
     func getMessage()
     
-    func send(withText text: String?)
+	func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func send(withMedias medias: [AmityMedia])
     func sendAudio()
     
-    func editText(with text: String, messageId: String)
+    func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath)
     func deleteErrorMessage(with messageId: String, at indexPath: IndexPath)
     func startReading()
@@ -79,6 +80,7 @@ protocol AmityMessageListScreenViewModelAction {
     func performAudioRecordingEvents(for event: AmityMessageListScreenViewModel.AudioRecordingEvents)
     
     func reportMessage(at indexPath: IndexPath)
+	func tapOnMention(withUserId userId: String)
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {
