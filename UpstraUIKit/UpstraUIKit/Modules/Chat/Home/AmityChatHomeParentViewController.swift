@@ -59,7 +59,7 @@ public class AmityChatHomeParentViewController: AmityViewController {
             
             // Create chat button
             let createChatButton: UIButton = UIButton.init(type: .custom)
-            createChatButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            createChatButton.setImage(AmityIconSet.iconCreateGroupChat?.withRenderingMode(.alwaysOriginal), for: .normal)
             createChatButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
             createChatButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
             rightButtonItems.append(createChatButton)
