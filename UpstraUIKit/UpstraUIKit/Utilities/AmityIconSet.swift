@@ -164,6 +164,12 @@ public struct AmityIconSet {
         public static var iconStatusWorkFromHome = UIImage(named: "icon_status_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
+    enum ChatSettings {
+        public static var iconInviteUser = UIImage(named: "icon_invite_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMutedNotification = UIImage(named: "icon_muted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconUnmutedNotification = UIImage(named: "icon_unmuted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    }
+    
     enum Post {
         public static var like = UIImage(named: "icon_post_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var liked = UIImage(named: "icon_post_liked", in: AmityUIKitManager.bundle, compatibleWith: nil)

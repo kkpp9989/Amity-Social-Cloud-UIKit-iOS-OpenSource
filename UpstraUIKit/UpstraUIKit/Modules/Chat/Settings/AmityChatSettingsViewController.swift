@@ -28,7 +28,9 @@ final class AmityChatSettingsViewController: AmityViewController {
     }
     
     private func setUpView() {
-        title = screenViewModel.dataSource.title()
+        screenViewModel.dataSource.title { chatDisplayName in
+            self.title = chatDisplayName
+        }
         screenViewModel.delegate  = self
     }
     
@@ -40,13 +42,15 @@ final class AmityChatSettingsViewController: AmityViewController {
                            forCellReuseIdentifier: AmitySettingsItemNavigationContentTableViewCell.identifier)
         tableView.register(AmitySettingsItemTextContentTableViewCell.nib,
                            forCellReuseIdentifier: AmitySettingsItemTextContentTableViewCell.identifier)
+        tableView.register(AmitySettingsItemSeparatorContentTableViewCell.nib, forCellReuseIdentifier: AmitySettingsItemSeparatorContentTableViewCell.identifier)
+        tableView.separatorColor = .clear
     }
 }
 
 extension AmityChatSettingsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch screenViewModel.dataSource.getOption(with: indexPath.row) {
-        case .leave, .report(let _) :
+        case .leave, .report(let _), .inviteUser, .notification(let _):
             let cell = tableView.dequeueReusableCell(withIdentifier: AmitySettingsItemTextContentTableViewCell.identifier) as! AmitySettingsItemTextContentTableViewCell
             return cell
         default:
@@ -57,13 +61,21 @@ extension AmityChatSettingsViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch screenViewModel.dataSource.getOption(with: indexPath.row) {
-        case .leave, .report(let _):
+        case .leave:
             if let cell = cell as? AmitySettingsItemTextContentTableViewCell {
                 let item = AmitySettingsItem.TextContent(identifier: "",
                                                          icon: screenViewModel.dataSource.getOptionImage(with: indexPath.row),
                                                          title: screenViewModel.dataSource.getOptionTitle(with: indexPath.row),
                                                          description: "",
                                                          titleTextColor: screenViewModel.dataSource.getOptionTextColor(with: indexPath.row))
+                cell.display(content: item)
+            }
+        case .report(let _), .inviteUser, .notification(let _):
+            if let cell = cell as? AmitySettingsItemTextContentTableViewCell {
+                let item = AmitySettingsItem.TextContent(identifier: "",
+                                                         icon: screenViewModel.dataSource.getOptionImage(with: indexPath.row),
+                                                         title: screenViewModel.dataSource.getOptionTitle(with: indexPath.row),
+                                                         description: "")
                 cell.display(content: item)
             }
         case .members:

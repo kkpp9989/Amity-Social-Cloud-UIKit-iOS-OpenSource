@@ -458,6 +458,9 @@ public struct AmityLocalizedStringSet {
         static let navigationTitle = "chat_setting_member_detail_title"
         static let removeMemberAlertTitle = "chat_setting_remove_member_alert_title"
         static let removeMemberAlertBody = "chat_setting_remove_member_alert_body"
+        static let inviteUser = "chat_setting_invite_user"
+        static let mutedNotification = "chat_setting_muted_notification"
+        static let unmutedNotification = "chat_setting_unmuted_notification"
     }
     
     // MARK: - Chat status

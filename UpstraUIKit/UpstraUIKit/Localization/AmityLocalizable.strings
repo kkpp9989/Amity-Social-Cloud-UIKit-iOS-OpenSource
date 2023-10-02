@@ -489,6 +489,9 @@
 "chat_setting_member_detail_title" = "Member Details";
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
 "chat_setting_remove_member_alert_body" = "The user won't no longer be able to see this group chat";
+"chat_setting_invite_user" = "Invite user";
+"chat_setting_muted_notification" = "Mute";
+"chat_setting_unmuted_notification" = "Unmute";
 
 // MARK: - Chat Status
 /* [Custom for ONE Krungthai] Localized string of chat status */

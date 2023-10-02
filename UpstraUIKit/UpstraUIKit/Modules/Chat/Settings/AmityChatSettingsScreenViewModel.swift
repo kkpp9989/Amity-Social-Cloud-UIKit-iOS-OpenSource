@@ -14,6 +14,8 @@ enum OptionsList: Equatable {
     case leave
     case members
     case groupProfile
+    case inviteUser
+    case notification(Bool)
     var text: String {
         switch self {
         case .report(let isReported):
@@ -27,6 +29,13 @@ enum OptionsList: Equatable {
             return AmityLocalizedStringSet.ChatSettings.member.localizedString
         case .groupProfile:
             return AmityLocalizedStringSet.ChatSettings.groupProfile.localizedString
+        case .inviteUser:
+            return AmityLocalizedStringSet.ChatSettings.inviteUser.localizedString
+        case .notification(let isMuted):
+            if isMuted {
+                return AmityLocalizedStringSet.ChatSettings.mutedNotification.localizedString
+            }
+            return AmityLocalizedStringSet.ChatSettings.unmutedNotification.localizedString
         }
     }
     var textColor: UIColor {
@@ -39,6 +48,10 @@ enum OptionsList: Equatable {
             return UIColor(hex: "#292B32")
         case .groupProfile:
             return UIColor(hex: "#292B32")
+        case .inviteUser:
+            return UIColor(hex: "#292B32")
+        case .notification(_):
+            return UIColor(hex: "#292B32")
         }
     }
     
@@ -48,6 +61,15 @@ enum OptionsList: Equatable {
             return AmityIconSet.CommunitySettings.iconItemEditProfile
         case .members:
             return AmityIconSet.CommunitySettings.iconItemMembers
+        case .report(let _):
+            return AmityIconSet.UserSettings.iconItemReportUser
+        case .inviteUser:
+            return AmityIconSet.ChatSettings.iconInviteUser
+        case .notification(let isMuted):
+            if isMuted {
+                return AmityIconSet.ChatSettings.iconUnmutedNotification
+            }
+            return AmityIconSet.ChatSettings.iconMutedNotification
         default:
             return nil
         }
@@ -63,7 +85,7 @@ protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
 }
 
 protocol AmityChatSettingsScreenViewModelDataSource {
-    func title() -> String
+    func title(completion: @escaping(_ chatDisplayName: String?) -> Void)
     func getNumberOfItems() -> Int
     func getOption(with index: Int) -> OptionsList
     func getOptionTitle(with index: Int) -> String
@@ -111,6 +133,11 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
             directChatSetting = [.report(isUserReported), .leave]
         }
     }
+    var isMutedNotification: Bool = false {
+        didSet {
+            directChatSetting = [.report(isUserReported), .leave]
+        }
+    }
     
     private let groupChatSetting: [OptionsList] = [ .groupProfile, .members, .leave]
     private var directChatSetting: [OptionsList] = []
@@ -121,7 +148,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         
-        directChatSetting = [.report(isUserReported)]
+        directChatSetting = [.notification(isMutedNotification), .inviteUser, .report(isUserReported), .leave]
         
         self.channelId = channelId
         
@@ -144,9 +171,30 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
 
 // MARK: - DataSource
 extension AmityChatSettingsScreenViewModel {
-    func title() -> String {
-        return AmityLocalizedStringSet.ChatSettings.title.localizedString
+    func title(completion: @escaping(_ chatDisplayName: String?) -> Void) {
+        //        return AmityLocalizedStringSet.ChatSettings.title.localizedString // [Original]
+        
+        if let channel = channelModel {
+            switch channel.channelType {
+            case .conversation:
+                /* [Custom for ONE Krungthai] Get other user by membership in SDK */
+                AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
+                    DispatchQueue.main.async { [self] in
+                        if let otherMember = user {
+                            completion(otherMember.displayName)
+                        } else {
+                            completion(channel.displayName)
+                        }
+                    }
+                }
+            default:
+                completion(channel.displayName)
+            }
+        } else {
+            completion("")
+        }
     }
+        
     
     func getNumberOfItems() -> Int {
         guard let model = channelModel else {
@@ -281,6 +329,22 @@ extension AmityChatSettingsScreenViewModel {
         
     }
     
+    func presentInviteMember() {
+        
+    }
+    
+    func changeNotificationStatus() {
+        isMutedNotification ? unmutedNotification() : mutedNotification()
+    }
+    
+    func mutedNotification() {
+        
+    }
+    
+    func unmutedNotification() {
+        
+    }
+    
     func didClickCell(index: Int) {
         var optionSetting: [OptionsList] = [.leave]
         if let model = channelModel {
@@ -299,6 +363,12 @@ extension AmityChatSettingsScreenViewModel {
             presentMember()
         case .groupProfile:
             presentGroupProfile()
+        case .inviteUser:
+            presentInviteMember()
+        case .notification:
+            changeNotificationStatus()
+        default:
+            break
         }
     }
 }
