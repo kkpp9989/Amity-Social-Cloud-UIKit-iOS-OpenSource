@@ -11,11 +11,13 @@ import AmitySDK
 
 protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetSettingMenu settings: [AmitySettingsItem])
-    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannel)
+    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannelModel)
+    func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool)
+    func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
 }
 
 protocol AmityChatSettingsScreenViewModelDataSource {
-    var channel: AmityChannel? { get }
+    var channel: AmityChannelModel? { get }
     var channelId: String { get }
     var title: String? { get }
 }
@@ -24,6 +26,8 @@ protocol AmityChatSettingsScreenViewModelAction {
     func retrieveChannel()
     func retrieveNotificationSettings()
     func retrieveSettingsMenu()
+    func changeNotificationSettings()
+    func changeReportUserStatus()
 }
 
 protocol AmityChatSettingsScreenViewModelType: AmityChatSettingsScreenViewModelAction, AmityChatSettingsScreenViewModelDataSource {

@@ -24,7 +24,12 @@ final class AmityChatSettingsViewController: AmityViewController {
         let vc = AmityChatSettingsViewController(
             nibName: AmityChatSettingsViewController.identifier,
             bundle: AmityUIKitManager.bundle)
-        vc.screenViewModel = AmityChatSettingsScreenViewModel(channelId: channelId)
+
+        let chatNotificationController = AmityChatNotificationSettingsController(withChannelId: channelId)
+        let chatInfoController = AmityChatInfoController(channelId: channelId)
+        vc.screenViewModel = AmityChatSettingsScreenViewModel(channelId: channelId,
+                                                              chatNotificationController: chatNotificationController,
+                                                              chatInfoController: chatInfoController)
         return vc
     }
     
@@ -60,88 +65,80 @@ final class AmityChatSettingsViewController: AmityViewController {
     }
     
     private func handleActionItem(settingsItem: AmitySettingsItem) {
-//        guard let community = screenViewModel.dataSource.community else { return }
-//        switch settingsItem {
-//        case .navigationContent(let content):
-//            guard let item = AmityCommunitySettingsItem(rawValue: content.identifier) else { return }
-//            switch item {
-//            case .editProfile:
-//                let vc = AmityCommunityEditorViewController.make(withCommunityId: community.communityId)
-//                vc.delegate = self
-//                let nav = UINavigationController(rootViewController: vc)
-//                nav.modalPresentationStyle = .fullScreen
-//                present(nav, animated: true, completion: nil)
-//            case .members:
-//                let vc = AmityCommunityMemberSettingsViewController.make(community: community.object)
-//                navigationController?.pushViewController(vc, animated: true)
-//            case .notification:
-//                let vc = AmityCommunityNotificationSettingsViewController.make(community: community)
-//                navigationController?.pushViewController(vc, animated: true)
-//            case .postReview:
-//                let vc = AmityPostReviewSettingsViewController.make(communityId: community.communityId)
-//                navigationController?.pushViewController(vc, animated: true)
-//            default:
-//                break
-//            }
-//        case .textContent(let content):
-//            guard let item = AmityCommunitySettingsItem(rawValue: content.identifier) else { return }
-//            switch item {
-//            case .leaveCommunity:
-//                let alertTitle = AmityLocalizedStringSet.CommunitySettings.alertTitleLeave.localizedString
-//                let actionTitle = AmityLocalizedStringSet.General.leave.localizedString
-//                var description = AmityLocalizedStringSet.CommunitySettings.alertDescLeave.localizedString
-//                let isOnlyOneMember = screenViewModel.dataSource.community?.membersCount == 1
-//                if screenViewModel.dataSource.isModerator(userId: AmityUIKitManagerInternal.shared.currentUserId) {
-//                    description = AmityLocalizedStringSet.CommunitySettings.alertDescModeratorLeave.localizedString
-//                }
-//
-//                AmityAlertController.present(
-//                    title: alertTitle,
-//                    message: description.localizedString,
-//                    actions: [.cancel(handler: nil), .custom(title: actionTitle.localizedString, style: .destructive, handler: { [weak self] in
-//                        guard let strongSelf = self else { return }
-//                        if isOnlyOneMember {
-//                            let description = AmityLocalizedStringSet.CommunitySettings.alertDescLastModeratorLeave.localizedString
-//                            AmityAlertController.present(title: alertTitle, message: description, actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.close.localizedString, style: .destructive, handler: { [weak self] in
-//                                    self?.screenViewModel.action.closeCommunity()
-//                            })],
-//                            from: strongSelf)
-//                        } else {
-//                            strongSelf.screenViewModel.action.leaveCommunity()
-//                        }
-//                    })],
-//                    from: self)
-//            case .closeCommunity:
-//                AmityAlertController.present(
-//                    title: AmityLocalizedStringSet.CommunitySettings.alertTitleClose.localizedString,
-//                    message: AmityLocalizedStringSet.CommunitySettings.alertDescClose.localizedString,
-//                    actions: [.cancel(handler: nil),
-//                              .custom(title: AmityLocalizedStringSet.General.close.localizedString,
-//                                      style: .destructive,
-//                                      handler: { [weak self] in
-//                                        self?.screenViewModel.action.closeCommunity()
-//                                      })],
-//                    from: self)
-//            default:
-//                break
-//            }
-//        default:
-//            break
-//        }
+        guard let channel = screenViewModel.dataSource.channel else { return }
+        switch settingsItem {
+        case .textContent(content: let content):
+            switch content.identifier {
+            case "report":
+                screenViewModel.action.changeReportUserStatus()
+            case "leave":
+                // Open alert controller
+                break
+            case "delete":
+                // Open alert controller
+                break
+            case "members":
+                // Open members list
+                break
+            case "groupProfile":
+                // Open group profile setting
+                break
+            case "inviteUser":
+                // Open invite user
+                break
+            case "notification":
+                AmityHUD.show(.loading)
+                screenViewModel.action.changeNotificationSettings()
+                break
+            default:
+                break
+            }
+            
+        case .navigationContent(content: let content):
+            switch content.identifier {
+            case "report":
+                break
+            case "leave":
+                break
+            case "delete":
+                break
+            case "members":
+                break
+            case "groupProfile":
+                break
+            case "inviteUser":
+                break
+            case "notification":
+                break
+            default:
+                break
+            }
+        default:
+            break
+        }
+
     }
 }
 
 extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDelegate {
-    
+
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetSettingMenu settings: [AmitySettingsItem]) {
         settingTableView.settingsItems = settings
     }
     
-    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannel) {
+    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannelModel) {
         title = viewModel.dataSource.title
     }
     
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, failure error: AmityError) {
         // Not ready
+    }
+    
+    func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool) {
+        AmityHUD.show(.success(message: "\(isNotificationEnabled ? "Unmuted" : "Muted")"))
+    }
+    
+    func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityHUD.show(.error(message: error.localizedDescription))
     }
 }

@@ -17,6 +17,25 @@ enum AmityChatSettingsItem: Equatable {
     case inviteUser
     case notification(Bool)
     
+    var identifier: String {
+        switch self {
+        case .report:
+            return "report"
+        case .leave:
+            return "leave"
+        case .delete:
+            return "delete"
+        case .members:
+            return "members"
+        case .groupProfile:
+            return "groupProfile"
+        case .inviteUser:
+            return "inviteUser"
+        case .notification:
+            return "notification"
+        }
+    }
+    
     var title: String {
         switch self {
         case .report(let isReported):
