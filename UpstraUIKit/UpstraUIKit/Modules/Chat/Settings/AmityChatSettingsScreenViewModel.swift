@@ -9,366 +9,68 @@
 import UIKit
 import AmitySDK
 
-enum OptionsList: Equatable {
-    case report(Bool)
-    case leave
-    case members
-    case groupProfile
-    case inviteUser
-    case notification(Bool)
-    var text: String {
-        switch self {
-        case .report(let isReported):
-            if isReported {
-                return AmityLocalizedStringSet.ChatSettings.unReportUser.localizedString
-            }
-            return AmityLocalizedStringSet.ChatSettings.reportUser.localizedString
-        case .leave:
-            return AmityLocalizedStringSet.ChatSettings.leaveChannel.localizedString
-        case .members:
-            return AmityLocalizedStringSet.ChatSettings.member.localizedString
-        case .groupProfile:
-            return AmityLocalizedStringSet.ChatSettings.groupProfile.localizedString
-        case .inviteUser:
-            return AmityLocalizedStringSet.ChatSettings.inviteUser.localizedString
-        case .notification(let isMuted):
-            if isMuted {
-                return AmityLocalizedStringSet.ChatSettings.mutedNotification.localizedString
-            }
-            return AmityLocalizedStringSet.ChatSettings.unmutedNotification.localizedString
-        }
-    }
-    var textColor: UIColor {
-        switch self {
-        case .report:
-            return UIColor(hex: "#292B32")
-        case .leave:
-            return UIColor(hex: "#FA4D30")
-        case .members:
-            return UIColor(hex: "#292B32")
-        case .groupProfile:
-            return UIColor(hex: "#292B32")
-        case .inviteUser:
-            return UIColor(hex: "#292B32")
-        case .notification(_):
-            return UIColor(hex: "#292B32")
-        }
-    }
-    
-    var image: UIImage? {
-        switch self {
-        case .groupProfile:
-            return AmityIconSet.CommunitySettings.iconItemEditProfile
-        case .members:
-            return AmityIconSet.CommunitySettings.iconItemMembers
-        case .report(let _):
-            return AmityIconSet.UserSettings.iconItemReportUser
-        case .inviteUser:
-            return AmityIconSet.ChatSettings.iconInviteUser
-        case .notification(let isMuted):
-            if isMuted {
-                return AmityIconSet.ChatSettings.iconUnmutedNotification
-            }
-            return AmityIconSet.ChatSettings.iconMutedNotification
-        default:
-            return nil
-        }
-    }
-}
-
-protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
-    func screenViewModelDidFinishReport(error: String?)
-    func screenViewModelDidFinishLeaveChat(error: String?)
-    func screenViewModelDidPresentMember(channel: AmityChannelModel)
-    func screenViewmodelDidPresentGroupDetail(channelId: String)
-    func screenViewModelDidUpdate(viewModel: AmityChatSettingsScreenViewModel)
-}
-
-protocol AmityChatSettingsScreenViewModelDataSource {
-    func title(completion: @escaping(_ chatDisplayName: String?) -> Void)
-    func getNumberOfItems() -> Int
-    func getOption(with index: Int) -> OptionsList
-    func getOptionTitle(with index: Int) -> String
-    func getOptionTextColor(with index: Int) -> UIColor
-    func getOptionImage(with index: Int) -> UIImage?
-    func getMemberCount() -> String
-}
-
-protocol AmityChatSettingsScreenViewModelAction {
-    func leaveChat()
-    func presentMember()
-    func didClickCell(index: Int)
-    func changeReportStatus()
-}
-
-protocol AmityChatSettingsScreenViewModelType: AmityChatSettingsScreenViewModelAction, AmityChatSettingsScreenViewModelDataSource {
-    var action: AmityChatSettingsScreenViewModelAction { get }
-    var dataSource: AmityChatSettingsScreenViewModelDataSource { get }
-    var delegate: AmityChatSettingsScreenViewModelDelegate? { get set }
-}
-
-extension AmityChatSettingsScreenViewModelType {
-    var action: AmityChatSettingsScreenViewModelAction { return self }
-    var dataSource: AmityChatSettingsScreenViewModelDataSource { return self }
-}
-
 final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelType {
 
     weak var delegate: AmityChatSettingsScreenViewModelDelegate?
-    private var channelNotificationToken: AmityNotificationToken?
-    private var userToken: AmityNotificationToken?
     
-    // MARK: - Repository
-    private var channelRepository: AmityChannelRepository?
-    private var communityRepository: AmityCommunityRepository?
-    private var userRepository: AmityUserRepository?
+    // MARK: - Controller
+//    private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
+//    private let chatLeaveController: AmityChatLeaveControllerProtocol
+//    private let chatDeleteController: AmityChatDeleteControllerProtocol
+//    private let userRolesController: AmityChatserRolesControllerProtocol
+    private let channelRepository: AmityChannelRepository?
     
-    private var flagger: AmityUserFlagger?
+    // MARK: - SubViewModel
+    private var menuViewModel: AmityChatSettingsCreateMenuViewModelProtocol?
     
-    private var channelId = String()
-    var channelModel: AmityChannelModel?
-    var otherUser: AmityUser?
-    var isUserReported: Bool = false {
-        didSet {
-            directChatSetting = [.report(isUserReported), .leave]
-        }
-    }
-    var isMutedNotification: Bool = false {
-        didSet {
-            directChatSetting = [.report(isUserReported), .leave]
-        }
-    }
-    
-    private let groupChatSetting: [OptionsList] = [ .groupProfile, .members, .leave]
-    private var directChatSetting: [OptionsList] = []
-    private var memberCount = String()
+    // MARK: - Properties
+    private(set) var channel: AmityChannel?
+    var title: String?
+    let channelId: String
     
     init(channelId: String) {
-        communityRepository = AmityCommunityRepository(client: AmityUIKitManagerInternal.shared.client)
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
-        userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
-        
-        directChatSetting = [.notification(isMutedNotification), .inviteUser, .report(isUserReported), .leave]
-        
         self.channelId = channelId
-        
-        AmityHUD.show(.loading)
-        
-        channelNotificationToken = channelRepository?.getChannel(channelId).observe { [weak self] (channel, error) in
-            guard let weakSelf = self,
-                  let model = channel.object else { return }
-            let channelModel = AmityChannelModel(object: model)
-            weakSelf.channelModel = channelModel
-            weakSelf.memberCount = "\(model.memberCount)"
-            if channelModel.isConversationChannel {
-                weakSelf.getReportUserStatus()
-            }
-            weakSelf.delegate?.screenViewModelDidUpdate(viewModel: weakSelf)
-            AmityHUD.hide()
-        }
     }
 }
 
 // MARK: - DataSource
 extension AmityChatSettingsScreenViewModel {
-    func title(completion: @escaping(_ chatDisplayName: String?) -> Void) {
-        //        return AmityLocalizedStringSet.ChatSettings.title.localizedString // [Original]
-        
-        if let channel = channelModel {
-            switch channel.channelType {
-            case .conversation:
-                /* [Custom for ONE Krungthai] Get other user by membership in SDK */
-                AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
-                    DispatchQueue.main.async { [self] in
-                        if let otherMember = user {
-                            completion(otherMember.displayName)
-                        } else {
-                            completion(channel.displayName)
-                        }
-                    }
-                }
-            default:
-                completion(channel.displayName)
-            }
-        } else {
-            completion("")
-        }
-    }
-        
-    
-    func getNumberOfItems() -> Int {
-        guard let model = channelModel else {
-            return 1
-        }
-        if model.isConversationChannel {
-            return directChatSetting.count
-        }
-        return groupChatSetting.count
-    }
-    
-    func getOptionTitle(with index: Int) -> String {
-        guard let model = channelModel else {
-            return OptionsList.leave.text
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].text
-        }
-        return groupChatSetting[index].text
-    }
-    
-    func getOptionTextColor(with index: Int) -> UIColor {
-        guard let model = channelModel else {
-            return OptionsList.leave.textColor
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].textColor
-        }
-        return groupChatSetting[index].textColor
-    }
-    
-    func getOptionImage(with index: Int) -> UIImage? {
-        guard let model = channelModel else {
-            return OptionsList.leave.image
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].image
-        }
-        return groupChatSetting[index].image
-    }
-    
-    func getOption(with index: Int) -> OptionsList {
-        guard let model = channelModel else {
-            return OptionsList.leave
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index]
-        }
-        return groupChatSetting[index]
-    }
-    
-    func getMemberCount() -> String {
-        return memberCount
-    }
-    
-    private func getReportStatus() {
-        guard let user = otherUser else {
-            isUserReported = false
-            return
-        }
-        flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-        flagger?.isFlaggedByMe {
-            self.isUserReported = $0
-        }
-    }
-    
-    private func getReportUserStatus() {
-        guard let channel = channelModel else { return }
-        userToken?.invalidate()
-        if !channel.getOtherUserId().isEmpty {
-            userToken = userRepository?.getUser(channel.getOtherUserId()).observeOnce({ [weak self] user, error in
-                guard let weakSelf = self else { return }
-                if error == nil {
-                    if let userObject = user.object {
-                        weakSelf.otherUser = userObject
-                        weakSelf.getReportStatus()
-                    }
-
-                }
-            })
-        }
-    }
     
 }
 
 // MARK: - Action
 extension AmityChatSettingsScreenViewModel {
-    
-    func changeReportStatus() {
-        isUserReported ? unreportUser() : reportUser()
-    }
-    
-    private func reportUser() {
-        if let user = otherUser {
-            flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-            flagger?.flag { [weak self] (success, error) in
-                guard let weakSelf = self else { return }
-                weakSelf.isUserReported = success
-                weakSelf.delegate?.screenViewModelDidFinishReport(error: error?.localizedDescription)
-            }
-        }
-    }
-    
-    private func unreportUser() {
-        if let user = otherUser {
-            flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-            flagger?.unflag { [weak self] (success, error) in
-                guard let weakSelf = self else { return }
-                /// we have to take the opposite value of success
-                weakSelf.isUserReported = !success
-                weakSelf.delegate?.screenViewModelDidFinishReport(error: error?.localizedDescription)
-            }
-        }
-    }
-    
-    func leaveChat() {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository?.leaveChannel, parameters: channelId) { [weak self] success,error in
-            guard let weakSelf = self else { return }
-            weakSelf.delegate?.screenViewModelDidFinishLeaveChat(error: error?.localizedDescription)
-        }
-    }
-    
-    func presentMember() {
-        if let channelObject = channelRepository?.getChannel(channelId).object {
-            let model = AmityChannelModel(object: channelObject)
-            delegate?.screenViewModelDidPresentMember(channel: model)
-        }
-    }
-    
-    func presentGroupProfile() {
-        delegate?.screenViewmodelDidPresentGroupDetail(channelId: channelId)
-        
-    }
-    
-    func presentInviteMember() {
-        
-    }
-    
-    func changeNotificationStatus() {
-        isMutedNotification ? unmutedNotification() : mutedNotification()
-    }
-    
-    func mutedNotification() {
-        
-    }
-    
-    func unmutedNotification() {
-        
-    }
-    
-    func didClickCell(index: Int) {
-        var optionSetting: [OptionsList] = [.leave]
-        if let model = channelModel {
-            if model.isConversationChannel {
-                optionSetting =  directChatSetting
+    func retrieveChannel() {
+        if let channelObject = channelRepository?.getChannel(channelId), let channel = channelObject.snapshot {
+            self.channel = channel
+            if channel.channelType == .conversation {
+                AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
+                    if let otherMember = user {
+                        title = otherMember.displayName
+                        delegate?.screenViewModel(self, didGetChannelSuccess: channel)
+                    }
+                }
             } else {
-                optionSetting = groupChatSetting
+                title = channel.displayName
+                delegate?.screenViewModel(self, didGetChannelSuccess: channel)
             }
-        }
-        switch optionSetting[index] {
-        case .leave:
-            leaveChat()
-        case .report:
-            changeReportStatus()
-        case .members:
-            presentMember()
-        case .groupProfile:
-            presentGroupProfile()
-        case .inviteUser:
-            presentInviteMember()
-        case .notification:
-            changeNotificationStatus()
-        default:
-            break
+            
+            retrieveSettingsMenu()
         }
     }
+    
+    func retrieveNotificationSettings() {
+        
+    }
+    
+    func retrieveSettingsMenu() {
+        guard let channel = channel else { return }
+        menuViewModel = AmityChatSettingsCreateMenuViewModel(channel: channel)
+        menuViewModel?.createSettingsItems{ [weak self] (items) in
+            guard let strongSelf = self else { return }
+            strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
+        }
+    }
+
 }
