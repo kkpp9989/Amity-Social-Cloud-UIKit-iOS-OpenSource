@@ -202,7 +202,9 @@ public extension AmityMentionManager {
         let cursorPosition = textInput.offset(from: textInput.beginningOfDocument, to: selectedRange.start)
         
         for mention in mentions {
-            if mention.index <= cursorPosition && mention.index + mention.length >= cursorPosition, let startPosition = textInput.position(from: textInput.beginningOfDocument, offset: mention.index), let endPosition = textInput.position(from: textInput.beginningOfDocument, offset: mention.index + mention.length + 1)  {
+            if mention.index <= cursorPosition && mention.index + mention.length >= cursorPosition,
+			   let startPosition = textInput.position(from: textInput.beginningOfDocument, offset: mention.index),
+			   let endPosition = textInput.position(from: textInput.beginningOfDocument, offset: mention.index + mention.length + 1)  {
                 if selectedRange == textInput.textRange(from:startPosition, to: endPosition) { return }
                 textInput.selectedTextRange = textInput.textRange(from:startPosition, to: endPosition)
             }

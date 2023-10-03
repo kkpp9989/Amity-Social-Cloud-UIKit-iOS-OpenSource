@@ -241,24 +241,31 @@ extension AmityMessageListScreenViewModel {
         
     }
     
-    func send(withText text: String?) {
+	func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
         let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !textMessage.isEmpty else {
             return
         }
-        let createOptioins = AmityTextMessageCreateOptions(subChannelId: subChannelId, text: textMessage)
+		let createOptioins = AmityTextMessageCreateOptions(
+			subChannelId: subChannelId,
+			text: textMessage,
+			tags: nil,
+			parentId: nil,
+			metadata: metadata,
+			mentioneesBuilder: mentionees)
+		
         messageRepository.createTextMessage(options: createOptioins) { [weak self] _,_ in
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
         }
     }
     
-    func editText(with text: String, messageId: String) {
+    func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?){
         let textMessage = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !textMessage.isEmpty else { return }
         
         editor = AmityMessageEditor(client: AmityUIKitManagerInternal.shared.client, messageId: messageId)
-        editor?.editText(textMessage, completion: { [weak self] (isSuccess, error) in
+		editor?.editText(textMessage, metadata: metadata, mentionees: mentionees, completion: { [weak self] (isSuccess, error) in
             guard isSuccess else { return }
             
             self?.delegate?.screenViewModelEvents(for: .didEditText)
@@ -374,6 +381,10 @@ extension AmityMessageListScreenViewModel {
             }
         }
     }
+	
+	func tapOnMention(withUserId userId: String) {
+		delegate?.screenViewModelDidTapOnMention(with: userId)
+	}
 }
 
 private extension AmityMessageListScreenViewModel {
