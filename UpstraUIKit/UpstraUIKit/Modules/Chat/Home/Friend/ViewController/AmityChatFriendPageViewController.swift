@@ -130,7 +130,7 @@ extension AmityChatFriendPageViewController: UITableViewDelegate {
               let model = screenViewModel.dataSource.item(at: indexPath) else {
             return
         }
-        cell.display(with: model)
+        cell.display(with: model, isChat: true)
         cell.setIndexPath(with: indexPath)
         cell.delegate = self
     }

@@ -44,12 +44,6 @@ public class AmityChatHomeParentViewController: AmityViewController {
         }
     }
     
-//    private func setupNavigationBar() {
-//        let addImage = UIImage(named: "icon_chat_create", in: AmityUIKitManager.bundle, compatibleWith: nil)
-//        let barButton = UIBarButtonItem(image: addImage, style: .plain, target: self, action: #selector(didClickAdd(_:)))
-//        navigationItem.rightBarButtonItem = barButton
-//    }
-    
     // MARK: - Setup views
     private func setupNavigationBar() {
         DispatchQueue.main.async { [self] in
