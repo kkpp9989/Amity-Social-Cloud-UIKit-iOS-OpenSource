@@ -17,6 +17,8 @@ protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
     func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
     func screenViewModelDidUpdateReportUser(_ viewModel: AmityChatSettingsScreenViewModelType, isReported: Bool)
     func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
+    func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType)
+    func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
 }
 
 protocol AmityChatSettingsScreenViewModelDataSource {
@@ -31,6 +33,8 @@ protocol AmityChatSettingsScreenViewModelAction {
     func retrieveSettingsMenu()
     func changeNotificationSettings()
     func changeReportUserStatus()
+    func deleteChat()
+    func leaveChat()
 }
 
 protocol AmityChatSettingsScreenViewModelType: AmityChatSettingsScreenViewModelAction, AmityChatSettingsScreenViewModelDataSource {

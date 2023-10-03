@@ -1,5 +1,5 @@
 //
-//  AmityChatInfoController.swift
+//  AmityChannelController.swift
 //  AmityUIKit
 //
 //  Created by Thanaphat Thanawatpanya on 2/10/2566 BE.
@@ -9,11 +9,13 @@
 import Foundation
 import AmitySDK
 
-protocol AmityChannelInfoControllerProtocol {
+protocol AmityChannelControllerProtocol {
     func getChannel(_ completion: @escaping (Result<AmityChannelModel, AmityError>) -> Void)
+    func leaveChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async
+    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async
 }
 
-final class AmityChatInfoController: AmityChannelInfoControllerProtocol {
+final class AmityChannelController: AmityChannelControllerProtocol {
     
     private let repository: AmityChannelRepository
     private var channelId: String
@@ -26,7 +28,6 @@ final class AmityChatInfoController: AmityChannelInfoControllerProtocol {
     }
     
     func getChannel(_ completion: @escaping (Result<AmityChannelModel, AmityError>) -> Void) {
-        // Get channel by channelId
         channel = repository.getChannel(channelId)
         token = channel?.observe({ channel, error in
             guard let object = channel.snapshot else {
@@ -39,5 +40,17 @@ final class AmityChatInfoController: AmityChannelInfoControllerProtocol {
             let model = AmityChannelModel(object: object)
             completion(.success(model))
         })
+    }
+    
+    func leaveChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
+        do {
+            try await repository.leaveChannel(channelId: channelId)
+            completion(true, nil)
+        } catch {
+            completion(false, error)
+        }
+    }
+    
+    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
     }
 }

@@ -695,7 +695,7 @@
 		DF3134E32ACAFFD80032B8C2 /* AmityChatSettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E22ACAFFD80032B8C2 /* AmityChatSettingsItem.swift */; };
 		DF3134E52ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */; };
 		DF3134E82ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */; };
-		DF3134EA2ACB2B120032B8C2 /* AmityChatInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */; };
+		DF3134EA2ACB2B120032B8C2 /* AmityChannelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E92ACB2B120032B8C2 /* AmityChannelController.swift */; };
 		DF3134EC2ACBF8020032B8C2 /* AmityChatUserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
 		DF816EA02A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */; };
@@ -1416,7 +1416,7 @@
 		DF3134E22ACAFFD80032B8C2 /* AmityChatSettingsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsItem.swift; sourceTree = "<group>"; };
 		DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatNotificationSettingsController.swift; sourceTree = "<group>"; };
-		DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatInfoController.swift; sourceTree = "<group>"; };
+		DF3134E92ACB2B120032B8C2 /* AmityChannelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChannelController.swift; sourceTree = "<group>"; };
 		DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatUserController.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
 		DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberCommunityUtilities.swift; sourceTree = "<group>"; };
@@ -4774,7 +4774,7 @@
 			isa = PBXGroup;
 			children = (
 				DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */,
-				DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */,
+				DF3134E92ACB2B120032B8C2 /* AmityChannelController.swift */,
 				DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */,
 			);
 			path = Controller;
@@ -5569,7 +5569,7 @@
 				0DBC357025A388690064D138 /* AmityCommunityRoleController.swift in Sources */,
 				AA14A0442ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift in Sources */,
 				97E21E8B264D266C00F19CB3 /* AmityGroupChatEditScreenViewModel.swift in Sources */,
-				DF3134EA2ACB2B120032B8C2 /* AmityChatInfoController.swift in Sources */,
+				DF3134EA2ACB2B120032B8C2 /* AmityChannelController.swift in Sources */,
 				DF3134E82ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift in Sources */,
 				72A3518024EA820800DA9D46 /* VideoCollectionViewCell.swift in Sources */,
 				7211553E25505D180081CC23 /* AmityCategoryPickerViewController.swift in Sources */,

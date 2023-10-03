@@ -16,7 +16,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     
     // MARK: - Controller
     private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
-    private let channelInfoController: AmityChannelInfoControllerProtocol
+    private let channelController: AmityChannelControllerProtocol
 //    private let chatLeaveController: AmityChatLeaveControllerProtocol
 //    private let chatDeleteController: AmityChatDeleteControllerProtocol
 //    private let userRolesController: AmityChatUserRolesControllerProtocol
@@ -37,10 +37,10 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     
     init(channelId: String,
          chatNotificationController: AmityChatNotificationSettingsControllerProtocol,
-         channelInfoController: AmityChannelInfoControllerProtocol,
+         channelController: AmityChannelControllerProtocol,
          userController: AmityChatUserControllerProtocol) {
         self.chatNotificationController = chatNotificationController
-        self.channelInfoController = channelInfoController
+        self.channelController = channelController
         self.userController = userController
         self.channelId = channelId
     }
@@ -53,10 +53,10 @@ extension AmityChatSettingsScreenViewModel {
 
 // MARK: - Action
 extension AmityChatSettingsScreenViewModel {
-    // MARK: - Get Action
+    // MARK: - Get Action - Channel, other user info and status report user of him (For 1:1 Chat only)
     func retrieveChannel() {
         // Get channel
-        channelInfoController.getChannel { [weak self] result in
+        channelController.getChannel { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let channel):
@@ -85,6 +85,7 @@ extension AmityChatSettingsScreenViewModel {
                     strongSelf.title = channel.displayName
                     strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
                 }
+                
                 strongSelf.retrieveSettingsMenu()
             case .failure(_):
                 break
@@ -92,6 +93,7 @@ extension AmityChatSettingsScreenViewModel {
         }
     }
     
+    // MARK: - Get Action - Notification
     func retrieveNotificationSettings() {
         // Get channel notification settings
         chatNotificationController.retrieveNotificationSettings { [weak self] result in
@@ -106,6 +108,7 @@ extension AmityChatSettingsScreenViewModel {
         }
     }
     
+    // MARK: - Get Action - Setting menu
     func retrieveSettingsMenu() {
         // Get channel
         guard let channel = channel else { return }
@@ -120,10 +123,9 @@ extension AmityChatSettingsScreenViewModel {
         }
     }
     
-    // MARK: - Notification - Update Action
-    
+    // MARK: Update Action - Notification
     func changeNotificationSettings() {
-        if !isNotificationEnabled {
+        if !isNotificationEnabled { // Case : Will enable notification
             chatNotificationController.enableNotificationSettings { [weak self] success, error in
                 guard let strongSelf = self else { return }
                 if success {
@@ -134,7 +136,7 @@ extension AmityChatSettingsScreenViewModel {
                        strongSelf.delegate?.screenViewModelDidUpdateNotificationSettingsFail(strongSelf, error: error)
                 }
             }
-        } else {
+        } else { // Case : Will disable notification
             chatNotificationController.disableNotificationSettings { [weak self] success, error in
                 guard let strongSelf = self else { return }
                 if success {
@@ -148,7 +150,7 @@ extension AmityChatSettingsScreenViewModel {
         }
     }
     
-    // MARK: - Report user - Update Action
+    // MARK: Update Action - Report user status
     func changeReportUserStatus() {
         guard let otherUserId = otherUser?.userId else { return }
         if !isReportedOtherUser { // Case : Will report user
@@ -183,5 +185,25 @@ extension AmityChatSettingsScreenViewModel {
             }
         }
     }
+    
+    // MARK: Update Action - Delete chat (1:1 Chat and Group Chat with moderator roles)
+    func deleteChat() {
+        
+    }
 
+    // MARK: Update Action - Leave chat (Group Chat)
+    func leaveChat() {
+        Task {
+            await channelController.leaveChannel { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let isSuccess = result, isSuccess {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
+                    } else if let error = error {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
+                    }
+                }
+            }
+        }
+    }
 }
