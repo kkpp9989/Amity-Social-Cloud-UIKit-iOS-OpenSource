@@ -75,6 +75,7 @@ public struct AmityIconSet {
     public static var iconNotificationNavigationBar = UIImage(named: "icon_notification_button", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconContactProfile = UIImage(named: "icon_contact_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMessageProfile = UIImage(named: "icon_message_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconCreateGroupChat = UIImage(named: "icon_create_group_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
 
     public static var iconBadgeDNALike = UIImage(named: "icon_badge_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeDNALove = UIImage(named: "icon_badge_dna_love", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -152,6 +153,7 @@ public struct AmityIconSet {
         public static var iconDelete2 = UIImage(named: "icon_delete_2", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconDelete3 = UIImage(named: "icon_delete_3", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconSetting = UIImage(named: "icon_chat_setting", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMentionBadges = UIImage(named: "icon_mention_badges", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum Post {

@@ -51,7 +51,7 @@ final class AmityFollowerTableViewCell: UITableViewCell, Nibbable {
         bannedImageView.isHidden = true
     }
     
-    func display(with model: AmityUserModel) {
+    func display(with model: AmityUserModel, isChat: Bool) {
         displayNameLabel.text = model.displayName
         optionButton.isHidden = model.isCurrentUser
         avatarView.setImage(withImageURL: model.avatarURL, placeholder: AmityIconSet.defaultAvatar)
@@ -61,6 +61,8 @@ final class AmityFollowerTableViewCell: UITableViewCell, Nibbable {
             bannedImageViewWidthConstraint.constant = 16
             bannedImageView.image = AmityIconSet.CommunitySettings.iconCommunitySettingBanned
         }
+        
+        optionButton.isHidden = isChat
     }
     
     func setIndexPath(with _indexPath: IndexPath) {

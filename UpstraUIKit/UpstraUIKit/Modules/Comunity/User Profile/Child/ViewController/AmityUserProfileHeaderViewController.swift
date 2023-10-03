@@ -290,7 +290,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         descriptionLabel.text = user.about
         editProfileButton.isHidden = !user.isCurrentUser
         messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser
-        ktbContainerView.isHidden = !user.isCurrentUser
+        ktbContainerView.isHidden = user.isCurrentUser
     }
     
     private func updateFollowInfo(with model: AmityFollowInfo) {
@@ -379,6 +379,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     @IBAction func messageFriendAction(_ sender: UIButton) {
+        screenViewModel.action.createChannel()
     }
     
     @IBAction func contachFriendAction(_ sender: UIButton) {

@@ -1,20 +1,16 @@
 //
-//  AmityFollowersListViewController.swift
+//  AmityChatFriendPageViewController.swift
 //  AmityUIKit
 //
-//  Created by Hamlet on 10.06.21.
-//  Copyright © 2021 Amity. All rights reserved.
+//  Created by GuIDe'MacbookAmityHQ on 2/10/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
+import AmitySDK
 
-enum AmityFollowerViewType {
-    case following
-    case followers
-}
-
-final class AmityFollowersListViewController: AmityViewController, IndicatorInfoProvider {
-
+class AmityChatFriendPageViewController: AmityViewController, IndicatorInfoProvider {
+    
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var refreshErrorView: UIView!
@@ -23,7 +19,7 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
     // MARK: - Properties
     private var type: AmityFollowerViewType?
     private var emptyView = AmitySearchEmptyView()
-    private var pageTitle: String?
+    public var pageTitle: String?
     private var screenViewModel: AmityFollowersListScreenViewModelType!
     private var searchController = UISearchController(searchResultsController: nil)
     private let refreshControl = UIRefreshControl()
@@ -41,12 +37,10 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
         screenViewModel.action.getFollowsList()
     }
     
-    static func make(pageTitle: String, type: AmityFollowerViewType, userId: String) -> AmityFollowersListViewController {
-        let viewModel: AmityFollowersListScreenViewModelType = AmityFollowersListScreenViewModel(userId: userId, type: type)
-        
-        let vc = AmityFollowersListViewController(nibName: AmityFollowersListViewController.identifier, bundle: AmityUIKitManager.bundle)
+    static func make(type: AmityFollowerViewType) -> AmityChatFriendPageViewController {
+        let viewModel: AmityFollowersListScreenViewModelType = AmityFollowersListScreenViewModel(userId: AmityUIKitManagerInternal.shared.currentUserId, type: type)
+        let vc = AmityChatFriendPageViewController(nibName: AmityChatFriendPageViewController.identifier, bundle: AmityUIKitManager.bundle)
 
-        vc.pageTitle = pageTitle
         vc.type = type
         vc.screenViewModel = viewModel
         
@@ -125,7 +119,7 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
 }
 
 // MARK: - UITableView Delegate
-extension AmityFollowersListViewController: UITableViewDelegate {
+extension AmityChatFriendPageViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {
@@ -136,7 +130,7 @@ extension AmityFollowersListViewController: UITableViewDelegate {
               let model = screenViewModel.dataSource.item(at: indexPath) else {
             return
         }
-        cell.display(with: model, isChat: false)
+        cell.display(with: model, isChat: true)
         cell.setIndexPath(with: indexPath)
         cell.delegate = self
     }
@@ -147,7 +141,7 @@ extension AmityFollowersListViewController: UITableViewDelegate {
 }
 
 // MARK: - UITableView DataSource
-extension AmityFollowersListViewController: UITableViewDataSource {
+extension AmityChatFriendPageViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return screenViewModel.dataSource.numberOfItems()
     }
@@ -159,7 +153,7 @@ extension AmityFollowersListViewController: UITableViewDataSource {
 }
 
 // MARK: - AmityFollowerTableViewCellDelegate
-extension AmityFollowersListViewController: AmityFollowerTableViewCellDelegate {
+extension AmityChatFriendPageViewController: AmityFollowerTableViewCellDelegate {
     func didPerformAction(at indexPath: IndexPath, action: AmityFollowerAction) {
         switch action {
         case .tapAvatar, .tapDisplayName:
@@ -172,7 +166,7 @@ extension AmityFollowersListViewController: AmityFollowerTableViewCellDelegate {
 }
 
 // MARK:- Private Methods
-private extension AmityFollowersListViewController {
+private extension AmityChatFriendPageViewController {
     func handleOptionTap(for indexPath: IndexPath) {
         screenViewModel.action.getReportUserStatus(at: indexPath)
     }
@@ -183,7 +177,7 @@ private extension AmityFollowersListViewController {
 }
 
 // MARK:- UISearchBarDelegate
-extension AmityFollowersListViewController: UISearchBarDelegate {
+extension AmityChatFriendPageViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         screenViewModel.action.getFollowsList()
     }
@@ -204,7 +198,7 @@ extension AmityFollowersListViewController: UISearchBarDelegate {
     }
 }
 
-extension AmityFollowersListViewController: AmityFollowersListScreenViewModelDelegate {
+extension AmityChatFriendPageViewController: AmityFollowersListScreenViewModelDelegate {
     func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, didRemoveUser at: IndexPath) {
         AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
     }

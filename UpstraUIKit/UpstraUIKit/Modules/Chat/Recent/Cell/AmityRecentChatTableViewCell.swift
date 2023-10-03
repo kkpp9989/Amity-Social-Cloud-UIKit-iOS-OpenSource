@@ -19,6 +19,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var statusImageView: UIImageView!
     @IBOutlet private var memberLabel: UILabel!
     @IBOutlet private var badgeView: AmityBadgeView!
+    @IBOutlet private var mentionBadgeImageView: UIImageView!
     @IBOutlet private var previewMessageLabel: UILabel!
     @IBOutlet private var dateTimeLabel: UILabel!
     
@@ -49,6 +50,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         
         iconImageView.isHidden = true
         statusImageView.isHidden = true
+        badgeView.isHidden = true
         
         titleLabel.font = AmityFontSet.title
         titleLabel.textColor = AmityColorSet.base
@@ -64,6 +66,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         dateTimeLabel.font = AmityFontSet.caption
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
         
+        mentionBadgeImageView.image = AmityIconSet.Chat.iconMentionBadges
+        mentionBadgeImageView.isHidden = true
     }
     
     func display(with channel: AmityChannelModel) {
@@ -72,6 +76,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
         titleLabel.text = channel.displayName
         avatarView.placeholder = AmityIconSet.defaultAvatar
+        mentionBadgeImageView.isHidden = !channel.object.hasMentioned
+        badgeView.isHidden = channel.unreadCount < 1
         
         switch channel.channelType {
         case .standard:
@@ -85,7 +91,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             token?.invalidate()
             if !channel.getOtherUserId().isEmpty {
                 token = repository?.getUser(channel.getOtherUserId()).observeOnce { [weak self] user, error in
-                    guard let userObject = user.object else { return }
+                    guard let userObject = user.snapshot else { return }
                     self?.titleLabel.text = userObject.displayName
                 }
             }
