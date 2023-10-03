@@ -692,6 +692,7 @@
 		DF3134E52ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */; };
 		DF3134E82ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */; };
 		DF3134EA2ACB2B120032B8C2 /* AmityChatInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */; };
+		DF3134EC2ACBF8020032B8C2 /* AmityChatUserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
 		DF816EA02A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */; };
 		DF9818E92A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */; };
@@ -1408,6 +1409,7 @@
 		DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatNotificationSettingsController.swift; sourceTree = "<group>"; };
 		DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatInfoController.swift; sourceTree = "<group>"; };
+		DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatUserController.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
 		DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberCommunityUtilities.swift; sourceTree = "<group>"; };
 		DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromButtonView.swift; sourceTree = "<group>"; };
@@ -4737,6 +4739,7 @@
 			children = (
 				DF3134E72ACB25420032B8C2 /* AmityChatNotificationSettingsController.swift */,
 				DF3134E92ACB2B120032B8C2 /* AmityChatInfoController.swift */,
+				DF3134EB2ACBF8020032B8C2 /* AmityChatUserController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -5360,6 +5363,7 @@
 				721C8C87262D1EA100BA576C /* AmityCommentEditorViewController.swift.swift in Sources */,
 				72A3514124EA820800DA9D46 /* AmityComunity.swift in Sources */,
 				B788B935252D8B71002F4F12 /* AmityTrendingCommunityScreenViewModelProtocol.swift in Sources */,
+				DF3134EC2ACBF8020032B8C2 /* AmityChatUserController.swift in Sources */,
 				A0A903B226BA749B002949B2 /* Protocol.swift in Sources */,
 				AACF116A2A67BAD5006C2907 /* URLEnpointManager.swift in Sources */,
 				A9E890FE29F93F9B00A22B35 /* AmityReactionUsersScreenViewModel.swift in Sources */,

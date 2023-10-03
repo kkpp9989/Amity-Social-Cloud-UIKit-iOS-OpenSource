@@ -9,11 +9,11 @@
 import Foundation
 import AmitySDK
 
-protocol AmityChatInfoControllerProtocol {
+protocol AmityChannelInfoControllerProtocol {
     func getChannel(_ completion: @escaping (Result<AmityChannelModel, AmityError>) -> Void)
 }
 
-final class AmityChatInfoController: AmityChatInfoControllerProtocol {
+final class AmityChatInfoController: AmityChannelInfoControllerProtocol {
     
     private let repository: AmityChannelRepository
     private var channelId: String

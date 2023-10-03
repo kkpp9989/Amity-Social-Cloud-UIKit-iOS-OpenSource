@@ -5,6 +5,7 @@
 //  Created by Thanaphat Thanawatpanya on 2/10/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
+/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsScreenViewModelProtocol */
 
 import UIKit
 import AmitySDK
@@ -14,6 +15,8 @@ protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannelModel)
     func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool)
     func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
+    func screenViewModelDidUpdateReportUser(_ viewModel: AmityChatSettingsScreenViewModelType, isReported: Bool)
+    func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
 }
 
 protocol AmityChatSettingsScreenViewModelDataSource {

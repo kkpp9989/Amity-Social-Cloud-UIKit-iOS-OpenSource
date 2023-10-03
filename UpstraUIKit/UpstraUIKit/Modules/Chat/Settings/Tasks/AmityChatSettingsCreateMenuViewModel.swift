@@ -10,16 +10,16 @@ import UIKit
 import AmitySDK
 
 protocol AmityChatSettingsCreateMenuViewModelProtocol {
-    func createSettingsItems(isNotificationEnabled: Bool, _ completion: (([AmitySettingsItem]) -> Void)?)
+    func createSettingsItems(isNotificationEnabled: Bool, isReportedUserByMe: Bool, _ completion: (([AmitySettingsItem]) -> Void)?)
 }
 
 final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuViewModelProtocol {
 
     // MARK: - Properties
     private let channel: AmityChannelModel
-    private var isUserModerator: Bool = false
-    private var isReportedUser: Bool = false
+    private var isReportedUserByMe: Bool = false
     private var isNotificationEnabled: Bool = false
+    private var isUserModerator: Bool = false
     
     // MARK: - Controller
     private let dispatchCounter = DispatchGroup()
@@ -28,8 +28,9 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
         self.channel = channel
     }
     
-    func createSettingsItems(isNotificationEnabled: Bool, _ completion: (([AmitySettingsItem]) -> Void)?) {
+    func createSettingsItems(isNotificationEnabled: Bool, isReportedUserByMe: Bool, _ completion: (([AmitySettingsItem]) -> Void)?) {
         self.isNotificationEnabled = isNotificationEnabled
+        self.isReportedUserByMe = isReportedUserByMe
         prepareDataSource(completion)
     }
     
@@ -53,9 +54,9 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             settingsItems.append(.textContent(content: itemInviteUserContent))
             
             // MARK: Report / unreport User (1:1 Chat) [Mock]
-            var itemReportUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.report(isReportedUser).identifier,
-                                                               icon: AmityChatSettingsItem.report(isReportedUser).icon,
-                                                               title: AmityChatSettingsItem.report(isReportedUser).title,
+            var itemReportUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.report(isReportedUserByMe).identifier,
+                                                               icon: AmityChatSettingsItem.report(isReportedUserByMe).icon,
+                                                               title: AmityChatSettingsItem.report(isReportedUserByMe).title,
                                                                description: nil)
             settingsItems.append(.textContent(content: itemReportUserContent))
             

@@ -5,6 +5,7 @@
 //  Created by min khant on 05/05/2021.
 //  Copyright © 2021 Amity. All rights reserved.
 //
+/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsViewController */
 
 import UIKit
 import AmitySDK
@@ -27,9 +28,11 @@ final class AmityChatSettingsViewController: AmityViewController {
 
         let chatNotificationController = AmityChatNotificationSettingsController(withChannelId: channelId)
         let chatInfoController = AmityChatInfoController(channelId: channelId)
+        let userController = AmityChatUserController(channelId: channelId)
         vc.screenViewModel = AmityChatSettingsScreenViewModel(channelId: channelId,
                                                               chatNotificationController: chatNotificationController,
-                                                              chatInfoController: chatInfoController)
+                                                              channelInfoController: chatInfoController,
+                                                              userController: userController)
         return vc
     }
     
@@ -69,7 +72,8 @@ final class AmityChatSettingsViewController: AmityViewController {
         switch settingsItem {
         case .textContent(content: let content):
             switch content.identifier {
-            case "report":
+            case "report": // (1:1 Chat)
+                AmityHUD.show(.loading)
                 screenViewModel.action.changeReportUserStatus()
             case "leave":
                 // Open alert controller
@@ -77,16 +81,16 @@ final class AmityChatSettingsViewController: AmityViewController {
             case "delete":
                 // Open alert controller
                 break
-            case "members":
+            case "members": // (Group Chat)
                 // Open members list
                 break
-            case "groupProfile":
+            case "groupProfile": // (Group Chat [Moderator role])
                 // Open group profile setting
                 break
-            case "inviteUser":
+            case "inviteUser": // (1:1 Chat)
                 // Open invite user
                 break
-            case "notification":
+            case "notification": // (1:1 Chat, Group Chat)
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeNotificationSettings()
                 break
@@ -141,4 +145,13 @@ extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDeleg
     func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
         AmityHUD.show(.error(message: error.localizedDescription))
     }
+    
+    func screenViewModelDidUpdateReportUser(_ viewModel: AmityChatSettingsScreenViewModelType, isReported: Bool) {
+        AmityHUD.show(.success(message: "\(isReported ? "Report Sent" : "Unreport Sent")"))
+    }
+    
+    func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityHUD.show(.error(message: error.localizedDescription))
+    }
+    
 }
