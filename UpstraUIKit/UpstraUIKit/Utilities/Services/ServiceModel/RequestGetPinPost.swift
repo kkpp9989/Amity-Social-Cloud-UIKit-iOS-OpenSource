@@ -26,7 +26,7 @@ struct RequestGetPinPost {
         case .globalFeed:
             endpointUrl = "\(domainURL)/pin-post?targetType=global"
         case .communityFeed(let communityId):
-            endpointUrl = "\(domainURL)/pin-post?targetType=community?targetId=\(communityId)"
+            endpointUrl = "\(domainURL)/pin-post?targetType=community&targetId=\(communityId)"
         default:
             endpointUrl = "\(domainURL)/pin-post"
         }
