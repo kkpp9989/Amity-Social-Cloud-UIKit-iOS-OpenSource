@@ -13,8 +13,8 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     
     // MARK: - Properties
     var recentsChatViewController = AmityRecentChatViewController.make()
-    var followingChatViewController = AmityRecentChatViewController.make()
-    var followersChatViewController = AmityRecentChatViewController.make()
+    var followingChatViewController = AmityChatFriendPageViewController.make(type: .following)
+    var followersChatViewController = AmityChatFriendPageViewController.make(type: .followers)
 
     // MARK: - View lifecycle
     private init() {

@@ -8,6 +8,12 @@
 
 import UIKit
 
+protocol AmityMessageListComposeBarDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+	func sendMessageTap()
+}
+
 final class AmityMessageListComposeBarViewController: UIViewController {
 
     // MARK: - IBOutlet Properties
@@ -21,6 +27,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet var separatorView: UIView! // [Custom for ONE Krungthai] Add separator view for set color
     
     // MARK: - Properties
+	weak var delegate: AmityMessageListComposeBarDelegate?
     private var screenViewModel: AmityMessageListScreenViewModelType!
     let composeBarView = AmityKeyboardComposeBarViewController.make()
     
@@ -32,12 +39,15 @@ final class AmityMessageListComposeBarViewController: UIViewController {
         setupView()
     }
     
-    static func make(viewModel: AmityMessageListScreenViewModelType, setting: AmityMessageListViewController.Settings) -> AmityMessageListComposeBarViewController {
+	static func make(viewModel: AmityMessageListScreenViewModelType,
+					 setting: AmityMessageListViewController.Settings,
+					 delegate: AmityMessageListComposeBarDelegate?) -> AmityMessageListComposeBarViewController {
         let vc = AmityMessageListComposeBarViewController(
             nibName: AmityMessageListComposeBarViewController.identifier,
             bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.setting = setting
+		vc.delegate = delegate
         return vc
     }
     
@@ -47,7 +57,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
 private extension AmityMessageListComposeBarViewController {
     
     @IBAction func sendMessageTap() {
-        screenViewModel.action.send(withText: textComposeBarView.text)
+		delegate?.sendMessageTap()
         clearText()
     }
     
@@ -79,6 +89,7 @@ private extension AmityMessageListComposeBarViewController {
     }
     
     func setupTextComposeBarView() {
+		textComposeBarView.delegate = self
         textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
         textComposeBarView.textViewDidChanged = { [weak self] text in
             self?.screenViewModel.action.setText(withText: text)
@@ -148,6 +159,15 @@ private extension AmityMessageListComposeBarViewController {
 }
 
 extension AmityMessageListComposeBarViewController: AmityComposeBar {
+	var textView: AmityTextView {
+		get {
+			textComposeBarView.textView
+		}
+		set {
+			textComposeBarView.textView = newValue
+		}
+	}
+	
     
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
@@ -265,4 +285,14 @@ extension AmityMessageListComposeBarViewController: UIPopoverPresentationControl
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
+}
+
+extension AmityMessageListComposeBarViewController: AmityTextComposeBarViewDelegate {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		delegate?.composeView(view, shouldChangeTextIn: range, replacementText: text) ?? true
+	}
+	
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
+		delegate?.composeViewDidChangeSelection(view)
+	}
 }

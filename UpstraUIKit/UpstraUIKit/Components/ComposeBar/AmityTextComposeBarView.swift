@@ -13,6 +13,12 @@ extension AmityTextComposeBarView: UIKeyInput {
     func insertText(_ text: String) { }
     func deleteBackward() { }
 }
+
+protocol AmityTextComposeBarViewDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+}
+
 /// TextView Compose Bar
 class AmityTextComposeBarView: AmityView {
     
@@ -34,7 +40,8 @@ class AmityTextComposeBarView: AmityView {
     var textViewDidChanged: ((String) -> Void)?
     var textViewShouldBeginEditing: ((AmityTextView) -> Void)?
     var maxHeight: CGFloat = 120
-
+	weak var delegate: AmityTextComposeBarViewDelegate?
+	
     private var defaultHeightTextView: CGFloat = 0
     
     /// Text
@@ -112,7 +119,7 @@ extension AmityTextComposeBarView: AmityTextViewDelegate {
         guard !(((currentText == "") && (text == " ")) || ((currentText == "") && (text == "\n"))) else {
             return false
         }
-        return true
+		return delegate?.composeView(self, shouldChangeTextIn: range, replacementText: text) ?? true
     }
     
     func textViewDidChange(_ textView: AmityTextView) {
@@ -131,4 +138,8 @@ extension AmityTextComposeBarView: AmityTextViewDelegate {
         textViewShouldBeginEditing?(textView)
         return true
     }
+	
+	func textViewDidChangeSelection(_ textView: AmityTextView) {
+		delegate?.composeViewDidChangeSelection(self)
+	}
 }

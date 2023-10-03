@@ -178,6 +178,8 @@ extension AmityMessageListTableViewController: AmityMessageCellDelegate {
         case .didCollapseExpandableLabel:
             message.appearance.isExpanding = false
             tableView.endUpdates()
+		case .didTapOnMention(_, let userId):
+			screenViewModel.action.tapOnMention(withUserId: userId)
         }
     }
     

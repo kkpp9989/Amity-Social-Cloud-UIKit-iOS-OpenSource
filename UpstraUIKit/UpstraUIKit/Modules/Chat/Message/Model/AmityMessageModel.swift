@@ -26,7 +26,9 @@ public final class AmityMessageModel {
     public var data: [AnyHashable : Any]?
     public var tags: [String]
     public var channelSegment: UInt
-    
+	public let metadata: [String: Any]?
+	public let mentionees: [AmityMentionees]?
+	
     /**
      * The post appearance settings
      */
@@ -53,6 +55,8 @@ public final class AmityMessageModel {
         self.tags = object.tags
         self.channelSegment = UInt(object.channelSegment)
         self.appearance = AmityMessageModelAppearance()
+		self.metadata = object.metadata
+		self.mentionees = object.mentionees
     }
     
     public var text: String? {
