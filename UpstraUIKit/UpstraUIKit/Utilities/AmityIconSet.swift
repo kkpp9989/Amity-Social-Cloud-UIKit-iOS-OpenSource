@@ -153,6 +153,7 @@ public struct AmityIconSet {
         public static var iconDelete2 = UIImage(named: "icon_delete_2", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconDelete3 = UIImage(named: "icon_delete_3", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconSetting = UIImage(named: "icon_chat_setting", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMentionBadges = UIImage(named: "icon_mention_badges", in: AmityUIKitManager.bundle, compatibleWith: nil)
         
         /* [Custom for ONE Krungthai] Icon of user status in chat */
         public static var iconStatusAvailable = UIImage(named: "icon_status_available", in: AmityUIKitManager.bundle, compatibleWith: nil)

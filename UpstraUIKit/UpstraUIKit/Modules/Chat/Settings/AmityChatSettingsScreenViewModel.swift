@@ -65,39 +65,26 @@ extension AmityChatSettingsScreenViewModel {
                 if channel.channelType == .conversation { // Case: Conversation type (1:1 Chat) -> Get other member displayname for set title
                     strongSelf.userController.getOtherUserInConversationChatByMemberShip { user in
                         if let otheruser = user {
-                            // Get other user
                             strongSelf.otherUser = otheruser
-                            // Set other user displayname to chat displayname
                             strongSelf.title = otheruser.displayName
-                            // Go to delegate process
                             strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
-                            // Get status report user and maybe update setting menu
                             Task {
                                 await strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
                                     if let statusReportUser = result {
-                                        print("[Report user] currentstatusReportUser: \(statusReportUser)")
-                                        // Update status report user of other user
                                         strongSelf.isReportedOtherUser = statusReportUser
-                                        // Create / update setting menu again after get status report user success
                                         strongSelf.retrieveSettingsMenu()
-                                        print("[Report user] retrieveSettingsMenu")
                                     }
                                 }
                             }
                         } else {
-                            // Set chat displayname from channel data
                             strongSelf.title = channel.displayName
-                            // Go to delegate process
                             strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
                         }
                     }
                 } else { // Case: Other type (Group Chat) -> Get displayname from channel object for set title
-                    // Set chat displayname from channel data
                     strongSelf.title = channel.displayName
-                    // Go to delegate process
                     strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
                 }
-                // Create / update setting menu after get channel success
                 strongSelf.retrieveSettingsMenu()
             case .failure(_):
                 break
@@ -112,8 +99,6 @@ extension AmityChatSettingsScreenViewModel {
             switch result {
             case .success(let notification):
                 strongSelf.isNotificationEnabled = notification.isEnabled
-                
-                // Create / update setting menu after get channel notification settings success
                 strongSelf.retrieveSettingsMenu()
             case .failure(_):
                 break
@@ -172,12 +157,9 @@ extension AmityChatSettingsScreenViewModel {
                     guard let strongSelf = self else { return }
                     DispatchQueue.main.async {
                         if let isSuccess = result {
-                            print("[Report user] ischangestatus to report user to report: \(isSuccess)")
                             strongSelf.isReportedOtherUser = true
                             strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: true)
-                            // Create / update setting menu again after get status report user success
                             strongSelf.retrieveSettingsMenu()
-                            print("[Report user] retrieveSettingsMenu")
                         } else if let error = error {
                             strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
                         }
@@ -190,12 +172,9 @@ extension AmityChatSettingsScreenViewModel {
                     guard let strongSelf = self else { return }
                     DispatchQueue.main.async {
                         if let isSuccess = result {
-                            print("[Report user] ischangestatus to report user to unreport: \(isSuccess)")
-                            strongSelf.isReportedOtherUser = false 
+                            strongSelf.isReportedOtherUser = false
                             strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: false)
-                            // Create / update setting menu again after get status report user success
                             strongSelf.retrieveSettingsMenu()
-                            print("[Report user] retrieveSettingsMenu")
                         } else if let error = error {
                             strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
                         }
