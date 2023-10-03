@@ -78,7 +78,19 @@ extension AmityFeedScreenViewModel {
         postComponents = []
         var postsData = pinPostData
         postsData += posts
+        
+        // Create a set to store unique post IDs
+        var uniquePostIds = Set<String>()  // Assuming postId is of type String, change it to the appropriate type
+        
         for post in postsData {
+            // Check if the post's ID is already in the set
+            if uniquePostIds.contains(post.postId) {
+                continue  // Skip this post if it's a duplicate
+            }
+            
+            // Add the post's ID to the set to mark it as seen
+            uniquePostIds.insert(post.postId)
+            
             post.appearance.displayType = .feed
 
             // [Custom for ONE Krungthai] Assign custom source post display type for use in moderator user in official community condition to outputing and prepare action
@@ -94,7 +106,7 @@ extension AmityFeedScreenViewModel {
                 let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
-            
+                        
             switch post.dataTypeInternal {
             case .text:
                 addComponent(component: AmityPostTextComponent(post: post))

@@ -8,6 +8,12 @@
 
 import UIKit
 
+protocol AmityComposeBarOnlyTextDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+	func sendMessageTap()
+}
+
 final class AmityComposeBarOnlyTextViewController: UIViewController {
 
     // MARK: - IBOutlet Properties
@@ -18,7 +24,7 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
     // MARK: - Properties
     private let screenViewModel: AmityMessageListScreenViewModelType
     let composeBarView = AmityKeyboardComposeBarViewController.make()
-    
+	weak var delegate: AmityComposeBarOnlyTextDelegate?
     // MARK: - View lifecycle
     private init(viewModel: AmityMessageListScreenViewModelType) {
         screenViewModel = viewModel
@@ -34,8 +40,11 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
         setupView()
     }
     
-    static func make(viewModel: AmityMessageListScreenViewModelType) -> AmityComposeBarOnlyTextViewController {
-        return AmityComposeBarOnlyTextViewController(viewModel: viewModel)
+    static func make(viewModel: AmityMessageListScreenViewModelType,
+					 delegate: AmityComposeBarOnlyTextDelegate?) -> AmityComposeBarOnlyTextViewController {
+		let vc = AmityComposeBarOnlyTextViewController(viewModel: viewModel)
+		vc.delegate = delegate
+        return vc
     }
     
 }
@@ -44,7 +53,7 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
 private extension AmityComposeBarOnlyTextViewController {
     
     @IBAction func sendMessageTap() {
-        screenViewModel.action.send(withText: textComposeBarView.text)
+		delegate?.sendMessageTap()
         clearText()
     }
     
@@ -59,6 +68,7 @@ private extension AmityComposeBarOnlyTextViewController {
     }
     
     func setupTextComposeBarView() {
+		textComposeBarView.delegate = self
         textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
         textComposeBarView.textViewDidChanged = { [weak self] text in
             self?.screenViewModel.action.setText(withText: text)
@@ -80,6 +90,14 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+	var textView: AmityTextView {
+		get {
+			textComposeBarView.textView
+		}
+		set {
+			textComposeBarView.textView = newValue
+		}
+	}
     
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
@@ -135,3 +153,12 @@ extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
     
 }
 
+extension AmityComposeBarOnlyTextViewController: AmityTextComposeBarViewDelegate {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		delegate?.composeView(view, shouldChangeTextIn: range, replacementText: text) ?? true
+	}
+	
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
+		delegate?.composeViewDidChangeSelection(view)
+	}
+}

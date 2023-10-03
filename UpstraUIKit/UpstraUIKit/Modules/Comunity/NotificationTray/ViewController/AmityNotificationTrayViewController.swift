@@ -46,7 +46,7 @@ class AmityNotificationTrayViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        AmityHUD.show(.loading)
+        AmityEventHandler.shared.showKTBLoading()
         screenViewModel.fetchData()
         screenViewModel.updateReadTray()
     }
@@ -133,7 +133,7 @@ extension AmityNotificationTrayViewController: AmityNotificationTrayScreenViewMo
         DispatchQueue.main.async {
             self.tableView.reloadData()
             self.isLoadmore = true
-            AmityHUD.hide()
+            AmityEventHandler.shared.hideKTBLoading()
         }
     }
 }

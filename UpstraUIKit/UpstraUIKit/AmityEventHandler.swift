@@ -267,4 +267,9 @@ open class AmityEventHandler {
     
     /// Behavior for present contact ktb page.
     open func openKTBContact( from source: AmityViewController, id: String) { }
+    
+    /// Behavior for present loading ktb.
+    open func showKTBLoading() { }
+    open func hideKTBLoading() { }
+
 }

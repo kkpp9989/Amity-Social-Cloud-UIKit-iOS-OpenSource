@@ -13,7 +13,9 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     
     // MARK: - Properties
     var recentsChatViewController = AmityRecentChatViewController.make()
-    
+    var followingChatViewController = AmityChatFriendPageViewController.make(type: .following)
+    var followersChatViewController = AmityChatFriendPageViewController.make(type: .followers)
+
     // MARK: - View lifecycle
     private init() {
         super.init(nibName: AmityChatHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -30,7 +32,9 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
         recentsChatViewController.pageTitle = AmityLocalizedStringSet.recentTitle.localizedString
-        return [recentsChatViewController]
+        followingChatViewController.pageTitle = AmityLocalizedStringSet.followingTitle.localizedString
+        followersChatViewController.pageTitle = AmityLocalizedStringSet.followersTitle.localizedString
+        return [recentsChatViewController, followingChatViewController, followersChatViewController]
     }
     
 }

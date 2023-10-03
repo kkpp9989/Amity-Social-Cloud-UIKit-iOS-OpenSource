@@ -44,8 +44,22 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
             textMessageView.readMoreColor = AmityColorSet.highlight
             textMessageView.hyperLinkColor = AmityColorSet.highlight
         }
-        
-        textMessageView.text = message.text
+		
+		if let metadata = message.metadata,
+		   let mentionees = message.mentionees,
+		   let text = message.text {
+			textMessageView.setText(
+				text,
+				withAttributes: AmityMentionManager.getAttributes(
+					fromText: text,
+					withMetadata: metadata,
+					mentionees: mentionees
+				)
+			)
+		} else {
+			textMessageView.text = message.text
+		}
+		
         textMessageView.isExpanded = message.appearance.isExpanding
     }
     
@@ -113,7 +127,7 @@ extension AmityMessageTextTableViewCell: AmityExpandableLabelDelegate {
     }
     
     func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
-        // Intentionally left empty
+		delegate?.performEvent(self, labelEvents: .didTapOnMention(label: label, userId: userId))
     }
     
     func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
