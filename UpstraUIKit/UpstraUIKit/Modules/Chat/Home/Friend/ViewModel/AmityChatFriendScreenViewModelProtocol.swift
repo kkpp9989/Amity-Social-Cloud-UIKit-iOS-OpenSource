@@ -17,6 +17,7 @@ protocol AmityChatFriendScreenViewModelDelegate: AnyObject {
     func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didReportUserSuccess at: IndexPath)
     func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didUnreportUserSuccess at: IndexPath)
     func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didGetReportUserStatus isReported: Bool, at indexPath: IndexPath)
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didCreateChannel channel: AmityChannel)
 }
 
 protocol AmityChatFriendScreenViewModelDataSource {
@@ -34,6 +35,7 @@ protocol AmityChatFriendScreenViewModelAction {
     func removeUser(at indexPath: IndexPath)
     func unreportUser(at indexPath: IndexPath)
     func getReportUserStatus(at indexPath: IndexPath)
+    func createChannel(user: AmityUserModel)
 }
 
 protocol AmityChatFriendScreenViewModelType: AmityChatFriendScreenViewModelAction, AmityChatFriendScreenViewModelDataSource {

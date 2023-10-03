@@ -20,7 +20,7 @@ class AmityChatFriendPageViewController: AmityViewController, IndicatorInfoProvi
     private var type: AmityFollowerViewType?
     private var emptyView = AmitySearchEmptyView()
     public var pageTitle: String?
-    private var screenViewModel: AmityFollowersListScreenViewModelType!
+    private var screenViewModel: AmityChatFriendScreenViewModelType!
     private var searchController = UISearchController(searchResultsController: nil)
     private let refreshControl = UIRefreshControl()
     
@@ -38,7 +38,7 @@ class AmityChatFriendPageViewController: AmityViewController, IndicatorInfoProvi
     }
     
     static func make(type: AmityFollowerViewType) -> AmityChatFriendPageViewController {
-        let viewModel: AmityFollowersListScreenViewModelType = AmityFollowersListScreenViewModel(userId: AmityUIKitManagerInternal.shared.currentUserId, type: type)
+        let viewModel: AmityChatFriendScreenViewModelType = AmityChatFriendScreenViewModel(userId: AmityUIKitManagerInternal.shared.currentUserId, type: type)
         let vc = AmityChatFriendPageViewController(nibName: AmityChatFriendPageViewController.identifier, bundle: AmityUIKitManager.bundle)
 
         vc.type = type
@@ -136,7 +136,10 @@ extension AmityChatFriendPageViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        guard let model = screenViewModel.dataSource.item(at: indexPath) else {
+            return tableView.deselectRow(at: indexPath, animated: true)
+        }
+        screenViewModel.action.createChannel(user: model)
     }
 }
 
@@ -155,20 +158,16 @@ extension AmityChatFriendPageViewController: UITableViewDataSource {
 // MARK: - AmityFollowerTableViewCellDelegate
 extension AmityChatFriendPageViewController: AmityFollowerTableViewCellDelegate {
     func didPerformAction(at indexPath: IndexPath, action: AmityFollowerAction) {
-        switch action {
-        case .tapAvatar, .tapDisplayName:
-            guard let user = screenViewModel.dataSource.item(at: indexPath) else { return }
-            AmityEventHandler.shared.userDidTap(from: self, userId: user.userId)
-        case .tapOption:
-            handleOptionTap(for: indexPath)
+        guard let model = screenViewModel.dataSource.item(at: indexPath) else {
+            return tableView.deselectRow(at: indexPath, animated: true)
         }
+        screenViewModel.action.createChannel(user: model)
     }
 }
 
 // MARK:- Private Methods
 private extension AmityChatFriendPageViewController {
     func handleOptionTap(for indexPath: IndexPath) {
-        screenViewModel.action.getReportUserStatus(at: indexPath)
     }
     
     @objc func handleRefreshingControl() {
@@ -198,16 +197,16 @@ extension AmityChatFriendPageViewController: UISearchBarDelegate {
     }
 }
 
-extension AmityChatFriendPageViewController: AmityFollowersListScreenViewModelDelegate {
-    func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, didRemoveUser at: IndexPath) {
+extension AmityChatFriendPageViewController: AmityChatFriendScreenViewModelDelegate {
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didRemoveUser at: IndexPath) {
         AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
     }
     
-    func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, failure error: AmityError) {
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, failure error: AmityError) {
         refreshControl.endRefreshing()
     }
     
-    func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, didGetReportUserStatus isReported: Bool, at indexPath: IndexPath) {
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didGetReportUserStatus isReported: Bool, at indexPath: IndexPath) {
         let bottomSheet = BottomSheetViewController()
         let contentView = ItemOptionView<TextItemOption>()
         bottomSheet.sheetContentView = contentView
@@ -244,11 +243,13 @@ extension AmityChatFriendPageViewController: AmityFollowersListScreenViewModelDe
     }
     
     func screenViewModelDidGetListSuccess() {
+        AmityEventHandler.shared.hideKTBLoading()
         refreshControl.endRefreshing()
         tableView.reloadData()
     }
     
     func screenViewModelDidGetListFail() {
+        AmityEventHandler.shared.hideKTBLoading()
         refreshControl.endRefreshing()
         refreshErrorView.isHidden = false
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) { [weak self] in
@@ -256,11 +257,16 @@ extension AmityChatFriendPageViewController: AmityFollowersListScreenViewModelDe
         }
     }
     
-    func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, didReportUserSuccess at: IndexPath) {
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didReportUserSuccess at: IndexPath) {
         AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.reportSent.localizedString))
     }
     
-    func screenViewModel(_ viewModel: AmityFollowersListScreenViewModelType, didUnreportUserSuccess at: IndexPath) {
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didUnreportUserSuccess at: IndexPath) {
         AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.unreportSent.localizedString))
+    }
+    
+    func screenViewModel(_ viewModel: AmityChatFriendScreenViewModelType, didCreateChannel channel: AmityChannel) {
+        AmityEventHandler.shared.hideKTBLoading()
+        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
     }
 }
