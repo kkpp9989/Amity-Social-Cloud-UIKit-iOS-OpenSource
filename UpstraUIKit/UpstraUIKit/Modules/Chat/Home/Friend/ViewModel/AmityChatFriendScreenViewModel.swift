@@ -23,10 +23,12 @@ class AmityChatFriendScreenViewModel: AmityChatFriendScreenViewModelType {
     private var followersList: [AmityFollowRelationship] = []
     private var followersCollection: AmityCollection<AmityFollowRelationship>?
     private var flagger: AmityUserFlagger?
+    private let channelRepository: AmityChannelRepository
     
     // MARK: - Initializer
     init(userId: String, type: AmityFollowerViewType) {
         userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+        channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         followManager = userRepository.followManager
         self.userId = userId
         self.isCurrentUser = userId == AmityUIKitManagerInternal.shared.client.currentUserId
@@ -49,8 +51,7 @@ extension AmityChatFriendScreenViewModel {
 // MARK: - Action
 extension AmityChatFriendScreenViewModel {
     func getFollowsList() {
-        /* [Fix-defect] Disable clearAmityFollowRelationshipLocalData function for fix case click following list from followed user then back to user profile, follow button will appear.*/
-//        followManager.clearAmityFollowRelationshipLocalData()
+        AmityEventHandler.shared.showKTBLoading()
         if userId == AmityUIKitManagerInternal.shared.client.currentUserId {
             followersCollection = type == .followers ? followManager.getMyFollowerList(with: .accepted) : followManager.getMyFollowingList(with: .accepted)
         } else {
@@ -75,54 +76,30 @@ extension AmityChatFriendScreenViewModel {
     }
     
     func reportUser(at indexPath: IndexPath) {
-        guard let user = getUser(at: indexPath) else { return }
-        flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-        flagger?.flag { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModel(strongSelf, didReportUserSuccess: indexPath)
-            } else {
-                strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
-            }
-        }
     }
     
     func unreportUser(at indexPath: IndexPath) {
-        guard let user = getUser(at: indexPath) else { return }
-        flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-        flagger?.unflag { [weak self] (success, error) in
-            guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModel(strongSelf, didUnreportUserSuccess: indexPath)
-            } else {
-                strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
-            }
-        }
     }
     
     func getReportUserStatus(at indexPath: IndexPath) {
-        guard let user = getUser(at: indexPath) else { return }
-        flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-        flagger?.isFlaggedByMe { [weak self] isReported in
-            guard let strongSelf = self else { return }
-            
-            strongSelf.delegate?.screenViewModel(strongSelf, didGetReportUserStatus: isReported, at: indexPath)
-        }
     }
     
     func removeUser(at indexPath: IndexPath) {
-        guard let user = getUser(at: indexPath) else { return }
-        followManager.declineUserRequest(withUserId: user.userId) { [weak self] success, response, error in
+    }
+    
+    func createChannel(user: AmityUserModel) {
+        let builder = AmityConversationChannelBuilder()
+        builder.setUserId(user.userId)
+        builder.setDisplayName(user.displayName)
+        
+        AmityEventHandler.shared.showKTBLoading()
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, _ in
             guard let strongSelf = self else { return }
-            if success {
-                strongSelf.delegate?.screenViewModel(strongSelf, didRemoveUser: indexPath)
-                strongSelf.getFollowsList()
-            } else if let error = error {
-                strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
+            if let channel = channelObject {
+                strongSelf.delegate?.screenViewModel(strongSelf, didCreateChannel: channel)
             }
         }
     }
-    
 }
 
 private extension AmityChatFriendScreenViewModel {
