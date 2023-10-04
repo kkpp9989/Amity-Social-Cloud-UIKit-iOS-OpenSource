@@ -216,6 +216,7 @@ final class AmityUIKitManagerInternal: NSObject {
     var currentUserId: String { return client.currentUserId ?? "" }
     var displayName: String { return client.user?.object?.displayName ?? "" }
     var avatarURL: String { return client.user?.object?.getAvatarInfo()?.fileURL ?? "" }
+    var userStatus:AmityUserStatus.StatusType = .unknown
 
     var userToken: String = ""
     public var currentUserToken: String { return self.userToken }

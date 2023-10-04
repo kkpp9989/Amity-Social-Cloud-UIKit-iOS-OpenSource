@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -702,6 +702,15 @@
 		DFDDF6B82A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */; };
 		DFDDF6B92A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */; };
 		FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276CE2A53B7C2003DFE4E /* AmitySDK */; };
+		FC40B7F62ACD473F00098E4F /* UserStatusViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC40B7F52ACD473F00098E4F /* UserStatusViewModelProtocol.swift */; };
+		FC40B7F92ACDD80D00098E4F /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC40B7F72ACDD80D00098E4F /* StatusTableViewCell.swift */; };
+		FC40B7FA2ACDD80D00098E4F /* StatusTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC40B7F82ACDD80D00098E4F /* StatusTableViewCell.xib */; };
+		FC40B7FC2ACDDCCC00098E4F /* UserStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC40B7FB2ACDDCCC00098E4F /* UserStatusViewModel.swift */; };
+		FC40B7FE2ACDDF5300098E4F /* AmityUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC40B7FD2ACDDF5300098E4F /* AmityUserStatus.swift */; };
+		FC9193082ACBE88D006A1E33 /* AmityOwnerChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC9193072ACBE88D006A1E33 /* AmityOwnerChatTableViewCell.swift */; };
+		FC91930A2ACBE897006A1E33 /* AmityOwnerChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC9193092ACBE897006A1E33 /* AmityOwnerChatTableViewCell.xib */; };
+		FC9193112ACC85D3006A1E33 /* UserStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC91930F2ACC85D3006A1E33 /* UserStatusViewController.swift */; };
+		FC9193122ACC85D3006A1E33 /* UserStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC9193102ACC85D3006A1E33 /* UserStatusViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1416,6 +1425,15 @@
 		DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityUserNotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityUserNotificationSettingsViewController.xib; sourceTree = "<group>"; };
 		FA6276BC2A53B58C003DFE4E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = SharedFrameworksEdit/Package.swift; sourceTree = "<group>"; };
+		FC40B7F52ACD473F00098E4F /* UserStatusViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatusViewModelProtocol.swift; sourceTree = "<group>"; };
+		FC40B7F72ACDD80D00098E4F /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
+		FC40B7F82ACDD80D00098E4F /* StatusTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StatusTableViewCell.xib; sourceTree = "<group>"; };
+		FC40B7FB2ACDDCCC00098E4F /* UserStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatusViewModel.swift; sourceTree = "<group>"; };
+		FC40B7FD2ACDDF5300098E4F /* AmityUserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityUserStatus.swift; sourceTree = "<group>"; };
+		FC9193072ACBE88D006A1E33 /* AmityOwnerChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityOwnerChatTableViewCell.swift; sourceTree = "<group>"; };
+		FC9193092ACBE897006A1E33 /* AmityOwnerChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityOwnerChatTableViewCell.xib; sourceTree = "<group>"; };
+		FC91930F2ACC85D3006A1E33 /* UserStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatusViewController.swift; sourceTree = "<group>"; };
+		FC9193102ACC85D3006A1E33 /* UserStatusViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UserStatusViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2260,6 +2278,7 @@
 				72A3508924EA820700DA9D46 /* AmityComunity.swift */,
 				D4CEE5C926144BB80088B7DE /* AmityPostModel.swift */,
 				B7ED344D2538B900005E33A7 /* AmityLoadingState.swift */,
+				FC40B7FD2ACDDF5300098E4F /* AmityUserStatus.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2290,6 +2309,7 @@
 		72A3509224EA820700DA9D46 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				FC91930B2ACC8574006A1E33 /* ViewUserStatus */,
 				9783FE962643FABF00DE4143 /* Member */,
 				970E784326429F8400E5FCEE /* Settings */,
 				72A350B424EA820700DA9D46 /* Edit */,
@@ -2422,6 +2442,8 @@
 			children = (
 				72A350B924EA820700DA9D46 /* AmityRecentChatTableViewCell.xib */,
 				72A350BA24EA820700DA9D46 /* AmityRecentChatTableViewCell.swift */,
+				FC9193092ACBE897006A1E33 /* AmityOwnerChatTableViewCell.xib */,
+				FC9193072ACBE88D006A1E33 /* AmityOwnerChatTableViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -4786,6 +4808,43 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		FC91930B2ACC8574006A1E33 /* ViewUserStatus */ = {
+			isa = PBXGroup;
+			children = (
+				FC91930E2ACC8593006A1E33 /* ViewModel */,
+				FC91930D2ACC858E006A1E33 /* Cell */,
+				FC91930C2ACC8586006A1E33 /* ViewController */,
+			);
+			path = ViewUserStatus;
+			sourceTree = "<group>";
+		};
+		FC91930C2ACC8586006A1E33 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				FC9193102ACC85D3006A1E33 /* UserStatusViewController.xib */,
+				FC91930F2ACC85D3006A1E33 /* UserStatusViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		FC91930D2ACC858E006A1E33 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				FC40B7F72ACDD80D00098E4F /* StatusTableViewCell.swift */,
+				FC40B7F82ACDD80D00098E4F /* StatusTableViewCell.xib */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		FC91930E2ACC8593006A1E33 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				FC40B7F52ACD473F00098E4F /* UserStatusViewModelProtocol.swift */,
+				FC40B7FB2ACDDCCC00098E4F /* UserStatusViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4950,6 +5009,7 @@
 				72A3515E24EA820800DA9D46 /* AmityEditTextViewController.xib in Resources */,
 				B77AC1882512105700321CF9 /* AmityEmptyView.xib in Resources */,
 				78C1C4B925F3EE2F00D6F092 /* AmitySettingsItemHeaderContentTableViewCell.xib in Resources */,
+				FC91930A2ACBE897006A1E33 /* AmityOwnerChatTableViewCell.xib in Resources */,
 				7247EE2826F091BF00B379A8 /* ItemOptionTableViewCell.xib in Resources */,
 				7855F929263684C000D054FB /* AmitySearchEmptyView.xib in Resources */,
 				97D723732695A690000735F5 /* AmityUserProfileHeaderViewController.xib in Resources */,
@@ -5006,11 +5066,13 @@
 				97E21E86264D244200F19CB3 /* AmityGroupChatEditViewController.xib in Resources */,
 				A062147C2709864100037C34 /* PostGalleryEmptyStateCell.xib in Resources */,
 				97D0EBA026A14A3A00E9FE6A /* AmityPendingPostsViewController.xib in Resources */,
+				FC40B7FA2ACDD80D00098E4F /* StatusTableViewCell.xib in Resources */,
 				AA8CC6DC2A6849B9003F8B8E /* AmityHashtagFeedViewController.xib in Resources */,
 				D4C821DD2760E1AC00ED6728 /* AmityMentionTableViewCell.xib in Resources */,
 				78C1C4C425F3EEAE00D6F092 /* AmitySettingsItemSeparatorContentTableViewCell.xib in Resources */,
 				DFDDF6B92A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib in Resources */,
 				7211553F25505D180081CC23 /* AmityCategoryPickerViewController.xib in Resources */,
+				FC9193122ACC85D3006A1E33 /* UserStatusViewController.xib in Resources */,
 				A9E891112A00CC0E00A22B35 /* AmityReactionPageViewController.xib in Resources */,
 				AA3A24812A6B9D44004CEEA0 /* OneKTBActivityDetailViewController.xib in Resources */,
 				97D0EB9826A14A3A00E9FE6A /* AmityPendingPostsActionTableViewCell.xib in Resources */,
@@ -5191,6 +5253,7 @@
 				AA8CC6D82A68460D003F8B8E /* AmityHashtagScreenViewModelProtocol.swift in Sources */,
 				78D9444325F9402D003C32A5 /* AmityCommunitySettingsItem.swift in Sources */,
 				D4C821D92760E13D00ED6728 /* AmityMentionTableView.swift in Sources */,
+				FC40B7FC2ACDDCCC00098E4F /* UserStatusViewModel.swift in Sources */,
 				0D9568A425D59A7500DE98FD /* AmityPostPlaceHolderTableViewCell.swift in Sources */,
 				720D599A2525BDB1009734EF /* DispatchGroupWrapper.swift in Sources */,
 				97D723E22695B133000735F5 /* AmityFollowerTableViewCell.swift in Sources */,
@@ -5235,6 +5298,7 @@
 				0DE673FF25A781F900CBC479 /* AmityCommunityProfilePageViewController.swift in Sources */,
 				975F14DA2696C4A3009C94C7 /* AmityUserSettingsScreenViewModel.swift in Sources */,
 				72A3513924EA820800DA9D46 /* UIView+Extension.swift in Sources */,
+				FC40B7F92ACDD80D00098E4F /* StatusTableViewCell.swift in Sources */,
 				78C1C4A525F3EA2700D6F092 /* AmityLabel.swift in Sources */,
 				72A3518124EA820800DA9D46 /* AssetsCollectionViewDataSource.swift in Sources */,
 				72A351A624EA821900DA9D46 /* AmityKeyboardService.swift in Sources */,
@@ -5394,6 +5458,7 @@
 				B704D1432578CB2F0038BA78 /* AmityPulseAnimation.swift in Sources */,
 				726067D3260ADFD800A6E12C /* AmitySocialNotificationSettingsScreenViewModel.swift in Sources */,
 				78DA0322263C715C007C11CE /* AmityMyCommunityPreviewScreenViewModelProtocol.swift in Sources */,
+				FC9193112ACC85D3006A1E33 /* UserStatusViewController.swift in Sources */,
 				78561A7725F9D5D700A1403E /* AmityPostReviewSettingsScreenViewModel.swift in Sources */,
 				B7B31C66250F4ACF000AC6E4 /* AmityPagerTabViewController.swift in Sources */,
 				97D7C4A2264BF90700EA24F5 /* AmityChannelMembershipModel.swift in Sources */,
@@ -5402,6 +5467,7 @@
 				72A3517524EA820800DA9D46 /* PreviewTitleBuilder.swift in Sources */,
 				0D87A87425DA5BD100A8D59F /* AmityCommentFetchCommentPostController.swift in Sources */,
 				0D44379925CD0A8B00C03616 /* AmityPostHeaderTableViewCell.swift in Sources */,
+				FC9193082ACBE88D006A1E33 /* AmityOwnerChatTableViewCell.swift in Sources */,
 				0D43B16A25D82CBD00E6B604 /* AmityPostController.swift in Sources */,
 				B77DE3132537F1BA00568DF0 /* AmityCommunityMemberSettingsViewController.swift in Sources */,
 				72A3517C24EA820800DA9D46 /* CameraCollectionViewCell.swift in Sources */,
@@ -5425,6 +5491,7 @@
 				AACF116C2A67BAD5006C2907 /* RequestError.swift in Sources */,
 				72A3513824EA820800DA9D46 /* UIColor+Extension.swift in Sources */,
 				72EA38CE253424D1001DDC8F /* AmityCommentModel.swift in Sources */,
+				FC40B7F62ACD473F00098E4F /* UserStatusViewModelProtocol.swift in Sources */,
 				AACF11612A67890C006C2907 /* AmityHashtagTableViewCell.swift in Sources */,
 				97D7C4A9264BF91000EA24F5 /* AmityChannelMemberViewController.swift in Sources */,
 				97D0EBB026A14A8800E9FE6A /* AmityPendingPostsDetailScreenViewModel.swift in Sources */,
@@ -5452,6 +5519,7 @@
 				B797ED1224F6CCFA00F3B411 /* UIButton+Extension.swift in Sources */,
 				7214C9E52632D9BD00192BB3 /* AmityCommunityCreatorViewController.swift in Sources */,
 				97D0EB9626A14A3A00E9FE6A /* AmityPendingPostsFeedViewModel.swift in Sources */,
+				FC40B7FE2ACDDF5300098E4F /* AmityUserStatus.swift in Sources */,
 				B788B92D252D7116002F4F12 /* AmityRecommendedCommunityScreenViewModel.swift in Sources */,
 				B773618525552BEC0072B182 /* AmityPageViewController.swift in Sources */,
 				A0A903AF26BA743C002949B2 /* AmityPostGalleryScreenViewModel.swift in Sources */,
