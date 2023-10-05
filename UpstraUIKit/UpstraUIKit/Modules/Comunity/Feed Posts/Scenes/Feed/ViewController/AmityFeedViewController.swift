@@ -466,6 +466,16 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         tableView.reloadData()
     }
     
+    func screenViewModelDidUpdatePinSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String) {
+        debouncer.run { [weak self] in
+            self?.scrollToTop()
+            self?.screenViewModel.action.fetchPosts()
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: message, in: window)
+            }
+        }
+    }
+
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate

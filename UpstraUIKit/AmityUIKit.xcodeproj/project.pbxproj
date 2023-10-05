@@ -485,6 +485,7 @@
 		AA14A0442ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0432ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift */; };
 		AA14A0462ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0452ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift */; };
 		AA14A04A2ACAB9B900DAD2E0 /* AmityChatFriendPageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA14A0492ACAB9B900DAD2E0 /* AmityChatFriendPageViewController.xib */; };
+		AA14A0522ACE966F00DAD2E0 /* AmityToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0512ACE966F00DAD2E0 /* AmityToastView.swift */; };
 		AA3A247E2A6B9C42004CEEA0 /* OneKTBActivityDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A247D2A6B9C41004CEEA0 /* OneKTBActivityDetailViewController.swift */; };
 		AA3A24812A6B9D44004CEEA0 /* OneKTBActivityDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA3A24802A6B9D44004CEEA0 /* OneKTBActivityDetailViewController.xib */; };
 		AA3A24842A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */; };
@@ -1199,6 +1200,7 @@
 		AA14A0432ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatFriendScreenViewModel.swift; sourceTree = "<group>"; };
 		AA14A0452ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatFriendScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		AA14A0492ACAB9B900DAD2E0 /* AmityChatFriendPageViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityChatFriendPageViewController.xib; sourceTree = "<group>"; };
+		AA14A0512ACE966F00DAD2E0 /* AmityToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityToastView.swift; sourceTree = "<group>"; };
 		AA3A247D2A6B9C41004CEEA0 /* OneKTBActivityDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailViewController.swift; sourceTree = "<group>"; };
 		AA3A24802A6B9D44004CEEA0 /* OneKTBActivityDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OneKTBActivityDetailViewController.xib; sourceTree = "<group>"; };
 		AA3A24832A6BA4FD004CEEA0 /* OneKTBActivityDetailScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneKTBActivityDetailScreenViewModelProtocol.swift; sourceTree = "<group>"; };
@@ -2186,6 +2188,7 @@
 				78C1C4A425F3EA2700D6F092 /* AmityLabel.swift */,
 				78C1C4CE25F3F04B00D6F092 /* AmityIconView.swift */,
 				78C1C4D325F3F05100D6F092 /* AmityIconView.xib */,
+				AA14A0512ACE966F00DAD2E0 /* AmityToastView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -5493,6 +5496,7 @@
 				7236EB4425593EE80006F785 /* AmityPostEditorViewController.swift in Sources */,
 				97D723D62695B133000735F5 /* AmityFollowRequestsScreenViewModelProtocol.swift in Sources */,
 				0DA0BD1725D98011004804BA /* AmityPostDetailScreenViewModel.swift in Sources */,
+				AA14A0522ACE966F00DAD2E0 /* AmityToastView.swift in Sources */,
 				AA14A0412ACAADC800DAD2E0 /* AmityChatFriendPageViewController.swift in Sources */,
 				78C1C4DB25F3F29200D6F092 /* AmitySettingsItemNavigationContentTableViewCell.swift in Sources */,
 				7271C24A2524376600E13F9D /* AmityEmptyStateHeaderFooterView.swift in Sources */,
