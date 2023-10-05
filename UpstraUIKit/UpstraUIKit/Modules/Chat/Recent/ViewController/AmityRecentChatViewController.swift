@@ -15,7 +15,6 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     var pageTitle: String?
     let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
     
-    
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
     }
@@ -105,11 +104,11 @@ extension AmityRecentChatViewController: UITableViewDelegate {
         if indexPath.section != 0 {
             screenViewModel.action.join(at: indexPath)
         } else {
-            let myViewController = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
-            myViewController.delegate = self
-            myViewController.view.tag = 1
-            window?.rootViewController?.addChild(myViewController)
-            window?.addSubview(myViewController.view)
+            let userStatusVC = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
+            userStatusVC.delegate = self
+            userStatusVC.view.tag = 1
+            window?.rootViewController?.addChild(userStatusVC)
+            window?.addSubview(userStatusVC.view)
         }
     }
     
