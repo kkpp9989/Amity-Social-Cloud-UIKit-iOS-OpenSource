@@ -217,6 +217,30 @@ extension AmityRecentChatScreenViewModel {
         delegate?.screenViewModelRoute(for: .messageView(channelId: channel.channelId, subChannelId: channel.defaultSubChannelId))
     }
 
+    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+        // Create an instance of AmityUserStatus
+        let userStatus = AmityUserStatus()
+
+        // Call mapTypeToAmitySDK to map a StatusType enum value to a string
+        let statusType = AmityUIKitManagerInternal.shared.userStatus
+        let amityStatusString = userStatus.mapTypeToAmitySDK(statusType)
+        
+        let meta: [String: Any] = ["user_presence": amityStatusString]
+        let amityUserUpdateBuilder = AmityUserUpdateBuilder()
+        amityUserUpdateBuilder.setUserMetadata(meta)
+        
+        Task {
+            do {
+                let editUser = try await AmityUIKitManagerInternal.shared.client.editUser(amityUserUpdateBuilder)
+                // The update was successful
+                completion(.success(()))
+            } catch {
+                // Handle the error here
+                print("Update failed: \(error)")
+                completion(.failure(error))
+            }
+        }
+    }
 }
 
 private extension AmityRecentChatScreenViewModel {

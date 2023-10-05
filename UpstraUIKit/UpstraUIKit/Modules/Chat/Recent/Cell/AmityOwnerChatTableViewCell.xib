@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,6 +32,14 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="v37-OI-9dz" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
+                        <rect key="frame" x="44" y="40" width="20" height="20"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="FW8-Gh-aw8"/>
+                            <constraint firstAttribute="height" constant="20" id="tef-eG-r7p"/>
+                        </constraints>
+                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Doz-Xj-wfl">
                         <rect key="frame" x="0.0" y="64" width="545" height="8"/>
                         <color key="backgroundColor" red="0.92156862745098034" green="0.92549019607843142" blue="0.93725490196078431" alpha="1" colorSpace="calibratedRGB"/>
@@ -46,15 +54,19 @@
                     <constraint firstAttribute="trailing" secondItem="Doz-Xj-wfl" secondAttribute="trailing" id="2Fn-U2-Rxn"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="leading" secondItem="Crb-ep-vqF" secondAttribute="trailing" constant="14" id="KlT-qP-IyD"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="centerY" secondItem="Crb-ep-vqF" secondAttribute="centerY" id="SRU-ov-GtT"/>
+                    <constraint firstItem="v37-OI-9dz" firstAttribute="bottom" secondItem="Crb-ep-vqF" secondAttribute="bottom" constant="8" id="UDs-Lb-c8A"/>
                     <constraint firstItem="Crb-ep-vqF" firstAttribute="top" secondItem="DRO-ru-ODU" secondAttribute="top" constant="12" id="cRd-3J-wFX"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="top" secondItem="Crb-ep-vqF" secondAttribute="bottom" constant="12" id="rVb-iy-MWQ"/>
                     <constraint firstAttribute="bottom" secondItem="Doz-Xj-wfl" secondAttribute="bottom" id="ro9-Pp-E6P"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="leading" secondItem="DRO-ru-ODU" secondAttribute="leading" id="vj3-dl-lU6"/>
+                    <constraint firstItem="v37-OI-9dz" firstAttribute="trailing" secondItem="Crb-ep-vqF" secondAttribute="trailing" constant="8" id="wta-O8-qB2"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="sLb-2b-Va5"/>
             <connections>
                 <outlet property="avatarView" destination="Crb-ep-vqF" id="NZc-wm-OtY"/>
+                <outlet property="badgeStatusIcon" destination="v37-OI-9dz" id="E85-vN-CZu"/>
+                <outlet property="statusLabel" destination="UAM-cf-hqK" id="ETM-hQ-hc6"/>
             </connections>
             <point key="canvasLocation" x="300" y="241.90140845070422"/>
         </tableViewCell>

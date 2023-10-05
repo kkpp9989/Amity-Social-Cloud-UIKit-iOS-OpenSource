@@ -214,9 +214,10 @@ final class AmityUIKitManagerInternal: NSObject {
     private(set) var messageMediaService = AmityMessageMediaService()
     
     var currentUserId: String { return client.currentUserId ?? "" }
-    var displayName: String { return client.user?.object?.displayName ?? "" }
-    var avatarURL: String { return client.user?.object?.getAvatarInfo()?.fileURL ?? "" }
-    var userStatus:AmityUserStatus.StatusType = .unknown
+    var displayName: String { return client.user?.snapshot?.displayName ?? "" }
+    var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
+    var userStatus: AmityUserStatus.StatusType = .AVAILABLE
+    var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "" }
 
     var userToken: String = ""
     public var currentUserToken: String { return self.userToken }

@@ -52,7 +52,7 @@ struct AmityUserStatus {
         case "out_sick":
             return .OUT_SICK
         default:
-            return .unknown
+            return .AVAILABLE
         }
     }
     

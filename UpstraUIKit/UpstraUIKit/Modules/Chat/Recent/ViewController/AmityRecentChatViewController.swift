@@ -209,6 +209,21 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
 extension AmityRecentChatViewController: UserStatusDelegate {
     func didClose() {
         window?.subviews.filter({$0.tag == 1}).forEach({$0.removeFromSuperview()})
+        screenViewModel?.action.update { [self] result in
+            switch result {
+            case .success:
+                print("Update succeeded")
+                reloadData()
+            case .failure(let error):
+                print("Update failed with error: \(error)")
+            }
+        }
+    }
+    
+    private func reloadData() {
+        DispatchQueue.main.async { [self] in
+            tableView.reloadData()
+        }
     }
     
 }

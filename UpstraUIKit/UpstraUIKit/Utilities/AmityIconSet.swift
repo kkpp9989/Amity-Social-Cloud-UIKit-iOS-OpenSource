@@ -154,6 +154,15 @@ public struct AmityIconSet {
         public static var iconDelete3 = UIImage(named: "icon_delete_3", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconSetting = UIImage(named: "icon_chat_setting", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMentionBadges = UIImage(named: "icon_mention_badges", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        
+        public static var iconWorkFromHome = UIImage(named: "icon_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconOutSick = UIImage(named: "icon_out_sick", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconOnLeave = UIImage(named: "icon_on_leave", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconInTheOffice = UIImage(named: "icon_in_the_office", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconInAMeeting = UIImage(named: "icon_in_a_meeting", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconAvailable = UIImage(named: "Icon_available", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconDoNotDisturb = UIImage(named: "icon_do_not_disturb", in: AmityUIKitManager.bundle, compatibleWith: nil)
+
     }
     
     enum Post {

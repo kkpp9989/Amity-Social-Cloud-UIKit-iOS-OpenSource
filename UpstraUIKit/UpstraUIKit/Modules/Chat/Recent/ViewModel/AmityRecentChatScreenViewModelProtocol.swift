@@ -30,6 +30,7 @@ protocol AmityRecentChatScreenViewModelAction {
     func join(at indexPath: IndexPath)
     func createChannel(users: [AmitySelectMemberModel])
     func loadMore()
+    func update(completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 protocol AmityRecentChatScreenViewModelType: AmityRecentChatScreenViewModelAction, AmityRecentChatScreenViewModelDataSource {
