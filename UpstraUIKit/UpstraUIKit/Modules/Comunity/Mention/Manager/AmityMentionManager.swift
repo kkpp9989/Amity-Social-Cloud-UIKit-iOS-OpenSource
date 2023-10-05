@@ -673,7 +673,7 @@ extension AmityMentionManager {
                 })
             }
             
-            let range = NSRange(location: mention.index, length: mention.length + 1)
+            let range = NSRange(location: mention.index, length: mention.length)
             attributes.append(MentionAttribute(attributes: [.foregroundColor: highlightColor, .font: highlightFont], range: range, userId: mention.userId ?? ""))
         }
 

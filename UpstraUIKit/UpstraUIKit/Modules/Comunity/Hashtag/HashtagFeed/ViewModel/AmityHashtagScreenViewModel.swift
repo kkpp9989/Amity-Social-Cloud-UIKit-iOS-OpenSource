@@ -158,12 +158,12 @@ extension AmityHashtagScreenViewModel {
                 }
                 
                 tokenArray.append(token)
-                
-                dispatchGroup.notify(queue: .main) {
-                    let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
-                    self.prepareComponents(posts: sortedArray)
-                    self.tokenArray.removeAll()
-                }
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
+                self.prepareComponents(posts: sortedArray)
+                self.tokenArray.removeAll()
             }
             
             if dummyList.postIDS.isEmpty {
