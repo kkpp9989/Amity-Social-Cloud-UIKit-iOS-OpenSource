@@ -174,13 +174,13 @@ extension AmityFeedScreenViewModel {
                 }
                 
                 tokenArray.append(token)
-                
-                dispatchGroup.notify(queue: .main) {
-                    let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
-                    self.pinPostData = sortedArray
-                    self.tokenArray.removeAll()
-                    self.fetchFeedPosts()
-                }
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
+                self.pinPostData = sortedArray
+                self.tokenArray.removeAll()
+                self.fetchFeedPosts()
             }
             
             if dummyList.isEmpty {
