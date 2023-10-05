@@ -44,8 +44,20 @@ class AmityCommentView: AmityView {
     @IBOutlet private weak var reactionDetailLabel: UILabel!
     @IBOutlet private weak var reactionDetailButton: UIButton!
     
+    // MARK: - URLPreview IBOutlet Properties
+    /* [Custom for ONE Krungthai][URL Preview] Component for URL Preview */
+    @IBOutlet var urlPreviewImage: UIImageView!
+    @IBOutlet var urlPreviewDomain: UILabel!
+    @IBOutlet var urlPreviewTitle: UILabel!
+    @IBOutlet var urlPreviewView: UIView!
+    @IBOutlet var trailingStaticOfContentView: NSLayoutConstraint!
+    @IBOutlet var trailingStaticOfURLPreviewDetailView: NSLayoutConstraint!
+    
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
+
+    // MARK: - URLPreview Properties
+    private var urlData: URL? // [Custom for ONE Krungthai][URL Preview] Add URL data property for use tap action
     
     // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
     public var isModeratorUserInOfficialCommunity: Bool = false
@@ -55,6 +67,7 @@ class AmityCommentView: AmityView {
     override func initial() {
         loadNibContent()
         setupView()
+        setupURLPreviewView() // [Custom for ONE Krungthai][URL Preview] Add setup URL preview view
     }
     
     private func setupView() {
@@ -240,9 +253,10 @@ class AmityCommentView: AmityView {
     func prepareForReuse() {
         bannedImageView.image = nil
         comment = nil
+        clearURLPreviewView() // [Custom for ONE Krungthai][URL Preview] Add clear URL preview view outputing
     }
     
-    open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat) -> CGFloat {
+    open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat, isHaveURLPreview: Bool = false) -> CGFloat {
         
         let topSpace: CGFloat = 65 + layout.space.aboveAvatar
         
@@ -257,7 +271,8 @@ class AmityCommentView: AmityView {
                 boundingWidth: labelBoundingWidth,
                 maximumLines: maximumLines
             )
-            return height
+            let latestHeight = isHaveURLPreview ? height + 100 : height
+            return latestHeight
         } ()
         
         
@@ -277,7 +292,6 @@ class AmityCommentView: AmityView {
             let bottomStackViewHeight = bottomStackViews.reduce(0, +) + (spaceBetweenElement * numberOfSpaceBetweenElements)
             return bottomStackViewHeight
         } ()
-
         
         return topSpace
         + contentHeight
@@ -288,4 +302,69 @@ class AmityCommentView: AmityView {
         
     }
     
+}
+
+// MARK: URL Preview [Custom For ONE Krungthai]
+extension AmityCommentView {
+    // MARK: - Setup URL Preview
+    private func setupURLPreviewView() {
+        // Setup image
+        urlPreviewImage.image = nil
+        urlPreviewImage.backgroundColor = .white
+        urlPreviewImage.contentMode = .scaleAspectFill
+
+        // Setup domain
+        urlPreviewDomain.text = " "
+        urlPreviewDomain.font = AmityFontSet.caption
+        urlPreviewDomain.textColor = AmityColorSet.disableTextField
+
+        // Setup title
+        urlPreviewTitle.text = " "
+        urlPreviewTitle.font = AmityFontSet.captionBold
+        urlPreviewTitle.textColor = AmityColorSet.base
+
+        // Setup ishidden status of view & constant for URL preview
+        urlPreviewView.isHidden = true
+        trailingStaticOfContentView.isActive = false
+        trailingStaticOfURLPreviewDetailView.isActive = false
+
+        // Setup tap gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openURLTapAction(_:)))
+        urlPreviewView.addGestureRecognizer(tapGesture)
+    }
+
+    // MARK: - Display URL Preview
+    public func displayURLPreview(metadata: AmityURLMetadata) {
+        urlPreviewTitle.text = metadata.title
+        urlPreviewDomain.text = metadata.domain
+        urlPreviewImage.image = metadata.imagePreview
+        urlData = metadata.urlData
+        
+        urlPreviewView.isHidden = false
+        trailingStaticOfContentView.isActive = true
+        trailingStaticOfURLPreviewDetailView.isActive = true
+    }
+
+    // MARK: - Hide URL Preview
+    public func hideURLPreview() {
+        clearURLPreviewView()
+    }
+
+    // MARK: - Clear URL Preview
+    private func clearURLPreviewView() {
+        urlPreviewView.isHidden = true
+        trailingStaticOfContentView.isActive = false
+        trailingStaticOfURLPreviewDetailView.isActive = false
+        urlPreviewTitle.text = " "
+        urlPreviewDomain.text = " "
+        urlPreviewImage.image = nil
+        urlData = nil
+    }
+
+    // MARK: - Perform Action
+    @objc func openURLTapAction(_ sender: UITapGestureRecognizer) {
+        if let currentURLData = urlData {
+            UIApplication.shared.open(currentURLData, options: [:], completionHandler: nil)
+        }
+    }
 }
