@@ -321,7 +321,7 @@ extension OneKTBActivityDetailViewController: AmityPostTableViewDelegate {
                     shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                     shouldLineShow: viewModel.isReplyType
                 )
-                _cell.configure(with: comment, layout: layout)
+                _cell.configure(with: comment, layout: layout, indexPath: indexPath)
                 _cell.labelDelegate = self
                 _cell.actionDelegate = self
             }
@@ -337,7 +337,7 @@ extension OneKTBActivityDetailViewController: AmityPostTableViewDelegate {
                 shouldShowActions: screenViewModel.post?.isCommentable ?? false,
                 shouldLineShow: viewModel.isReplyType
             )
-            _cell.configure(with: comment, layout: layout)
+            _cell.configure(with: comment, layout: layout, indexPath: indexPath)
             _cell.labelDelegate = self
             _cell.actionDelegate = self
             

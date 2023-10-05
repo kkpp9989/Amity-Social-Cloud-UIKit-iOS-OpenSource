@@ -10,6 +10,7 @@ import UIKit
 import AmitySDK
 
 protocol AmityFeedScreenViewModelDelegate: AnyObject {
+    func screenViewModelDidClearDataSuccess(_ viewModel: AmityFeedScreenViewModelType) // [Improvement] add did clear data success function for fetch post when scroll refresh from feed have post with URL Preview
     func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelLoadingState(_ viewModel: AmityFeedScreenViewModelType, for loadingState: AmityLoadingState)
     func screenViewModelScrollToTop(_ viewModel: AmityFeedScreenViewModelType)
@@ -47,7 +48,8 @@ protocol AmityFeedScreenViewModelAction {
     // MARK: Fetch data
     func fetchPosts()
     func loadMore()
-    
+    func clearOldPosts()
+
     // MARK: PostId / CommentId
     func like(id: String, referenceType: AmityReactionReferenceType)
     func unlike(id: String, referenceType: AmityReactionReferenceType)

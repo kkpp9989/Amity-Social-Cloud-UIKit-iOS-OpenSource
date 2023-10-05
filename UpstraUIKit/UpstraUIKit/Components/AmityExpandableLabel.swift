@@ -173,7 +173,7 @@ open class AmityExpandableLabel: UILabel {
                     attributedString.addAttributes([
                         .foregroundColor: hyperLinkColor,
                         .attachment: url], range: match.range)
-                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range)
+//                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
                     hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
                 }
                 
@@ -685,7 +685,7 @@ extension AmityExpandableLabel {
             attributedString.addAttributes([
                 .foregroundColor: hyperLinkColor,
                 .attachment: url], range: match.range)
-            attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range)
+//            attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
             hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
         }
         
