@@ -57,7 +57,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         memberLabel.font = AmityFontSet.caption
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
         
-        previewMessageLabel.text = "No message yet\nNo message yet"
+        previewMessageLabel.text = "No message yet"
         previewMessageLabel.numberOfLines = 2
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
@@ -78,24 +78,21 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         avatarView.placeholder = AmityIconSet.defaultAvatar
         mentionBadgeImageView.isHidden = !channel.object.hasMentioned
         badgeView.isHidden = channel.unreadCount < 1
-        
+
         switch channel.channelType {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
         case .conversation:
             memberLabel.text = nil
-            titleLabel.text = channel.displayName
-            
-            token?.invalidate()
-            if !channel.getOtherUserId().isEmpty {
-                token = repository?.getUser(channel.getOtherUserId()).observeOnce { [weak self] user, error in
-                    guard let userObject = user.snapshot else { return }
-                    self?.avatarView.setImage(withImageURL: userObject.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
-                    self?.titleLabel.text = userObject.displayName
+            AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
+                DispatchQueue.main.async { [self] in
+                    if let otherMember = user {
+                        // Set avatar
+                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                        titleLabel.text = otherMember.displayName
+                    }
                 }
-            } else {
-                avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultAvatar)
             }
         case .community:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
@@ -105,7 +102,5 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         @unknown default:
             break
         }
-        
-        
     }
 }

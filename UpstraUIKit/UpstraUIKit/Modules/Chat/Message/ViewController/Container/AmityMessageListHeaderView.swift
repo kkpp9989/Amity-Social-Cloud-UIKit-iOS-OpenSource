@@ -135,34 +135,32 @@ extension AmityMessageListHeaderView {
     func updateUserStatus(user: AmityUser) {
         // Show status view
         statusView.isHidden = false
-        // [Temp] Mock status
-        let status: AmityMemberChatStatus = .available
+        let status = user.metadata?["user_presence"] as? String ?? ""
         switch status {
-        case .available:
+        case "available":
             statusImageView.image = AmityIconSet.Chat.iconStatusAvailable
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
-        case .offline:
-            statusImageView.image = AmityIconSet.Chat.iconStatusOffline
-            statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.offline.localizedString
-        case .doNotDisturb:
+        case "do_not_disturb":
             statusImageView.image = AmityIconSet.Chat.iconStatusDoNotDisTurb
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.doNotDisturb.localizedString
-        case .inTheOffice:
+        case "in_the_office":
             statusImageView.image = AmityIconSet.Chat.iconStatusInTheOffice
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.inTheOffice.localizedString
-        case .workFromHome:
+        case "work_from_home":
             statusImageView.image = AmityIconSet.Chat.iconStatusWorkFromHome
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.workFromHome.localizedString
-        case .inAMeeting:
+        case "in_a_meeting":
             statusImageView.image = AmityIconSet.Chat.iconStatusInAMeeting
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.inAMeeting.localizedString
-        case .onLeave:
+        case "on_leave":
             statusImageView.image = AmityIconSet.Chat.iconStatusOnLeave
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.onLeave.localizedString
-        case .outSick:
+        case "out_sick":
             statusImageView.image = AmityIconSet.Chat.iconStatusOutSick
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.outSick.localizedString
+        default:
+            statusImageView.image = AmityIconSet.Chat.iconStatusAvailable
+            statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
         }
-        
     }
 }

@@ -13,6 +13,7 @@ import AmitySDK
 public final class AmityRecentChatViewController: AmityViewController, IndicatorInfoProvider {
     
     var pageTitle: String?
+    let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
@@ -70,12 +71,14 @@ private extension AmityRecentChatViewController {
             let barButton = UIBarButtonItem(image: addImage, style: .plain, target: self, action: #selector(didClickAdd(_:)))
             navigationItem.rightBarButtonItem = barButton
         }
+        
         setupTableView()
     }
     
     func setupTableView() {
         view.backgroundColor = AmityColorSet.backgroundColor
         tableView.register(AmityRecentChatTableViewCell.nib, forCellReuseIdentifier: AmityRecentChatTableViewCell.identifier)
+        tableView.register(AmityOwnerChatTableViewCell.nib, forCellReuseIdentifier: AmityOwnerChatTableViewCell.identifier)
         tableView.backgroundColor = AmityColorSet.backgroundColor
         tableView.separatorInset.left = 64
         tableView.showsVerticalScrollIndicator = false
@@ -98,7 +101,15 @@ private extension AmityRecentChatViewController {
 // MARK: - UITableView Delegate
 extension AmityRecentChatViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        screenViewModel.action.join(at: indexPath)
+        if indexPath.section != 0 {
+            screenViewModel.action.join(at: indexPath)
+        } else {
+            let userStatusVC = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
+            userStatusVC.delegate = self
+            userStatusVC.view.tag = 1
+            window?.rootViewController?.addChild(userStatusVC)
+            window?.addSubview(userStatusVC.view)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -110,14 +121,45 @@ extension AmityRecentChatViewController: UITableViewDelegate {
 
 // MARK: - UITableView DataSource
 extension AmityRecentChatViewController: UITableViewDataSource {
+    
+    public func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return screenViewModel.dataSource.numberOfRow(in: section)
+        if section == 0 {
+            return 1
+        } else {
+            return screenViewModel.dataSource.numberOfRow(in: section)
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return 72
+        } else {
+            return UITableView.automaticDimension
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath)
+        
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: AmityOwnerChatTableViewCell.identifier, for: indexPath)
+            configureOwner(for: cell)
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath)
             configure(for: cell, at: indexPath)
-        return cell
+            return cell
+        }
+        
+    }
+    
+    private func configureOwner(for cell: UITableViewCell) {
+        if let cell = cell as? AmityOwnerChatTableViewCell {
+            cell.setupDisplay()
+        }
     }
     
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
@@ -162,4 +204,26 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
     func screenViewModelEmptyView(isEmpty: Bool) {
         tableView.backgroundView = isEmpty ? emptyView : nil
     }
+}
+
+extension AmityRecentChatViewController: UserStatusDelegate {
+    func didClose() {
+        window?.subviews.filter({$0.tag == 1}).forEach({$0.removeFromSuperview()})
+        screenViewModel?.action.update { [self] result in
+            switch result {
+            case .success:
+                print("Update succeeded")
+                reloadData()
+            case .failure(let error):
+                print("Update failed with error: \(error)")
+            }
+        }
+    }
+    
+    private func reloadData() {
+        DispatchQueue.main.async { [self] in
+            tableView.reloadData()
+        }
+    }
+    
 }
