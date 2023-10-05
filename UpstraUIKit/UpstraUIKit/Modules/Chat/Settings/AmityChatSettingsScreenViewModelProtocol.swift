@@ -19,6 +19,8 @@ protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
     func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
     func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType)
     func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
+    func screenViewModelDidDeleteChannel(_ viewModel: AmityChatSettingsScreenViewModelType)
+    func screenViewModelDidDeleteChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error)
 }
 
 protocol AmityChatSettingsScreenViewModelDataSource {

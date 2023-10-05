@@ -5,11 +5,12 @@
 //  Created by min khant on 05/05/2021.
 //  Copyright © 2021 Amity. All rights reserved.
 //
-/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsViewController */
+/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsViewController and add new action some setting */
 
 import UIKit
 import AmitySDK
 
+// MARK: - Viewcontroller
 final class AmityChatSettingsViewController: AmityViewController {
     
     // MARK: - IBOutlet Properties
@@ -75,35 +76,39 @@ final class AmityChatSettingsViewController: AmityViewController {
             case "report": // (1:1 Chat)
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeReportUserStatus()
-            case "leave":
+            case "leave": // (Group chat)
                 // Open alert controller
+                // Not ready
                 break
-            case "delete":
-                let alertTitle = "Delete chat"
-                let description = "You and your friend’ll no longer be able to receive any messages or see chat history."
+            case "delete": // (1:1 Chat, Group Chat [Moderator role])
+                // [Temp] Set for 1:1 Chat, it will separate between 1:1 Chat and group chat next time
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.deleteChatTitle.localizedString
+                let description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
                 
                 AmityAlertController.present(
                     title: alertTitle,
                     message: description,
-                    actions: [.cancel(handler: nil), .custom(title: "Delete", style: .destructive, handler: { [weak self] in
+                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] in
                         guard let strongSelf = self else { return }
-                        strongSelf.screenViewModel.action.leaveChat()
+                        strongSelf.screenViewModel.action.deleteChat()
                     })],
                     from: self)
-                
             case "members": // (Group Chat)
                 // Open members list
+                // Not ready
                 break
             case "groupProfile": // (Group Chat [Moderator role])
                 // Open group profile setting
+                // Not ready
                 break
             case "inviteUser": // (1:1 Chat)
-                AmityChannelEventHandler.shared.channelCreateNewChat(
-                    from: self,
-                    completionHandler: { [weak self] storeUsers in
-                        guard let weakSelf = self else { return }
-                        print("[Storeusers] :\(storeUsers)")
-                })
+//                AmityChannelEventHandler.shared.channelCreateNewChat(
+//                    from: self,
+//                    completionHandler: { [weak self] storeUsers in
+//                        guard let weakSelf = self else { return }
+//                        print("[Storeusers] :\(storeUsers)")
+//                })
+                // Not ready
                 break
             case "notification": // (1:1 Chat, Group Chat)
                 AmityHUD.show(.loading)
@@ -116,18 +121,25 @@ final class AmityChatSettingsViewController: AmityViewController {
         case .navigationContent(content: let content):
             switch content.identifier {
             case "report":
+                // Not ready
                 break
             case "leave":
+                // Not ready
                 break
             case "delete":
+                // Not ready
                 break
             case "members":
+                // Not ready
                 break
             case "groupProfile":
+                // Not ready
                 break
             case "inviteUser":
+                // Not ready
                 break
             case "notification":
+                // Not ready
                 break
             default:
                 break
@@ -139,11 +151,14 @@ final class AmityChatSettingsViewController: AmityViewController {
     }
 }
 
+// MARK: - Delegate
 extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDelegate {
+    // MARK: - Get setting menu delegate
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetSettingMenu settings: [AmitySettingsItem]) {
         settingTableView.settingsItems = settings
     }
     
+    // MARK: - Get channel delegate
     func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannelModel) {
         title = viewModel.dataSource.title
     }
@@ -152,30 +167,51 @@ extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDeleg
         // Not ready
     }
     
+    // MARK: - Update notification delegate
     func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool) {
-        AmityHUD.show(.success(message: "\(isNotificationEnabled ? "Unmuted" : "Muted")"))
+        AmityHUD.show(.success(message: "\(isNotificationEnabled ? AmityLocalizedStringSet.ChatSettings.unmutedNotification.localizedString : AmityLocalizedStringSet.ChatSettings.mutedNotification.localizedString)"))
     }
     
     func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
         AmityHUD.show(.error(message: error.localizedDescription))
     }
     
+    // MARK: - Update report user status delegate
     func screenViewModelDidUpdateReportUser(_ viewModel: AmityChatSettingsScreenViewModelType, isReported: Bool) {
-        AmityHUD.show(.success(message: "\(isReported ? "Report Sent" : "Unreport Sent")"))
+        AmityHUD.show(.success(message: "\(isReported ? AmityLocalizedStringSet.ChatSettings.reportSent.localizedString : AmityLocalizedStringSet.ChatSettings.unreportSent.localizedString)"))
     }
     
     func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
         AmityHUD.show(.error(message: error.localizedDescription))
     }
     
+    // MARK: - Leave channel delegate
     func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
-        dismiss(animated: true)
+        // Not ready
     }
     
     func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
         AmityAlertController.present(
-            title: "Error",
-            message: "Can't delete chat with error :\(error.localizedDescription)",
+            title: AmityLocalizedStringSet.ChatSettings.unableLeaveChatTitle.localizedString,
+            message: AmityLocalizedStringSet.ChatSettings.unableLeaveChatMessage.localizedString,
+            actions: [.ok(handler: nil)],
+            from: self)
+    }
+    
+    // MARK: - Delete channel delegate
+    func screenViewModelDidDeleteChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
+        // Handle back to view some each case
+        if let chatHomePage = navigationController?.viewControllers.first(where: { $0.isKind(of: AmityChatHomePageViewController.self) }) {
+            navigationController?.popToViewController(chatHomePage, animated: true)
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    func screenViewModelDidDeleteChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityAlertController.present(
+            title: AmityLocalizedStringSet.ChatSettings.unableDeleteChatTitle.localizedString,
+            message: AmityLocalizedStringSet.ChatSettings.unableDeleteChatMessage.localizedString,
             actions: [.ok(handler: nil)],
             from: self)
     }

@@ -188,7 +188,19 @@ extension AmityChatSettingsScreenViewModel {
     
     // MARK: Update Action - Delete chat (1:1 Chat and Group Chat with moderator roles)
     func deleteChat() {
-        
+        let serviceRequest = RequestChat()
+        serviceRequest.requestDeleteChat(channelId: channelId) { [weak self] result in
+            guard let strongSelf = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let success):
+                    strongSelf.delegate?.screenViewModelDidDeleteChannel(strongSelf)
+                case .failure(let failure):
+                    failure.localizedDescription
+                    strongSelf.delegate?.screenViewModelDidDeleteChannelFail(strongSelf, error: failure)
+                }
+            }
+        }
     }
 
     // MARK: Update Action - Leave chat (Group Chat)
