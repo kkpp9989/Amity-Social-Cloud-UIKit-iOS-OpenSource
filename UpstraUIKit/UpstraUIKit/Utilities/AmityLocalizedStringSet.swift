@@ -38,6 +38,7 @@ public struct AmityLocalizedStringSet {
         static let post = "general_post"
         static let discard = "general_discard"
         static let leave = "general_leave"
+        static let error = "general_error" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let sangsun = "general_sangsun"
         static let satsue = "general_satsue"
         static let samakki = "general_samakki"
@@ -133,6 +134,7 @@ public struct AmityLocalizedStringSet {
     // MARK: - Message List
     enum MessageList {
         static let holdToRecord = "message_list_hold_to_record"
+        static let tapToRecord = "message_list_tap_to_record" // [Custom for ONE Krungthai] Add tap to record localized string for use in chat detail refer design in ONE KTB figma
         static let releaseToSend = "message_list_release_to_send"
         static let alertErrorMessageTitle = "message_list_alert_error_message_title"
         static let alertErrorMessageDesc = "message_list_alert_error_message_desc"
@@ -446,8 +448,18 @@ public struct AmityLocalizedStringSet {
         static let unReportUser = "chat_setting_unreport_user"
         static let title = "chat_setting_title"
         static let reportSent = "chat_setting_report_sent"
-        static let leaveChatTitle = "chat_setting_leave_chat_title"
-        static let leaveChatMessage = "chat_setting_leave_chat_message"
+        static let unreportSent = "chat_setting_unreport_sent" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatTitle = "chat_setting_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatMemberRoleGroupChatMessage = "chat_setting_leave_chat_member_role_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatModeratorRoleWithOneMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatModeratorRoleWithManyMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableLeaveChatTitle = "chat_setting_unable_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableLeaveChatMessage = "chat_setting_unable_leave_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteChatTitle = "chat_setting_delete_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteConversationChatMessage = "chat_setting_delete_conversation_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteGroupChatMessage = "chat_setting_delete_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableDeleteChatTitle = "chat_setting_unable_delete_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableDeleteChatMessage = "chat_setting_unable_delete_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let promoteToModerator = "chat_setting_promote_to_moderator"
         static let dismissFromModerator = "chat_setting_dimiss_to_moderator"
         static let removeFromGroupChat = "chat_setting_remove_from_group_chat"
@@ -457,6 +469,22 @@ public struct AmityLocalizedStringSet {
         static let navigationTitle = "chat_setting_member_detail_title"
         static let removeMemberAlertTitle = "chat_setting_remove_member_alert_title"
         static let removeMemberAlertBody = "chat_setting_remove_member_alert_body"
+        static let inviteUser = "chat_setting_invite_user"
+        static let mutedNotification = "chat_setting_muted_notification"
+        static let unmutedNotification = "chat_setting_unmuted_notification"
+    }
+    
+    // MARK: - Chat status
+    /* [Custom for ONE Krungthai] Localized string of chat status */
+    enum ChatStatus {
+        static let available = "chat_status_available"
+        static let offline = "chat_status_offline"
+        static let doNotDisturb = "chat_status_do_not_disturb"
+        static let inTheOffice = "chat_status_in_the_office"
+        static let workFromHome = "chat_status_work_from_home"
+        static let inAMeeting = "chat_status_in_a_meeting"
+        static let onLeave = "chat_status_on_leave"
+        static let outSick = "chat_status_out_sick"
     }
     
     enum CommunityChannelCreation {

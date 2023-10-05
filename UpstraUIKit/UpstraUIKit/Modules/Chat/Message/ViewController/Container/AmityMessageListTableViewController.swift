@@ -42,7 +42,9 @@ final class AmityMessageListTableViewController: UITableViewController {
 // MARK: - Setup View
 extension AmityMessageListTableViewController {
     func setupView() {
-        tableView.separatorInset.left = UIScreen.main.bounds.width
+        /* [Custom for ONE Krungthai] Delete separator line refer to ONE KTB figma */
+//        tableView.separatorInset.left = UIScreen.main.bounds.width // [Original]
+        tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         tableView.keyboardDismissMode = .onDrag
         tableView.estimatedRowHeight = 0

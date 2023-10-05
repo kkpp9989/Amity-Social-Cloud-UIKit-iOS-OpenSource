@@ -26,5 +26,5 @@ struct RequestError:OurErrorProtocol {
 }
 
 enum HandleError: Error {
-    case connectionError, notFound, JsonDecodeError
+    case connectionError, notFound, JsonDecodeError, permissionDenied, rateLimitExceed
 }

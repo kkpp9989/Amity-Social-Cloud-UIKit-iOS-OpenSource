@@ -10,7 +10,7 @@ import Foundation
 struct DomainManager {
     
     struct Domain {
-        
+        // MARK: Custom API
         // [Custom for ONE Krungthai] -> Enumuration of domain url of custom API by env
         private enum CustomAPI: String {
             case DEV = "https://one-ktb-apidev.convolab.ai"
@@ -30,6 +30,19 @@ struct DomainManager {
             default:
                 return CustomAPI.UAT.rawValue // Set UAT to default
             }
+        }
+        
+        // MARK: Main API
+        // [Custom for ONE Krungthai] -> Enumuration of domain url of main API
+        enum MainAPI: String {
+            case US = "https://api.us.amity.co"
+            case EU = "https://api.eu.amity.co"
+            case SG = "https://api.sg.amity.co"
+        }
+        
+        // [Custom for ONE Krungthai] -> Get domain of main API function by region
+        static func getDomainURLMainAPI(region: MainAPI) -> String {
+            return region.rawValue
         }
     }
     

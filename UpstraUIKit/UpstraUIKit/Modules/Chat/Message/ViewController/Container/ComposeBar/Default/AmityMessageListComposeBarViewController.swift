@@ -24,6 +24,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet private var showDefaultKeyboardButton: UIButton!
     @IBOutlet var recordButton: AmityRecordingButton!
     @IBOutlet private var trailingStackView: UIStackView!
+    @IBOutlet var separatorView: UIView! // [Custom for ONE Krungthai] Add separator view for set color
     
     // MARK: - Properties
 	weak var delegate: AmityMessageListComposeBarDelegate?
@@ -98,6 +99,9 @@ private extension AmityMessageListComposeBarViewController {
             self?.screenViewModel.action.toggleKeyboardVisible(visible: true)
             self?.screenViewModel.action.inputSource(for: .default)
         }
+        
+        /* [Custom for ONE Krungthai] Set separator color refer to ONE KTB figma */
+        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
     }
     
     func setupSendMessageButton() {
@@ -130,7 +134,9 @@ private extension AmityMessageListComposeBarViewController {
         recordButton.titleLabel?.font = AmityFontSet.bodyBold
         recordButton.setTitleColor(AmityColorSet.base, for: .normal)
         recordButton.setImage(AmityIconSet.Chat.iconMic, for: .normal)
-        recordButton.setTitle(AmityLocalizedStringSet.MessageList.holdToRecord.localizedString, for: .normal)
+        /* [Custom for ONE Krungthai] Change wording of record button to "Tap to record" */
+//        recordButton.setTitle(AmityLocalizedStringSet.MessageList.holdToRecord.localizedString, for: .normal) // [Original]
+        recordButton.setTitle(AmityLocalizedStringSet.MessageList.tapToRecord.localizedString, for: .normal)
         recordButton.tintColor = AmityColorSet.base
         recordButton.isHidden = true
         
@@ -174,7 +180,7 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
             trailingStackView.isHidden = true
             textComposeBarView.isHidden = true
             recordButton.isHidden = false
-            showAudioButton.isHidden = setting.shouldHideAudioButton
+            showAudioButton.isHidden = true // [Custom for ONE Krungthai] Change record button to hidden when pressed record button refer to Figma
             showDefaultKeyboardButton.isHidden = false
             textComposeBarView.textView.resignFirstResponder()
         } else {

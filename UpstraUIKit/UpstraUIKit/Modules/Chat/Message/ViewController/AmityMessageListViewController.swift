@@ -20,7 +20,7 @@ public extension AmityMessageListViewController {
         /// Set compose bar style. The default value is `ComposeBarStyle.default`.
         public var composeBarStyle = ComposeBarStyle.default
         public var shouldHideAudioButton: Bool = false
-        public var shouldShowChatSettingBarButton: Bool = false
+        public var shouldShowChatSettingBarButton: Bool = true // [Custom for ONE Krungthai] Open chat setting bar to default
         public var enableConnectionBar: Bool = true
         public init() {
             // Intentionally left empty
@@ -100,6 +100,10 @@ public final class AmityMessageListViewController: AmityViewController {
         
         bottomConstraint.constant = .zero
         view.endEditing(true)
+        
+        
+        /* [Custom for ONE Krungthai] Hide tabber when open chat detail view */
+        tabBarController?.tabBar.isHidden = true
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -114,6 +118,9 @@ public final class AmityMessageListViewController: AmityViewController {
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
         view.endEditing(true)
+        
+        /* [Custom for ONE Krungthai] Hide tabber when go to another view */
+        tabBarController?.tabBar.isHidden = false
     }
     
     /// Create `AmityMessageListViewController` instance.

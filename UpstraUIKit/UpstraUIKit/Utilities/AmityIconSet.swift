@@ -154,6 +154,22 @@ public struct AmityIconSet {
         public static var iconDelete3 = UIImage(named: "icon_delete_3", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconSetting = UIImage(named: "icon_chat_setting", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMentionBadges = UIImage(named: "icon_mention_badges", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        
+        /* [Custom for ONE Krungthai] Icon of user status in chat */
+        public static var iconStatusAvailable = UIImage(named: "icon_status_available", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusOffline = UIImage(named: "icon_status_offline", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusDoNotDisTurb = UIImage(named: "icon_status_do_not_disturb", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusInAMeeting = UIImage(named: "icon_status_in_a_meeting", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusInTheOffice = UIImage(named: "icon_status_in_the_office", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusOnLeave = UIImage(named: "icon_status_on_leave", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusOutSick = UIImage(named: "icon_status_out_sick", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconStatusWorkFromHome = UIImage(named: "icon_status_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    }
+    
+    enum ChatSettings {
+        public static var iconInviteUser = UIImage(named: "icon_invite_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMutedNotification = UIImage(named: "icon_muted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconUnmutedNotification = UIImage(named: "icon_unmuted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum Post {
