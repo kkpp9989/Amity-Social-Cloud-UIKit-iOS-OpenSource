@@ -103,7 +103,7 @@ extension AmityFeedScreenViewModel {
             }
             
             if let communityId = post.targetCommunity?.communityId {
-                let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
                         
@@ -156,26 +156,30 @@ extension AmityFeedScreenViewModel {
         dummyList += postIds
         DispatchQueue.main.async { [self] in
             for postId in postIds {
+                print("-------> dispatchGroup.enter() \(postId)")
                 dispatchGroup.enter()
                 let postCollection = postRepository.getPost(withId: postId)
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
                     if let _ = AmityError(error: error) {
-                        self?.nextData()
+                        print("-------> dispatchGroup.leave() \(postId)")
+                        strongSelf.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
                             if !model.isDelete {
-                                self?.appendData(post: model)
+                                strongSelf.appendData(post: model)
                             }
                         } else {
-                            self?.nextData()
+                            print("-------> dispatchGroup.leave() \(postId)")
+                            strongSelf.nextData()
                         }
                     }
+                    strongSelf.dispatchGroup.leave()
                 }
-                
                 tokenArray.append(token)
             }
             
+            // Move the dispatchGroup.notify block here, outside of the loop
             dispatchGroup.notify(queue: .main) {
                 let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
                 self.pinPostData = sortedArray
@@ -190,6 +194,7 @@ extension AmityFeedScreenViewModel {
             }
         }
     }
+
     
     private func fetchFeedPosts() {
         DispatchQueue.main.async { [self] in
@@ -229,7 +234,7 @@ extension AmityFeedScreenViewModel {
     }
     
     private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
-        guard let _post = amityObject.object else { return nil }
+        guard let _post = amityObject.snapshot else { return nil }
         let post = AmityPostModel(post: _post)
         post.isPinPost = true
         return post
@@ -243,11 +248,11 @@ extension AmityFeedScreenViewModel {
         if !containsPostId {
             pinPostData.append(post)
         }
-        dispatchGroup.leave()
+        print("-------> dispatchGroup.leave() \(post.postId)")
     }
     
     func nextData() {
-        dispatchGroup.leave()
+//        dispatchGroup.leave()
     }
     
     //  Sort function by list from fetchPosts
@@ -581,9 +586,9 @@ extension AmityFeedScreenViewModel {
             guard let strongSelf = self else { return }
             switch result {
             case .success():
-                print("Create Pin-Post Success")
-            case .failure(let error):
-                print(error)
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send success")
+            case .failure(_):
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send failed")
             }
         }
     }
@@ -594,9 +599,9 @@ extension AmityFeedScreenViewModel {
             guard let strongSelf = self else { return }
             switch result {
             case .success():
-                print("Delete Pin-Post Success")
-            case .failure(let error):
-                print(error)
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send success")
+            case .failure(_):
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send failed")
             }
         }
     }

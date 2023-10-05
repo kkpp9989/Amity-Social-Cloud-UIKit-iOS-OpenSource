@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AmitySDK
 
 enum AmityPostProtocolHeaderHandlerAction {
     case tapOption
@@ -118,11 +119,11 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                 switch post.appearance.amitySocialPostDisplayStyle  {
                 case .community, .postDetailFromCommunityProfile:
                     if post.isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 default:
                     if isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 }
                 
@@ -133,11 +134,11 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                 switch post.appearance.amitySocialPostDisplayStyle  {
                 case .community, .postDetailFromCommunityProfile:
                     if post.isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 default:
                     if isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 }
                 contentView.configure(items: items, selectedItem: nil)
@@ -147,11 +148,11 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                 switch post.appearance.amitySocialPostDisplayStyle  {
                 case .community, .postDetailFromCommunityProfile:
                     if post.isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 default:
                     if isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 }
                 
@@ -164,20 +165,26 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
             if let communityId = post.targetCommunity?.communityId {
                 var items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
                 
-                // check permission pinpost
-                switch post.appearance.amitySocialPostDisplayStyle  {
-                case .community, .postDetailFromCommunityProfile:
-                    if post.isModerator {
-                        items.append(pinpostOption)
-                    }
-                default:
-                    if isModerator {
-                        items.append(pinpostOption)
-                    }
-                }
                 AmityUIKitManagerInternal.shared.client.hasPermission(.editCommunity, forCommunity: communityId) { [weak self] (hasPermission) in
                     if hasPermission {
                         items.insert(deleteOption, at: 0)
+                    }
+                    
+                    // check permission pinpost
+                    switch post.appearance.amitySocialPostDisplayStyle  {
+                    case .community, .postDetailFromCommunityProfile:
+                        if let communityId = post.targetCommunity?.communityId {
+                            let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                            let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
+                            
+                            if isModerator {
+                                items.insert(pinpostOption, at: 0)
+                            }
+                        }
+                    default:
+                        if isModerator {
+                            items.insert(pinpostOption, at: 0)
+                        }
                     }
                     contentView.configure(items: items, selectedItem: nil)
                     self?.viewController?.present(bottomSheet, animated: false, completion: nil)
@@ -188,12 +195,17 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                 // check permission pinpost
                 switch post.appearance.amitySocialPostDisplayStyle  {
                 case .community, .postDetailFromCommunityProfile:
-                    if post.isModerator {
-                        items.append(pinpostOption)
+                    if let communityId = post.targetCommunity?.communityId {
+                        let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                        let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
+                        
+                        if isModerator {
+                            items.insert(pinpostOption, at: 0)
+                        }
                     }
                 default:
                     if isModerator {
-                        items.append(pinpostOption)
+                        items.insert(pinpostOption, at: 0)
                     }
                 }
                 contentView.configure(items: items, selectedItem: nil)
