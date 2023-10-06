@@ -443,6 +443,7 @@ public struct AmityLocalizedStringSet {
     enum ChatSettings {
         static let leaveChannel = "chat_setting_leave_channel"
         static let deleteChannel = "chat_setting_delete_channel"
+        static let deleteChannelDescription = "chat_setting_delete_channel_description" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let member = "chat_setting_member"
         static let groupProfile = "chat_setting_group_profile"
         static let reportUser = "chat_setting_report_user"

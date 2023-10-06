@@ -11,7 +11,7 @@ import UIKit
 import AmitySDK
 
 final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelType {
-
+    
     weak var delegate: AmityChatSettingsScreenViewModelDelegate?
     
     // MARK: - Controller
@@ -31,9 +31,12 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     let channelId: String
     private var isNotificationEnabled: Bool = false
     
-    // For 1:1 Chat only
+    // For 1:1 chat only
     private var otherUser: AmityUserModel?
-    private var isReportedOtherUser: Bool = false
+    private var isReportedOtherUser: Bool?
+    
+    // For Group chat only
+    private(set) var isCanEditGroupChannel: Bool?
     
     init(channelId: String,
          chatNotificationController: AmityChatNotificationSettingsControllerProtocol,
@@ -48,7 +51,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
 
 // MARK: - DataSource
 extension AmityChatSettingsScreenViewModel {
-    
+    // Not used
 }
 
 // MARK: - Action
@@ -68,12 +71,10 @@ extension AmityChatSettingsScreenViewModel {
                             strongSelf.otherUser = otheruser
                             strongSelf.title = otheruser.displayName
                             strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
-                            Task {
-                                await strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
-                                    if let statusReportUser = result {
-                                        strongSelf.isReportedOtherUser = statusReportUser
-                                        strongSelf.retrieveSettingsMenu()
-                                    }
+                            strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
+                                if let statusReportUser = result {
+                                    strongSelf.isReportedOtherUser = statusReportUser
+                                    strongSelf.retrieveSettingsMenu()
                                 }
                             }
                         } else {
@@ -84,6 +85,13 @@ extension AmityChatSettingsScreenViewModel {
                 } else { // Case: Other type (Group Chat) -> Get displayname from channel object for set title
                     strongSelf.title = channel.displayName
                     strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+                    
+                    DispatchQueue.main.async {
+                        strongSelf.userController.getEditGroupChannelPermission { result in
+                            strongSelf.isCanEditGroupChannel = result
+                            strongSelf.retrieveSettingsMenu()
+                        }
+                    }
                 }
                 
                 strongSelf.retrieveSettingsMenu()
@@ -115,7 +123,9 @@ extension AmityChatSettingsScreenViewModel {
         // Init creator
         menuViewModel = AmityChatSettingsCreateMenuViewModel(channel: channel)
         // Start create setting menu
-        menuViewModel?.createSettingsItems(isNotificationEnabled: isNotificationEnabled, isReportedUserByMe: isReportedOtherUser) { [weak self] (items) in
+        menuViewModel?.createSettingsItems(isNotificationEnabled: isNotificationEnabled,
+                                           isReportedUserByMe: isReportedOtherUser,
+                                           isCanEditGroupChannel: isCanEditGroupChannel) { [weak self] (items) in
             guard let strongSelf = self else { return }
             DispatchQueue.main.async {
                 strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
@@ -153,33 +163,29 @@ extension AmityChatSettingsScreenViewModel {
     // MARK: Update Action - Report user status
     func changeReportUserStatus() {
         guard let otherUserId = otherUser?.userId else { return }
-        if !isReportedOtherUser { // Case : Will report user
-            Task {
-                await userController.reportUser(with: otherUserId) { [weak self] result, error in
-                    guard let strongSelf = self else { return }
-                    DispatchQueue.main.async {
-                        if let isSuccess = result {
-                            strongSelf.isReportedOtherUser = true
-                            strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: true)
-                            strongSelf.retrieveSettingsMenu()
-                        } else if let error = error {
-                            strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
-                        }
+        if let isReportedOtherUser = isReportedOtherUser, !isReportedOtherUser { // Case : Will report user
+            userController.reportUser(with: otherUserId) { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let _ = result {
+                        strongSelf.isReportedOtherUser = true
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: true)
+                        strongSelf.retrieveSettingsMenu()
+                    } else if let error = error {
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
                     }
                 }
             }
         } else { // Case : Will unreport user
-            Task {
-                await userController.unreportUser(with: otherUserId) { [weak self] result, error in
-                    guard let strongSelf = self else { return }
-                    DispatchQueue.main.async {
-                        if let isSuccess = result {
-                            strongSelf.isReportedOtherUser = false
-                            strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: false)
-                            strongSelf.retrieveSettingsMenu()
-                        } else if let error = error {
-                            strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
-                        }
+            userController.unreportUser(with: otherUserId) { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let _ = result {
+                        strongSelf.isReportedOtherUser = false
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: false)
+                        strongSelf.retrieveSettingsMenu()
+                    } else if let error = error {
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
                     }
                 }
             }

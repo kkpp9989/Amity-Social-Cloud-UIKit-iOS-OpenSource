@@ -18,6 +18,7 @@ final class AmityChatSettingsViewController: AmityViewController {
     
     // MARK: - Properties
     private var screenViewModel: AmityChatSettingsScreenViewModelType!
+    private var isCanEditGroupChannel: Bool?
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -77,23 +78,49 @@ final class AmityChatSettingsViewController: AmityViewController {
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeReportUserStatus()
             case "leave": // (Group chat)
-                // [Temp] Set for member roles in group chat, it will separate between member roles and moderator roles next time
                 let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
-                let description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
-                
-                AmityAlertController.present(
-                    title: alertTitle,
-                    message: description,
-                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
-                        guard let strongSelf = self else { return }
-                        strongSelf.screenViewModel.action.leaveChat()
-                    })],
-                    from: self)
-                break
+                var description: String
+                if let isCanEditGroupChannel = screenViewModel.dataSource.isCanEditGroupChannel, isCanEditGroupChannel {
+                    if channel.memberCount == 1 {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithOneMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.close.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.deleteChat()
+                            })],
+                            from: self)
+                    } else {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithManyMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.leaveChat()
+                            })],
+                            from: self)
+                    }
+                } else {
+                    description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+                    AmityAlertController.present(
+                        title: alertTitle,
+                        message: description,
+                        actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                            guard let strongSelf = self else { return }
+                            strongSelf.screenViewModel.action.leaveChat()
+                        })],
+                        from: self)
+                }
             case "delete": // (1:1 Chat, Group Chat [Moderator role])
-                // [Temp] Set for 1:1 Chat, it will separate between 1:1 Chat and group chat next time
                 let alertTitle = AmityLocalizedStringSet.ChatSettings.deleteChatTitle.localizedString
-                let description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
+                var description: String
+                if channel.channelType == .conversation {
+                    description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
+                } else {
+                    description = AmityLocalizedStringSet.ChatSettings.deleteGroupChatMessage.localizedString
+                }
                 
                 AmityAlertController.present(
                     title: alertTitle,

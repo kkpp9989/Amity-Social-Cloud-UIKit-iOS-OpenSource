@@ -43,7 +43,7 @@ final class AmityChannelController: AmityChannelControllerProtocol {
     }
     
     func leaveChannel(_ completion: @escaping (_ result: ()?, _ error: Error?) -> Void) {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.leaveChannel, parameters: channelId) { success,error in
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.leaveChannel, parameters: channelId) { success, error in
             completion(success, error)
         }
     }

@@ -11,7 +11,7 @@ import UIKit
 enum AmityChatSettingsItem: Equatable {
     case report(Bool)
     case leave
-    case delete
+    case delete(Bool)
     case members
     case groupProfile
     case inviteUser
@@ -68,8 +68,11 @@ enum AmityChatSettingsItem: Equatable {
     
     var description: String? {
         switch self {
-        case .delete:
-            return ""
+        case .delete(let isModeratorGroupChat):
+            if isModeratorGroupChat {
+                return "Deleting this chat will remove all messages and files. This cannot be undone."
+            }
+            return nil
         default:
             return nil
         }
