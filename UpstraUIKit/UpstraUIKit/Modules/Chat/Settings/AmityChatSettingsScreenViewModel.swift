@@ -188,16 +188,13 @@ extension AmityChatSettingsScreenViewModel {
     
     // MARK: Update Action - Delete chat (1:1 Chat and Group Chat with moderator roles)
     func deleteChat() {
-        let serviceRequest = RequestChat()
-        serviceRequest.requestDeleteChat(channelId: channelId) { [weak self] result in
+        channelController.deleteChannel { [weak self] result, error in
             guard let strongSelf = self else { return }
             DispatchQueue.main.async {
-                switch result {
-                case .success(let success):
+                if let isSuccess = result, isSuccess {
                     strongSelf.delegate?.screenViewModelDidDeleteChannel(strongSelf)
-                case .failure(let failure):
-                    failure.localizedDescription
-                    strongSelf.delegate?.screenViewModelDidDeleteChannelFail(strongSelf, error: failure)
+                } else if let error = error {
+                    strongSelf.delegate?.screenViewModelDidDeleteChannelFail(strongSelf, error: error)
                 }
             }
         }
@@ -205,15 +202,13 @@ extension AmityChatSettingsScreenViewModel {
 
     // MARK: Update Action - Leave chat (Group Chat)
     func leaveChat() {
-        Task {
-            await channelController.leaveChannel { [weak self] result, error in
-                guard let strongSelf = self else { return }
-                DispatchQueue.main.async {
-                    if let isSuccess = result, isSuccess {
-                        strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
-                    } else if let error = error {
-                        strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
-                    }
+        channelController.leaveChannel { [weak self] result, error in
+            guard let strongSelf = self else { return }
+            DispatchQueue.main.async {
+                if let error = error {
+                    strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
+                } else {
+                    strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
                 }
             }
         }

@@ -255,7 +255,7 @@ private extension AmityRecentChatScreenViewModel {
             channelsCollection = channelRepository.getChannels(with: query)
         case .conversation:
             let query = AmityChannelQuery()
-            query.types = [AmityChannelQueryType.conversation]
+            query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community]
             query.includeDeleted = false
             channelsCollection = channelRepository.getChannels(with: query)
         default:

@@ -77,8 +77,18 @@ final class AmityChatSettingsViewController: AmityViewController {
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeReportUserStatus()
             case "leave": // (Group chat)
-                // Open alert controller
-                // Not ready
+                // [Temp] Set for member roles in group chat, it will separate between member roles and moderator roles next time
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
+                let description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+                
+                AmityAlertController.present(
+                    title: alertTitle,
+                    message: description,
+                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                        guard let strongSelf = self else { return }
+                        strongSelf.screenViewModel.action.leaveChat()
+                    })],
+                    from: self)
                 break
             case "delete": // (1:1 Chat, Group Chat [Moderator role])
                 // [Temp] Set for 1:1 Chat, it will separate between 1:1 Chat and group chat next time
@@ -102,12 +112,12 @@ final class AmityChatSettingsViewController: AmityViewController {
                 // Not ready
                 break
             case "inviteUser": // (1:1 Chat)
-//                AmityChannelEventHandler.shared.channelCreateNewChat(
-//                    from: self,
-//                    completionHandler: { [weak self] storeUsers in
-//                        guard let weakSelf = self else { return }
-//                        print("[Storeusers] :\(storeUsers)")
-//                })
+                AmityChannelEventHandler.shared.channelCreateNewChat(
+                    from: self,
+                    completionHandler: { [weak self] storeUsers in
+                        guard let weakSelf = self else { return }
+                        print("[Storeusers] :\(storeUsers)")
+                })
                 // Not ready
                 break
             case "notification": // (1:1 Chat, Group Chat)
@@ -187,7 +197,12 @@ extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDeleg
     
     // MARK: - Leave channel delegate
     func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
-        // Not ready
+        // Handle back to view some each case
+        if let chatHomePage = navigationController?.viewControllers.first(where: { $0.isKind(of: AmityChatHomePageViewController.self) }) {
+            navigationController?.popToViewController(chatHomePage, animated: true)
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
     }
     
     func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {

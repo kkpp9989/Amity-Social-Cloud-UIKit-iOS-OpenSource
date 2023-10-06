@@ -504,6 +504,7 @@
 "chat_setting_invite_user" = "Invite user"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_muted_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unmuted_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_invite_via_qr_and_link" = "Invite via QR / Link"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 
 // MARK: - Chat Status
 /* [Custom for ONE Krungthai] Localized string of chat status */

@@ -39,21 +39,21 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
         
         switch channel.channelType {
         case .conversation: // 1:1 Chat
-            // MARK: Muted or unmuted notification [Mock]
+            // MARK: Muted or unmuted notification
             let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
                                                                         icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
                                                                         title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
                                                                         description: nil)
             settingsItems.append(.textContent(content: itemNotificationContent))
             
-            // MARK: Invite user (1:1 Chat)
+            // MARK: Invite user (1:1 Chat) [No action]
             let itemInviteUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteUser.identifier,
                                                                   icon: AmityChatSettingsItem.inviteUser.icon,
                                                                   title: AmityChatSettingsItem.inviteUser.title,
                                                                   description: nil)
             settingsItems.append(.textContent(content: itemInviteUserContent))
             
-            // MARK: Report / unreport User (1:1 Chat) [Mock]
+            // MARK: Report / unreport User (1:1 Chat)
             var itemReportUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.report(isReportedUserByMe).identifier,
                                                                icon: AmityChatSettingsItem.report(isReportedUserByMe).icon,
                                                                title: AmityChatSettingsItem.report(isReportedUserByMe).title,
@@ -63,7 +63,7 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             // MARK: Separator
             settingsItems.append(.separator)
             
-            // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles]) // [Mock]
+            // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles])
             var itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete.identifier,
                                                                       icon: AmityChatSettingsItem.delete.icon,
                                                                       title: AmityChatSettingsItem.delete.title,
@@ -78,14 +78,14 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 // MARK: Group profile (Group chat [Moderator roles])
                 // Not ready
                 
-                // MARK: Member list (Group Chat)
+                // MARK: Member list (Group Chat) [No action]
                 let itemMembersContent = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.members.identifier,
                                                                       icon: AmityChatSettingsItem.members.icon,
                                                                       title: AmityChatSettingsItem.members.title,
                                                                       description: nil)
                 settingsItems.append(.navigationContent(content: itemMembersContent))
                 
-                // MARK: Muted or unmuted notification [Mock]
+                // MARK: Muted or unmuted notification
                 let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
                                                                             icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
                                                                             title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
@@ -112,28 +112,37 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 // MARK: Separator
                 settingsItems.append(.separator)
             } else {
-                // MARK: Member list (Group Chat)
+                // MARK: Member list (Group Chat) [No action]
                 let itemMembersContent = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.members.identifier,
                                                                       icon: AmityChatSettingsItem.members.icon,
                                                                       title: AmityChatSettingsItem.members.title,
                                                                       description: nil)
                 settingsItems.append(.navigationContent(content: itemMembersContent))
                 
-                // MARK: Muted or unmuted notification [Mock]
+                // MARK: Muted or unmuted notification
                 let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
                                                                             icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
                                                                             title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
                                                                             description: nil)
                 settingsItems.append(.textContent(content: itemNotificationContent))
                 
-                // MARK: Invite via QR / Link (Group chat [Member roles])
-                // Not ready
+                // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
+                let itemInviteViaQRAndLink = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
+                                                                            icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
+                                                                            title: AmityChatSettingsItem.inviteViaQRAndLink.title,
+                                                                            description: nil)
+                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
                 settingsItems.append(.separator)
                 
                 // MARK: Leave chat (Group Chat)
-                // Not ready
+                let itemLeaveChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.leave.identifier,
+                                                                         icon: AmityChatSettingsItem.leave.icon,
+                                                                         title: AmityChatSettingsItem.leave.title,
+                                                                        description: nil,
+                                                                         titleTextColor: AmityColorSet.alert)
+                settingsItems.append(.textContent(content: itemLeaveChatContent))
                 
                 // MARK: Separator
                 settingsItems.append(.separator)

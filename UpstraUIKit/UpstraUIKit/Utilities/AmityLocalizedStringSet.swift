@@ -442,6 +442,7 @@ public struct AmityLocalizedStringSet {
     // MARK: - Chat setting
     enum ChatSettings {
         static let leaveChannel = "chat_setting_leave_channel"
+        static let deleteChannel = "chat_setting_delete_channel"
         static let member = "chat_setting_member"
         static let groupProfile = "chat_setting_group_profile"
         static let reportUser = "chat_setting_report_user"
@@ -472,6 +473,7 @@ public struct AmityLocalizedStringSet {
         static let inviteUser = "chat_setting_invite_user"
         static let mutedNotification = "chat_setting_muted_notification"
         static let unmutedNotification = "chat_setting_unmuted_notification"
+        static let inviteViaQRAndLink = "chat_setting_invite_via_qr_and_link"
     }
     
     // MARK: - Chat status

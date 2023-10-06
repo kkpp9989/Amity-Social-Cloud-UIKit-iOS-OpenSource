@@ -11,8 +11,8 @@ import AmitySDK
 
 protocol AmityChannelControllerProtocol {
     func getChannel(_ completion: @escaping (Result<AmityChannelModel, AmityError>) -> Void)
-    func leaveChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async
-    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async
+    func leaveChannel(_ completion: @escaping (_ result: ()?, _ error: Error?) -> Void)
+    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
 }
 
 final class AmityChannelController: AmityChannelControllerProtocol {
@@ -42,15 +42,21 @@ final class AmityChannelController: AmityChannelControllerProtocol {
         })
     }
     
-    func leaveChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
-        do {
-            try await repository.leaveChannel(channelId: channelId)
-            completion(true, nil)
-        } catch {
-            completion(false, error)
+    func leaveChannel(_ completion: @escaping (_ result: ()?, _ error: Error?) -> Void) {
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.leaveChannel, parameters: channelId) { success,error in
+            completion(success, error)
         }
     }
     
-    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
+    func deleteChannel(_ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) {
+        let serviceRequest = RequestChat()
+        serviceRequest.requestDeleteChat(channelId: channelId) { result in
+            switch result {
+            case .success:
+                completion(true, nil)
+            case .failure(let failure):
+                completion(false, failure)
+            }
+        }
     }
 }
