@@ -21,12 +21,35 @@
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="JBx-rs-wC0">
                         <rect key="frame" x="16" y="12" width="513" height="74"/>
                         <subviews>
-                            <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="20u-8Q-3sZ" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ca2-jv-8WY">
                                 <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="20u-8Q-3sZ" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="C57-Nw-eGz"/>
+                                            <constraint firstAttribute="width" constant="40" id="sJV-Dh-r5W"/>
+                                        </constraints>
+                                    </view>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tlq-rZ-mxr">
+                                        <rect key="frame" x="32" y="32" width="12" height="12"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="12" id="78b-9E-nWj"/>
+                                            <constraint firstAttribute="height" constant="12" id="Apy-5P-eee"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="C57-Nw-eGz"/>
-                                    <constraint firstAttribute="width" constant="40" id="sJV-Dh-r5W"/>
+                                    <constraint firstAttribute="height" constant="40" id="7nf-fF-Ng1"/>
+                                    <constraint firstAttribute="width" constant="40" id="Dsa-vP-pu5"/>
+                                    <constraint firstItem="tlq-rZ-mxr" firstAttribute="bottom" secondItem="20u-8Q-3sZ" secondAttribute="bottom" constant="4" id="RaN-Ps-RBZ"/>
+                                    <constraint firstAttribute="bottom" secondItem="20u-8Q-3sZ" secondAttribute="bottom" id="bDd-83-Rbw"/>
+                                    <constraint firstAttribute="trailing" secondItem="20u-8Q-3sZ" secondAttribute="trailing" id="fGv-K8-BYG"/>
+                                    <constraint firstItem="20u-8Q-3sZ" firstAttribute="leading" secondItem="Ca2-jv-8WY" secondAttribute="leading" id="iCY-68-7tW"/>
+                                    <constraint firstItem="20u-8Q-3sZ" firstAttribute="top" secondItem="Ca2-jv-8WY" secondAttribute="top" id="rQ6-qn-1NQ"/>
+                                    <constraint firstItem="tlq-rZ-mxr" firstAttribute="trailing" secondItem="20u-8Q-3sZ" secondAttribute="trailing" constant="4" id="tnG-Hf-dpk"/>
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="kCF-4O-N8N">
@@ -159,6 +182,7 @@
                 <outlet property="memberLabel" destination="pBa-Nj-HY3" id="9gR-Qb-9Ak"/>
                 <outlet property="mentionBadgeImageView" destination="WIH-pP-o90" id="hK1-6m-vUt"/>
                 <outlet property="previewMessageLabel" destination="KfJ-qk-eMm" id="N4F-O6-KxJ"/>
+                <outlet property="statusBadgeImageView" destination="tlq-rZ-mxr" id="X16-4I-che"/>
                 <outlet property="statusImageView" destination="Kbb-R3-kRH" id="b92-6d-74F"/>
                 <outlet property="titleLabel" destination="uMv-MI-0HT" id="cxj-4f-n9R"/>
             </connections>

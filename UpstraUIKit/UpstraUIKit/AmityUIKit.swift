@@ -199,6 +199,36 @@ public final class AmityUIKitManager {
         let userNotificationManager = client.notificationManager
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .social, isEnabled: false, roleFilter: nil)]) { _, _ in }
     }
+    
+    public static func enablePresenceStatus() {
+        Task {
+            do {
+                try await client.presence.enable()
+                print("enable presence")
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
+    public static func startHeartbeat() {
+        Task {
+            do {
+                try await client.presence.startHeartbeat()
+                print("start heartbeat")
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
+    public static func stopHeartbeat() {
+        do {
+            client.presence.stopHeartbeat()
+        } catch let error {
+            print(error)
+        }
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {

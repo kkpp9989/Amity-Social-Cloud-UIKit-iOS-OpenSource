@@ -34,6 +34,7 @@ public class AmityChatHomeParentViewController: AmityViewController {
         super.viewWillAppear(animated)
         theme?.clearNavigationBarSetting()
         setupView()
+        AmityUIKitManager.startHeartbeat()
     }
     
     private func setupView() {
@@ -127,11 +128,6 @@ private extension AmityChatHomeParentViewController {
     }
     
     @objc func createPostTap() {
-        AmityChannelEventHandler.shared.channelCreateNewChat(
-            from: self,
-            completionHandler: { [weak self] storeUsers in
-                guard let weakSelf = self else { return }
-//                weakSelf.screenViewModel.action.createChannel(users: storeUsers)
-        })
+        AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self)
     }
 }
