@@ -98,6 +98,13 @@ private extension AmityRecentChatViewController {
     }
 }
 
+extension AmityRecentChatViewController: GroupChatCreatorViewControllerDelegate {
+    
+    func tapCreateButton(channelId: String, subChannelId: String) {
+        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channelId, subChannelId: subChannelId)
+    }
+}
+
 // MARK: - UITableView Delegate
 extension AmityRecentChatViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -212,7 +219,6 @@ extension AmityRecentChatViewController: UserStatusDelegate {
         screenViewModel?.action.update { [self] result in
             switch result {
             case .success:
-                print("Update succeeded")
                 reloadData()
             case .failure(let error):
                 print("Update failed with error: \(error)")
