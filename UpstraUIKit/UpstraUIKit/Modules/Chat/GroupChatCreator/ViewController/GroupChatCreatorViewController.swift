@@ -36,7 +36,7 @@ class GroupChatCreatorViewController: AmityViewController {
     
     private var selectUsersData: [AmitySelectMemberModel]
     
-    weak var delegate: GroupChatCreatorViewControllerDelegate?
+    open var delegate: GroupChatCreatorViewControllerDelegate?
 
     private var isValueChanged: Bool {
         guard let user = screenViewModel?.dataSource.user else {

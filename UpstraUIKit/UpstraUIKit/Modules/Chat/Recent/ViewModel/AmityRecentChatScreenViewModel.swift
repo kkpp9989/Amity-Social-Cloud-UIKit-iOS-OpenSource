@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Combine
 
 public struct AmityChannelModel {
     let channelId: String
@@ -21,6 +22,8 @@ public struct AmityChannelModel {
     let participation: AmityChannelParticipation
     let metadata: [String:Any]
     let object: AmityChannel
+    let previewMessage: AmityMessagePreview?
+    var isOnline: Bool
     
     init(object: AmityChannel) {
         self.channelId = object.channelId
@@ -34,6 +37,8 @@ public struct AmityChannelModel {
         self.avatarFileId = object.getAvatarInfo()?.fileURL
         self.metadata = object.metadata ?? [:]
         self.object = object
+        self.previewMessage = object.messagePreview
+        self.isOnline = false
     }
     
     var isConversationChannel: Bool {
@@ -67,16 +72,19 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     // MARK: - Collection
     private var channelsCollection: AmityCollection<AmityChannel>?
     
-    
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Token
     private var channelsToken: AmityNotificationToken?
     private var existingChannelToken: AmityNotificationToken?
     private var channelType: AmityChannelType = .conversation
-    
+    private var channelPresenceRepo: AmityChannelPresenceRepository
+    private var channelPresenceToken: AnyCancellable?
+
     init(channelType: AmityChannelType) {
         self.channelType = channelType
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+        channelPresenceRepo = AmityChannelPresenceRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
     required init?(coder: NSCoder) {
@@ -84,7 +92,11 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     }
     
     // MARK: - DataSource
-    private var channels: [AmityChannelModel] = []
+    public var channels: [AmityChannelModel] = []
+    
+    func getChannelArray() -> [AmityChannelModel] {
+        return channels
+    }
     
     func channel(at indexPath: IndexPath) -> AmityChannelModel {
         return channels[indexPath.row]
@@ -178,6 +190,43 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
             }
         }
     }
+    
+    func syncChannelPresence(_ channelId: String) {
+        channelPresenceRepo.syncChannelPresence(id: channelId)
+    }
+    
+    func unsyncChannelPresence(_ channelId: String) {
+        channelPresenceRepo.unsyncChannelPresence(id: channelId)
+    }
+    
+    func unsyncAllChannelPresence() {
+        channelPresenceToken?.cancel()
+        channelPresenceRepo.unsyncAllChannelPresence()
+    }
+    
+    func getSyncAllChannelPresence(completion: @escaping () -> Void) {
+        channelPresenceRepo.getSyncingChannelPresence().sink { completion in
+            // Handle completion (e.g., error handling)
+            // Call the completion handler here if needed
+        } receiveValue: { presence in
+            // Process the presence data
+            let onlinePresence = presence.filter { $0.isAnyMemberOnline }
+            
+            let onlineChannel = self.channels.filter { channel in
+                let isOnline = onlinePresence.contains { $0.channelId == channel.channelId }
+                print("-----------> ChannelId: \(channel.channelId) -> \(isOnline)")
+                return isOnline
+            }
+            
+            self.channels = onlineChannel
+            self.delegate?.screenViewModelDidGetChannel()
+            
+            // Call the completion handler when the processing is done
+            completion()
+        }
+        .store(in: &cancellables)
+    }
+
 }
 
 // MARK: - Action
@@ -280,5 +329,8 @@ private extension AmityRecentChatScreenViewModel {
         delegate?.screenViewModelLoadingState(for: .loaded)
         delegate?.screenViewModelDidGetChannel()
         delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
+        getSyncAllChannelPresence { [self] in
+            delegate?.screenViewModelDidGetChannel()
+        }
     }
 }

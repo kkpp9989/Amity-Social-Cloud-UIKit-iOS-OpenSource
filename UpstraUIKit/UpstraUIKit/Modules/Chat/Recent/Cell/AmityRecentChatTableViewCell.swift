@@ -35,7 +35,6 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     override func prepareForReuse() {
         super.prepareForReuse()
         titleLabel.text = ""
-        previewMessageLabel.text = ""
         dateTimeLabel.text = ""
         badgeView.badge = 0
         avatarView.image = nil
@@ -62,7 +61,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         previewMessageLabel.numberOfLines = 2
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
-        previewMessageLabel.alpha = 0
+        previewMessageLabel.alpha = 1
         
         dateTimeLabel.font = AmityFontSet.caption
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
@@ -72,7 +71,6 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with channel: AmityChannelModel) {
-        print("----------> metadata: \(channel.metadata)")
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
@@ -80,6 +78,14 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         avatarView.placeholder = AmityIconSet.defaultAvatar
         mentionBadgeImageView.isHidden = !channel.object.hasMentioned
         badgeView.isHidden = channel.unreadCount < 1
+        
+        if let previewMessage = channel.previewMessage {
+            //  You can access data of preview message in same way as AmityMessage
+            let text = previewMessage.data?["text"] as? String ?? "No message yet"
+            let type = previewMessage.dataType
+            
+            previewMessageLabel.text = text
+        }
 
         switch channel.channelType {
         case .standard:
@@ -87,6 +93,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             memberLabel.text = "(\(channel.memberCount))"
         case .conversation:
             memberLabel.text = nil
+            statusImageView.isHidden = false
             AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
@@ -94,13 +101,22 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                         avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                         titleLabel.text = otherMember.displayName
                         let status = otherMember.metadata?["user_presence"] as? String ?? ""
-                        statusBadgeImageView.image = setImageFromStatus(status)
+                        if status != "available" {
+                            statusBadgeImageView.image = setImageFromStatus(status)
+                        } else {
+                            if channel.isOnline {
+                                statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                            } else {
+                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                            }
+                        }
                     }
                 }
             }
         case .community:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
+            statusImageView.isHidden = true
         case .private, .live, .broadcast, .unknown:
             break
         @unknown default:
@@ -111,7 +127,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     private func setImageFromStatus(_ status: String) -> UIImage {
         switch status {
         case "available":
-            return AmityIconSet.Chat.iconStatusAvailable ?? UIImage()
+            return AmityIconSet.Chat.iconOnlineIndicator ?? UIImage()
         case "do_not_disturb":
             return AmityIconSet.Chat.iconStatusDoNotDisTurb ?? UIImage()
         case "work_from_home":

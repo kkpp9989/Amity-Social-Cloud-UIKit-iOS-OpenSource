@@ -159,7 +159,7 @@ extension AmityMessageListHeaderView {
             statusImageView.image = AmityIconSet.Chat.iconStatusOutSick
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.outSick.localizedString
         default:
-            statusImageView.image = AmityIconSet.Chat.iconStatusAvailable
+            statusImageView.image = AmityIconSet.Chat.iconOfflineIndicator
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
         }
     }

@@ -164,6 +164,8 @@ public struct AmityIconSet {
         public static var iconStatusOnLeave = UIImage(named: "icon_status_on_leave", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconStatusOutSick = UIImage(named: "icon_status_out_sick", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconStatusWorkFromHome = UIImage(named: "icon_status_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconOfflineIndicator = UIImage(named: "icon_offline_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconOnlineIndicator = UIImage(named: "icon_online_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum ChatSettings {

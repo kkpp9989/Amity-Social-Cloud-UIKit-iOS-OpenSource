@@ -255,7 +255,7 @@ extension AmityPostGalleryViewController: UICollectionViewDelegateFlowLayout {
                         from: self,
                         postId: postObject.postId,
                         streamId: stream.streamId,
-                        recordedData: stream.recordingData
+                        stream: stream
                     )
                 case .live:
                     AmityEventHandler.shared.openLiveStreamPlayer(

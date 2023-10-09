@@ -22,9 +22,11 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
     
+    weak var delegate: GroupChatCreatorViewControllerDelegate?
+    
     // MARK: - Properties
     private var screenViewModel: AmityRecentChatScreenViewModelType!
-    
+            
     private lazy var emptyView: AmityEmptyView = {
         let emptyView = AmityEmptyView(frame: tableView.frame)
         emptyView.update(title: AmityLocalizedStringSet.emptyChatList.localizedString,
@@ -47,6 +49,13 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         super.viewDidLoad()
         setupScreenViewModel()
         setupView()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        //  Stop syncing presence for all users as user
+        screenViewModel.action.unsyncAllChannelPresence()
     }
     
     public static func make(channelType: AmityChannelType = .conversation) -> AmityRecentChatViewController {
@@ -122,6 +131,18 @@ extension AmityRecentChatViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
+        }
+        
+        if let _ = cell as? AmityRecentChatTableViewCell {
+            let channel = screenViewModel.dataSource.channel(at: indexPath)
+            screenViewModel.action.syncChannelPresence(channel.channelId)
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let _ = cell as? AmityRecentChatTableViewCell {
+            let channel = screenViewModel.dataSource.channel(at: indexPath)
+            screenViewModel.action.unsyncChannelPresence(channel.channelId)
         }
     }
 }
