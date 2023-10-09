@@ -403,6 +403,8 @@ public struct AmityLocalizedStringSet {
         static let successfullyUpdated = "hud_successfully_updated"
         static let reportSent = "hud_report_sent"
         static let unreportSent = "hud_unreport_sent"
+        static let muted = "hud_muted"
+        static let unmuted = "hud_unmuted"
         static let delete = "hud_delete"
     }
     
@@ -473,8 +475,8 @@ public struct AmityLocalizedStringSet {
         static let removeMemberAlertTitle = "chat_setting_remove_member_alert_title"
         static let removeMemberAlertBody = "chat_setting_remove_member_alert_body"
         static let inviteUser = "chat_setting_invite_user"
-        static let mutedNotification = "chat_setting_muted_notification"
-        static let unmutedNotification = "chat_setting_unmuted_notification"
+        static let muteNotification = "chat_setting_mute_notification"
+        static let unmuteNotification = "chat_setting_unmute_notification"
         static let inviteViaQRAndLink = "chat_setting_invite_via_qr_and_link"
     }
     

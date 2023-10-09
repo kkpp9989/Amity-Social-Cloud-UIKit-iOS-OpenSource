@@ -431,6 +431,8 @@
 "hud_somthing_went_wrong" = "Oops!\nSomething went wrong";
 "hud_successfully_created" = "Successfully\ncreated";
 "hud_successfully_updated" = "Successfully\nupdated";
+"hud_muted" = "Muted"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"hud_unmuted" = "Unmuted"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "hud_report_sent" = "Report sent";
 "hud_unreport_sent" = "Unreport sent";
 "hud_delete" = "Delete";
@@ -506,8 +508,8 @@
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
 "chat_setting_remove_member_alert_body" = "The user won't no longer be able to see this group chat";
 "chat_setting_invite_user" = "Invite user"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_muted_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_unmuted_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_mute_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_unmute_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_invite_via_qr_and_link" = "Invite via QR / Link"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 
 // MARK: - Edit group chat profile
