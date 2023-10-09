@@ -254,15 +254,15 @@ open class AmityEventHandler {
         from source: AmityViewController,
         postId: String,
         streamId: String,
-        recordedData: [AmityLiveVideoRecordingData]
+        stream: AmityStream
     ) {
-        guard
-            let firstRecordedData = recordedData.first,
-            let videoUrl = firstRecordedData.url(for: .MP4) else {
-            assertionFailure("recordedData must have at least one recorded data.")
-            return
-        }
-        source.presentVideoPlayer(at: videoUrl)
+//        guard
+//            let firstRecordedData = recordedData.first,
+//            let videoUrl = firstRecordedData.url(for: .MP4) else {
+//            assertionFailure("recordedData must have at least one recorded data.")
+//            return
+//        }
+//        source.presentVideoPlayer(at: videoUrl)
     }
     
     /// Behavior for present contact ktb page.

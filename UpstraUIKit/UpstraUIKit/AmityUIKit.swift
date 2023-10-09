@@ -223,12 +223,9 @@ public final class AmityUIKitManager {
     }
     
     public static func stopHeartbeat() {
-        do {
-            client.presence.stopHeartbeat()
-        } catch let error {
-            print(error)
-        }
+        client.presence.stopHeartbeat()
     }
+
 }
 
 final class AmityUIKitManagerInternal: NSObject {
