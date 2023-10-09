@@ -82,10 +82,30 @@ open class AmityChannelEventHandler {
     /// It will be triggered when user click add button to create chat with users
     ///
     /// A default behavior is navigating to `AmityMemberPickerChatViewController`
-    open func channelCreateNewGroupChat(from source: AmityViewController) {
-        let vc = AmityMemberPickerChatViewController.make()
+    open func channelCreateNewGroupChat(from source: AmityViewController, selectUsers: [AmitySelectMemberModel]) {
+        let vc = AmityMemberPickerChatViewController.make(withCurrentUsers: selectUsers)
         let navVc = UINavigationController(rootViewController: vc)
         navVc.modalPresentationStyle = .fullScreen
         source.present(navVc, animated: true, completion: nil)
+    }
+    
+    /// Event for open group profile editor
+    /// It will be triggered when user click group profile in chat settings (Moderator only)
+    ///
+    /// A default behavior is navigating to `AmityGroupChatEditViewController`
+    open func channelEditGroupChatProfile(from source: AmityViewController, channelId: String) {
+        let vc = AmityGroupChatEditViewController.make(channelId: channelId)
+        vc.hidesBottomBarWhenPushed = true
+        source.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    /// Event for open group chat member list
+    /// It will be triggered when user click members in chat settings
+    ///
+    /// A default behavior is navigating to `AmityChannelMemberViewController`
+    open func channelOpenGroupChatMemberList(from source: AmityViewController, channel: AmityChannelModel) {
+        let vc = AmityChannelMemberSettingsViewController.make(channel: channel)
+        vc.hidesBottomBarWhenPushed = true
+        source.navigationController?.pushViewController(vc, animated: true)
     }
 }

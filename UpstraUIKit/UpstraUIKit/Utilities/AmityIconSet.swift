@@ -170,6 +170,7 @@ public struct AmityIconSet {
         public static var iconInviteUser = UIImage(named: "icon_invite_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMutedNotification = UIImage(named: "icon_muted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconUnmutedNotification = UIImage(named: "icon_unmuted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconInviteViaQRAndLink = UIImage(named: "icon_invite_via_qr_and_link", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum Post {

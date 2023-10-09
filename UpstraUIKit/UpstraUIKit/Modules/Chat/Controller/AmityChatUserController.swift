@@ -10,10 +10,11 @@ import Foundation
 import AmitySDK
 
 protocol AmityChatUserControllerProtocol {
-    func reportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async // Used
-    func unreportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async // Used
-    func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async // Used
-    func getOtherUserInConversationChatByMemberShip(completion: (_ user: AmityUserModel?) -> Void) // Used
+    func reportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
+    func unreportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
+    func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
+    func getOtherUserInConversationChatByMemberShip(completion: (_ user: AmityUserModel?) -> Void)
+    func getEditGroupChannelPermission(_ completion: @escaping (_ result: Bool) -> Void)
 }
 
 final class AmityChatUserController: AmityChatUserControllerProtocol {
@@ -49,30 +50,46 @@ final class AmityChatUserController: AmityChatUserControllerProtocol {
     
     
     // MARK: Report / unreport user
-    func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
-        do {
-            let isFlaggedByMe = try await userRepository.isUserFlaggedByMe(withId: userId)
-            completion(isFlaggedByMe, nil)
-        } catch {
-            completion(nil, error)
+    func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) {
+//        do {
+//            let isFlaggedByMe = try await userRepository.isUserFlaggedByMe(withId: userId)
+//            completion(isFlaggedByMe, nil)
+//        } catch {
+//            completion(nil, error)
+//        }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userRepository.isUserFlaggedByMe(withId:), parameters: userId) { success, error in
+            completion(success, error)
         }
     }
     
-    func reportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
-        do {
-            let flagged = try await userRepository.flagUser(withId: userId)
-            completion(flagged, nil)
-        } catch {
-            completion(nil, error)
+    func reportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) {
+//        do {
+//            let flagged = try await userRepository.flagUser(withId: userId)
+//            completion(flagged, nil)
+//        } catch {
+//            completion(nil, error)
+//        }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userRepository.flagUser(withId:), parameters: userId) { success, error in
+            completion(success, error)
         }
     }
     
-    func unreportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) async {
-        do {
-            let unFlagged = try await userRepository.unflagUser(withId: userId)
-            completion(unFlagged, nil)
-        } catch {
-            completion(nil, error)
+    func unreportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) {
+//        do {
+//            let unFlagged = try await userRepository.unflagUser(withId: userId)
+//            completion(unFlagged, nil)
+//        } catch {
+//            completion(nil, error)
+//        }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userRepository.unflagUser(withId:), parameters: userId) { success, error in
+            completion(success, error)
+        }
+    }
+    
+    // MARK: Group role permission
+    func getEditGroupChannelPermission(_ completion: @escaping (_ result: Bool) -> Void) {
+        AmityUIKitManagerInternal.shared.client.hasPermission(.editChannel, forChannel: channelId) { status in
+            completion(status)
         }
     }
 }

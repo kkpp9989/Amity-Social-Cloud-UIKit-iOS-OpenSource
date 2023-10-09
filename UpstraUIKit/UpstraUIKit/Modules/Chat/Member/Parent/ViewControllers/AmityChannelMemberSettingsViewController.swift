@@ -62,13 +62,20 @@ public final class AmityChannelMemberSettingsViewController: AmityPageViewContro
 
 extension AmityChannelMemberSettingsViewController: AmityChannelMemberSettingsScreenViewModelDelegate {
     func screenViewModelShouldShowAddButtonBarItem(status: Bool) {
-        if status {
-            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
-            rightItem.tintColor = AmityColorSet.base
-            navigationItem.rightBarButtonItem = rightItem
-            navigationController?.reset()
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
+        // [Original]
+//        if status {
+//            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
+//            rightItem.tintColor = AmityColorSet.base
+//            navigationItem.rightBarButtonItem = rightItem
+//            navigationController?.reset()
+//        } else {
+//            navigationItem.rightBarButtonItem = nil
+//        }
+        
+        // [Custom for ONE Krungthai] Show add member button all role
+        let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
+        rightItem.tintColor = AmityColorSet.base
+        navigationItem.rightBarButtonItem = rightItem
+        navigationController?.reset()
     }
 }

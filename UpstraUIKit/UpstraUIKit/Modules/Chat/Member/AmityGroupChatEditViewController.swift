@@ -20,6 +20,7 @@ class AmityGroupChatEditViewController: AmityViewController {
     @IBOutlet private weak var nameTextField: AmityTextField!
     @IBOutlet private weak var countLabel: UILabel!
     @IBOutlet private weak var avatarView: AmityAvatarView!
+    @IBOutlet private weak var groupNameSeparatorView: UIView!
     
     private var screenViewModel: AmityGroupChatEditorScreenViewModelType?
     private var channelId = String()
@@ -66,6 +67,12 @@ class AmityGroupChatEditViewController: AmityViewController {
     private func setupNavigationBar() {
         saveBarButtonItem = UIBarButtonItem(title: AmityLocalizedStringSet.General.save.localizedString, style: .done, target: self, action: #selector(saveButtonTap))
         saveBarButtonItem.isEnabled = false
+        // [Improvement] Add set font style to label of save button
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body,
+                                                   NSAttributedString.Key.foregroundColor: AmityColorSet.primary], for: .normal)
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         navigationItem.rightBarButtonItem = saveBarButtonItem
     }
     
@@ -81,7 +88,8 @@ class AmityGroupChatEditViewController: AmityViewController {
         cameraImageView.clipsToBounds = true
         
         // display name
-        groupNameTitleLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
+//        groupNameTitleLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*" // [Original]
+        groupNameTitleLabel.text = AmityLocalizedStringSet.editGroupChatProfileDisplayNameTitle.localizedString + "*" // [Custom for ONE Krungthai] Change label of displayname refer to ONE KTB figma
         groupNameTitleLabel.font = AmityFontSet.title
         groupNameTitleLabel.textColor = AmityColorSet.base
         countLabel.font = AmityFontSet.caption
@@ -90,6 +98,11 @@ class AmityGroupChatEditViewController: AmityViewController {
         nameTextField.borderStyle = .none
         nameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         nameTextField.maxLength = Constant.maxCharactor
+        nameTextField.font = AmityFontSet.body // [Improvement] Set font style of text field
+        
+        // [Improvement] Set separator background
+        // separator
+        groupNameSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
     }
     
     @objc private func textFieldEditingChanged(_ textView: AmityTextView) {

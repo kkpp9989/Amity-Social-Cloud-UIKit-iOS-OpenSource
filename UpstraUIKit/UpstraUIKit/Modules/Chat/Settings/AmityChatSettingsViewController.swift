@@ -18,6 +18,7 @@ final class AmityChatSettingsViewController: AmityViewController {
     
     // MARK: - Properties
     private var screenViewModel: AmityChatSettingsScreenViewModelType!
+    private var isCanEditGroupChannel: Bool?
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -77,13 +78,49 @@ final class AmityChatSettingsViewController: AmityViewController {
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeReportUserStatus()
             case "leave": // (Group chat)
-                // Open alert controller
-                // Not ready
-                break
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
+                var description: String
+                if let isCanEditGroupChannel = screenViewModel.dataSource.isCanEditGroupChannel, isCanEditGroupChannel {
+                    if channel.memberCount == 1 {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithOneMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.close.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.deleteChat()
+                            })],
+                            from: self)
+                    } else {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithManyMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.leaveChat()
+                            })],
+                            from: self)
+                    }
+                } else {
+                    description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+                    AmityAlertController.present(
+                        title: alertTitle,
+                        message: description,
+                        actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                            guard let strongSelf = self else { return }
+                            strongSelf.screenViewModel.action.leaveChat()
+                        })],
+                        from: self)
+                }
             case "delete": // (1:1 Chat, Group Chat [Moderator role])
-                // [Temp] Set for 1:1 Chat, it will separate between 1:1 Chat and group chat next time
                 let alertTitle = AmityLocalizedStringSet.ChatSettings.deleteChatTitle.localizedString
-                let description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
+                var description: String
+                if channel.channelType == .conversation {
+                    description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
+                } else {
+                    description = AmityLocalizedStringSet.ChatSettings.deleteGroupChatMessage.localizedString
+                }
                 
                 AmityAlertController.present(
                     title: alertTitle,
@@ -94,22 +131,17 @@ final class AmityChatSettingsViewController: AmityViewController {
                     })],
                     from: self)
             case "members": // (Group Chat)
-                // Open members list
-                // Not ready
+                // Use navigation content instead
                 break
             case "groupProfile": // (Group Chat [Moderator role])
-                // Open group profile setting
-                // Not ready
+                // Use navigation content instead
                 break
             case "inviteUser": // (1:1 Chat)
-//                AmityChannelEventHandler.shared.channelCreateNewChat(
-//                    from: self,
-//                    completionHandler: { [weak self] storeUsers in
-//                        guard let weakSelf = self else { return }
-//                        print("[Storeusers] :\(storeUsers)")
-//                })
-                // Not ready
-                break
+                var selectusers: [AmitySelectMemberModel] = []
+                if let otherUser = screenViewModel.dataSource.otherUser {
+                    selectusers.append(AmitySelectMemberModel(object: otherUser.object))
+                }
+                AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self, selectUsers: selectusers)
             case "notification": // (1:1 Chat, Group Chat)
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeNotificationSettings()
@@ -120,26 +152,25 @@ final class AmityChatSettingsViewController: AmityViewController {
             
         case .navigationContent(content: let content):
             switch content.identifier {
-            case "report":
-                // Not ready
+            case "report": // (1:1 Chat)
+                // Use in text content instead
                 break
-            case "leave":
-                // Not ready
+            case "leave": // (Group chat)
+                // Use in text content instead
                 break
-            case "delete":
-                // Not ready
+            case "delete": // (1:1 Chat, Group Chat [Moderator role])
+                // Use in text content instead
                 break
-            case "members":
-                // Not ready
+            case "members": // (Group Chat)
+                AmityChannelEventHandler.shared.channelOpenGroupChatMemberList(from: self, channel: channel)
                 break
-            case "groupProfile":
-                // Not ready
+            case "groupProfile": // (Group Chat [Moderator role])
+                AmityChannelEventHandler.shared.channelEditGroupChatProfile(from: self, channelId: channel.channelId)
+            case "inviteUser": // (1:1 Chat)
+                // Use in text content instead
                 break
-            case "inviteUser":
-                // Not ready
-                break
-            case "notification":
-                // Not ready
+            case "notification": // (1:1 Chat, Group Chat)
+                // Use in text content instead
                 break
             default:
                 break
@@ -187,7 +218,12 @@ extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDeleg
     
     // MARK: - Leave channel delegate
     func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
-        // Not ready
+        // Handle back to view some each case
+        if let chatHomePage = navigationController?.viewControllers.first(where: { $0.isKind(of: AmityChatHomePageViewController.self) }) {
+            navigationController?.popToViewController(chatHomePage, animated: true)
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
     }
     
     func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {

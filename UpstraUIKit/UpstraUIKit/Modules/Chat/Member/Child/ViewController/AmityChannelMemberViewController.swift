@@ -9,7 +9,7 @@
 import UIKit
 import AmitySDK
 
-enum AmityChannelMemberViewType {
+public enum AmityChannelMemberViewType {
     case moderator, member
 }
 
@@ -23,7 +23,7 @@ class AmityChannelMemberViewController: AmityViewController {
 
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
-    @IBOutlet private weak var searchBar: UISearchBar!
+//    @IBOutlet private weak var searchBar: UISearchBar! // [Custom for ONE Krungthai] Disable search bar refer ONE KTB figma design
     
     // MARK: - Properties
     private var pageTitle: String!
@@ -33,7 +33,7 @@ class AmityChannelMemberViewController: AmityViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        setupSearchBar()
+//        setupSearchBar() // [Custom for ONE Krungthai] Disable search bar refer ONE KTB figma design
         screenViewModel.action.getMember(viewType: viewType)
     }
     
@@ -57,14 +57,15 @@ class AmityChannelMemberViewController: AmityViewController {
         return vc
     }
     
-    private func setupSearchBar() {
-        searchBar.backgroundImage = UIImage()
-        searchBar.delegate = self
-        searchBar.tintColor = AmityColorSet.base
-        searchBar.returnKeyType = .done
-        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
-        ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
-    }
+    // [Custom for ONE Krungthai] Disable search bar refer ONE KTB figma design
+//    private func setupSearchBar() {
+//        searchBar.backgroundImage = UIImage()
+//        searchBar.delegate = self
+//        searchBar.tintColor = AmityColorSet.base
+//        searchBar.returnKeyType = .done
+//        (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
+//        ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
+//    }
 
     func addMember(users: [AmitySelectMemberModel]) {
         screenViewModel.action.addUser(users: users)
@@ -180,6 +181,7 @@ extension AmityChannelMemberViewController: AmityChannelMemberScreenViewModelDel
         }
     }
 
+    // [Custom for ONE Krungthai] Disable search bar refer ONE KTB figma design | Don't use
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
     }
@@ -245,12 +247,12 @@ private extension AmityChannelMemberViewController {
                 var option: TextItemOption
                 if isReported {
                     // unreport option
-                    option = TextItemOption(title: AmityLocalizedStringSet.General.undoReport.localizedString) {
+                    option = TextItemOption(title: AmityLocalizedStringSet.ChatSettings.unReportUser.localizedString) {
                         strongSelf.screenViewModel.action.unreportUser(at: indexPath)
                     }
                 } else {
                     // report option
-                    option = TextItemOption(title: AmityLocalizedStringSet.General.report.localizedString) {
+                    option = TextItemOption(title: AmityLocalizedStringSet.ChatSettings.reportUser.localizedString) {
                         strongSelf.screenViewModel.action.reportUser(at: indexPath)
                     }
                 }
@@ -271,8 +273,9 @@ private extension AmityChannelMemberViewController {
     }
 }
 
-extension AmityChannelMemberViewController: UISearchBarDelegate {
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        screenViewModel.action.searchUser(with: searchText)
-    }
-}
+// [Custom for ONE Krungthai] Disable search bar refer ONE KTB figma design
+//extension AmityChannelMemberViewController: UISearchBarDelegate {
+//    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        screenViewModel.action.searchUser(with: searchText)
+//    }
+//}
