@@ -200,7 +200,7 @@ extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDeleg
     
     // MARK: - Update notification delegate
     func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool) {
-        AmityHUD.show(.success(message: "\(isNotificationEnabled ? AmityLocalizedStringSet.ChatSettings.unmutedNotification.localizedString : AmityLocalizedStringSet.ChatSettings.mutedNotification.localizedString)"))
+        AmityHUD.show(.success(message: "\(isNotificationEnabled ? AmityLocalizedStringSet.HUD.unmuted.localizedString : AmityLocalizedStringSet.HUD.muted.localizedString)"))
     }
     
     func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {

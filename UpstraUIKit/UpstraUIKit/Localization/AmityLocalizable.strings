@@ -431,6 +431,8 @@
 "hud_somthing_went_wrong" = "Oops!\nSomething went wrong";
 "hud_successfully_created" = "Successfully\ncreated";
 "hud_successfully_updated" = "Successfully\nupdated";
+"hud_muted" = "Muted"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"hud_unmuted" = "Unmuted"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "hud_report_sent" = "Report sent";
 "hud_unreport_sent" = "Unreport sent";
 "hud_delete" = "Delete";
@@ -491,7 +493,7 @@
 "chat_setting_unable_leave_chat_title" = "Unable to leave chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_leave_chat_message" = "You’re the only moderator in this group. To leave chat, nominate other members to moderator role."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_delete_chat_title" = "Delete chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_delete_conversation_chat_message" = "You’ll no longer be able to receive any messages or see chat history."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_delete_conversation_chat_message" = "You and your friend’ll no longer be able to receive any messages or see chat history."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_delete_group_chat_message" = "If delete this group, all messages and files will be permanently deleted."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_delete_chat_title" = "Unable to delete chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_delete_chat_message" = "Something went wrong. Please try again later."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
@@ -506,8 +508,8 @@
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
 "chat_setting_remove_member_alert_body" = "The user won't no longer be able to see this group chat";
 "chat_setting_invite_user" = "Invite user"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_muted_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_unmuted_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_mute_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_unmute_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_invite_via_qr_and_link" = "Invite via QR / Link"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 
 // MARK: - Edit group chat profile

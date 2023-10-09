@@ -58,9 +58,9 @@ enum AmityChatSettingsItem: Equatable {
             return AmityLocalizedStringSet.ChatSettings.inviteUser.localizedString
         case .notification(let isMuted):
             if isMuted {
-                return AmityLocalizedStringSet.ChatSettings.mutedNotification.localizedString
+                return AmityLocalizedStringSet.ChatSettings.muteNotification.localizedString
             }
-            return AmityLocalizedStringSet.ChatSettings.unmutedNotification.localizedString
+            return AmityLocalizedStringSet.ChatSettings.unmuteNotification.localizedString
         case .inviteViaQRAndLink:
             return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
         }
