@@ -128,6 +128,6 @@ private extension AmityChatHomeParentViewController {
     }
     
     @objc func createPostTap() {
-        AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self)
+        AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self, selectUsers: [])
     }
 }

@@ -28,6 +28,7 @@ protocol AmityChatSettingsScreenViewModelDataSource {
     var channelId: String { get }
     var title: String? { get }
     var isCanEditGroupChannel: Bool? { get }
+    var otherUser: AmityUserModel? { get }
 }
 
 protocol AmityChatSettingsScreenViewModelAction {

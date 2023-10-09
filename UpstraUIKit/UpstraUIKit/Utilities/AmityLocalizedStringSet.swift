@@ -38,6 +38,7 @@ public struct AmityLocalizedStringSet {
         static let post = "general_post"
         static let discard = "general_discard"
         static let leave = "general_leave"
+        static let next = "general_next" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let error = "general_error" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let sangsun = "general_sangsun"
         static let satsue = "general_satsue"
@@ -476,6 +477,11 @@ public struct AmityLocalizedStringSet {
         static let unmutedNotification = "chat_setting_unmuted_notification"
         static let inviteViaQRAndLink = "chat_setting_invite_via_qr_and_link"
     }
+    
+    // MARK: - Edit group chat profile
+    // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting
+    static let editGroupChatProfileDisplayNameTitle = "edit_group_chat_profile_display_name_title"
+    static let editGroupChatProfileDisplayNamePlaceholder = "edit_group_chat_profile_display_name_placeholder"
     
     // MARK: - Chat status
     /* [Custom for ONE Krungthai] Localized string of chat status */

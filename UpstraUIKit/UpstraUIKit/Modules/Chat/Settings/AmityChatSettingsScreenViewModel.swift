@@ -17,9 +17,6 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     // MARK: - Controller
     private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
     private let channelController: AmityChannelControllerProtocol
-//    private let chatLeaveController: AmityChatLeaveControllerProtocol
-//    private let chatDeleteController: AmityChatDeleteControllerProtocol
-//    private let userRolesController: AmityChatUserRolesControllerProtocol
     private let userController: AmityChatUserControllerProtocol
     
     // MARK: - SubViewModel
@@ -32,7 +29,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     private var isNotificationEnabled: Bool = false
     
     // For 1:1 chat only
-    private var otherUser: AmityUserModel?
+    var otherUser: AmityUserModel?
     private var isReportedOtherUser: Bool?
     
     // For Group chat only

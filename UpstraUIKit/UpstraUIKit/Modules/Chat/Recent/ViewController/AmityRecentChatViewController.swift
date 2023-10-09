@@ -99,7 +99,7 @@ private extension AmityRecentChatViewController {
 }
 
 extension AmityRecentChatViewController: GroupChatCreatorViewControllerDelegate {
-    
+
     func tapCreateButton(channelId: String, subChannelId: String) {
         AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channelId, subChannelId: subChannelId)
     }

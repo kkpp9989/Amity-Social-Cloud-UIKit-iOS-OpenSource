@@ -26,6 +26,7 @@
 "general_post" = "Post";
 "general_discard" = "Discard";
 "general_leave" = "Leave";
+"general_next" = "Next"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "general_error" = "Error"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "general_sangsun" = "สร้างสรรค์";
 "general_satsue" = "สัตย์ซื่อ";
@@ -414,7 +415,8 @@
 "community_alert_unable_to_leave_community_desc" = "You’re the only moderator in this group. To leave social, nominate other members to moderator role.";
 
 // MARK: - Edit User Profile
-"edit_user_profile_title" = "Edit Profile";
+//"edit_user_profile_title" = "Edit Profile"; // [Original]
+"edit_user_profile_title" = "Group Profile"; // [Custom for ONE Krungthai] Change wording "edit_user_profile_title"
 "edit_user_profile_display_name_title" = "Display name";
 "edit_user_profile_email_title" = "Email";
 "edit_user_profile_phone_number_title" = "Phone number";
@@ -499,13 +501,19 @@
 "chat_setting_report" = "Report";
 "chat_setting_member_title" = "Member";
 "chat_setting_moderator_title" = "Moderator";
-"chat_setting_member_detail_title" = "Member Details";
+//"chat_setting_member_detail_title" = "Member Details"; // [Original]
+"chat_setting_member_detail_title" = "Members"; // [Custom for ONE Krungthai] Change wording "chat_setting_member_detail_title"
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
 "chat_setting_remove_member_alert_body" = "The user won't no longer be able to see this group chat";
 "chat_setting_invite_user" = "Invite user"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_muted_notification" = "Mute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unmuted_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_invite_via_qr_and_link" = "Invite via QR / Link"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+
+// MARK: - Edit group chat profile
+// [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting
+"edit_group_chat_profile_display_name_title" = "Group name";
+"edit_group_chat_profile_display_name_placeholder" = "Enter group name";
 
 // MARK: - Chat Status
 /* [Custom for ONE Krungthai] Localized string of chat status */
