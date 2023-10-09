@@ -27,7 +27,7 @@ public struct AmityChannelModel {
         self.avatarURL = object.getAvatarInfo()?.fileURL ?? ""
         self.displayName = (object.displayName ?? "") == "" ? AmityLocalizedStringSet.General.anonymous.localizedString : object.displayName!
         self.memberCount = object.memberCount
-        self.unreadCount = object.defaultSubChannelUnreadCount
+        self.unreadCount = object.unreadCount
         self.lastActivity = object.lastActivity ?? Date()
         self.participation = object.participation
         self.channelType = object.channelType
@@ -101,7 +101,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     func createCommunityChannel(users: [AmitySelectMemberModel]) {
         var allUsers = users
         var currentUser: AmitySelectMemberModel?
-        if let user = AmityUIKitManagerInternal.shared.client.currentUser?.object {
+        if let user = AmityUIKitManagerInternal.shared.client.user?.snapshot {
             let userModel = AmitySelectMemberModel(object: user)
             currentUser = userModel
             allUsers.append(userModel)
@@ -130,7 +130,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
                 weakSelf.createNewCommiunityChannel(builder: builder)
             }
             /// which mean we already have that channel and don't need to creaet new channel
-            guard let channel = channel.object else { return }
+            guard let channel = channel.snapshot else { return }
             AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: weakSelf.channelRepository.joinChannel, parameters: channelId)
             weakSelf.existingChannelToken?.invalidate()
             weakSelf.delegate?.screenViewModelDidCreateCommunity(channelId: channelId, subChannelId: channel.defaultSubChannelId)
@@ -154,7 +154,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     func createConversationChannel(users: [AmitySelectMemberModel]) {
         var allUsers = users
         var currentUser: AmitySelectMemberModel?
-        if let user = AmityUIKitManagerInternal.shared.client.currentUser?.object {
+        if let user = AmityUIKitManagerInternal.shared.client.user?.snapshot {
             let userModel = AmitySelectMemberModel(object: user)
             currentUser = userModel
             allUsers.append(userModel)
@@ -249,13 +249,12 @@ private extension AmityRecentChatScreenViewModel {
         switch channelType {
         case .community:
             let query = AmityChannelQuery()
-            query.types = [AmityChannelQueryType.community]
             query.filter = .userIsMember
             query.includeDeleted = false
             channelsCollection = channelRepository.getChannels(with: query)
         case .conversation:
             let query = AmityChannelQuery()
-            query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community]
+            query.filter = .userIsMember
             query.includeDeleted = false
             channelsCollection = channelRepository.getChannels(with: query)
         default:

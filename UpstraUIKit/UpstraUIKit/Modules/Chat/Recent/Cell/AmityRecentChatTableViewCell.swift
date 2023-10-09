@@ -22,7 +22,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var mentionBadgeImageView: UIImageView!
     @IBOutlet private var previewMessageLabel: UILabel!
     @IBOutlet private var dateTimeLabel: UILabel!
-    
+    @IBOutlet private var statusBadgeImageView: UIImageView!
+
     private var token: AmityNotificationToken?
     private var repository: AmityUserRepository?
     
@@ -71,6 +72,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with channel: AmityChannelModel) {
+        print("----------> metadata: \(channel.metadata)")
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
@@ -91,6 +93,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                         // Set avatar
                         avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                         titleLabel.text = otherMember.displayName
+                        let status = otherMember.metadata?["user_presence"] as? String ?? ""
+                        statusBadgeImageView.image = setImageFromStatus(status)
                     }
                 }
             }
@@ -101,6 +105,25 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             break
         @unknown default:
             break
+        }
+    }
+    
+    private func setImageFromStatus(_ status: String) -> UIImage {
+        switch status {
+        case "available":
+            return AmityIconSet.Chat.iconStatusAvailable ?? UIImage()
+        case "do_not_disturb":
+            return AmityIconSet.Chat.iconStatusDoNotDisTurb ?? UIImage()
+        case "work_from_home":
+            return AmityIconSet.Chat.iconStatusWorkFromHome ?? UIImage()
+        case "in_a_meeting":
+            return AmityIconSet.Chat.iconStatusInAMeeting ?? UIImage()
+        case "on_leave":
+            return AmityIconSet.Chat.iconStatusOnLeave ?? UIImage()
+        case "out_sick":
+            return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
+        default:
+            return AmityIconSet.Chat.iconStatusAvailable ?? UIImage()
         }
     }
 }

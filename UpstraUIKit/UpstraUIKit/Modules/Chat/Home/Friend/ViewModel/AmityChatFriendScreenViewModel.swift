@@ -88,9 +88,12 @@ extension AmityChatFriendScreenViewModel {
     }
     
     func createChannel(user: AmityUserModel) {
+        let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+
         let builder = AmityConversationChannelBuilder()
         builder.setUserId(user.userId)
         builder.setDisplayName(user.displayName)
+        builder.setMetadata(["user_id_member": userIds])
         
         AmityEventHandler.shared.showKTBLoading()
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, _ in
