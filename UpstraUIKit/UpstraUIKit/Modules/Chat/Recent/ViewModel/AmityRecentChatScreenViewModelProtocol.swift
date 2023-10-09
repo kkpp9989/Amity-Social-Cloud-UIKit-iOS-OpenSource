@@ -35,7 +35,7 @@ protocol AmityRecentChatScreenViewModelAction {
     func syncChannelPresence(_ channelId: String)
     func unsyncChannelPresence(_ channelId: String)
     func unsyncAllChannelPresence()
-    func getSyncAllChannelPresence(completion: @escaping () -> Void)
+    func getSyncAllChannelPresence()
 }
 
 protocol AmityRecentChatScreenViewModelType: AmityRecentChatScreenViewModelAction, AmityRecentChatScreenViewModelDataSource {

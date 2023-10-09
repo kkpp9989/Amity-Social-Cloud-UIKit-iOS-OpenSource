@@ -23,6 +23,8 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
+    public var tapCreateButton: ((String, String) -> Void)?
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,6 +59,10 @@ private extension AmityMemberPickerChatViewController {
         let selectUsersData = screenViewModel.dataSource.getStoreUsers()
 
         let vc = GroupChatCreatorViewController.make(selectUsersData)
+        vc.tapCreateButton = { [weak self] channelId, subChannelId in
+            guard let strongSelf = self else { return }
+            strongSelf.tapCreateButton?(channelId, subChannelId)
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
     
