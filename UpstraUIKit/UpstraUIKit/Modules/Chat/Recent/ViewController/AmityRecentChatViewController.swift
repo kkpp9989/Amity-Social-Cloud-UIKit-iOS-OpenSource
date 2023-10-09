@@ -21,12 +21,10 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
-    
-    weak var delegate: GroupChatCreatorViewControllerDelegate?
-    
+        
     // MARK: - Properties
     private var screenViewModel: AmityRecentChatScreenViewModelType!
-            
+                
     private lazy var emptyView: AmityEmptyView = {
         let emptyView = AmityEmptyView(frame: tableView.frame)
         emptyView.update(title: AmityLocalizedStringSet.emptyChatList.localizedString,
@@ -107,13 +105,6 @@ private extension AmityRecentChatViewController {
     }
 }
 
-extension AmityRecentChatViewController: GroupChatCreatorViewControllerDelegate {
-
-    func tapCreateButton(channelId: String, subChannelId: String) {
-        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channelId, subChannelId: subChannelId)
-    }
-}
-
 // MARK: - UITableView Delegate
 extension AmityRecentChatViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -133,16 +124,21 @@ extension AmityRecentChatViewController: UITableViewDelegate {
             screenViewModel.action.loadMore()
         }
         
-        if let _ = cell as? AmityRecentChatTableViewCell {
+        if let cell = cell as? AmityRecentChatTableViewCell {
             let channel = screenViewModel.dataSource.channel(at: indexPath)
-            screenViewModel.action.syncChannelPresence(channel.channelId)
+            if channel.channelType == .conversation {
+                screenViewModel.action.syncChannelPresence(channel.channelId)
+            }
+            cell.display(with: channel)
         }
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let _ = cell as? AmityRecentChatTableViewCell {
             let channel = screenViewModel.dataSource.channel(at: indexPath)
-            screenViewModel.action.unsyncChannelPresence(channel.channelId)
+            if channel.channelType == .conversation {
+                screenViewModel.action.unsyncChannelPresence(channel.channelId)
+            }
         }
     }
 }

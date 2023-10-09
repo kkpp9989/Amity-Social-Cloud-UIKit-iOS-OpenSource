@@ -141,7 +141,7 @@ final class AmityChatSettingsViewController: AmityViewController {
                 if let otherUser = screenViewModel.dataSource.otherUser {
                     selectusers.append(AmitySelectMemberModel(object: otherUser.object))
                 }
-                AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self, selectUsers: selectusers)
+                AmityChannelEventHandler.shared.channelCreateEditGroupChat(from: self, selectUsers: selectusers)
             case "notification": // (1:1 Chat, Group Chat)
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeNotificationSettings()

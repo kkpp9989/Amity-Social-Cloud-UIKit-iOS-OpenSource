@@ -30,6 +30,8 @@ class GroupChatCreatorViewController: AmityViewController {
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
+    public var tapCreateButton: ((String, String) -> Void)?
+
     // To support reuploading image
     // use this variable to store a new image
     private var uploadingAvatarImage: UIImage?
@@ -223,7 +225,7 @@ extension GroupChatCreatorViewController: GroupChatCreatorScreenViewModelDelegat
     func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, channelId: String, subChannelId: String) {
         dismiss(animated: true) { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.delegate?.tapCreateButton(channelId: channelId, subChannelId: subChannelId)
+            strongSelf.tapCreateButton?(channelId, subChannelId)
         }
     }
     

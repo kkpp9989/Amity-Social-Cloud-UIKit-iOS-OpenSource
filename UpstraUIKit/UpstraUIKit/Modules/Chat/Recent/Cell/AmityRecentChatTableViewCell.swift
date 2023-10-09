@@ -32,13 +32,13 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         setupView()
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        titleLabel.text = ""
-        dateTimeLabel.text = ""
-        badgeView.badge = 0
-        avatarView.image = nil
-    }
+//    override func prepareForReuse() {
+//        super.prepareForReuse()
+//        titleLabel.text = ""
+//        dateTimeLabel.text = ""
+//        badgeView.badge = 0
+//        avatarView.image = nil
+//    }
     
     private func setupView() {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
@@ -71,6 +71,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with channel: AmityChannelModel) {
+        statusImageView.isHidden = false
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
@@ -91,6 +92,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
+            statusImageView.isHidden = true
         case .conversation:
             memberLabel.text = nil
             statusImageView.isHidden = false
@@ -139,7 +141,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case "out_sick":
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
-            return AmityIconSet.Chat.iconStatusAvailable ?? UIImage()
+            return UIImage()
         }
     }
 }
