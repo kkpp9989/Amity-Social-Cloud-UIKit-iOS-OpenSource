@@ -493,7 +493,7 @@
 "chat_setting_unable_leave_chat_title" = "Unable to leave chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_leave_chat_message" = "You’re the only moderator in this group. To leave chat, nominate other members to moderator role."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_delete_chat_title" = "Delete chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-"chat_setting_delete_conversation_chat_message" = "You’ll no longer be able to receive any messages or see chat history."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"chat_setting_delete_conversation_chat_message" = "You and your friend’ll no longer be able to receive any messages or see chat history."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_delete_group_chat_message" = "If delete this group, all messages and files will be permanently deleted."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_delete_chat_title" = "Unable to delete chat"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_unable_delete_chat_message" = "Something went wrong. Please try again later."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
