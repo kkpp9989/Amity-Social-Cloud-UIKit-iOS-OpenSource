@@ -598,6 +598,17 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 }
             }
             
+        case .videoViewer(let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            if let videoInfo = message.object.getVideoInfo() {
+                if let fileUrl = videoInfo.getVideo(resolution: .original), let url = URL(string: fileUrl) {
+                    presentVideoPlayer(at: url)
+                } else if let url = URL(string: videoInfo.fileURL ) {
+                    presentVideoPlayer(at: url)
+                }
+            } else {
+                print("unable to find video url for message: \(message.messageId)")
+            }
         }
     }
     

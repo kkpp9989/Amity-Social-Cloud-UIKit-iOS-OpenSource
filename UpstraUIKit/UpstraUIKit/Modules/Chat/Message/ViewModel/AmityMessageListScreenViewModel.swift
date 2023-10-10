@@ -43,6 +43,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case deleteErrorMessage(indexPath: IndexPath)
         case report(indexPath: IndexPath)
         case imageViewer(indexPath: IndexPath, imageView: UIImageView)
+        case videoViewer(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {

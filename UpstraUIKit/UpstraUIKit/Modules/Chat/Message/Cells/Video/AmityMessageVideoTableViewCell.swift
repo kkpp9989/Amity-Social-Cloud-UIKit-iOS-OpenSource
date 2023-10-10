@@ -31,12 +31,15 @@ class AmityMessageVideoTableViewCell: AmityMessageTableViewCell {
         // Setup video thumbnail
         messageImageView.contentMode = .center
         messageImageView.layer.cornerRadius = 4
-        let tapGesuter = UITapGestureRecognizer(target: self, action: #selector(imageViewTap))
-        tapGesuter.numberOfTouchesRequired = 1
+        let tapGestureOfVideoThumbnail = UITapGestureRecognizer(target: self, action: #selector(imageViewTap))
+        tapGestureOfVideoThumbnail.numberOfTouchesRequired = 1
         messageImageView.isUserInteractionEnabled = true
-        messageImageView.addGestureRecognizer(tapGesuter)
+        messageImageView.addGestureRecognizer(tapGestureOfVideoThumbnail)
         
         // Setup duration video
+        let tapGestureOfPlayButton = UITapGestureRecognizer(target: self, action: #selector(imageViewTap))
+        tapGestureOfPlayButton.numberOfTouchesRequired = 1
+        playVideoView.addGestureRecognizer(tapGestureOfPlayButton)
         playVideoView.isHidden = true
         durationLabel.isHidden = true
         durationLabel.textColor = .white
@@ -93,8 +96,7 @@ private extension AmityMessageVideoTableViewCell {
     @objc
     func imageViewTap() {
         if messageImageView.image != AmityIconSet.videoThumbnailPlaceholder {
-//            screenViewModel.action.performCellEvent(for: .imageViewer(indexPath: indexPath, imageView: messageImageView))
-            // Not ready
+            screenViewModel.action.performCellEvent(for: .videoViewer(indexPath: indexPath))
         }
     }
 }
