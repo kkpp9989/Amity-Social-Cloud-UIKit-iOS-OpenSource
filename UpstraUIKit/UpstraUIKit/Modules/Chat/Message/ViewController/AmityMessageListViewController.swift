@@ -334,6 +334,9 @@ private extension AmityMessageListViewController {
                 self?.fileTap()
             case .location:
                 self?.locationTap()
+            case .videoAlbum:
+                // Not ready
+                break
             }
         }
         
