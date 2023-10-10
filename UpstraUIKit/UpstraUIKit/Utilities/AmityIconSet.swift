@@ -55,6 +55,7 @@ public struct AmityIconSet {
     public static var iconMember = UIImage(named: "icon_members", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCameraFill = UIImage(named: "icon_camera_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconAlbumFill = UIImage(named: "icon_album_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconVideoAlbumFill = UIImage(named: "icon_video_album_fill", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add  icon video album for use in chat detail
     public static var iconFileFill = UIImage(named: "icon_file_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconLocationFill = UIImage(named: "icon_location_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMagicWand = UIImage(named: "icon_magic_wand", in: AmityUIKitManager.bundle, compatibleWith: nil)
