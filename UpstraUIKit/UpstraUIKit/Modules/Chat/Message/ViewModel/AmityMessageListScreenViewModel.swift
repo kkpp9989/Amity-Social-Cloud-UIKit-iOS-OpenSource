@@ -43,6 +43,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case deleteErrorMessage(indexPath: IndexPath)
         case report(indexPath: IndexPath)
         case imageViewer(indexPath: IndexPath, imageView: UIImageView)
+        case videoViewer(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
@@ -471,8 +472,15 @@ private extension AmityMessageListScreenViewModel {
 // MARK: - Send Image
 extension AmityMessageListScreenViewModel {
     
-    func send(withMedias medias: [AmityMedia]) {
-        let operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
+        var operations: [AsyncOperation] = []
+        
+        switch type {
+        case .image:
+            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+        case .video:
+            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+        }
         
         // Define serial dependency A <- B <- C <- ... <- Z
         for (left, right) in zip(operations, operations.dropFirst()) {

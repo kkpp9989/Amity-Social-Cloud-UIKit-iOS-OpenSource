@@ -178,7 +178,20 @@ private extension AmityMessageListViewController {
         imagePicker.settings.theme.selectionStyle = .numbered
         presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
-            self?.screenViewModel.action.send(withMedias: medias)
+            self?.screenViewModel.action.send(withMedias: medias, type: .image)
+        })
+    }
+    
+    func videoAlbumTap() {
+        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        imagePicker.settings.theme.selectionStyle = .checked
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.video]
+        imagePicker.settings.selection.max = 20
+        imagePicker.settings.selection.unselectOnReachingMax = false
+        imagePicker.settings.theme.selectionStyle = .numbered
+        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+            let medias = assets.map { AmityMedia(state: .localAsset($0), type: .video) }
+            self?.screenViewModel.action.send(withMedias: medias, type: .video)
         })
     }
     
@@ -189,6 +202,7 @@ private extension AmityMessageListViewController {
     func locationTap() {
         
     }
+
 }
 
 // MARK: - Setup View
@@ -335,8 +349,7 @@ private extension AmityMessageListViewController {
             case .location:
                 self?.locationTap()
             case .videoAlbum:
-                // Not ready
-                break
+                self?.videoAlbumTap()
             }
         }
         
@@ -412,7 +425,7 @@ extension AmityMessageListViewController: UIImagePickerControllerDelegate & UINa
                 let resizedImage = image
                     .scalePreservingAspectRatio()
                 let media = AmityMedia(state: .image(resizedImage), type: .image)
-                self?.screenViewModel.action.send(withMedias: [media])
+                self?.screenViewModel.action.send(withMedias: [media], type: .image)
             } catch {
                 Log.add(error.localizedDescription)
             }
@@ -585,6 +598,17 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 }
             }
             
+        case .videoViewer(let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            if let videoInfo = message.object.getVideoInfo() {
+                if let fileUrl = videoInfo.getVideo(resolution: .original), let url = URL(string: fileUrl) {
+                    presentVideoPlayer(at: url)
+                } else if let url = URL(string: videoInfo.fileURL ) {
+                    presentVideoPlayer(at: url)
+                }
+            } else {
+                print("unable to find video url for message: \(message.messageId)")
+            }
         }
     }
     

@@ -223,6 +223,8 @@ extension AmityMessageListTableViewController {
             return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
         case .audio:
             return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
+        case .video:
+            return message.isOwner ? AmityMessageTypes.videoOutgoing.identifier : AmityMessageTypes.videoIncoming.identifier
         case .custom:
             fallthrough
         default:

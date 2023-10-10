@@ -69,8 +69,8 @@ private extension AmityKeyboardComposeBarViewController {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             let margin: CGFloat = 16 // [Improvement] Change margin for 4 item per row (Original = 20)
             let width = collectionView.bounds.width
-            let numberOfItemsPerRow: CGFloat = 4 // [Improvement] Change item per row to 3(Original = 4)
-            let spacing: CGFloat = 16 // [Improvement] Change spacing for 4 item per row (Original = 16)
+            let numberOfItemsPerRow: CGFloat = 4 // [Improvement] Change item per row to 3(Original = 3)
+            let spacing: CGFloat = 16 // [Improvement] Change spacing for 4 item per row (Original = 40)
             let availableWidth = width - spacing * (numberOfItemsPerRow + 1) - (margin * 2)
             let itemDimension = floor(availableWidth / numberOfItemsPerRow)
             layout.scrollDirection = .vertical
