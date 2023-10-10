@@ -53,7 +53,7 @@ protocol AmityMessageListScreenViewModelAction {
     func getMessage()
     
 	func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
-    func send(withMedias medias: [AmityMedia])
+    func send(withMedias medias: [AmityMedia], type: AmityMediaType)
     func sendAudio()
     
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
