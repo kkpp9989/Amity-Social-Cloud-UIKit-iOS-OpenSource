@@ -120,7 +120,7 @@ public class AmityChatHomeParentViewController: AmityViewController {
 
 private extension AmityChatHomeParentViewController {
     @objc func searchTap() {
-        let searchVC = AmitySearchViewController.make()
+        let searchVC = AmityChatSearchParentViewController.make()
         let nav = UINavigationController(rootViewController: searchVC)
         nav.modalPresentationStyle = .fullScreen
         nav.modalTransitionStyle = .crossDissolve
@@ -132,6 +132,5 @@ private extension AmityChatHomeParentViewController {
             guard let weakSelf = self else { return }
             AmityChannelEventHandler.shared.channelDidTap(from: weakSelf, channelId: channelId, subChannelId: subChannelId)
         }
-        
     }
 }

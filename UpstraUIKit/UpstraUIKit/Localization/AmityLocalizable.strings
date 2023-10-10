@@ -113,6 +113,8 @@
 "communities" = "Communities";
 "accounts" = "Accounts";
 "hashtags" = "Hashtags";
+"messages" = "Messages";
+"groups" = "Groups";
 
 /* [Custom for ONE Krungthai] Change wording "text_message_placeholder" */
 //"text_message_placeholder" = "Type message"; // [Original]
