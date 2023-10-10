@@ -253,8 +253,8 @@ extension AmityMessageListScreenViewModel {
 			parentId: nil,
 			metadata: metadata,
 			mentioneesBuilder: mentionees)
-		
-        messageRepository.createTextMessage(options: createOptioins) { [weak self] _,_ in
+        
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
         }

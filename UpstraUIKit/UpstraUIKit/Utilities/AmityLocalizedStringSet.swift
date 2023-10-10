@@ -128,6 +128,8 @@ public struct AmityLocalizedStringSet {
     static let communities = "communities"
     static let accounts = "accounts"
     static let hashtags = "hashtags"
+    static let messages = "messages"
+    static let groups = "groups"
 
     static let somethingWentWrongWithTryAgain = "something_went_wrong_with_try_again"
     static let noInternetConnection = "no_internet_connection"
