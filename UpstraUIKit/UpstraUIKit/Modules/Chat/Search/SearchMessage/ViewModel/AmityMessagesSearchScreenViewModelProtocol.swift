@@ -18,7 +18,7 @@ protocol AmityMessagesSearchScreenViewModelDelegate: AnyObject {
 
 protocol AmityMessagesSearchScreenViewModelDataSource {
     func numberOfKeyword() -> Int
-    func item(at indexPath: IndexPath) -> AmitySDK.AmityMessage?
+    func item(at indexPath: IndexPath) -> MessageSearchModelData?
 }
 
 protocol AmityMessagesSearchScreenViewModelAction {

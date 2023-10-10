@@ -41,7 +41,7 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
 
         switch status {
         case .AVAILABLE:
-            return AmityIconSet.Chat.iconStatusAvailable ?? UIImage()
+            return AmityIconSet.Chat.iconOnlineIndicator ?? UIImage()
         case .DO_NOT_DISTURB:
             return AmityIconSet.Chat.iconStatusDoNotDisTurb ?? UIImage()
         case .IN_THE_OFFICE:

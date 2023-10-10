@@ -74,7 +74,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [messageVC, membersVC, groupVC]
+        return [messageVC, membersVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {

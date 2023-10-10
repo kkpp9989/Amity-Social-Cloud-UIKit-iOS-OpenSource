@@ -33,11 +33,11 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="v37-OI-9dz" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
-                        <rect key="frame" x="48" y="44" width="12" height="12"/>
+                        <rect key="frame" x="41" y="37" width="15" height="15"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="12" id="FW8-Gh-aw8"/>
-                            <constraint firstAttribute="height" constant="12" id="tef-eG-r7p"/>
+                            <constraint firstAttribute="width" constant="15" id="FW8-Gh-aw8"/>
+                            <constraint firstAttribute="height" constant="15" id="tef-eG-r7p"/>
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Doz-Xj-wfl">
@@ -54,12 +54,12 @@
                     <constraint firstAttribute="trailing" secondItem="Doz-Xj-wfl" secondAttribute="trailing" id="2Fn-U2-Rxn"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="leading" secondItem="Crb-ep-vqF" secondAttribute="trailing" constant="14" id="KlT-qP-IyD"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="centerY" secondItem="Crb-ep-vqF" secondAttribute="centerY" id="SRU-ov-GtT"/>
-                    <constraint firstItem="v37-OI-9dz" firstAttribute="bottom" secondItem="Crb-ep-vqF" secondAttribute="bottom" constant="4" id="UDs-Lb-c8A"/>
+                    <constraint firstItem="v37-OI-9dz" firstAttribute="bottom" secondItem="Crb-ep-vqF" secondAttribute="bottom" id="UDs-Lb-c8A"/>
                     <constraint firstItem="Crb-ep-vqF" firstAttribute="top" secondItem="DRO-ru-ODU" secondAttribute="top" constant="12" id="cRd-3J-wFX"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="top" secondItem="Crb-ep-vqF" secondAttribute="bottom" constant="12" id="rVb-iy-MWQ"/>
                     <constraint firstAttribute="bottom" secondItem="Doz-Xj-wfl" secondAttribute="bottom" id="ro9-Pp-E6P"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="leading" secondItem="DRO-ru-ODU" secondAttribute="leading" id="vj3-dl-lU6"/>
-                    <constraint firstItem="v37-OI-9dz" firstAttribute="trailing" secondItem="Crb-ep-vqF" secondAttribute="trailing" constant="4" id="wta-O8-qB2"/>
+                    <constraint firstItem="v37-OI-9dz" firstAttribute="trailing" secondItem="Crb-ep-vqF" secondAttribute="trailing" id="wta-O8-qB2"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="sLb-2b-Va5"/>
