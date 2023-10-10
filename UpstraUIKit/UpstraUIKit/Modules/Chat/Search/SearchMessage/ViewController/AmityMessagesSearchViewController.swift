@@ -62,13 +62,14 @@ class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvi
 extension AmityMessagesSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
+        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId)
     }
     
-//    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if tableView.isBottomReached {
-//            screenViewModel.action.loadMore()
-//        }
-//    }
+    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView.isBottomReached {
+            screenViewModel.action.loadMore()
+        }
+    }
     
     /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

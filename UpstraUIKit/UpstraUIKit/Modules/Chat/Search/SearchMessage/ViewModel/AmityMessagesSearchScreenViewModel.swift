@@ -9,16 +9,24 @@
 import UIKit
 import AmitySDK
 
+struct MessageSearchModelData {
+    var messageObjc: AmitySDK.AmityMessage
+    var channelObjc: AmityChannelModel
+}
+
 class AmityMessagesSearchScreenViewModel: AmityMessagesSearchScreenViewModelType {
     
     weak var delegate: AmityMessagesSearchScreenViewModelDelegate?
     
     // MARK: Repository
     private let messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
+    private let channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
 
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
     private var messageList: [AmitySDK.AmityMessage] = []
+    private var channelList: [AmityChannelModel] = []
+    private var dataList: [MessageSearchModelData] = []
     private var fromIndex: Int = 0
     private var size: Int = 20
     private var currentKeyword: String = ""
@@ -36,12 +44,12 @@ class AmityMessagesSearchScreenViewModel: AmityMessagesSearchScreenViewModelType
 extension AmityMessagesSearchScreenViewModel {
     
     func numberOfKeyword() -> Int {
-        return messageList.count
+        return dataList.count
     }
     
-    func item(at indexPath: IndexPath) -> AmitySDK.AmityMessage? {
-        guard !messageList.isEmpty else { return nil }
-        return messageList[indexPath.row]
+    func item(at indexPath: IndexPath) -> MessageSearchModelData? {
+        guard !dataList.isEmpty else { return nil }
+        return dataList[indexPath.row]
     }
     
 }
@@ -57,12 +65,13 @@ extension AmityMessagesSearchScreenViewModel {
         if currentKeyword != newKeyword {
             if !isLoadingMore {
                 dummyList = []
+                messageList = []
+                channelList = []
             }
-            messageList = []
+            dataList = []
             currentKeyword = newKeyword
             fromIndex = 0
             isEndingResult = false
-            isLoadingMore = false
         }
         
         delegate?.screenViewModel(self, loadingState: .loading)
@@ -85,7 +94,7 @@ extension AmityMessagesSearchScreenViewModel {
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async {
-                    self.delegate?.screenViewModel(self, loadingState: .loaded)
+                    self.mapMessageAndChannelToDataList()
                 }
             }
         }
@@ -93,56 +102,121 @@ extension AmityMessagesSearchScreenViewModel {
     
     private func getMessageIds(_ messageIds: [String]) {
         dummyList += messageIds
-        DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            
             for messageId in messageIds {
-                dispatchGroup.enter()
-                let messageObject = messageRepository.getMessage(messageId)
+                strongSelf.dispatchGroup.enter()
+                
+                // Use a flag to track whether leave has been called for this task
+                var leaveCalled = false
+
+                let messageObject = strongSelf.messageRepository.getMessage(messageId)
                 let token = messageObject.observe { [weak self] (message, error) in
                     guard let strongSelf = self else { return }
                     if let _ = AmityError(error: error) {
-                        strongSelf.dispatchGroup.leave()
+                        // Check if leave has already been called
+                        if !leaveCalled {
+                            leaveCalled = true
+                            strongSelf.dispatchGroup.leave()
+                        }
                     } else {
                         if let message = message.snapshot {
                             //  Handle message result
                             strongSelf.messageList.append(message)
-                            strongSelf.dispatchGroup.leave()
+                            
+                            // Check if leave has already been called
+                            if !leaveCalled {
+                                leaveCalled = true
+                                strongSelf.dispatchGroup.leave()
+                            }
                         }
                     }
                 }
                 
-                tokenArray.append(token)
+                strongSelf.tokenArray.append(token)
             }
             
-            dispatchGroup.notify(queue: .main) {
-                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.messageList)
-                self.prepareData(updatedMessageList: sortedArray)
-                self.tokenArray.removeAll()
+            strongSelf.dispatchGroup.notify(queue: .main) {
+                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.messageList)
+                strongSelf.prepareData(updatedMessageList: sortedArray)
+                strongSelf.tokenArray.removeAll()
             }
             
-            if dummyList.isEmpty {
-                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.messageList)
-                self.prepareData(updatedMessageList: sortedArray)
+            if strongSelf.dummyList.isEmpty {
+                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.messageList)
+                strongSelf.prepareData(updatedMessageList: sortedArray)
             }
         }
     }
     
     private func prepareData(updatedMessageList: [AmitySDK.AmityMessage]) {
         DispatchQueue.main.async { [self] in
-            /* Check is loading result more from current keyword or result from new keyword */
+            /* Check is loading result more from the current keyword or result from a new keyword */
             if isLoadingMore {
-                self.messageList += updatedMessageList
+                // Filter out messages that are already in the messageList
+                let filteredMessages = updatedMessageList.filter { message in
+                    !messageList.contains { $0.messageId == message.messageId }
+                }
+                messageList += filteredMessages
             } else {
-                self.messageList = updatedMessageList
+                messageList = updatedMessageList
             }
             
-            if messageList.isEmpty {
-                delegate?.screenViewModelDidSearchNotFound(self)
-            } else {
-                delegate?.screenViewModelDidSearch(self)
+            let filteredChannelIds = messageList.compactMap { $0.channelId }
+            getChannel(channelList: filteredChannelIds)
+        }
+    }
+    
+    func getChannel(channelList: [String]) {
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            for channelId in channelList {
+                strongSelf.dispatchGroup.enter()
+                
+                // Use a flag to track whether leave has been called for this task
+                var leaveCalled = false
+                
+                let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
+                    guard let strongSelf = self else { return }
+                    guard let object = channel.snapshot else { return }
+                    
+                    if let _ = AmityError(error: error) {
+                        // Check if leave has already been called
+                        if !leaveCalled {
+                            leaveCalled = true
+                            strongSelf.dispatchGroup.leave()
+                        }
+                    } else {
+                        let channelModel = AmityChannelModel(object: object)
+                        strongSelf.channelList.append(channelModel)
+                        
+                        // Check if leave has already been called
+                        if !leaveCalled {
+                            leaveCalled = true
+                            strongSelf.dispatchGroup.leave()
+                        }
+                    }
+                }
+                
+                strongSelf.tokenArray.append(token)
             }
             
-            /* Hide loading indicator */
-            delegate?.screenViewModel(self, loadingState: .loaded)
+            strongSelf.dispatchGroup.notify(queue: .main) {
+                let sortedArray = strongSelf.sortArrayPositions(array1: channelList, array2: strongSelf.channelList)
+                strongSelf.prepareData(updatedChannelList: sortedArray)
+                strongSelf.tokenArray.removeAll()
+            }
+        }
+    }
+
+    
+    private func prepareData(updatedChannelList: [AmityChannelModel]) {
+        DispatchQueue.main.async { [self] in
+            channelList = updatedChannelList
+            
+            mapMessageAndChannelToDataList()
         }
     }
     
@@ -173,4 +247,57 @@ extension AmityMessagesSearchScreenViewModel {
         
         return sortedArray
     }
+    
+    private func sortArrayPositions(array1: [String], array2: [AmityChannelModel]) -> [AmityChannelModel] {
+        var sortedArray: [AmityChannelModel] = []
+        
+        for channelId in array1 {
+            if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
+                sortedArray.append(array2[index])
+            }
+        }
+        
+        return sortedArray
+    }
+    
+    private func mapMessageAndChannelToDataList() {
+        // Ensure that messageList and channelList have the same count
+        guard messageList.count == channelList.count else {
+            return
+        }
+        
+        dataList.removeAll() // Clear existing data
+
+        for index in 0..<min(messageList.count, channelList.count) {
+            let messageObjc = messageList[index]
+            let channelObjc = channelList[index]
+            
+            dispatchGroup.enter() // Enter the group for each iteration
+            
+            // Perfo3rm your data processing here
+            let data = MessageSearchModelData(
+                messageObjc: messageObjc,
+                channelObjc: channelObjc
+            )
+            
+            dataList.append(data)
+            
+            // Leave the group when the processing for this iteration is complete
+            dispatchGroup.leave()
+        }
+        
+        // Wait for all iterations to complete
+        dispatchGroup.notify(queue: .main) {
+            /* Hide loading indicator */
+            self.delegate?.screenViewModel(self, loadingState: .loaded)
+            self.isLoadingMore = false
+
+            if self.dataList.isEmpty {
+                self.delegate?.screenViewModelDidSearchNotFound(self)
+            } else {
+                self.delegate?.screenViewModelDidSearch(self)
+            }
+        }
+    }
+
 }

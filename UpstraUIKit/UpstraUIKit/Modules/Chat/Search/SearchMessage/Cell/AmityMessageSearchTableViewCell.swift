@@ -41,7 +41,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         memberLabel.font = AmityFontSet.caption
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
         
-        previewMessageLabel.text = "No message yet"
+        previewMessageLabel.text = "No message"
         previewMessageLabel.numberOfLines = 2
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
@@ -51,22 +51,53 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
     }
     
-    func display(with message: AmitySDK.AmityMessage, keyword: String) {
+    func display(with data: MessageSearchModelData, keyword: String) {
         statusImageView.isHidden = false
         memberLabel.text = ""
-        dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: message.createdAt)
-        titleLabel.text = message.user?.displayName
+        dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: data.channelObjc.lastActivity)
+        titleLabel.text = data.channelObjc.displayName
         avatarView.placeholder = AmityIconSet.defaultAvatar
-        statusImageView.isHidden = false
-        avatarView.setImage(withImageURL: message.user?.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
 
-//        let status = message.user?.metadata?["user_presence"] as? String ?? ""
-//        statusBadgeImageView.image = setImageFromStatus(status)
+        let text = data.messageObjc.data?["text"] as? String ?? "No message"
+        let highlightText = highlightKeyword(in: text, keyword: keyword, highlightColor: AmityColorSet.primary)
+        previewMessageLabel.attributedText = highlightText
         
-        let originalText = message.data?["text"] as? String ?? ""
-        let highlightColor = AmityColorSet.primary
-        let attributedString = highlightKeyword(in: originalText, keyword: keyword, highlightColor: highlightColor)
-        previewMessageLabel.attributedText = attributedString
+        switch data.channelObjc.channelType {
+        case .standard:
+            avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
+            memberLabel.text = "(\(data.channelObjc.memberCount))"
+            statusImageView.isHidden = true
+        case .conversation:
+            memberLabel.text = nil
+            statusImageView.isHidden = false
+            AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: data.channelObjc.channelId) { user in
+                DispatchQueue.main.async { [self] in
+                    if let otherMember = user {
+                        // Set avatar
+                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                        titleLabel.text = otherMember.displayName
+                        let status = otherMember.metadata?["user_presence"] as? String ?? ""
+                        if status != "available" {
+                            statusBadgeImageView.image = setImageFromStatus(status)
+                        } else {
+                            if data.channelObjc.isOnline {
+                                statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                            } else {
+                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                            }
+                        }
+                    }
+                }
+            }
+        case .community:
+            avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
+            memberLabel.text = "(\(data.channelObjc.memberCount))"
+            statusImageView.isHidden = true
+        case .private, .live, .broadcast, .unknown:
+            break
+        @unknown default:
+            break
+        }
     }
     
     private func setImageFromStatus(_ status: String) -> UIImage {
