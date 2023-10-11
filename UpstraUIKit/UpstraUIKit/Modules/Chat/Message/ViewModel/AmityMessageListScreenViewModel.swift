@@ -44,6 +44,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case report(indexPath: IndexPath)
         case imageViewer(indexPath: IndexPath, imageView: UIImageView)
         case videoViewer(indexPath: IndexPath)
+        case fileDownloader(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
@@ -469,7 +470,7 @@ private extension AmityMessageListScreenViewModel {
     
 }
 
-// MARK: - Send Image
+// MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
     
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
@@ -505,6 +506,21 @@ extension AmityMessageListScreenViewModel {
     }
 
 }
+
+// MARK: - Send File
+extension AmityMessageListScreenViewModel {
+    func send(withFiles files: [AmityFile]) {
+        let operations = files.map { UploadFileMessageOperation(subChannelId: subChannelId, file: $0, repository: messageRepository) }
+        
+        // Define serial dependency A <- B <- C <- ... <- Z
+        for (left, right) in zip(operations, operations.dropFirst()) {
+            right.addDependency(left)
+        }
+
+        queue.addOperations(operations, waitUntilFinished: false)
+    }
+}
+
 
 // MARK: - Audio Recording
 extension AmityMessageListScreenViewModel {

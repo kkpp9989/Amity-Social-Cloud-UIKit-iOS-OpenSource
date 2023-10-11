@@ -708,6 +708,12 @@
 		D4D7683E26006D7000AD4367 /* AmitySettingContentIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */; };
 		D4EC11E525B93DCE0095F507 /* AmityPostSharingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */; };
 		D4EC11EA25B93E000095F507 /* AmityPostSharingTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */; };
+		DF27F1042AD6533A00767DDE /* AmityMessageFileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F1032AD6533A00767DDE /* AmityMessageFileTableViewCell.swift */; };
+		DF27F1072AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F1052AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift */; };
+		DF27F1082AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF27F1062AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib */; };
+		DF27F10B2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F1092AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.swift */; };
+		DF27F10C2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF27F10A2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib */; };
+		DF27F10E2AD684BA00767DDE /* UploadFileMessageOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F10D2AD684BA00767DDE /* UploadFileMessageOperation.swift */; };
 		DF3134E02ACAF96A0032B8C2 /* AmityChatSettingsCreateMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134DF2ACAF96A0032B8C2 /* AmityChatSettingsCreateMenuViewModel.swift */; };
 		DF3134E32ACAFFD80032B8C2 /* AmityChatSettingsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E22ACAFFD80032B8C2 /* AmityChatSettingsItem.swift */; };
 		DF3134E52ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */; };
@@ -1464,6 +1470,12 @@
 		D4D7683D26006D7000AD4367 /* AmitySettingContentIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmitySettingContentIcon.swift; sourceTree = "<group>"; };
 		D4EC11E425B93DCE0095F507 /* AmityPostSharingSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingSettings.swift; sourceTree = "<group>"; };
 		D4EC11E925B93E000095F507 /* AmityPostSharingTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPostSharingTarget.swift; sourceTree = "<group>"; };
+		DF27F1032AD6533A00767DDE /* AmityMessageFileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMessageFileTableViewCell.swift; sourceTree = "<group>"; };
+		DF27F1052AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMessageFileIncomingTableViewCell.swift; sourceTree = "<group>"; };
+		DF27F1062AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityMessageFileIncomingTableViewCell.xib; sourceTree = "<group>"; };
+		DF27F1092AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMessageFileOutgoingTableViewCell.swift; sourceTree = "<group>"; };
+		DF27F10A2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityMessageFileOutgoingTableViewCell.xib; sourceTree = "<group>"; };
+		DF27F10D2AD684BA00767DDE /* UploadFileMessageOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadFileMessageOperation.swift; sourceTree = "<group>"; };
 		DF3134DF2ACAF96A0032B8C2 /* AmityChatSettingsCreateMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsCreateMenuViewModel.swift; sourceTree = "<group>"; };
 		DF3134E22ACAFFD80032B8C2 /* AmityChatSettingsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsItem.swift; sourceTree = "<group>"; };
 		DF3134E42ACB06F80032B8C2 /* AmityChatSettingsScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSettingsScreenViewModelProtocol.swift; sourceTree = "<group>"; };
@@ -2423,6 +2435,7 @@
 				72A3509B24EA820700DA9D46 /* AmityMessageListScreenViewModelProtocol.swift */,
 				72A3509C24EA820700DA9D46 /* AmityMessageListScreenViewModel.swift */,
 				DFA428B42AD572AA00A6AE57 /* UploadVideoMessageOperation.swift */,
+				DF27F10D2AD684BA00767DDE /* UploadFileMessageOperation.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -2430,6 +2443,7 @@
 		72A3509D24EA820700DA9D46 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				DF27F1022AD6518B00767DDE /* File */,
 				DFA428A92AD5541900A6AE57 /* Video */,
 				72A350A324EA820700DA9D46 /* AmityMessageCellProtocol.swift */,
 				72A3509E24EA820700DA9D46 /* AmityMessageTableViewCell.swift */,
@@ -4922,6 +4936,18 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
+		DF27F1022AD6518B00767DDE /* File */ = {
+			isa = PBXGroup;
+			children = (
+				DF27F1032AD6533A00767DDE /* AmityMessageFileTableViewCell.swift */,
+				DF27F1052AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift */,
+				DF27F1062AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib */,
+				DF27F1092AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.swift */,
+				DF27F10A2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib */,
+			);
+			path = File;
+			sourceTree = "<group>";
+		};
 		DF3134DE2ACAF94A0032B8C2 /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
@@ -5196,6 +5222,7 @@
 				72A3514024EA820800DA9D46 /* AmityLocalizable.strings in Resources */,
 				72A3515C24EA820800DA9D46 /* AmityMessageListViewController.xib in Resources */,
 				A9E890FC29F93DCE00A22B35 /* AmityReactionUserTableViewCell.xib in Resources */,
+				DF27F1082AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib in Resources */,
 				78C1C4AE25F3EE0500D6F092 /* AmitySettingsItemTextContentTableViewCell.xib in Resources */,
 				7271C23E25234A6100E13F9D /* AmityCategorySeletionTableViewCell.xib in Resources */,
 				B76A1017252B7DFA00AFC7A8 /* AmityRecommendedCommunityViewController.xib in Resources */,
@@ -5259,6 +5286,7 @@
 				97D723DD2695B133000735F5 /* AmityUserFollowersViewController.xib in Resources */,
 				97D723AC2695AE59000735F5 /* AmitySearchMemberTableViewCell.xib in Resources */,
 				B77DE3142537F1BA00568DF0 /* AmityCommunityMemberSettingsViewController.xib in Resources */,
+				DF27F10C2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib in Resources */,
 				B73125D22590B765000E142F /* AmityMemberPickerViewController.xib in Resources */,
 				97D723582695A642000735F5 /* AmitySearchViewController.xib in Resources */,
 				97D0EBB326A14A8800E9FE6A /* AmityPendingPostsDetailViewController.xib in Resources */,
@@ -5401,6 +5429,7 @@
 				72A3517824EA820800DA9D46 /* PreviewBuilder.swift in Sources */,
 				D4C821DC2760E1AC00ED6728 /* AmityMentionTableViewCell.swift in Sources */,
 				97E21E85264D244200F19CB3 /* AmityGroupChatEditViewController.swift in Sources */,
+				DF27F1072AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift in Sources */,
 				AA7972562A6E8A7B00ED3BC9 /* AmityPostTabbarViewController.swift in Sources */,
 				97D0EB7A26A148FE00E9FE6A /* AmityCommunityRepositoryManager.swift in Sources */,
 				97D723DE2695B133000735F5 /* AmityUserFollowersViewController.swift in Sources */,
@@ -5418,6 +5447,7 @@
 				72887A192537F78D00188FAD /* AmityUserProfileEditorViewController.swift in Sources */,
 				AA8CC6CC2A6835B3003F8B8E /* DateFormatter+Extension.swift in Sources */,
 				B7C026872574CBC5007CC334 /* AmityPopoverMessageViewController.swift in Sources */,
+				DF27F1042AD6533A00767DDE /* AmityMessageFileTableViewCell.swift in Sources */,
 				97D0EB9D26A14A3A00E9FE6A /* AmityPendingPostsEmptyView.swift in Sources */,
 				72931CB924F79347008D6DBD /* AmityPostTargetPickerScreenViewModel.swift in Sources */,
 				B791DD64251C4EA400B5EABE /* AmityCommunitiesModel.swift in Sources */,
@@ -5664,6 +5694,7 @@
 				0D5D94DB25AC65C200E52AE0 /* AmityCommunityMemberSettingsScreenViewModelProtocol.swift in Sources */,
 				D4CEE5C526144B940088B7DE /* AmityPostTextEditorScreenViewModelType.swift in Sources */,
 				72A3511E24EA820800DA9D46 /* AmityComunityPanelView.swift in Sources */,
+				DF27F10B2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.swift in Sources */,
 				72A3513124EA820800DA9D46 /* NibFileOwnerLoadable.swift in Sources */,
 				97D723702695A690000735F5 /* AmityFollowInfoModel.swift in Sources */,
 				B761FD2F257A0D9200826342 /* AmityMessageImageOutgoingTableViewCell.swift in Sources */,
@@ -5765,6 +5796,7 @@
 				B750672524FC0A4000DD17B4 /* AmitySelectMemberModel.swift in Sources */,
 				72A3519724EA820800DA9D46 /* AmityPhotoCollectionViewFlowLayout.swift in Sources */,
 				B7B31C53250F4ACF000AC6E4 /* AmityProfileContainerViewController.swift in Sources */,
+				DF27F10E2AD684BA00767DDE /* UploadFileMessageOperation.swift in Sources */,
 				DFB199902A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift in Sources */,
 				AA61D19B2AD3104200CD217B /* GroupChatCreatorScreenViewModelProtocol.swift in Sources */,
 				7271C23A252349B400E13F9D /* AmityCategorySeletionTableViewCell.swift in Sources */,

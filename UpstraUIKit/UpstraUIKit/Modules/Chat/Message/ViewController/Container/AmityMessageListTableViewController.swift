@@ -216,6 +216,7 @@ extension AmityMessageListTableViewController {
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {
+        print("[Message] id: \(message.messageId) | type: \(message.messageType) | content: \(message.object.data)")
         switch message.messageType {
         case .text:
             return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
@@ -225,6 +226,8 @@ extension AmityMessageListTableViewController {
             return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
         case .video:
             return message.isOwner ? AmityMessageTypes.videoOutgoing.identifier : AmityMessageTypes.videoIncoming.identifier
+        case .file:
+            return message.isOwner ? AmityMessageTypes.fileOutgoing.identifier : AmityMessageTypes.fileIncoming.identifier
         case .custom:
             fallthrough
         default:

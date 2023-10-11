@@ -59,6 +59,7 @@ public final class AmityMessageListViewController: AmityViewController {
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var connectionStatatusObservation: NSKeyValueObservation?
 	private var mentionManager: AmityMentionManager?
+    private var filePicker: AmityFilePicker?
     
     // MARK: - Container View
     private var navigationHeaderViewController: AmityMessageListHeaderView!
@@ -87,6 +88,7 @@ public final class AmityMessageListViewController: AmityViewController {
         shouldCellOverride()
 		
 		setupMentionTableView()
+        setupFilePicker()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -196,13 +198,20 @@ private extension AmityMessageListViewController {
     }
     
     func fileTap() {
-        
+        filePicker?.present(from: UIView())
     }
     
     func locationTap() {
         
     }
 
+}
+
+// MARK: - Setup File picker
+private extension AmityMessageListViewController {
+    func setupFilePicker() {
+        filePicker = AmityFilePicker(presentationController: self, delegate: self)
+    }
 }
 
 // MARK: - Setup View
@@ -609,6 +618,26 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find video url for message: \(message.messageId)")
             }
+        case .fileDownloader(let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            if let fileInfo = message.object.getFileInfo() {
+                AmityHUD.show(.loading)
+                AmityUIKitManagerInternal.shared.fileService.loadFile(fileURL: fileInfo.fileURL) { result in
+                    switch result {
+                    case .success(let data):
+                        AmityHUD.hide {
+                            let tempUrl = data.write(withName: fileInfo.fileName)
+                            let documentPicker = UIDocumentPickerViewController(url: tempUrl, in: .exportToService)
+                            documentPicker.modalPresentationStyle = .fullScreen
+                            self.present(documentPicker, animated: true, completion: nil)
+                        }
+                    case .failure:
+                        AmityHUD.hide()
+                    }
+                }
+            } else {
+                print("unable to find file for message: \(message.messageId)")
+            }
         }
     }
     
@@ -738,4 +767,10 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
 									mentionees: mentionees)
 		mentionManager?.resetState()
 	}
+}
+
+extension AmityMessageListViewController: AmityFilePickerDelegate {
+    func didPickFiles(files: [AmityFile]) {
+        screenViewModel.action.send(withFiles: files)
+    }
 }

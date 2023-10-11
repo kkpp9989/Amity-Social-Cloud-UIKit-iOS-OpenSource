@@ -98,7 +98,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
             
             switch message.messageType {
-            case .text, .audio:
+            case .text, .audio, .file:
                 containerView.backgroundColor = AmityColorSet.messageBubble
             case .image:
                 containerView.backgroundColor = AmityColorSet.messageBubbleInverse
@@ -111,7 +111,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
             
             switch message.messageType {
-            case .text, .audio:
+            case .text, .audio, .file:
                 containerView.backgroundColor = AmityColorSet.messageBubbleInverse
             default:
                 containerView.backgroundColor = AmityColorSet.backgroundColor
