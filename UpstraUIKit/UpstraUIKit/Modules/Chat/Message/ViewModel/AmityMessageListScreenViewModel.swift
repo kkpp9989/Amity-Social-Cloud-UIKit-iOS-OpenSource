@@ -44,6 +44,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case report(indexPath: IndexPath)
         case imageViewer(indexPath: IndexPath, imageView: UIImageView)
         case videoViewer(indexPath: IndexPath)
+        case fileDownloader(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {

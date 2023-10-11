@@ -82,9 +82,8 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
 private extension AmityMessageFileTableViewCell {
     @objc
     func fileInfoViewTap() {
-//        if messageImageView.image != AmityIconSet.defaultMessageImage {
-//            screenViewModel.action.performCellEvent(for: .imageViewer(indexPath: indexPath, imageView: messageImageView))
-//        }
-        // Download file
+        if fileIcon.image != nil {
+            screenViewModel.action.performCellEvent(for: .fileDownloader(indexPath: indexPath))
+        }
     }
 }

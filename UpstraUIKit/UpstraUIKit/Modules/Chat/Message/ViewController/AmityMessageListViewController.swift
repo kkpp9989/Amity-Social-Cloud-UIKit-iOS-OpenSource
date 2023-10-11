@@ -618,6 +618,26 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find video url for message: \(message.messageId)")
             }
+        case .fileDownloader(let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            if let fileInfo = message.object.getFileInfo() {
+                AmityHUD.show(.loading)
+                AmityUIKitManagerInternal.shared.fileService.loadFile(fileURL: fileInfo.fileURL) { result in
+                    switch result {
+                    case .success(let data):
+                        AmityHUD.hide {
+                            let tempUrl = data.write(withName: fileInfo.fileName)
+                            let documentPicker = UIDocumentPickerViewController(url: tempUrl, in: .exportToService)
+                            documentPicker.modalPresentationStyle = .fullScreen
+                            self.present(documentPicker, animated: true, completion: nil)
+                        }
+                    case .failure:
+                        AmityHUD.hide()
+                    }
+                }
+            } else {
+                print("unable to find file for message: \(message.messageId)")
+            }
         }
     }
     
