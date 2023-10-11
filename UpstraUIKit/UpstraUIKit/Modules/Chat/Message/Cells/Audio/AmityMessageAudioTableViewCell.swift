@@ -39,8 +39,16 @@ final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         if !message.isDeleted {
             if message.isOwner {
-                durationLabel.textColor = AmityColorSet.baseInverse
-                actionImageView.tintColor = AmityColorSet.baseInverse
+                if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
+                    // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
+                    durationLabel.textColor = AmityColorSet.base
+                    actionImageView.tintColor = AmityColorSet.base
+                } else {
+                    // [Original]
+                    durationLabel.textColor = AmityColorSet.baseInverse
+                    actionImageView.tintColor = AmityColorSet.baseInverse
+                }
+                
                 activityIndicatorView.style = .medium
                 switch message.syncState {
                 case .syncing:
