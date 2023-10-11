@@ -36,9 +36,17 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         super.display(message: message)
         if message.isOwner {
-            textMessageView.textColor = AmityColorSet.baseInverse
-            textMessageView.readMoreColor = AmityColorSet.baseInverse
-            textMessageView.hyperLinkColor = .white
+            if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
+                // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
+                textMessageView.textColor = AmityColorSet.base
+                textMessageView.readMoreColor = AmityColorSet.highlight
+                textMessageView.hyperLinkColor = AmityColorSet.highlight
+            } else {
+                // [Original]
+                textMessageView.textColor = AmityColorSet.baseInverse
+                textMessageView.readMoreColor = AmityColorSet.baseInverse
+                textMessageView.hyperLinkColor = .white
+            }
         } else {
             textMessageView.textColor = AmityColorSet.base
             textMessageView.readMoreColor = AmityColorSet.highlight

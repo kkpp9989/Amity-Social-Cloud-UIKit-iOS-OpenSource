@@ -59,6 +59,7 @@ public final class AmityMessageListViewController: AmityViewController {
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var connectionStatatusObservation: NSKeyValueObservation?
 	private var mentionManager: AmityMentionManager?
+    private var filePicker: AmityFilePicker?
     
     // MARK: - Container View
     private var navigationHeaderViewController: AmityMessageListHeaderView!
@@ -87,6 +88,7 @@ public final class AmityMessageListViewController: AmityViewController {
         shouldCellOverride()
 		
 		setupMentionTableView()
+        setupFilePicker()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -196,13 +198,20 @@ private extension AmityMessageListViewController {
     }
     
     func fileTap() {
-        
+        filePicker?.present(from: UIView())
     }
     
     func locationTap() {
         
     }
 
+}
+
+// MARK: - Setup File picker
+private extension AmityMessageListViewController {
+    func setupFilePicker() {
+        filePicker = AmityFilePicker(presentationController: self, delegate: self)
+    }
 }
 
 // MARK: - Setup View
@@ -738,4 +747,10 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
 									mentionees: mentionees)
 		mentionManager?.resetState()
 	}
+}
+
+extension AmityMessageListViewController: AmityFilePickerDelegate {
+    func didPickFiles(files: [AmityFile]) {
+        screenViewModel.action.send(withFiles: files)
+    }
 }
