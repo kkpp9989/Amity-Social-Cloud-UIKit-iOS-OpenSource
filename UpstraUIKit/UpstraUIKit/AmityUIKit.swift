@@ -204,7 +204,6 @@ public final class AmityUIKitManager {
         Task {
             do {
                 try await client.presence.enable()
-                print("enable presence")
             } catch let error {
                 print(error)
             }
@@ -215,7 +214,6 @@ public final class AmityUIKitManager {
         Task {
             do {
                 try await client.presence.startHeartbeat()
-                print("start heartbeat")
             } catch let error {
                 print(error)
             }
@@ -226,6 +224,9 @@ public final class AmityUIKitManager {
         client.presence.stopHeartbeat()
     }
 
+    public static func startUnreadCountSync() {
+        client.startUnreadSync()
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {

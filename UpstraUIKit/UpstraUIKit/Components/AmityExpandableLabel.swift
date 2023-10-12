@@ -752,7 +752,7 @@ extension AmityExpandableLabel {
         
         // Apply other attributes
         for attribute in attributes {
-            let clampedRange = NSRange(location: 0, length: min(attribute.range.length, attributedString.length - attribute.range.location))
+            let clampedRange = NSRange(location: 0, length: min(attribute.range.length + 1, attributedString.length - attribute.range.location))
             attributedString.addAttributes(attribute.attributes, range: clampedRange)
             hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .mention(userId: attribute.userId)))
         }

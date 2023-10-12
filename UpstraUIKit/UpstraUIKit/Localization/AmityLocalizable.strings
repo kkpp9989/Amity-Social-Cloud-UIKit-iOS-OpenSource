@@ -71,6 +71,10 @@
 "general_love" = "Love";
 "general_pinpost" = "Pinpost";
 "general_unpinpost" = "Unpinpost";
+"general_forward" = "Forward";
+"general_reply" = "Reply";
+"general_unsend" = "Unsend";
+"general_copy" = "Copy";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";

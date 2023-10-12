@@ -35,6 +35,7 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         
     override func display(message: AmityMessageModel) {
         super.display(message: message)
+        var highlightColor = AmityColorSet.primary
         if message.isOwner {
             if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
                 // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
@@ -47,10 +48,12 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
                 textMessageView.readMoreColor = AmityColorSet.baseInverse
                 textMessageView.hyperLinkColor = .white
             }
+            highlightColor = .white
         } else {
             textMessageView.textColor = AmityColorSet.base
             textMessageView.readMoreColor = AmityColorSet.highlight
             textMessageView.hyperLinkColor = AmityColorSet.highlight
+            highlightColor = AmityColorSet.primary
         }
 		
 		if let metadata = message.metadata,
@@ -61,7 +64,8 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
 				withAttributes: AmityMentionManager.getAttributes(
 					fromText: text,
 					withMetadata: metadata,
-					mentionees: mentionees
+					mentionees: mentionees,
+                    highlightColor: highlightColor
 				)
 			)
 		} else {
@@ -109,7 +113,6 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         super.prepareForReuse()
         textMessageView.isExpanded = false
     }
-    
 }
 
 extension AmityMessageTextTableViewCell: AmityExpandableLabelDelegate {

@@ -35,8 +35,11 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     
     var indexPath: IndexPath!
     let editMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.edit.localizedString, action: #selector(editTap))
-    let deleteMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.delete.localizedString, action: #selector(deleteTap))
+    let deleteMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.unsend.localizedString, action: #selector(deleteTap))
     let reportMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.report.localizedString, action: #selector(reportTap))
+    let forwardMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.forward.localizedString, action: #selector(forwardTap))
+    let replyMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.reply.localizedString, action: #selector(replyTap))
+    let copyMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.copy.localizedString, action: #selector(copyTap))
     
     override var canBecomeFirstResponder: Bool {
         return true
@@ -46,12 +49,17 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         if message.isOwner {
             switch message.messageType {
             case .text:
-                return action == #selector(editTap) || action == #selector(deleteTap)
+                return action == #selector(editTap) || action == #selector(deleteTap) || action == #selector(forwardTap) || action == #selector(replyTap) || action == #selector(copyTap)
             default:
-                return action == #selector(deleteTap)
+                return action == #selector(deleteTap) || action == #selector(forwardTap) || action == #selector(replyTap)
             }
         } else {
-            return action == #selector(reportTap)
+            switch message.messageType {
+            case .text:
+                return action == #selector(replyTap) || action == #selector(forwardTap) || action == #selector(copyTap)
+            default:
+                return action == #selector(forwardTap) || action == #selector(replyTap)
+            }
         }
     }
     
@@ -175,7 +183,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)
         containerView?.layer.cornerRadius = 4
-        containerView?.menuItems = [editMenuItem, deleteMenuItem, reportMenuItem]
+        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem]
         errorButton?.isHidden = true
         
         contentView.backgroundColor = AmityColorSet.backgroundColor
@@ -219,8 +227,22 @@ private extension AmityMessageTableViewCell {
         screenViewModel.action.performCellEvent(for: .report(indexPath: indexPath))
     }
     
+    @objc
+    func forwardTap() {
+        screenViewModel.action.performCellEvent(for: .forward(indexPath: indexPath))
+    }
+    
     @IBAction func errorTap() {
         screenViewModel.action.performCellEvent(for: .deleteErrorMessage(indexPath: indexPath))
     }
     
+    @objc
+    func copyTap() {
+        screenViewModel.action.performCellEvent(for: .copy(indexPath: indexPath))
+    }
+    
+    @objc
+    func replyTap() {
+        screenViewModel.action.performCellEvent(for: .reply(indexPath: indexPath))
+    }
 }
