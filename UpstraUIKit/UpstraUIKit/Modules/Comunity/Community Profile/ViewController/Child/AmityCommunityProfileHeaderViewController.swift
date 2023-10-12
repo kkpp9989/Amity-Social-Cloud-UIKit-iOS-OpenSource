@@ -23,6 +23,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var actionButton: AmityButton!
     @IBOutlet private var actionStackView: UIStackView!
+    @IBOutlet private var gradientView: UIView!
     
     @IBOutlet private var pendingPostsStatusView: UIView!
     @IBOutlet private var pendingPostsContainerView: UIView!
@@ -79,7 +80,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
         avatarView.contentMode = .scaleAspectFill
         gradient.colors = [UIColor.clear.cgColor, AmityColorSet.base.withAlphaComponent(0.8).cgColor]
         gradient.locations = [0, 1]
-        avatarView.layer.addSublayer(gradient)
+        gradientView.layer.addSublayer(gradient)
         
         displayNameLabel.text = ""
         displayNameLabel.font = AmityFontSet.headerLine

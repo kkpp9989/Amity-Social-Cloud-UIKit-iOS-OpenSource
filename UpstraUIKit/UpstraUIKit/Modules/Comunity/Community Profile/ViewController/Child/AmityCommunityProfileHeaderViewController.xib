@@ -17,6 +17,7 @@
                 <outlet property="categoryLabel" destination="Pdi-Fo-9vJ" id="03i-Ft-T2h"/>
                 <outlet property="descriptionLabel" destination="afn-1i-qkt" id="TIr-xd-ZS3"/>
                 <outlet property="displayNameLabel" destination="xyE-Zr-AJm" id="IN0-ae-COg"/>
+                <outlet property="gradientView" destination="WcI-r5-7zs" id="Fcf-MG-4C6"/>
                 <outlet property="memberLabel" destination="JE8-UH-jlx" id="EZ9-Q9-5yn"/>
                 <outlet property="officialBadgeImageView" destination="4dq-0f-PXT" id="soS-d0-7aT"/>
                 <outlet property="pendingPostsContainerView" destination="xYH-Fg-KT5" id="u4L-N2-pNz"/>
@@ -43,6 +44,12 @@
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9xv-ae-5a2" customClass="AmityImageView" customModule="AmityUIKit" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="276"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </view>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WcI-r5-7zs">
+                                    <rect key="frame" x="0.0" y="148" width="414" height="128"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="128" id="Vlt-1x-kU5"/>
+                                    </constraints>
                                 </view>
                                 <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="e4N-5R-z9e" userLabel="Displayname Stack View">
                                     <rect key="frame" x="16" y="211.5" width="93.5" height="24"/>
@@ -80,12 +87,15 @@
                             <constraints>
                                 <constraint firstItem="9xv-ae-5a2" firstAttribute="top" secondItem="Vzm-YV-HXL" secondAttribute="top" id="3nJ-zk-zl4"/>
                                 <constraint firstAttribute="bottom" secondItem="9xv-ae-5a2" secondAttribute="bottom" id="EZE-69-aXN"/>
+                                <constraint firstItem="WcI-r5-7zs" firstAttribute="leading" secondItem="Vzm-YV-HXL" secondAttribute="leading" id="HZZ-Ji-rur"/>
                                 <constraint firstItem="e4N-5R-z9e" firstAttribute="leading" secondItem="Vzm-YV-HXL" secondAttribute="leading" constant="16" id="K4b-Di-g9s"/>
                                 <constraint firstAttribute="bottom" secondItem="Pdi-Fo-9vJ" secondAttribute="bottom" constant="16" id="MbZ-u3-LKL"/>
                                 <constraint firstAttribute="trailing" secondItem="9xv-ae-5a2" secondAttribute="trailing" id="YVm-KK-h4t"/>
+                                <constraint firstAttribute="trailing" secondItem="WcI-r5-7zs" secondAttribute="trailing" id="alY-7q-Vqf"/>
                                 <constraint firstItem="9xv-ae-5a2" firstAttribute="leading" secondItem="Vzm-YV-HXL" secondAttribute="leading" id="b06-sD-E4c"/>
                                 <constraint firstItem="Pdi-Fo-9vJ" firstAttribute="leading" secondItem="Vzm-YV-HXL" secondAttribute="leading" constant="16" id="blD-6h-Spl"/>
                                 <constraint firstAttribute="width" secondItem="Vzm-YV-HXL" secondAttribute="height" multiplier="3:2" id="eBR-aa-Rqg"/>
+                                <constraint firstAttribute="bottom" secondItem="WcI-r5-7zs" secondAttribute="bottom" id="kl7-qb-hW3"/>
                                 <constraint firstItem="Pdi-Fo-9vJ" firstAttribute="top" secondItem="e4N-5R-z9e" secondAttribute="bottom" constant="4" id="uV4-VS-3IX"/>
                             </constraints>
                         </view>
