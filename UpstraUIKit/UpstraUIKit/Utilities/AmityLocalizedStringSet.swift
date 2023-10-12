@@ -84,6 +84,9 @@ public struct AmityLocalizedStringSet {
         static let generalLove = "general_love";
         static let pinpost = "general_pinpost"
         static let unPinpost = "general_unpinpost"
+        static let forward = "general_forward"
+        static let unsend = "general_unsend"
+        static let copy = "general_copy"
     }
     
     static let communitySettings = "community_settings"

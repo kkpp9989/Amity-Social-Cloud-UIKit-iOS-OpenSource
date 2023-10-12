@@ -32,14 +32,6 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         setupView()
     }
     
-//    override func prepareForReuse() {
-//        super.prepareForReuse()
-//        titleLabel.text = ""
-//        dateTimeLabel.text = ""
-//        badgeView.badge = 0
-//        avatarView.image = nil
-//    }
-    
     private func setupView() {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         

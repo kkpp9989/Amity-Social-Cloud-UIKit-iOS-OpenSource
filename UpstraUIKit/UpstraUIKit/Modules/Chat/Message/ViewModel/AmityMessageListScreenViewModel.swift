@@ -45,6 +45,9 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case imageViewer(indexPath: IndexPath, imageView: UIImageView)
         case videoViewer(indexPath: IndexPath)
         case fileDownloader(indexPath: IndexPath)
+        case forward(indexPath: IndexPath)
+        case copy(indexPath: IndexPath)
+        case reply(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
@@ -54,6 +57,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     weak var delegate: AmityMessageListScreenViewModelDelegate?
         
     // MARK: - Repository
+    private let subChannelRepository: AmitySubChannelRepository!
     private var membershipParticipation: AmityChannelParticipation?
     private let channelRepository: AmityChannelRepository!
     private var messageRepository: AmityMessageRepository!
@@ -65,6 +69,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var messagesCollection: AmityCollection<AmityMessage>?
     
     // MARK: - Notification Token
+    private var subChannelNotificationToken: AmityNotificationToken?
     private var channelNotificationToken: AmityNotificationToken?
     private var messagesNotificationToken: AmityNotificationToken?
     private var createMessageNotificationToken: AmityNotificationToken?
@@ -91,6 +96,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         membershipParticipation = AmityChannelParticipation(client: AmityUIKitManagerInternal.shared.client, andChannel: channelId)
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
+        subChannelRepository = AmitySubChannelRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
     // MARK: - DataSource
@@ -104,6 +110,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
             delegate?.screenViewModelDidTextChange(text: text)
         }
     }
+    
+    private var subChannel: AmitySubChannel?
     
     private(set) var allCellNibs: [String: UINib] = [:]
     private(set) var allCellClasses: [String: AmityMessageCellProtocol.Type] = [:]
@@ -219,9 +227,17 @@ extension AmityMessageListScreenViewModel {
     func getChannel(){
         channelNotificationToken?.invalidate()
         channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
-            guard let object = channel.object else { return }
+            guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
             self?.delegate?.screenViewModelDidGetChannel(channel: channelModel)
+        }
+    }
+    
+    func getSubChannel(){
+        subChannelNotificationToken?.invalidate()
+        subChannelNotificationToken = subChannelRepository.getSubChannel(withId: subChannelId).observe { [weak self] (subChannel, error) in
+            guard let object = subChannel.snapshot else { return }
+            self?.subChannel = object
         }
     }
     
@@ -255,7 +271,7 @@ extension AmityMessageListScreenViewModel {
 			parentId: nil,
 			metadata: metadata,
 			mentioneesBuilder: mentionees)
-        
+                        
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
@@ -299,13 +315,36 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
+    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+        let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !textMessage.isEmpty else {
+            return
+        }
+        let createOptioins = AmityTextMessageCreateOptions(
+            subChannelId: subChannelId,
+            text: textMessage,
+            tags: nil,
+            parentId: parentId,
+            metadata: metadata,
+            mentioneesBuilder: mentionees)
+                        
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
+            self?.text = ""
+            self?.delegate?.screenViewModelEvents(for: .didSendText)
+        }
+    }
+    
     func startReading() {
-        membershipParticipation?.startReading(subChannelId: subChannelId)
+        guard let subChannel = subChannel else { return }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: subChannel.startReading, parameters: ()) { _,_ in }
+//        membershipParticipation?.startReading(subChannelId: subChannelId)
     }
     
     func stopReading() {
-        membershipParticipation?.stopReading(subChannelId: subChannelId)
-        membershipParticipation = nil
+        guard let subChannel = subChannel else { return }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: subChannel.stopReading, parameters: ()) { _,_ in }
+//        membershipParticipation?.stopReading(subChannelId: subChannelId)
+//        membershipParticipation = nil
     }
     
     func shouldScrollToBottom(force: Bool) {
@@ -467,7 +506,6 @@ private extension AmityMessageListScreenViewModel {
         }
         
     }
-    
 }
 
 // MARK: - Send Image / Video

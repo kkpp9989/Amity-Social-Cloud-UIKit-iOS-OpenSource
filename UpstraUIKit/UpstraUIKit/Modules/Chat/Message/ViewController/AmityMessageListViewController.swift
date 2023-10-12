@@ -98,7 +98,6 @@ public final class AmityMessageListViewController: AmityViewController {
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
 		
         AmityKeyboardService.shared.delegate = self
-        screenViewModel.startReading()
         
         bottomConstraint.constant = .zero
         view.endEditing(true)
@@ -401,6 +400,8 @@ private extension AmityMessageListViewController {
     func buildViewModel() {
         screenViewModel.delegate = self
         screenViewModel.action.getChannel()
+        screenViewModel.action.getSubChannel()
+        screenViewModel.startReading()
     }
 }
 
@@ -638,6 +639,14 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find file for message: \(message.messageId)")
             }
+        case .forward(indexPath: let indexPath):
+            messageViewController.updateEditMode()
+        case .copy(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            UIPasteboard.general.string = message.text
+        case .reply(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            replyMessageTap(message)
         }
     }
     
@@ -767,6 +776,16 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
 									mentionees: mentionees)
 		mentionManager?.resetState()
 	}
+    
+    func replyMessageTap(_ message: AmityMessageModel) {
+        let metadata = mentionManager?.getMetadata()
+        let mentionees = mentionManager?.getMentionees()
+        screenViewModel.action.reply(withText: composeBar.textView.text,
+                                     parentId: message.messageId,
+                                     metadata: metadata,
+                                     mentionees: mentionees)
+        mentionManager?.resetState()
+    }
 }
 
 extension AmityMessageListViewController: AmityFilePickerDelegate {

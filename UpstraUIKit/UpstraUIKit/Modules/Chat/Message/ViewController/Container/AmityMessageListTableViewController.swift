@@ -106,6 +106,11 @@ extension AmityMessageListTableViewController {
         
     }
     
+    func updateEditMode() {
+        // Enable edit mode for the table view
+        tableView.setEditing(true, animated: true)
+    }
+    
 }
 
 // MARK: - Delegate

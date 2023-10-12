@@ -60,7 +60,9 @@ public struct AmityPostTextComponent: AmityPostComposable {
                                 cell.displayURLPreview(metadata: urlMetadata)
                                 // Reload row if row is visible
                                 if let indexPathOfCell = cell.indexPath, let _ = tableView.indexPathsForVisibleRows?.contains(where: { _ in indexPath == indexPathOfCell }) {
-                                    tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
+                                    DispatchQueue.main.async {
+                                        tableView.reloadRows(at: [indexPathOfCell], with: .automatic)
+                                    }
                                 }
                             } else { // Case : Can get new URL metadata -> hide URL preview
                                 // Hide URL Preview

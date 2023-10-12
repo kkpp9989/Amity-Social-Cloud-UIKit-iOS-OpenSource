@@ -47,6 +47,7 @@ final public class AmityMentionManager {
     public var users: [AmityMentionUserModel] = []
     public var keywords: [AmityHashtagModel] = []
     private let communityId: String?
+    private let channelId: String?
     private var font: UIFont = AmityFontSet.body
     private var highlightFont = AmityFontSet.bodyBold
     private var foregroundColor = AmityColorSet.base
@@ -58,6 +59,13 @@ final public class AmityMentionManager {
     private var communityObject: AmityObject<AmityCommunity>?
     private var token: AmityNotificationToken?
     private var community: AmityCommunityModel?
+    private var channel: AmityChannelModel?
+    
+    // Chat channel
+    private var channelMembership: AmityChannelMembership?
+    private var channelCollectionToken: AmityNotificationToken?
+    private var channelNotificationToken: AmityNotificationToken?
+    private let channelRepository: AmityChannelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
     
     // User repository
     private lazy var userRepository: AmityUserRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
@@ -75,19 +83,30 @@ final public class AmityMentionManager {
         switch type {
         case .post(let communityId), .comment(let communityId):
             self.communityId = communityId
+            self.channelId = nil
             if let communityId = communityId {
                 communityObject = privateCommunityRepository.getCommunity(withId: communityId)
                 token = communityObject?.observe { [weak self] community, error in
                     if community.dataStatus == .fresh {
                         self?.token?.invalidate()
                     }
-                    guard let object = community.object else { return }
+                    guard let object = community.snapshot else { return }
                     
                     self?.community = AmityCommunityModel(object: object)
                 }
             }
-        default:
+        case .message(channelId: let channelId):
             self.communityId = nil
+            self.channelId = channelId
+            if let channelId = channelId {
+                channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
+                    if channel.dataStatus == .fresh {
+                        self?.channelNotificationToken?.invalidate()
+                    }
+                    guard let object = channel.snapshot else { return }
+                    self?.channel = AmityChannelModel(object: object)
+                }
+            }
         }
     }
 }
@@ -354,18 +373,30 @@ public extension AmityMentionManager {
 // MARK: - Private methods
 private extension AmityMentionManager {
     func search(withText text: String) {
-        if communityId == nil || (community?.isPublic ?? false) {
-            usersCollection = userRepository.searchUser(text, sortBy: .displayName)
-            collectionToken = usersCollection?.observe { [weak self] (collection, _, error) in
-                self?.handleSearchResponse(with: collection)
+        if channelId == nil {
+            if communityId == nil || (community?.isPublic ?? false) {
+                usersCollection = userRepository.searchUser(text, sortBy: .displayName)
+                collectionToken = usersCollection?.observe { [weak self] (collection, _, error) in
+                    self?.handleSearchResponse(with: collection)
+                }
+                return
             }
-            return
         }
-        
+                
         if let communityId = communityId {
             privateCommunityMembersCollection = privateCommunityRepository.searchMembers(communityId: communityId, displayName: text, membership: [.member], roles: [], sortBy: .lastCreated)
             collectionToken = privateCommunityMembersCollection?.observe { [ weak self] (collection, change, error) in
                 self?.handleSearchResponse(with: collection)
+            }
+        }
+        
+        if let _ = channelId {
+            if !(channel?.isConversationChannel ?? false) {
+                let builder = AmityChannelMembershipFilterBuilder()
+                builder.add(filter: .member)
+                channelCollectionToken = channel?.participation.searchMembers(displayName: "", filterBuilder: builder, roles: []).observe({ [weak self] collection, _, _  in
+                    self?.handleSearchResponse(with: collection)
+                })
             }
         }
     }
@@ -401,6 +432,10 @@ private extension AmityMentionManager {
                 if T.self == AmityCommunityMember.self {
                     guard let memberObject = object as? AmityCommunityMember, let user = memberObject.user else { continue }
                     users.append(AmityMentionUserModel(user: user))
+                } else if T.self == AmityChannelMember.self {
+                    guard let memberObject = object as? AmityChannelMember, let user = memberObject.user else { continue }
+                    users.append(AmityMentionUserModel(user: user))
+
                 } else {
                     guard let userObject = object as? AmityUser else { continue }
                     users.append(AmityMentionUserModel(user: userObject))
