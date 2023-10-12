@@ -50,6 +50,8 @@ final class AmityCommunityFetchMemberController: AmityCommunityFetchMemberContro
             if collection.hasNext {
                 collection.nextPage()
                 completion(true)
+            } else {
+                completion(false)
             }
         default:
             completion(false)

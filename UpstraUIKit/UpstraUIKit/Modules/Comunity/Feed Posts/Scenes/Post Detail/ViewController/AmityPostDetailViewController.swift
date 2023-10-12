@@ -951,7 +951,7 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
             let info = AmityReactionInfo(referenceId: comment.id, referenceType: .comment, reactionsCount: comment.reactionsCount)
             let reactionList = screenViewModel.dataSource.getReactionList()
             
-            self.showReactionUserList(info: info, reactionList: reactionList)
+            self.showReactionUserList(info: info, reactionList: [:])
         case .post, .loadMoreReply:
             break
         }

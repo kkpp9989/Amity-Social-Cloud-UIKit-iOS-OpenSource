@@ -227,6 +227,10 @@ public final class AmityUIKitManager {
     public static func startUnreadCountSync() {
         client.startUnreadSync()
     }
+    
+    public static func createChannel(_ source: UIViewController,userId: String) {
+        AmityUIKitManagerInternal.shared.getUser(source, userId: userId)
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -240,6 +244,8 @@ final class AmityUIKitManagerInternal: NSObject {
     
     private(set) var fileService = AmityFileService()
     private(set) var messageMediaService = AmityMessageMediaService()
+    private(set) var userRepository: AmityUserRepository?
+    private(set) var channelRepository: AmityChannelRepository?
     
     var currentUserId: String { return client.currentUserId ?? "" }
     var displayName: String { return client.user?.snapshot?.displayName ?? "" }
@@ -249,6 +255,9 @@ final class AmityUIKitManagerInternal: NSObject {
 
     var userToken: String = ""
     public var currentUserToken: String { return self.userToken }
+    
+    private var userCollectionToken: AmityNotificationToken?
+    private var channelCollectionToken: AmityNotificationToken?
     
     var client: AmityClient {
         guard let client = _client else {
@@ -279,6 +288,7 @@ final class AmityUIKitManagerInternal: NSObject {
         
         // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
         self.apiKey = apiKey
+        
         
         completion(.success(true))
     }
@@ -364,7 +374,35 @@ final class AmityUIKitManagerInternal: NSObject {
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .videoStreaming, isEnabled: false, roleFilter: nil)]) { result, error in
             print("[Livestream-notification] Disable livestream user level notification result : \(result)")
         }
-        
+    }
+    
+    public func getUser(_ source: UIViewController, userId: String) {
+        AmityEventHandler.shared.showKTBLoading()
+        guard let userRepo = userRepository else { return }
+        userCollectionToken = userRepo.getUser(userId).observe { [weak self] object, error in
+            guard let strongSelf = self else { return }
+            if let user = object.snapshot {
+                let userModel = AmityUserModel(user: user)
+                strongSelf.userCollectionToken?.invalidate()
+                strongSelf.createChannel(source, user: userModel)
+            }
+        }
+    }
+    
+    private func createChannel(_ source: UIViewController, user: AmityUserModel) {
+        guard let channelRepo = channelRepository else { return }
+        let userIds: [String] = [user.userId, currentUserId]
+        let builder = AmityConversationChannelBuilder()
+        builder.setUserId(user.userId)
+        builder.setDisplayName(user.displayName)
+        builder.setMetadata(["user_id_member": userIds])
+                
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [weak self] channelObject, _ in
+            if let channel = channelObject {
+                AmityEventHandler.shared.hideKTBLoading()
+                AmityChannelEventHandler.shared.channelDidTap(from: source, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
+            }
+        }
     }
     
     // MARK: - Helpers
@@ -379,6 +417,8 @@ final class AmityUIKitManagerInternal: NSObject {
         // Update file repository to use in file service.
         fileService.fileRepository = AmityFileRepository(client: client)
         messageMediaService.fileRepository = AmityFileRepository(client: client)
+        userRepository = AmityUserRepository(client: client)
+        channelRepository = AmityChannelRepository(client: client)
     }
 }
 

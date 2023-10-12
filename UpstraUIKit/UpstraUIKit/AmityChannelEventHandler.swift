@@ -30,6 +30,15 @@ open class AmityChannelEventHandler {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
+    open func channelDidTap(from source: UIViewController,
+                            channelId: String, subChannelId: String) {
+        let settings = AmityMessageListViewController.Settings()
+        let viewController = AmityMessageListViewController.make(channelId: channelId, subChannelId: subChannelId, settings: settings)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
     /// Event for Leave Chat
     /// It will be triggered when leave chat is success
     ///
