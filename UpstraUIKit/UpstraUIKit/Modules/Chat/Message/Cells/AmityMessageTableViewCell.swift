@@ -63,6 +63,14 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         }
     }
     
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .clear
+        selectedBackgroundView = backgroundView
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -178,7 +186,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     
     // MARK: - Setup View
     private func setupView() {
-        selectionStyle = .none
+        selectionStyle = .default
+        tintColor = AmityColorSet.primary
         
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)

@@ -90,6 +90,16 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+    func updateViewDidSelectForwardMessage(amount: Int) {
+        // Intentionally left empty
+        // This class doesn't support updateViewDidSelectForwardMessage.
+    }
+    
+    func showForwardMenuButton(show: Bool) {
+        // Intentionally left empty
+        // This class doesn't support showForwardMenuButton.
+    }
+    
 	var textView: AmityTextView {
 		get {
 			textComposeBarView.textView

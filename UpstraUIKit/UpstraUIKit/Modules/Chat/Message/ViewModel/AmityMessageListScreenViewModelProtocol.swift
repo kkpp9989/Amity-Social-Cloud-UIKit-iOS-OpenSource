@@ -31,6 +31,8 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     func screenViewModelIsRefreshing(_ isRefreshing: Bool)
 	func screenViewModelDidTapOnMention(with userId: String)
     
+    func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int)
+    
 }
 
 protocol AmityMessageListScreenViewModelDataSource {
@@ -84,6 +86,9 @@ protocol AmityMessageListScreenViewModelAction {
     
     func reportMessage(at indexPath: IndexPath)
 	func tapOnMention(withUserId userId: String)
+    
+    func updateForwardMessageInList(with message: AmityMessageModel)
+    func resetDataInForwardMessageList()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {

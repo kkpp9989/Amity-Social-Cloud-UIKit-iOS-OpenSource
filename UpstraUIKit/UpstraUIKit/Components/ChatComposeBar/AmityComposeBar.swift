@@ -24,6 +24,8 @@ protocol AmityComposeBar: AnyObject {
     func showPopoverMessage()
     func clearText()
     func showRecordButton(show: Bool)
+    func showForwardMenuButton(show: Bool)
+    func updateViewDidSelectForwardMessage(amount: Int)
     
     var deletingTarget: UIView? { get set }
     var isTimeout: Bool { get set }
