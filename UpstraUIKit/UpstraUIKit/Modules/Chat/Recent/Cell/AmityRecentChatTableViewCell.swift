@@ -154,6 +154,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
             statusBadgeImageView.isHidden = true
+            badgeStatusView.backgroundColor = .clear
             return UIImage()
         }
     }
