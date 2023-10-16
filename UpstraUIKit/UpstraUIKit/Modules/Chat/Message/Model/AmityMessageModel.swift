@@ -28,6 +28,8 @@ public final class AmityMessageModel {
     public var channelSegment: UInt
 	public let metadata: [String: Any]?
 	public let mentionees: [AmityMentionees]?
+    public let parentId: String?
+    public var parentMessageObjc: AmityMessage?
 	
     /**
      * The post appearance settings
@@ -37,6 +39,9 @@ public final class AmityMessageModel {
     public var isOwner: Bool {
         return userId == AmityUIKitManagerInternal.shared.client.currentUserId
     }
+    
+    private let messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
+    private var messageToken: AmityNotificationToken?
     
     public init(object: AmityMessage) {
         self.object = object
@@ -57,6 +62,11 @@ public final class AmityMessageModel {
         self.appearance = AmityMessageModelAppearance()
 		self.metadata = object.metadata
 		self.mentionees = object.mentionees
+        self.parentId = object.parentId
+        self.getParentMessage {result in
+            self.parentMessageObjc = result
+            self.messageToken?.invalidate()
+        }
     }
     
     public var text: String? {
@@ -107,4 +117,20 @@ extension AmityMessageModel: Hashable {
         }
     }
     
+}
+
+extension AmityMessageModel {
+    private func getParentMessage(completion: @escaping (AmityMessage?) -> Void) {
+        messageToken = messageRepository.getMessage(parentId ?? "").observe { (message, error) in
+            if let message = message.snapshot {
+                //  Handle message result
+                print("----------> message have data")
+                completion(message)
+            } else {
+                print("----------> no data")
+                completion(nil)
+            }
+        }
+    }
+
 }

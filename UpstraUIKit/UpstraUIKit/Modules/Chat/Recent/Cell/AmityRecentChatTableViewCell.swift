@@ -23,6 +23,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var previewMessageLabel: UILabel!
     @IBOutlet private var dateTimeLabel: UILabel!
     @IBOutlet private var statusBadgeImageView: UIImageView!
+    @IBOutlet private var badgeStatusView: UIView!
 
     private var token: AmityNotificationToken?
     private var repository: AmityUserRepository?
@@ -30,6 +31,13 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // Reset any cell-specific properties here
+        statusBadgeImageView.image = nil
+        badgeStatusView.isHidden = true
     }
     
     private func setupView() {
@@ -41,15 +49,21 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         selectionStyle = .none
         
         iconImageView.isHidden = true
-        statusImageView.isHidden = true
         badgeView.isHidden = true
+        statusImageView.isHidden = true
+        statusBadgeImageView.isHidden = true
+        badgeStatusView.isHidden = true
+        
+        badgeStatusView.backgroundColor = .white
+        badgeStatusView.layer.cornerRadius = badgeStatusView.frame.height / 2
+        badgeStatusView.clipsToBounds = true
         
         titleLabel.font = AmityFontSet.title
         titleLabel.textColor = AmityColorSet.base
         memberLabel.font = AmityFontSet.caption
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
         
-        previewMessageLabel.text = "No message yet"
+        previewMessageLabel.text = "No message"
         previewMessageLabel.numberOfLines = 2
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
@@ -57,13 +71,13 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         
         dateTimeLabel.font = AmityFontSet.caption
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
-        
+                
         mentionBadgeImageView.image = AmityIconSet.Chat.iconMentionBadges
         mentionBadgeImageView.isHidden = true
     }
     
     func display(with channel: AmityChannelModel) {
-        statusImageView.isHidden = false
+        statusImageView.isHidden = true
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
@@ -84,10 +98,14 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
-            statusImageView.isHidden = true
+            statusBadgeImageView.isHidden = true
+            badgeStatusView.isHidden = true
+            badgeStatusView.backgroundColor = .clear
         case .conversation:
             memberLabel.text = nil
-            statusImageView.isHidden = false
+            statusBadgeImageView.isHidden = false
+            badgeStatusView.isHidden = false
+            badgeStatusView.backgroundColor = .white
             AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
@@ -110,7 +128,9 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case .community:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
-            statusImageView.isHidden = true
+            statusBadgeImageView.isHidden = true
+            badgeStatusView.isHidden = true
+            badgeStatusView.backgroundColor = .clear
         case .private, .live, .broadcast, .unknown:
             break
         @unknown default:
@@ -133,6 +153,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case "out_sick":
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
+            statusBadgeImageView.isHidden = true
             return UIImage()
         }
     }

@@ -1,20 +1,20 @@
 //
-//  AmityMessagesSearchViewController.swift
+//  AmityChannelsSearchViewController.swift
 //  AmityUIKit
 //
-//  Created by GuIDe'MacbookAmityHQ on 10/10/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 16/10/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 
-class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvider {
+class AmityChannelsSearchViewController: AmityViewController, IndicatorInfoProvider {
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
     
     // MARK: - Properties
-    private var screenViewModel: AmityMessagesSearchScreenViewModelType!
+    private var screenViewModel: AmityChannelsSearchScreenViewModelType!
     private var pageTitle: String?
     private var emptyView = AmitySearchEmptyView()
     private var keyword: String = ""
@@ -26,9 +26,9 @@ class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvi
         setupTableView()
     }
     
-    public static func make(title: String) -> AmityMessagesSearchViewController {
-        let viewModel = AmityMessagesSearchScreenViewModel()
-        let vc = AmityMessagesSearchViewController(nibName: AmityMessagesSearchViewController.identifier, bundle: AmityUIKitManager.bundle)
+    public static func make(title: String) -> AmityChannelsSearchViewController {
+        let viewModel = AmityChannelsSearchViewModel()
+        let vc = AmityChannelsSearchViewController(nibName: AmityChannelsSearchViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.pageTitle = title
         return vc
@@ -45,7 +45,7 @@ class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvi
     }
     
     private func setupTableView() {
-        tableView.register(AmityMessageSearchTableViewCell.nib, forCellReuseIdentifier: AmityMessageSearchTableViewCell.identifier)
+        tableView.register(AmityChannelsSearchTableViewCell.nib, forCellReuseIdentifier: AmityChannelsSearchTableViewCell.identifier)
         tableView.separatorColor = .clear
         tableView.backgroundColor = AmityColorSet.backgroundColor
         tableView.tableFooterView = UIView()
@@ -59,10 +59,10 @@ class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvi
 }
 
 // MARK: - UITableView Delegate
-extension AmityMessagesSearchViewController: UITableViewDelegate {
+extension AmityChannelsSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
-        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId)
+        AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: model.channelId, subChannelId: model.object.defaultSubChannelId)
     }
     
     func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -87,41 +87,43 @@ extension AmityMessagesSearchViewController: UITableViewDelegate {
 }
 
 // MARK: - UITableView DataSource
-extension AmityMessagesSearchViewController: UITableViewDataSource {
+extension AmityChannelsSearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return screenViewModel.dataSource.numberOfKeyword()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AmityMessageSearchTableViewCell.identifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: AmityChannelsSearchTableViewCell.identifier, for: indexPath)
         configure(for: cell, at: indexPath)
         return cell
     }
     
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
-        if let cell = cell as? AmityMessageSearchTableViewCell, let message = screenViewModel.dataSource.item(at: indexPath) {
+        if let cell = cell as? AmityChannelsSearchTableViewCell, let message = screenViewModel.dataSource.item(at: indexPath) {
             cell.display(with: message, keyword: keyword)
+            cell.delegate = self
+            cell.indexPath = indexPath
         }
     }
 }
 
-extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelDelegate {
-    func screenViewModelDidSearch(_ viewModel: AmityMessagesSearchScreenViewModelType) {
+extension AmityChannelsSearchViewController: AmityChannelsSearchScreenViewModelDelegate {
+    func screenViewModelDidSearch(_ viewModel: AmityChannelsSearchScreenViewModelType) {
         emptyView.removeFromSuperview()
         tableView.reloadData()
     }
     
-    func screenViewModelDidClearText(_ viewModel: AmityMessagesSearchScreenViewModelType) {
+    func screenViewModelDidClearText(_ viewModel: AmityChannelsSearchScreenViewModelType) {
         emptyView.removeFromSuperview()
         tableView.reloadData()
     }
     
-    func screenViewModelDidSearchNotFound(_ viewModel: AmityMessagesSearchScreenViewModelType) {
+    func screenViewModelDidSearchNotFound(_ viewModel: AmityChannelsSearchScreenViewModelType) {
         tableView.setEmptyView(view: emptyView)
         tableView.reloadData()
     }
     
-    func screenViewModel(_ viewModel: AmityMessagesSearchScreenViewModelType, loadingState: AmityLoadingState) {
+    func screenViewModel(_ viewModel: AmityChannelsSearchScreenViewModelType, loadingState: AmityLoadingState) {
         switch loadingState {
         case .initial:
             break
@@ -134,7 +136,7 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelD
     }
 }
 
-extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelAction {
+extension AmityChannelsSearchViewController: AmityHashtagSearchScreenViewModelAction {
     func loadMore() {
         screenViewModel.action.loadMore()
     }
@@ -142,5 +144,12 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelA
     func search(withText text: String?) {
         screenViewModel.action.search(withText: text)
         keyword = text ?? ""
+    }
+}
+
+extension AmityChannelsSearchViewController: AmityChannelsSearchTableViewCellDelegate {
+    func didJoinPerformAction(_ indexPath: IndexPath) {
+        guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
+        screenViewModel.action.join(withModel: model)
     }
 }

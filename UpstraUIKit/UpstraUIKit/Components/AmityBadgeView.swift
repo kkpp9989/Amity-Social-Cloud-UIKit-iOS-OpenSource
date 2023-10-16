@@ -33,7 +33,7 @@ final class AmityBadgeView: AmityView {
         
         label.textColor = UIColor.white
         label.textAlignment = .center
-        label.font = AmityFontSet.caption
+        label.font = AmityFontSet.captionBold
     }
     
 }

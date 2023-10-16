@@ -783,7 +783,8 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
         screenViewModel.action.reply(withText: composeBar.textView.text,
                                      parentId: message.messageId,
                                      metadata: metadata,
-                                     mentionees: mentionees)
+                                     mentionees: mentionees,
+                                     type: message.messageType)
         mentionManager?.resetState()
     }
 }

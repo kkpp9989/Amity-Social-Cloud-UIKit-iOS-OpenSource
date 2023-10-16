@@ -315,7 +315,7 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
-    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType) {
         let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !textMessage.isEmpty else {
             return
@@ -337,14 +337,11 @@ extension AmityMessageListScreenViewModel {
     func startReading() {
         guard let subChannel = subChannel else { return }
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: subChannel.startReading, parameters: ()) { _,_ in }
-//        membershipParticipation?.startReading(subChannelId: subChannelId)
     }
     
     func stopReading() {
         guard let subChannel = subChannel else { return }
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: subChannel.stopReading, parameters: ()) { _,_ in }
-//        membershipParticipation?.stopReading(subChannelId: subChannelId)
-//        membershipParticipation = nil
     }
     
     func shouldScrollToBottom(force: Bool) {

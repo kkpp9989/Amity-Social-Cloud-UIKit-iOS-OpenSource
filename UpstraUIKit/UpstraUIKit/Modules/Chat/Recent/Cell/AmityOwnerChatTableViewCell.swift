@@ -12,7 +12,8 @@ import AmitySDK
 class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
     
     @IBOutlet private var avatarView: AmityAvatarView!
-    @IBOutlet private var badgeStatusIcon: AmityAvatarView!
+    @IBOutlet private var badgeStatusIcon: UIImageView!
+    @IBOutlet private var badgeStatusView: UIView!
     @IBOutlet private var statusLabel: UILabel!
     private var repository: AmityUserRepository?
     
@@ -25,6 +26,10 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         avatarView.placeholder = AmityIconSet.defaultAvatar
         statusLabel.font = AmityFontSet.body
+        
+        badgeStatusView.backgroundColor = .white
+        badgeStatusView.layer.cornerRadius = badgeStatusView.frame.height / 2
+        badgeStatusView.clipsToBounds = true
     }
     
     func setupDisplay() {
