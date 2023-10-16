@@ -20,7 +20,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     // MARK: - Child ViewController
     private var messageVC = AmityMessagesSearchViewController.make(title: AmityLocalizedStringSet.messages.localizedString)
     private var membersVC = AmityMemberSearchViewController.make(title: AmityLocalizedStringSet.accounts.localizedString)
-    private var groupVC = AmityHashtagSearchViewController.make(title: AmityLocalizedStringSet.groups.localizedString)
+    private var groupVC = AmityChannelsSearchViewController.make(title: AmityLocalizedStringSet.groups.localizedString)
 
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -74,7 +74,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [messageVC, membersVC]
+        return [messageVC, membersVC, groupVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {

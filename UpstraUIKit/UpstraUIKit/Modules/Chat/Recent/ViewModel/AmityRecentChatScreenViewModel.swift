@@ -72,7 +72,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     // MARK: - Collection
     private var channelsCollection: AmityCollection<AmityChannel>?
     
-    var cancellables: Set<AnyCancellable> = Set()
+    var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Token
     private var channelsToken: AmityNotificationToken?
@@ -204,28 +204,27 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     
     func getSyncAllChannelPresence() {
         channelPresenceRepo.getSyncingChannelPresence().sink { completion in
-            // Handle completion (e.g., error handling)
-            // Call the completion handler here if needed
-            AmityLog.logLevel = .all
-//            switch completion {
-//            case .finished:
-//                print("getSyncingChannelPresence success")
-//            case .failure(let error):
-//                print("getSyncingChannelPresence failure: \(error.localizedDescription)")
-//            }
-        } receiveValue: { presence in
-            // Process the presence data
-            let onlinePresence = presence.filter { $0.isAnyMemberOnline }
+            // Handle completion
+            switch completion {
+            case .failure(let error):
+                print("------------> getSyncingChannelPresence error: \(error.localizedDescription)")
+            default:
+                print("------------> getSyncingChannelPresence error: nil")
+            }
+        } receiveValue: { presences in
             
-            var onlineChannels = self.channels
-            let onlineChannel = onlineChannels.filter { channel in
-                let isOnline = onlinePresence.contains { $0.channelId == channel.channelId }
-                print("-----------> ChannelId: \(channel.channelId) -> \(isOnline)")
+            /// Channel presences where any other member is online
+            let onlinePresences = presences.filter { $0.isAnyMemberOnline }
+            
+            // You can use this onlinePresences & map it with your channel list to determine
+            // list of online channels to show or sort it in asc | desc order
+            let onlineChannels = self.channels.filter { channel in
+                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
                 return isOnline
             }
             
-            self.channels = onlineChannel
-            self.delegate?.screenViewModelDidGetChannel()
+            self.channels = onlineChannels
+            
         }.store(in: &cancellables)
     }
 
@@ -235,6 +234,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
 extension AmityRecentChatScreenViewModel {
     
     func viewDidLoad() {
+        AmityLog.logLevel = .all
         getChannelList()
         getSyncAllChannelPresence()
     }

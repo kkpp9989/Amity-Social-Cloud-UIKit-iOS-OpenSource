@@ -32,24 +32,34 @@
                                             <constraint firstAttribute="width" constant="40" id="sJV-Dh-r5W"/>
                                         </constraints>
                                     </view>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tlq-rZ-mxr">
-                                        <rect key="frame" x="25" y="25" width="15" height="15"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fW8-I9-20E">
+                                        <rect key="frame" x="20" y="20" width="20" height="20"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tlq-rZ-mxr">
+                                                <rect key="frame" x="1.6666666666666643" y="1.6666666666666643" width="17" height="17"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="15" id="78b-9E-nWj"/>
-                                            <constraint firstAttribute="height" constant="15" id="Apy-5P-eee"/>
+                                            <constraint firstAttribute="width" constant="20" id="7Fx-bN-Sw9"/>
+                                            <constraint firstAttribute="height" constant="20" id="9yV-QH-Svp"/>
+                                            <constraint firstAttribute="trailing" secondItem="tlq-rZ-mxr" secondAttribute="trailing" constant="1.5" id="ZDT-mJ-w2a"/>
+                                            <constraint firstItem="tlq-rZ-mxr" firstAttribute="top" secondItem="fW8-I9-20E" secondAttribute="top" constant="1.5" id="bGN-3b-JhC"/>
+                                            <constraint firstAttribute="bottom" secondItem="tlq-rZ-mxr" secondAttribute="bottom" constant="1.5" id="cHc-hz-7VD"/>
+                                            <constraint firstItem="tlq-rZ-mxr" firstAttribute="leading" secondItem="fW8-I9-20E" secondAttribute="leading" constant="1.5" id="wHL-Qd-WWh"/>
                                         </constraints>
-                                    </imageView>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="7nf-fF-Ng1"/>
                                     <constraint firstAttribute="width" constant="40" id="Dsa-vP-pu5"/>
-                                    <constraint firstItem="tlq-rZ-mxr" firstAttribute="bottom" secondItem="20u-8Q-3sZ" secondAttribute="bottom" id="RaN-Ps-RBZ"/>
                                     <constraint firstAttribute="bottom" secondItem="20u-8Q-3sZ" secondAttribute="bottom" id="bDd-83-Rbw"/>
                                     <constraint firstAttribute="trailing" secondItem="20u-8Q-3sZ" secondAttribute="trailing" id="fGv-K8-BYG"/>
                                     <constraint firstItem="20u-8Q-3sZ" firstAttribute="leading" secondItem="Ca2-jv-8WY" secondAttribute="leading" id="iCY-68-7tW"/>
+                                    <constraint firstItem="fW8-I9-20E" firstAttribute="bottom" secondItem="20u-8Q-3sZ" secondAttribute="bottom" id="moC-dg-F9c"/>
+                                    <constraint firstItem="fW8-I9-20E" firstAttribute="trailing" secondItem="20u-8Q-3sZ" secondAttribute="trailing" id="rFZ-V9-UzO"/>
                                     <constraint firstItem="20u-8Q-3sZ" firstAttribute="top" secondItem="Ca2-jv-8WY" secondAttribute="top" id="rQ6-qn-1NQ"/>
-                                    <constraint firstItem="tlq-rZ-mxr" firstAttribute="trailing" secondItem="20u-8Q-3sZ" secondAttribute="trailing" id="tnG-Hf-dpk"/>
                                 </constraints>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="kCF-4O-N8N">
@@ -174,6 +184,7 @@
             <viewLayoutGuide key="safeArea" id="Vls-bw-Ym1"/>
             <connections>
                 <outlet property="avatarView" destination="20u-8Q-3sZ" id="Duq-hb-GQT"/>
+                <outlet property="badgeStatusView" destination="fW8-I9-20E" id="aRG-hF-Mj6"/>
                 <outlet property="badgeView" destination="Uer-ro-NIr" id="c85-OV-Uk2"/>
                 <outlet property="containerDisplayNameView" destination="pWq-Cj-2UP" id="mrX-uM-RcW"/>
                 <outlet property="containerMessageView" destination="cXm-ph-KqI" id="YZR-12-8tC"/>

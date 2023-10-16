@@ -56,7 +56,6 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: data.channelObjc.lastActivity)
         titleLabel.text = data.channelObjc.displayName
-        avatarView.placeholder = AmityIconSet.defaultAvatar
 
         let text = data.messageObjc.data?["text"] as? String ?? "No message"
         let highlightText = highlightKeyword(in: text, keyword: keyword, highlightColor: AmityColorSet.primary)
@@ -67,7 +66,9 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(data.channelObjc.memberCount))"
             statusImageView.isHidden = true
+            avatarView.placeholder = AmityIconSet.defaultAvatar
         case .conversation:
+            avatarView.placeholder = AmityIconSet.defaultAvatar
             memberLabel.text = nil
             statusImageView.isHidden = false
             AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: data.channelObjc.channelId) { user in
@@ -90,6 +91,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
                 }
             }
         case .community:
+            avatarView.placeholder = AmityIconSet.defaultGroupChat
             avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(data.channelObjc.memberCount))"
             statusImageView.isHidden = true
