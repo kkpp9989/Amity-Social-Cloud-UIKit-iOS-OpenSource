@@ -778,6 +778,11 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
         messageViewController.updateEditMode(isEdit: false)
         screenViewModel.action.resetDataInForwardMessageList()
     }
+    
+    func composeViewDidSelectForwardMessage() {
+        AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+        }
+    }
 	
 	func sendMessageTap() {
 		let metadata = mentionManager?.getMetadata()

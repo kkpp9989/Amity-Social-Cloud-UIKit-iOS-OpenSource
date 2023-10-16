@@ -12,6 +12,7 @@ protocol AmityMessageListComposeBarDelegate: AnyObject {
 	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
 	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
     func composeViewDidCancelForwardMessage()
+    func composeViewDidSelectForwardMessage()
 	func sendMessageTap()
 }
 
@@ -61,7 +62,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     
     // MARK: - Forward Message Action
     @IBAction func forwardTap(_ sender: UIButton) {
-        // Not ready
+        delegate?.composeViewDidSelectForwardMessage()
     }
     
     @IBAction func cancelForwardTap(_ sender: UIButton) {
