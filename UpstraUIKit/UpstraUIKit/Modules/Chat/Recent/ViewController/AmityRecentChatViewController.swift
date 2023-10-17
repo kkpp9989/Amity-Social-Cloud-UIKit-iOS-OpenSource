@@ -49,6 +49,11 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         setupView()
     }
     
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        AmityUIKitManager.getUnreadCount()
+    }
+    
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         

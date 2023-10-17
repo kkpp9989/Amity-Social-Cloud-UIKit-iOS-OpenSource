@@ -57,7 +57,7 @@ protocol AmityMessageListScreenViewModelAction {
     func send(withMedias medias: [AmityMedia], type: AmityMediaType)
     func send(withFiles files: [AmityFile])
     func sendAudio()
-    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType)
 
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath)

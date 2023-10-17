@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Combine
 
 /// AmityUIKit
 public final class AmityUIKitManager {
@@ -231,6 +232,14 @@ public final class AmityUIKitManager {
     public static func createChannel(_ source: UIViewController,userId: String) {
         AmityUIKitManagerInternal.shared.getUser(source, userId: userId)
     }
+    
+    public static func totalUnreadCount() -> Int {
+        return AmityUIKitManagerInternal.shared.totalUnreadCount
+    }
+    
+    public static func getUnreadCount() {
+        AmityUIKitManagerInternal.shared.getTotalUnreadCount()
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -253,11 +262,14 @@ final class AmityUIKitManagerInternal: NSObject {
     var userStatus: AmityUserStatus.StatusType = .AVAILABLE
     var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "" }
 
-    var userToken: String = ""
+    private var userToken: String = ""
     public var currentUserToken: String { return self.userToken }
     
     private var userCollectionToken: AmityNotificationToken?
     private var channelCollectionToken: AmityNotificationToken?
+    private var disposeBag: Set<AnyCancellable> = []
+    
+    var totalUnreadCount: Int = 0
     
     var client: AmityClient {
         guard let client = _client else {
@@ -389,7 +401,7 @@ final class AmityUIKitManagerInternal: NSObject {
         }
     }
     
-    private func createChannel(_ source: UIViewController, user: AmityUserModel) {
+    func createChannel(_ source: UIViewController, user: AmityUserModel) {
         guard let channelRepo = channelRepository else { return }
         let userIds: [String] = [user.userId, currentUserId]
         let builder = AmityConversationChannelBuilder()
@@ -403,6 +415,15 @@ final class AmityUIKitManagerInternal: NSObject {
                 AmityChannelEventHandler.shared.channelDidTap(from: source, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
             }
         }
+    }
+    
+    func getTotalUnreadCount() {
+        client.getUserUnread().sink(receiveValue: { [weak self] userUnread in
+            guard let strongSelf = self else { return }
+            print("[AMITY] User's total unread count: \(userUnread.unreadCount)")
+            strongSelf.totalUnreadCount = userUnread.unreadCount
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
+        }).store(in: &disposeBag)
     }
     
     // MARK: - Helpers
