@@ -756,6 +756,14 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 }
 
 extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, AmityComposeBarOnlyTextDelegate {
+    func composeViewDidCancelForwardMessage() {
+        // Not ready
+    }
+    
+    func composeViewDidSelectForwardMessage() {
+        // Not ready 
+    }
+    
 	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 		if view.textView.text.count > AmityMentionManager.maximumCharacterCountForPost {
 			showAlertForMaximumCharacters()

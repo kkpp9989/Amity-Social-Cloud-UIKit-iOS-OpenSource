@@ -20,7 +20,7 @@ public struct AmityURLMetadata {
 // MARK: - AmityShareExternalDomainURL
 private enum AmityShareExternalDomainURL: String {
     case DEV = "https://social-one-ktb-dev.com"
-    case UAT = "https://social-one-ktb-uat.com"
+    case UAT = "https://asc-one-ktb-uat.web.app"
     case PRODUCTION = "https://social-one-ktb.com"
 }
 
@@ -109,7 +109,12 @@ public struct AmityURLCustomManager {
             }
         }
 
-        static func generateExternalURLOfPost(postId: String) -> String {
+        static func generateExternalURLOfPost(post: AmityPostModel) -> String {
+            // Set parameter
+            let titleParameter = "ONE Krungthai Community : Recommend content For You"
+            let descriptionParameter = post.text.count > 20 ? String(post.text.prefix(20)) + "..." : post.text
+            let postId = post.postId
+            
             // Get domain URL from ENV
             var domainURL = ""
             if let envKey = AmityUIKitManager.env["env_key"] as? String {
@@ -117,9 +122,14 @@ public struct AmityURLCustomManager {
             } else {
                 domainURL = getDomainURLShareExternalURL(env: "") // Go to default (UAT)
             }
-
-            // Return URL
-            return "\(domainURL)/social/post/\(postId)"
+            
+            // Encode URL and return URL
+            let originalURL = "\(domainURL)/?title=\(titleParameter)&desc=\(descriptionParameter)&postId=\(postId)"
+            if let encodeURL = originalURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                return encodeURL
+            } else {
+                return originalURL
+            }
         }
     }
 }
