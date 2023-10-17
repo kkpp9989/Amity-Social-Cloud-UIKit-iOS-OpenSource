@@ -10,9 +10,9 @@ import AmitySDK
 import UIKit
 
 public struct AmityMentionUserModel {
-    let userId: String
+    let userId: String?
     let displayName: String
-    let avatarURL: String
+    let avatarURL: String?
     let isGlobalBan: Bool
     
     init(user: AmityUser) {
@@ -21,6 +21,13 @@ public struct AmityMentionUserModel {
         self.avatarURL = user.getAvatarInfo()?.fileURL ?? ""
         self.isGlobalBan = user.isGlobalBanned
     }
+	
+	init(userId: String?, displayName: String, avatarURL: String?, isGlobalBan: Bool) {
+		self.userId = userId
+		self.displayName = displayName
+		self.avatarURL = avatarURL
+		self.isGlobalBan = isGlobalBan
+	}
 }
 
 public protocol AmityMentionManagerDelegate: AnyObject {
@@ -247,7 +254,12 @@ public extension AmityMentionManager {
         
         let userId: String? = member.userId
         let displayName: String = member.displayName
-        let type: AmityMessageMentionType = .user
+        var type: AmityMessageMentionType = .user
+		
+		// select @All
+		if userId == nil, displayName == "All" {
+			type = .channel
+		}
         
         // adding a mention from ending
         var range = NSRange()
@@ -434,6 +446,9 @@ private extension AmityMentionManager {
                     users.append(AmityMentionUserModel(user: user))
                 } else if T.self == AmityChannelMember.self {
                     guard let memberObject = object as? AmityChannelMember, let user = memberObject.user else { continue }
+					if index == 0 {
+						users.append(AmityMentionUserModel(userId: nil, displayName: "All", avatarURL: "All", isGlobalBan: false))
+					}
                     users.append(AmityMentionUserModel(user: user))
 
                 } else {
@@ -689,7 +704,16 @@ extension AmityMentionManager {
         var attributes = [MentionAttribute]()
         
         let mentions = AmityMentionMapper.mentions(fromMetadata: metadata)
-        if mentions.isEmpty || mentionees.isEmpty { return [] }
+        if mentions.isEmpty || mentionees.isEmpty {
+			for mention in mentions {
+				if mention.index < 0 || mention.length <= 0 { continue }
+				if mention.type == .channel {
+					let range = NSRange(location: mention.index, length: mention.length)
+					attributes.append(MentionAttribute(attributes: [.foregroundColor: highlightColor, .font: highlightFont], range: range, userId: mention.userId ?? ""))
+				}
+			}
+			return attributes
+		}
         
         var users: [AmityUser] = []
         let mentionee = mentionees[0]

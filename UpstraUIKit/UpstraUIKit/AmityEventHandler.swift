@@ -91,6 +91,7 @@ open class AmityEventHandler {
     ///
     /// A default behavior is navigating to `AmityUserProfilePageViewController`
     open func userDidTap(from source: AmityViewController, userId: String) {
+		guard !userId.isEmpty else { return }
         let viewController = AmityUserProfilePageViewController.make(withUserId: userId)
         source.navigationController?.pushViewController(viewController, animated: true)
     }
