@@ -20,7 +20,7 @@ public struct AmityURLMetadata {
 // MARK: - AmityShareExternalDomainURL
 private enum AmityShareExternalDomainURL: String {
     case DEV = "https://social-one-ktb-dev.com"
-    case UAT = "https://asc-one-ktb-uat.web.app"
+    case UAT = "https://social-uat.krungthai.com"
     case PRODUCTION = "https://social-one-ktb.com"
 }
 
@@ -124,7 +124,7 @@ public struct AmityURLCustomManager {
             }
             
             // Encode URL and return URL
-            let originalURL = "\(domainURL)/?title=\(titleParameter)&desc=\(descriptionParameter)&postid=\(postId)"
+            let originalURL = "\(domainURL)/?title=\(titleParameter)&desc=\(descriptionParameter)&postId=\(postId)"
 //            print("[URL] original: \(originalURL)")
             if let encodeURL = originalURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
 //                print("[URL] encode: \(encodeURL)")
