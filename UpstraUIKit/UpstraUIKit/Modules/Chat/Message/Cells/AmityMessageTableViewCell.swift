@@ -200,6 +200,9 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     private func setAvatarImage(_ messageModel: AmityMessageModel) {
         let url = messageModel.object.user?.getAvatarInfo()?.fileURL
         avatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTap))
+        avatarView.addGestureRecognizer(tapGesture)
     }
 
 }
@@ -244,5 +247,9 @@ private extension AmityMessageTableViewCell {
     @objc
     func replyTap() {
         screenViewModel.action.performCellEvent(for: .reply(indexPath: indexPath))
+    }
+            
+    @objc func avatarTap() {
+        screenViewModel.action.performCellEvent(for: .avatar(indexPath: indexPath))
     }
 }

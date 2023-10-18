@@ -48,6 +48,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case forward(indexPath: IndexPath)
         case copy(indexPath: IndexPath)
         case reply(indexPath: IndexPath)
+        case avatar(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
