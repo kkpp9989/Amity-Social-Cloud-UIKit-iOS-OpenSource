@@ -45,7 +45,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func getChannelId() -> String
     func getCommunityId() -> String
     func isKeyboardVisible() -> Bool
-    func findIndexOfMessageWithMessageId(_ targetMessageId: String) -> (section: Int, row: Int)?
+    func findIndexPath(forMessageId messageId: String) -> IndexPath?
 }
 
 protocol AmityMessageListScreenViewModelAction {

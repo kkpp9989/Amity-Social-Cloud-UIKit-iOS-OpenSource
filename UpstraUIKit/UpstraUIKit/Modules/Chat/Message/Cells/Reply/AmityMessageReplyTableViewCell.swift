@@ -221,6 +221,7 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         textMessageView.isExpanded = false
+        replyImageView.isHidden = true
     }
 }
 

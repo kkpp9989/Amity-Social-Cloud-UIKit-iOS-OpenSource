@@ -147,10 +147,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         return channelId
     }
     
-    func findIndexOfMessageWithMessageId(_ targetMessageId: String) -> (section: Int, row: Int)? {
+    func findIndexPath(forMessageId messageId: String) -> IndexPath? {
         for (section, messageSection) in messages.enumerated() {
-            if let row = messageSection.firstIndex(where: { $0.messageId == targetMessageId }) {
-                return (section: section, row: row)
+            if let row = messageSection.firstIndex(where: { $0.messageId == messageId }) {
+                return IndexPath(row: row, section: section)
             }
         }
         return nil  // Message not found
@@ -391,6 +391,14 @@ extension AmityMessageListScreenViewModel {
 	}
     
     func jumpToTargetId(_ message: AmityMessageModel) {
+        for messageSection in messages {
+            if let targetMessage = messageSection.first(where: { $0.messageId == message.parentId }) {
+                self.delegate?.screenViewModelDidJumpToTarget(with: targetMessage.messageId)
+                return
+            }
+        }
+        
+        // Handle case when the target message is not found.
         var queryOptions: AmityMessageQueryOptions!
         queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, aroundMessageId: message.parentId, sortOption: .lastCreated)
 
