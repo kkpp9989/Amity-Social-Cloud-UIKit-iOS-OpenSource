@@ -76,6 +76,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var messagesNotificationToken: AmityNotificationToken?
     private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
+    private var navigatingNotificationToken: AmityNotificationToken?
     
     private var messageAudio: AmityMessageAudioController?
     
@@ -147,50 +148,14 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         return channelId
     }
     
-//    private func connectionStateDidChanged() {
-//
-//        // When the SDK disconnect, it will miss all real-time events during offline period.
-//        //
-//        // Once SDK reconnect, we reset the live collection to fetch the most recent data.
-//        // The page state will be reset to first page (last chunk messages).
-//        //
-//        switch AmityUIKitManagerInternal.shared.client.connectionStatus {
-//        case .notConnected, .connecting, .disconnected:
-//            // AmityHUD.show(.error(message: "Not Online"))
-//            // We don't care how many offline states are updated, we only record the first one.
-//            if lastNotOnline == nil {
-//                lastNotOnline = Date()
-//            }
-//        case .connected:
-//            var shouldRefresh = false
-//            // The seconds to reset live collection, if sdk is offline more than x seconds.
-//            let thresholdToResetLiveCollection = TimeInterval(3)
-//            if let lastNotOnline = lastNotOnline, Date().timeIntervalSince(lastNotOnline) > thresholdToResetLiveCollection {
-//                shouldRefresh = true
-//            } else if let lastEnterBackground = lastEnterBackground, Date().timeIntervalSince(lastEnterBackground) > thresholdToResetLiveCollection {
-//                // When the app goes into background, we cannot know the connection status.
-//                // If the background takes longer than the threshold, we refresh the collection, once connected no matter what.
-//                shouldRefresh = true
-//            }
-//            if shouldRefresh {
-//                 // AmityHUD.show(.success(message: "Online and refresh"))
-//                // Toggle `isFirstTimeLoaded` to trigger scroll to bottom logic.
-//                delegate?.screenViewModelIsRefreshing(true)
-//                isFirstTimeLoaded = true
-//                messagesCollection?.resetPage()
-//            } else {
-//                 // AmityHUD.show(.success(message: "Online without refresh"))
-//            }
-//            // SDK is online now, we reset this to nil.
-//            // This variable, gonna be set again when the connection state is changed to not_online.
-//            lastNotOnline = nil
-//            lastEnterBackground = nil
-//        @unknown default:
-//            break
-//        }
-//
-//    }
-    
+    func findIndexOfMessageWithMessageId(_ targetMessageId: String) -> (section: Int, row: Int)? {
+        for (section, messageSection) in messages.enumerated() {
+            if let row = messageSection.firstIndex(where: { $0.messageId == targetMessageId }) {
+                return (section: section, row: row)
+            }
+        }
+        return nil  // Message not found
+    }
 }
 
 // MARK: - Action
@@ -425,6 +390,14 @@ extension AmityMessageListScreenViewModel {
 	func tapOnMention(withUserId userId: String) {
 		delegate?.screenViewModelDidTapOnMention(with: userId)
 	}
+    
+    func jumpToTargetId(_ message: AmityMessageModel) {
+        var queryOptions: AmityMessageQueryOptions!
+        queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, aroundMessageId: message.parentId, sortOption: .lastCreated)
+
+        // Call the queryMessages function with the updated query options to jump to the desired message.
+        queryMessages(queryOptions: queryOptions, messageId: message.messageId)
+    }
 }
 
 private extension AmityMessageListScreenViewModel {
@@ -478,6 +451,46 @@ private extension AmityMessageListScreenViewModel {
         } else {
             delegate?.screenViewModelDidFailToReportMessage(at: indexPath, with: error)
         }
+    }
+    
+    func groupMessagesAndJumpToTarget(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?, messageId: String) {
+        
+        // First we get message from the collection
+        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        
+        // Ignore performing data if it don't change.
+        guard dataSourceHash != storedMessages.hashValue else {
+            // Ask view to hide loading indicator.
+            self.delegate?.screenViewModelIsRefreshing(false)
+            return
+        }
+        
+        dataSourceHash = storedMessages.hashValue
+        unsortedMessages = storedMessages
+        
+        // We use debouncer to prevent data updating too frequently and interupting UI.
+        // When data is settled for a particular second, then updating UI in one time.
+        debouncer.run { [weak self] in
+            self?.notifyView()
+            self?.delegate?.screenViewModelDidJumpToTarget(with: messageId)
+        }
+    }
+    
+    private func queryMessages(queryOptions: AmityMessageQueryOptions, messageId: String) {
+        // Invalidate the existing observer token to stop the previous observation.
+        navigatingNotificationToken?.invalidate()
+        
+        // Fetch messages using the specified query options and observe changes.
+        navigatingNotificationToken = messageRepository.getMessages(options: queryOptions).observe({ collection, change, error in
+            if let error = error {
+                print("Error: \(error).")
+                return
+            }
+            
+            // Use the 'collection' as the data source for the message table view.
+            // Reload the message table view when the data source changes due to new messages or updates.
+//            self.groupMessagesAndJumpToTarget(in: collection, change: change, messageId: messageId)
+        })
     }
     
     // MARK: - Helper

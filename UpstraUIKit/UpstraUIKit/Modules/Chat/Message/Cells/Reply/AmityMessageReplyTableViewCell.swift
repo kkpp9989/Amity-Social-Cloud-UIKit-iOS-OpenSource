@@ -256,6 +256,6 @@ extension AmityMessageReplyTableViewCell: AmityExpandableLabelDelegate {
 
 extension AmityMessageReplyTableViewCell {
     @objc func replyContainerTap() {
-        screenViewModel.action.performCellEvent(for: .reply(indexPath: indexPath))
+        screenViewModel.action.performCellEvent(for: .jumpReply(indexPath: indexPath))
     }
 }

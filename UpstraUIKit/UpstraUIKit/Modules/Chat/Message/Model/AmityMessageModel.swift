@@ -124,10 +124,8 @@ extension AmityMessageModel {
         messageToken = messageRepository.getMessage(parentId ?? "").observe { (message, error) in
             if let message = message.snapshot {
                 //  Handle message result
-                print("----------> message have data")
                 completion(message)
             } else {
-                print("----------> no data")
                 completion(nil)
             }
         }

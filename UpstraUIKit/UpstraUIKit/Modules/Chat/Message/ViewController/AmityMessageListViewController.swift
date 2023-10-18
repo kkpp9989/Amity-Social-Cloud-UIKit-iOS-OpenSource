@@ -682,6 +682,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             showReplyContainerView()
         case .jumpReply(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.jumpToTargetId(message)
         case .avatar(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             AmityEventHandler.shared.userDidTap(from: self, userId: message.userId)
@@ -716,6 +717,15 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 	func screenViewModelDidTapOnMention(with userId: String) {
 		AmityEventHandler.shared.userDidTap(from: self, userId: userId)
 	}
+    
+    func screenViewModelDidJumpToTarget(with messageId: String) {
+        if let index = screenViewModel.dataSource.findIndexOfMessageWithMessageId(messageId) {
+            print("Message found at section: \(index.section), row: \(index.row)")
+            let indexPath = IndexPath(row: index.row, section: index.section)
+            messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+    }
+
 }
 
 // MARK: - UITableViewDataSource
