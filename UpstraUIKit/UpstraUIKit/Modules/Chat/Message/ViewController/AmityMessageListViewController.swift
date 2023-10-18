@@ -608,7 +608,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertDeleteTitle.localizedString,
                                                         message: AmityLocalizedStringSet.MessageList.alertDeleteDesc.localizedString, preferredStyle: .alert)
             let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
+            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.unsend.localizedString, style: .destructive, handler: { [weak self] _ in
                 self?.screenViewModel.action.delete(withMessage: message, at: indexPath)
             })
             alertViewController.addAction(cancel)
@@ -619,7 +619,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertErrorMessageTitle.localizedString,
                                                         message: nil, preferredStyle: .actionSheet)
             let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
+            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.unsend.localizedString, style: .destructive, handler: { [weak self] _ in
                 self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath)
             })
             alertViewController.addAction(cancel)
@@ -719,10 +719,11 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 	}
     
     func screenViewModelDidJumpToTarget(with messageId: String) {
-        if let index = screenViewModel.dataSource.findIndexOfMessageWithMessageId(messageId) {
-            print("Message found at section: \(index.section), row: \(index.row)")
-            let indexPath = IndexPath(row: index.row, section: index.section)
-            messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        if let indexPath = screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
+            messageViewController.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            DispatchQueue.main.async { [self] in
+                shakeCell(at: indexPath)
+            }
         }
     }
 
@@ -891,5 +892,22 @@ extension AmityMessageListViewController {
             self.replyContainerView.isHidden = true
             self.message = nil
         }
+    }
+    
+    func shakeCell(at indexPath: IndexPath) {
+        guard let cell = messageViewController.tableView.cellForRow(at: indexPath) else {
+            return
+        }
+        
+        // Define the horizontal translation animation
+        let shake = CABasicAnimation(keyPath: "position.x")
+        shake.duration = 0.1
+        shake.repeatCount = 4 // Number of times to repeat the animation
+        shake.autoreverses = true
+        shake.fromValue = cell.layer.position.x - 5 // Adjust the value to control the distance of the shake
+        shake.toValue = cell.layer.position.x + 5 // Adjust the value to control the distance of the shake
+        
+        // Apply the animation to the cell's layer
+        cell.layer.add(shake, forKey: "cellShakeAnimation")
     }
 }
