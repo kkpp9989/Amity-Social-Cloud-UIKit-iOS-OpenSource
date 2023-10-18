@@ -201,6 +201,17 @@ public final class AmityUIKitManager {
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .social, isEnabled: false, roleFilter: nil)]) { _, _ in }
     }
     
+    public static func checkPresenceStatus() {
+        Task {
+            do {
+                try await client.presence.isEnabled()
+                print("------> User presence isEnable")
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
     public static func enablePresenceStatus() {
         Task {
             do {

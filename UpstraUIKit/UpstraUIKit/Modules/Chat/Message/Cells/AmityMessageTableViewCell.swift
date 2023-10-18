@@ -56,9 +56,9 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         } else {
             switch message.messageType {
             case .text:
-                return action == #selector(replyTap) || action == #selector(forwardTap) || action == #selector(copyTap)
+                return action == #selector(replyTap) || action == #selector(forwardTap) || action == #selector(copyTap) || action == #selector(reportTap)
             default:
-                return action == #selector(forwardTap) || action == #selector(replyTap)
+                return action == #selector(forwardTap) || action == #selector(replyTap) || action == #selector(reportTap)
             }
         }
     }
@@ -183,7 +183,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)
         containerView?.layer.cornerRadius = 4
-        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem]
+        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem, reportMenuItem]
         errorButton?.isHidden = true
         
         contentView.backgroundColor = AmityColorSet.backgroundColor

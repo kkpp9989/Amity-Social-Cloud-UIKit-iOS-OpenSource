@@ -222,7 +222,7 @@ extension AmityMessageListTableViewController {
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {
         print("[Message] id: \(message.messageId) | type: \(message.messageType) | content: \(message.object.data)")
-        if message.parentId != nil {
+        if message.parentId == nil {
             switch message.messageType {
             case .text:
                 return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
@@ -240,7 +240,7 @@ extension AmityMessageListTableViewController {
                 return nil
             }
         } else {
-            return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
+            return message.isOwner ? AmityMessageTypes.replyOutgoing.identifier : AmityMessageTypes.replyIncoming.identifier
         }
     }
     
