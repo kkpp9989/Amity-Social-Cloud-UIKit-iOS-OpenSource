@@ -17,13 +17,20 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
     }
     
     @IBOutlet private var textMessageView: AmityExpandableLabel!
-    
+    @IBOutlet private var replyAvatarImageView: AmityAvatarView!
+    @IBOutlet private var replyDisplayNameLabel: UILabel!
+    @IBOutlet private var replyDescLabel: UILabel!
+    @IBOutlet private var replyImageView: UIImageView!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
     }
-
+    
     private func setupView() {
+        containerMessageView.backgroundColor = UIColor(hex: "#F0FBFF")
+        containerMessageView.layer.cornerRadius = 12
+        
         textMessageView.text = ""
         textMessageView.textAlignment = .left
         textMessageView.numberOfLines = Constant.maximumLines
@@ -31,6 +38,12 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
         textMessageView.font = Constant.textMessageFont
         textMessageView.backgroundColor = .clear
         textMessageView.delegate = self
+        
+        replyDisplayNameLabel.font = AmityFontSet.body
+        replyDisplayNameLabel.textColor = AmityColorSet.base.blend(.shade1)
+        replyDescLabel.font = AmityFontSet.body
+        
+        replyImageView.isHidden = true
     }
         
     override func display(message: AmityMessageModel) {
@@ -73,6 +86,34 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
         }
         
         textMessageView.isExpanded = message.appearance.isExpanding
+        
+        if let messageParent = message.parentMessageObjc, messageParent.messageType == .image {
+            if !messageParent.isDeleted {
+                let indexPath = self.indexPath
+                AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: messageParent, size: .medium) { [weak self] in
+                    self?.replyImageView.image = AmityIconSet.defaultMessageImage
+                } completion: { [weak self] result in
+                    switch result {
+                    case .success(let image):
+                        // To check if the image going to assign has the correct index path.
+                        if indexPath == self?.indexPath {
+                            self?.replyImageView.image = image
+                            self?.replyImageView.isHidden = false
+                            self?.replyImageView.contentMode = .scaleAspectFill
+                        }
+                    case .failure:
+                        self?.replyImageView.image = AmityIconSet.defaultMessageImage
+                        self?.replyImageView.isHidden = false
+                        self?.replyImageView.contentMode = .center
+                    }
+                }
+            }
+        }
+        
+        let url = message.parentMessageObjc?.user?.getAvatarInfo()?.fileURL
+        replyAvatarImageView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
+        replyDisplayNameLabel.text = message.parentMessageObjc?.user?.displayName
+        replyDescLabel.text = message.parentMessageObjc?.data?["text"] as? String
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -103,6 +144,11 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
             let maximumLines = message.appearance.isExpanding ? 0 : Constant.maximumLines
             let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
             height += messageHeight
+        }
+        
+        if let _ = message.parentMessageObjc {
+            let replyHeight: CGFloat = 60
+            height += replyHeight
         }
         
         return height

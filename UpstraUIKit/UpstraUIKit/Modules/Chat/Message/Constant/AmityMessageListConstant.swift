@@ -19,6 +19,8 @@ public enum AmityMessageTypes: CaseIterable {
     case videoOutgoing
     case fileIncoming
     case fileOutgoing
+    case replyIncoming
+    case replyOutgoing
     
     var identifier: String {
         switch self {
@@ -32,6 +34,8 @@ public enum AmityMessageTypes: CaseIterable {
         case .videoOutgoing: return "videoOutgoing"
         case .fileIncoming: return "fileIncoming"
         case .fileOutgoing: return "fileOutgoing"
+        case .replyIncoming: return "replyIncoming"
+        case .replyOutgoing: return "replyOutgoing"
         }
     }
     
@@ -57,6 +61,10 @@ public enum AmityMessageTypes: CaseIterable {
             return UINib(nibName: "AmityMessageFileIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .fileOutgoing:
             return UINib(nibName: "AmityMessageFileOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .replyIncoming:
+            return UINib(nibName: "AmityMessageReplyIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .replyOutgoing:
+            return UINib(nibName: "AmityMessageReplyOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         }
     }
     
@@ -78,6 +86,8 @@ public enum AmityMessageTypes: CaseIterable {
             return AmityMessageFileIncomingTableViewCell.self
         case .fileOutgoing:
             return AmityMessageFileOutgoingTableViewCell.self
+        case .replyIncoming, .replyOutgoing:
+            return AmityMessageReplyTableViewCell.self
         }
     }
     

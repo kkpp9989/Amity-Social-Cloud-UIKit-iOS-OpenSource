@@ -72,7 +72,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     // MARK: - Collection
     private var channelsCollection: AmityCollection<AmityChannel>?
     
-    var cancellables: Set<AnyCancellable> = []
+    var cancellables: AnyCancellable?
 
     // MARK: - Token
     private var channelsToken: AmityNotificationToken?
@@ -203,7 +203,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     }
     
     func getSyncAllChannelPresence() {
-        channelPresenceRepo.getSyncingChannelPresence().sink { completion in
+        cancellables = channelPresenceRepo.getSyncingChannelPresence().sink { completion in
             // Handle completion
             switch completion {
             case .failure(let error):
@@ -225,7 +225,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
             
             self.channels = onlineChannels
             
-        }.store(in: &cancellables)
+        }
     }
 
 }
@@ -237,6 +237,7 @@ extension AmityRecentChatScreenViewModel {
         AmityLog.logLevel = .all
         getChannelList()
         getSyncAllChannelPresence()
+        AmityUIKitManager.checkPresenceStatus()
     }
     
     func createChannel(users: [AmitySelectMemberModel]) {

@@ -79,6 +79,8 @@ public final class AmityMessageListViewController: AmityViewController {
     private var didEnterBackgroundObservation: NSObjectProtocol?
     private var willEnterForegroundObservation: NSObjectProtocol?
     
+    private var isReply: Bool = false
+    
     // MARK: - View lifecyle
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -645,6 +647,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             UIPasteboard.general.string = message.text
         case .reply(indexPath: let indexPath):
+            
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             replyMessageTap(message)
         }
