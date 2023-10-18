@@ -143,7 +143,7 @@
 "message_list_release_to_send" = "Release to send";
 
 // MARK: - Empty
-"empty_chat_list" = "No conversations";
+"empty_chat_list" = "Let's start chatting!\nby search user";
 "empty_newsfeed_title" = "Your feed is empty";
 /* [Custom for ONE Krungthai] Change wording "empty_newsfeed_subtitle", "empty_newsfeed_explore_button", "empty_newsfeed_create_button" */
 // [Original]

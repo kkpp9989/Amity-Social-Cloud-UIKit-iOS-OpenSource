@@ -221,7 +221,6 @@ extension AmityMessageListTableViewController {
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {
-        print("[Message] id: \(message.messageId) | type: \(message.messageType) | content: \(message.object.data)")
         if message.parentId == nil {
             switch message.messageType {
             case .text:

@@ -431,7 +431,6 @@ final class AmityUIKitManagerInternal: NSObject {
     func getTotalUnreadCount() {
         client.getUserUnread().sink(receiveValue: { [weak self] userUnread in
             guard let strongSelf = self else { return }
-            print("[AMITY] User's total unread count: \(userUnread.unreadCount)")
             strongSelf.totalUnreadCount = userUnread.unreadCount
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
         }).store(in: &disposeBag)

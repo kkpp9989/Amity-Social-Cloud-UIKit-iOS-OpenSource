@@ -30,6 +30,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelIsRefreshing(_ isRefreshing: Bool)
 	func screenViewModelDidTapOnMention(with userId: String)
+    func screenViewModelDidJumpToTarget(with messageId: String)
     
 }
 
@@ -44,6 +45,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func getChannelId() -> String
     func getCommunityId() -> String
     func isKeyboardVisible() -> Bool
+    func findIndexOfMessageWithMessageId(_ targetMessageId: String) -> (section: Int, row: Int)?
 }
 
 protocol AmityMessageListScreenViewModelAction {
@@ -84,6 +86,8 @@ protocol AmityMessageListScreenViewModelAction {
     
     func reportMessage(at indexPath: IndexPath)
 	func tapOnMention(withUserId userId: String)
+    
+    func jumpToTargetId(_ message: AmityMessageModel)
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {
