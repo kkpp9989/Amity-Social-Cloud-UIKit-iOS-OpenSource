@@ -55,6 +55,13 @@ public final class AmityMessageListViewController: AmityViewController {
 	@IBOutlet private var mentionTableView: AmityMentionTableView!
 	@IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
 	
+    @IBOutlet private var replyAvatarView: AmityAvatarView!
+    @IBOutlet private var replyContentImageView: UIImageView!
+    @IBOutlet private var replyDisplayNameLabel: UILabel!
+    @IBOutlet private var replyDescLabel: UILabel!
+    @IBOutlet private var replyContainerView: UIView!
+    @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
+    
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var connectionStatatusObservation: NSKeyValueObservation?
@@ -80,6 +87,7 @@ public final class AmityMessageListViewController: AmityViewController {
     private var willEnterForegroundObservation: NSObjectProtocol?
     
     private var isReply: Bool = false
+    private var message: AmityMessageModel?
     
     // MARK: - View lifecyle
     public override func viewDidLoad() {
@@ -91,6 +99,7 @@ public final class AmityMessageListViewController: AmityViewController {
 		
 		setupMentionTableView()
         setupFilePicker()
+        setupReplyView()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -159,13 +168,22 @@ public final class AmityMessageListViewController: AmityViewController {
 		mentionTableView.dataSource = self
 		mentionTableView.register(AmityMentionTableViewCell.nib, forCellReuseIdentifier: AmityMentionTableViewCell.identifier)
 	}
+    
+    private func setupReplyView() {
+        replyContentImageView.contentMode = .center
+        replyContentImageView.layer.cornerRadius = 4
+        
+        replyAvatarView.placeholder = AmityIconSet.defaultAvatar
+        replyDisplayNameLabel.font = AmityFontSet.body
+        replyDescLabel.font = AmityFontSet.body
+    }
 }
 
 // MARK: - Action
 private extension AmityMessageListViewController {
     
     func cameraTap() {
-        #warning("Redundancy: camera picker should be replaced with a singleton class")
+#warning("Redundancy: camera picker should be replaced with a singleton class")
         let cameraPicker = UIImagePickerController()
         cameraPicker.sourceType = .camera
         cameraPicker.delegate = self
@@ -205,7 +223,11 @@ private extension AmityMessageListViewController {
     func locationTap() {
         
     }
-
+    
+    @IBAction func closeReplyContainerTap(_ sender: UIButton) {
+        hideReplyContainerView()
+    }
+    
 }
 
 // MARK: - Setup File picker
@@ -647,9 +669,11 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             UIPasteboard.general.string = message.text
         case .reply(indexPath: let indexPath):
-            
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
-            replyMessageTap(message)
+            setReplyContainerView(message)
+            showReplyContainerView()
+        case .jumpReply(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
         }
     }
     
@@ -781,27 +805,70 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
 	
 	func sendMessageTap() {
 		let metadata = mentionManager?.getMetadata()
-		let mentionees = mentionManager?.getMentionees()
-		screenViewModel.action.send(withText: composeBar.textView.text,
-									metadata: metadata,
-									mentionees: mentionees)
+        let mentionees = mentionManager?.getMentionees()
+        if let message = self.message {
+            hideReplyContainerView()
+            screenViewModel.action.reply(withText: composeBar.textView.text,
+                                         parentId: message.messageId,
+                                         metadata: metadata,
+                                         mentionees: mentionees,
+                                         type: message.messageType)
+        } else {
+            screenViewModel.action.send(withText: composeBar.textView.text,
+                                        metadata: metadata,
+                                        mentionees: mentionees)
+        }
 		mentionManager?.resetState()
 	}
-    
-    func replyMessageTap(_ message: AmityMessageModel) {
-        let metadata = mentionManager?.getMetadata()
-        let mentionees = mentionManager?.getMentionees()
-        screenViewModel.action.reply(withText: composeBar.textView.text,
-                                     parentId: message.messageId,
-                                     metadata: metadata,
-                                     mentionees: mentionees,
-                                     type: message.messageType)
-        mentionManager?.resetState()
-    }
 }
 
 extension AmityMessageListViewController: AmityFilePickerDelegate {
     func didPickFiles(files: [AmityFile]) {
         screenViewModel.action.send(withFiles: files)
+    }
+}
+
+extension AmityMessageListViewController {
+    private func setReplyContainerView(_ message: AmityMessageModel) {
+        self.message = message
+        if message.messageType == .image {
+            AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: message.object, size: .medium) { [weak self] in
+                self?.replyContentImageView.image = AmityIconSet.defaultMessageImage
+            } completion: { [weak self] result in
+                switch result {
+                case .success(let image):
+                    // To check if the image going to assign has the correct index path.
+                    self?.replyContentImageView.image = image
+                    self?.replyContentImageView.contentMode = .scaleAspectFill
+                    self?.replyContentImageView.isHidden = false
+                case .failure:
+                    self?.replyContentImageView.image = AmityIconSet.defaultMessageImage
+                    self?.replyContentImageView.isHidden = true
+                    self?.replyContentImageView.contentMode = .center
+                }
+            }
+        }
+        
+        let url = message.object.user?.getAvatarInfo()?.fileURL
+        replyAvatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
+        replyDisplayNameLabel.text = message.object.user?.displayName
+        replyDescLabel.text = message.text
+    }
+    
+    private func showReplyContainerView() {
+        isReply = true
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 55
+            self.replyContainerView.isHidden = false
+        }
+    }
+    
+    private func hideReplyContainerView() {
+        isReply = false
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 0
+            self.replyContainerView.isHidden = true
+            self.message = nil
+        }
     }
 }

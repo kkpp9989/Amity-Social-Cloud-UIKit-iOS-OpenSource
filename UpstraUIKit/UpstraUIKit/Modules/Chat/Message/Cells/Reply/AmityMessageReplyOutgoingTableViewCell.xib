@@ -35,19 +35,19 @@
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="4vJ-ZE-1CY">
-                                                <rect key="frame" x="58" y="5" width="277" height="50"/>
+                                                <rect key="frame" x="58" y="5" width="257" height="50"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ui6-4X-8oS">
-                                                        <rect key="frame" x="0.0" y="0.0" width="242" height="50"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="222" height="50"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LW5-hO-yCF">
-                                                                <rect key="frame" x="0.0" y="0.0" width="222" height="20.333333333333332"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="202" height="20.333333333333332"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eXK-8e-4aA">
-                                                                <rect key="frame" x="0.0" y="28.333333333333336" width="222" height="20.333333333333336"/>
+                                                                <rect key="frame" x="0.0" y="28.333333333333336" width="202" height="20.333333333333336"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
@@ -64,7 +64,7 @@
                                                         </constraints>
                                                     </view>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Bao-fn-WOU">
-                                                        <rect key="frame" x="242" y="7.6666666666666643" width="35" height="35"/>
+                                                        <rect key="frame" x="222" y="7.6666666666666643" width="35" height="35"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="35" id="NtQ-YA-eBy"/>
                                                             <constraint firstAttribute="height" constant="35" id="Qzw-QX-d7j"/>
@@ -77,7 +77,7 @@
                                             <constraint firstItem="4T7-wG-xFf" firstAttribute="centerY" secondItem="97n-eP-Rz6" secondAttribute="centerY" id="0gI-aG-osC"/>
                                             <constraint firstItem="4T7-wG-xFf" firstAttribute="leading" secondItem="97n-eP-Rz6" secondAttribute="leading" constant="20" symbolic="YES" id="2XB-d5-khx"/>
                                             <constraint firstAttribute="height" constant="55" id="GG4-sP-79Z"/>
-                                            <constraint firstAttribute="trailing" secondItem="4vJ-ZE-1CY" secondAttribute="trailing" id="Zb5-zY-UxD"/>
+                                            <constraint firstAttribute="trailing" secondItem="4vJ-ZE-1CY" secondAttribute="trailing" constant="20" symbolic="YES" id="Zb5-zY-UxD"/>
                                             <constraint firstItem="4vJ-ZE-1CY" firstAttribute="leading" secondItem="4T7-wG-xFf" secondAttribute="trailing" constant="8" symbolic="YES" id="bTx-nx-0z6"/>
                                             <constraint firstAttribute="bottom" secondItem="4vJ-ZE-1CY" secondAttribute="bottom" id="bZK-Fc-J8x"/>
                                             <constraint firstItem="4vJ-ZE-1CY" firstAttribute="top" secondItem="97n-eP-Rz6" secondAttribute="top" constant="5" id="o0Z-Sz-PbS"/>
@@ -173,6 +173,7 @@
                 <outlet property="errorButton" destination="Zds-W9-dWk" id="uMl-Wj-q3t"/>
                 <outlet property="metadataLabel" destination="kr7-qR-NsE" id="5j3-Xm-DxY"/>
                 <outlet property="replyAvatarImageView" destination="4T7-wG-xFf" id="zgf-B5-8H0"/>
+                <outlet property="replyContainerView" destination="97n-eP-Rz6" id="w0a-CZ-r5N"/>
                 <outlet property="replyDescLabel" destination="eXK-8e-4aA" id="Svv-bE-vj3"/>
                 <outlet property="replyDisplayNameLabel" destination="LW5-hO-yCF" id="Pvc-H4-H18"/>
                 <outlet property="replyImageView" destination="Bao-fn-WOU" id="hjF-dX-Vg7"/>
