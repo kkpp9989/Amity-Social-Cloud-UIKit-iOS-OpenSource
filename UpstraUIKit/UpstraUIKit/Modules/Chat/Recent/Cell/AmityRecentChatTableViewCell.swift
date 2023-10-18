@@ -85,14 +85,6 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         avatarView.placeholder = AmityIconSet.defaultAvatar
         mentionBadgeImageView.isHidden = !channel.object.hasMentioned
         badgeView.isHidden = channel.unreadCount < 1
-        
-        if let previewMessage = channel.previewMessage {
-            //  You can access data of preview message in same way as AmityMessage
-            let text = previewMessage.data?["text"] as? String ?? "No message yet"
-            let type = previewMessage.dataType
-            
-            previewMessageLabel.text = text
-        }
 
         switch channel.channelType {
         case .standard:
@@ -135,6 +127,34 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             break
         @unknown default:
             break
+        }
+        
+        if let previewMessage = channel.previewMessage {
+            //  You can access data of preview message in same way as AmityMessage
+            let text = previewMessage.data?["text"] as? String ?? "No message yet"
+            let type = previewMessage.dataType
+
+            var displayName: String = ""
+            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId {
+                displayName = "You: "
+            }
+            
+            switch type {
+            case .text:
+                displayName += text
+            case .file:
+                displayName += "Sent a file"
+            case .video:
+                displayName += "Sent a video"
+            case .image:
+                displayName += "Sent an image"
+            case .audio:
+                displayName += "Sent a voice message"
+            default:
+                displayName += "No message yet"
+            }
+            
+            previewMessageLabel.text = displayName
         }
     }
     
