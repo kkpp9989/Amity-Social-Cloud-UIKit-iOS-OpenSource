@@ -133,21 +133,28 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             //  You can access data of preview message in same way as AmityMessage
             let text = previewMessage.data?["text"] as? String ?? "No message yet"
             let type = previewMessage.dataType
+
+            var displayName: String = ""
+            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId {
+                displayName = "You: "
+            }
             
             switch type {
             case .text:
-                previewMessageLabel.text = text
+                displayName += text
             case .file:
-                previewMessageLabel.text = "Sent a file"
+                displayName += "Sent a file"
             case .video:
-                previewMessageLabel.text = "Sent a video"
+                displayName += "Sent a video"
             case .image:
-                previewMessageLabel.text = "Sent an image"
+                displayName += "Sent an image"
             case .audio:
-                previewMessageLabel.text = "Sent a voice message"
+                displayName += "Sent a voice message"
             default:
-                previewMessageLabel.text = "No message yet"
+                displayName += "No message yet"
             }
+            
+            previewMessageLabel.text = displayName
         }
     }
     
