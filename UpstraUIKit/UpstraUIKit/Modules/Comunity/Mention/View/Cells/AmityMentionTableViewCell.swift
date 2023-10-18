@@ -36,7 +36,11 @@ public final class AmityMentionTableViewCell: UITableViewCell, Nibbable {
     }
     
     public func display(with model: AmityMentionUserModel) {
-        avatarView.setImage(withImageURL: model.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+		if model.avatarURL == "All" {
+			avatarView.image = AmityIconSet.Chat.iconMentionAll
+		} else {
+			avatarView.setImage(withImageURL: model.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+		}
         displayNameLabel.text = model.displayName
         
         if model.isGlobalBan {

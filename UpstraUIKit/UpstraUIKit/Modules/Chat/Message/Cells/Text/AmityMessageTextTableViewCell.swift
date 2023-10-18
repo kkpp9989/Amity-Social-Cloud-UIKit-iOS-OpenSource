@@ -56,8 +56,8 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
             highlightColor = AmityColorSet.primary
         }
 		
+		let mentionees = message.mentionees ?? []
 		if let metadata = message.metadata,
-		   let mentionees = message.mentionees,
 		   let text = message.text {
 			textMessageView.setText(
 				text,
