@@ -61,6 +61,9 @@ public final class AmityMessageListViewController: AmityViewController {
 	private var mentionManager: AmityMentionManager?
     private var filePicker: AmityFilePicker?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - Container View
     private var navigationHeaderViewController: AmityMessageListHeaderView!
     private var messageViewController: AmityMessageListTableViewController!
@@ -91,6 +94,9 @@ public final class AmityMessageListViewController: AmityViewController {
 		
 		setupMentionTableView()
         setupFilePicker()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -104,6 +110,8 @@ public final class AmityMessageListViewController: AmityViewController {
         bottomConstraint.constant = .zero
         view.endEditing(true)
         
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
         
         /* [Custom for ONE Krungthai] Hide tabber when open chat detail view */
         tabBarController?.tabBar.isHidden = true
@@ -650,6 +658,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             replyMessageTap(message)
+        case .avatar(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            AmityEventHandler.shared.userDidTap(from: self, userId: message.userId)
         }
     }
     
