@@ -53,7 +53,7 @@ final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
     /* [Custom for ONE Krungthai][Share Post By URL] Create new function for open default share view of iOS refer to user story */
     private func handleShareOption(post: AmityPostModel) {
         guard let viewController = viewController else { return }
-        AmityFeedEventHandler.shared.sharePostDidTap(from: viewController, postId: post.postId)
+        AmityFeedEventHandler.shared.sharePostDidTap(from: viewController, post: post)
     }
     
     // [Original]
