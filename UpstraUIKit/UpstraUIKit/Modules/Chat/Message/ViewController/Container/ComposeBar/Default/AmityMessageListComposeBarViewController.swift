@@ -11,6 +11,8 @@ import UIKit
 protocol AmityMessageListComposeBarDelegate: AnyObject {
 	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
 	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+    func composeViewDidCancelForwardMessage()
+    func composeViewDidSelectForwardMessage()
 	func sendMessageTap()
 }
 
@@ -26,10 +28,17 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet private var trailingStackView: UIStackView!
     @IBOutlet var separatorView: UIView! // [Custom for ONE Krungthai] Add separator view for set color
     
+    // [Custom for ONE Krungthai] Add input menu view, forward menu view and forward button for handle in forward message function
+    @IBOutlet var inputMenuView: UIStackView!
+    @IBOutlet var forwardMenuView: UIStackView!
+    @IBOutlet private var cancelForwardButton: UIButton!
+    @IBOutlet private var forwardButton: UIButton!
+    
     // MARK: - Properties
 	weak var delegate: AmityMessageListComposeBarDelegate?
     private var screenViewModel: AmityMessageListScreenViewModelType!
     let composeBarView = AmityKeyboardComposeBarViewController.make()
+    var amountForwardMessage: Int = 0
     
     // MARK: - Settings
     private var setting = AmityMessageListViewController.Settings()
@@ -51,6 +60,15 @@ final class AmityMessageListComposeBarViewController: UIViewController {
         return vc
     }
     
+    // MARK: - Forward Message Action
+    @IBAction func forwardTap(_ sender: UIButton) {
+        delegate?.composeViewDidSelectForwardMessage()
+    }
+    
+    @IBAction func cancelForwardTap(_ sender: UIButton) {
+        showForwardMenuButton(show: false)
+        delegate?.composeViewDidCancelForwardMessage()
+    }
 }
 
 // MARK: - Action
@@ -86,6 +104,7 @@ private extension AmityMessageListComposeBarViewController {
         setupShowKeyboardComposeBarButton()
         setupLeftItems()
         setupRecordButton()
+        setupForwardMenuView()
     }
     
     func setupTextComposeBarView() {
@@ -102,6 +121,45 @@ private extension AmityMessageListComposeBarViewController {
         
         /* [Custom for ONE Krungthai] Set separator color refer to ONE KTB figma */
         separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+    }
+    
+    func setupForwardMenuView() {
+        // Set view to hidden at start
+        forwardMenuView.isHidden = true
+        
+        // Set cancel button
+        cancelForwardButton.backgroundColor = AmityColorSet.baseInverse
+        cancelForwardButton.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
+        cancelForwardButton.layer.borderWidth = 1
+        cancelForwardButton.layer.cornerRadius = 18 // Base on font size 15
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .disabled)
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .selected)
+        
+        // Set forward button
+        forwardButton.backgroundColor = UIColor(hex: "B2EAFF")
+        forwardButton.layer.cornerRadius = 18 // Base on font size 15
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .disabled)
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .selected)
     }
     
     func setupSendMessageButton() {
@@ -173,6 +231,50 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         sendMessageButton.isEnabled = !text.isEmpty
         showKeyboardComposeBarButton.isHidden = !text.isEmpty
         sendMessageButton.isHidden = text.isEmpty
+    }
+    
+    func showForwardMenuButton(show: Bool) {
+        if show {
+            inputMenuView.isHidden = true
+            forwardMenuView.isHidden = false
+        } else {
+            inputMenuView.isHidden = false
+            forwardMenuView.isHidden = true
+        }
+    }
+    
+    func updateViewDidSelectForwardMessage(amount: Int) {
+        if amount > 0 {
+            forwardButton.isEnabled = true
+            forwardButton.backgroundColor = AmityColorSet.primary
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .normal)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .disabled)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .selected)
+        } else {
+            forwardButton.isEnabled = false
+            forwardButton.backgroundColor = UIColor(hex: "B2EAFF")
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .normal)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .disabled)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .selected)
+        }
     }
     
     func showRecordButton(show: Bool) {

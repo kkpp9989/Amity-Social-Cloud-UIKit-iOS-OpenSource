@@ -40,6 +40,7 @@ public struct AmityLocalizedStringSet {
         static let leave = "general_leave"
         static let next = "general_next" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let error = "general_error" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let share = "general_share" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let sangsun = "general_sangsun"
         static let satsue = "general_satsue"
         static let samakki = "general_samakki"

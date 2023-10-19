@@ -54,7 +54,7 @@ extension AmityMessageListTableViewController {
         }
         tableView.dataSource = self
         tableView.delegate = self
-        
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
 }
 
@@ -106,9 +106,9 @@ extension AmityMessageListTableViewController {
         
     }
     
-    func updateEditMode() {
+    func updateEditMode(isEdit: Bool) {
         // Enable edit mode for the table view
-        tableView.setEditing(true, animated: true)
+        tableView.setEditing(isEdit, animated: true)
     }
     
 }
@@ -137,6 +137,19 @@ extension AmityMessageListTableViewController {
         return dateView
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.updateForwardMessageInList(with: message)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.updateForwardMessageInList(with: message)
+        }
+    }
 }
 
 // MARK: - DataSource
