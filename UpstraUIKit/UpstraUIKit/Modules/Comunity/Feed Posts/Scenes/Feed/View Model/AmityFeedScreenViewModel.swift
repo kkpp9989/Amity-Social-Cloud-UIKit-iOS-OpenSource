@@ -327,7 +327,6 @@ extension AmityFeedScreenViewModel {
             if let postId = notification.object as? String {
                 if feedType == .globalFeed {
                     delegate?.screenViewModelRouteToPostDetail(postId, viewModel: self)
-                    stopObserveFeedUpdate()
                 }
             }
         }
