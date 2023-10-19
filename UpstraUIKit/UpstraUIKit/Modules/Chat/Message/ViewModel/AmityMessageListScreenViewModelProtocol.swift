@@ -48,6 +48,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func getCommunityId() -> String
     func isKeyboardVisible() -> Bool
     func findIndexPath(forMessageId messageId: String) -> IndexPath?
+    func getChannelType() -> AmityChannelType
 }
 
 protocol AmityMessageListScreenViewModelAction {

@@ -2490,14 +2490,14 @@
 		72A3509D24EA820700DA9D46 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				DF27F1022AD6518B00767DDE /* File */,
-				DFA428A92AD5541900A6AE57 /* Video */,
 				72A350A324EA820700DA9D46 /* AmityMessageCellProtocol.swift */,
 				72A3509E24EA820700DA9D46 /* AmityMessageTableViewCell.swift */,
 				B70D2BA3257713C100E2D56B /* Audio */,
+				DF27F1022AD6518B00767DDE /* File */,
 				72A3509F24EA820700DA9D46 /* Image */,
-				72A350A424EA820700DA9D46 /* Text */,
 				AA9A02BB2ADC51B300D25FFE /* Reply */,
+				72A350A424EA820700DA9D46 /* Text */,
+				DFA428A92AD5541900A6AE57 /* Video */,
 			);
 			path = Cells;
 			sourceTree = "<group>";

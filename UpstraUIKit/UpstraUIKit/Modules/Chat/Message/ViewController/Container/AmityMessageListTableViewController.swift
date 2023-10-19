@@ -229,8 +229,9 @@ extension AmityMessageListTableViewController {
             cell.setViewModel(with: screenViewModel)
             cell.setIndexPath(with: indexPath)
         }
-        
+        let channelType = screenViewModel.dataSource.getChannelType()
         (cell as? AmityMessageCellProtocol)?.display(message: message)
+        (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {

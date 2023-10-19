@@ -114,6 +114,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         }
     }
     
+    private var channelType: AmityChannelType = .conversation
+    
     private var subChannel: AmitySubChannel?
     private var forwardMessageList: [AmityMessageModel] = []
     
@@ -147,6 +149,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     
     func getCommunityId() -> String {
         return channelId
+    }
+    
+    func getChannelType() -> AmityChannelType {
+        return channelType
     }
     
     func findIndexPath(forMessageId messageId: String) -> IndexPath? {
@@ -197,6 +203,7 @@ extension AmityMessageListScreenViewModel {
         channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
+            self?.channelType = channelModel.channelType
             self?.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
     }
