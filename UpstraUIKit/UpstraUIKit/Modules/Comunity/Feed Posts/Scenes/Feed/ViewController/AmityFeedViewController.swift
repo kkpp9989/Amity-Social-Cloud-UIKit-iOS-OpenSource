@@ -95,6 +95,10 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         
         // this line solves issue where refresh control sticks to the top while switching tab
         resetRefreshControlStateIfNeeded()
+        
+        // Delete observer from other feed viewcontroller and set new of its
+        screenViewModel.action.stopObserveFeedUpdate()
+        screenViewModel.action.startObserveFeedUpdate()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
@@ -140,7 +144,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - Setup ViewModel
     private func setupScreenViewModel() {
         screenViewModel.delegate = self
-        screenViewModel.action.startObserveFeedUpdate()
         screenViewModel.action.fetchUserSettings()
         screenViewModel.action.fetchPosts()
     }
