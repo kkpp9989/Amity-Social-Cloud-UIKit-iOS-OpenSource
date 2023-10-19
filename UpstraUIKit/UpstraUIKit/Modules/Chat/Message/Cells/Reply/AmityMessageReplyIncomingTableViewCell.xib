@@ -147,16 +147,22 @@
                         </subviews>
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HU8-QU-5OO">
-                        <rect key="frame" x="303" y="161" width="104" height="20.333333333333343"/>
+                        <rect key="frame" x="245.66666666666663" y="161" width="161.33333333333337" height="20.333333333333343"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="3Dw-aI-R3M">
-                                <rect key="frame" x="20" y="0.0" width="84" height="20.333333333333332"/>
+                                <rect key="frame" x="20.000000000000028" y="0.0" width="141.33333333333334" height="20.333333333333332"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="46r-KS-Hn1">
                                         <rect key="frame" x="0.0" y="2.3333333333333428" width="16" height="16"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oo8-Zn-7wF">
                                         <rect key="frame" x="20" y="0.0" width="64" height="20.333333333333332"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gfF-82-wke">
+                                        <rect key="frame" x="88" y="0.0" width="53.333333333333343" height="20.333333333333332"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -196,6 +202,7 @@
                 <outlet property="displayNameLabel" destination="Bm5-bo-rKq" id="OPw-Zj-0ML"/>
                 <outlet property="errorButton" destination="VBz-Gd-yDh" id="Obe-Od-O83"/>
                 <outlet property="metadataLabel" destination="oo8-Zn-7wF" id="Mma-hr-Ig9"/>
+                <outlet property="readCountLabel" destination="gfF-82-wke" id="QTP-vM-0iH"/>
                 <outlet property="replyAvatarImageView" destination="Ryb-qN-wX9" id="mbB-WN-FzR"/>
                 <outlet property="replyContainerView" destination="qej-8n-1GD" id="xFh-7l-Let"/>
                 <outlet property="replyDescLabel" destination="Ygz-TQ-Jhl" id="HJB-zB-Jdt"/>

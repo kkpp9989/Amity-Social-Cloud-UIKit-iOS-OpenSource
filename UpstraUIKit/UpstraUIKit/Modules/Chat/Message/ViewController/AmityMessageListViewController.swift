@@ -672,7 +672,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 print("unable to find file for message: \(message.messageId)")
             }
         case .forward(indexPath: let indexPath):
-            messageViewController.updateEditMode()
+            messageViewController.updateEditMode(isEdit: true)
+            composeBar.showForwardMenuButton(show: true)
         case .copy(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             UIPasteboard.general.string = message.text
@@ -718,6 +719,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 		AmityEventHandler.shared.userDidTap(from: self, userId: userId)
 	}
     
+    func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int) {
+        composeBar.updateViewDidSelectForwardMessage(amount: amountForwardMessageList)
+    }
+
     func screenViewModelDidJumpToTarget(with messageId: String) {
         if let indexPath = screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
             messageViewController.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
@@ -805,13 +810,6 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 }
 
 extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, AmityComposeBarOnlyTextDelegate {
-    func composeViewDidCancelForwardMessage() {
-        // Not ready
-    }
-    
-    func composeViewDidSelectForwardMessage() {
-        // Not ready 
-    }
     
 	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 		if view.textView.text.count > AmityMentionManager.maximumCharacterCountForPost {
@@ -824,6 +822,16 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
 	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
 		mentionManager?.changeSelection(view.textView)
 	}
+    
+    func composeViewDidCancelForwardMessage() {
+        messageViewController.updateEditMode(isEdit: false)
+        screenViewModel.action.resetDataInForwardMessageList()
+    }
+    
+    func composeViewDidSelectForwardMessage() {
+        AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+        }
+    }
 	
 	func sendMessageTap() {
 		let metadata = mentionManager?.getMetadata()

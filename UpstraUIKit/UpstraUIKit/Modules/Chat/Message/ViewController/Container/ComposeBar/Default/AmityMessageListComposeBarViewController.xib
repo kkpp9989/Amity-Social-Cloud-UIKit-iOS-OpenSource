@@ -11,6 +11,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityMessageListComposeBarViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="cancelForwardButton" destination="IfB-MS-lLK" id="Zhk-cu-3fp"/>
+                <outlet property="forwardButton" destination="PKb-jk-Sp1" id="6Ef-w6-KuK"/>
+                <outlet property="forwardMenuView" destination="Cbd-wO-r6o" id="PTX-ub-uOE"/>
+                <outlet property="inputMenuView" destination="kdj-Df-qWR" id="chZ-rr-Hjx"/>
                 <outlet property="recordButton" destination="esJ-Dw-sKh" id="IcP-IN-PDZ"/>
                 <outlet property="sendMessageButton" destination="yfB-uX-rGz" id="zSu-TI-Pr0"/>
                 <outlet property="separatorView" destination="fep-sX-u9j" id="Jyt-Cy-Zzt"/>
@@ -40,7 +44,7 @@
                                         <constraint firstAttribute="height" constant="1" id="ojO-Q7-Cgc"/>
                                     </constraints>
                                 </view>
-                                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kdj-Df-qWR">
+                                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="kdj-Df-qWR" userLabel="Input Menu View">
                                     <rect key="frame" x="16" y="9" width="382" height="43"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hq3-Zu-FTO">
@@ -116,12 +120,36 @@
                                         <constraint firstAttribute="bottom" secondItem="gU0-nB-1dd" secondAttribute="bottom" id="TX0-l6-1Z1"/>
                                     </constraints>
                                 </stackView>
+                                <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Cbd-wO-r6o" userLabel="Forward menu View">
+                                    <rect key="frame" x="16" y="52" width="382" height="0.0"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IfB-MS-lLK">
+                                            <rect key="frame" x="0.0" y="0.0" width="185" height="0.0"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Cancel"/>
+                                            <connections>
+                                                <action selector="cancelForwardTap:" destination="-1" eventType="touchUpInside" id="lFT-IR-qSD"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PKb-jk-Sp1">
+                                            <rect key="frame" x="197" y="0.0" width="185" height="0.0"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Share"/>
+                                            <connections>
+                                                <action selector="forwardTap:" destination="-1" eventType="touchUpInside" id="xC8-QO-qBZ"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </stackView>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="kdj-Df-qWR" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" constant="16" id="7Au-zx-mBQ"/>
+                                <constraint firstAttribute="bottom" secondItem="Cbd-wO-r6o" secondAttribute="bottom" id="90U-YM-WaY"/>
                                 <constraint firstItem="fep-sX-u9j" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" id="Hai-Nb-vCe"/>
                                 <constraint firstAttribute="trailing" secondItem="fep-sX-u9j" secondAttribute="trailing" id="OLo-1R-562"/>
                                 <constraint firstAttribute="trailing" secondItem="kdj-Df-qWR" secondAttribute="trailing" constant="16" id="aVk-uN-q0n"/>
+                                <constraint firstAttribute="trailing" secondItem="Cbd-wO-r6o" secondAttribute="trailing" constant="16" id="rcJ-fy-IHo"/>
+                                <constraint firstItem="Cbd-wO-r6o" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" constant="16" id="tZK-zF-CXx"/>
                             </constraints>
                         </stackView>
                     </subviews>

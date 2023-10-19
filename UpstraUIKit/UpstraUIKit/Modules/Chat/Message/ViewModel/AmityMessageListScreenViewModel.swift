@@ -114,7 +114,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         }
     }
     
+    private var channelType: AmityChannelType = .conversation
+    
     private var subChannel: AmitySubChannel?
+    private var forwardMessageList: [AmityMessageModel] = []
     
     private(set) var allCellNibs: [String: UINib] = [:]
     private(set) var allCellClasses: [String: AmityMessageCellProtocol.Type] = [:]
@@ -146,6 +149,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     
     func getCommunityId() -> String {
         return channelId
+    }
+    
+    func getChannelType() -> AmityChannelType {
+        return channelType
     }
     
     func findIndexPath(forMessageId messageId: String) -> IndexPath? {
@@ -196,6 +203,7 @@ extension AmityMessageListScreenViewModel {
         channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
+            self?.channelType = channelModel.channelType
             self?.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
     }
@@ -391,7 +399,24 @@ extension AmityMessageListScreenViewModel {
 		delegate?.screenViewModelDidTapOnMention(with: userId)
 	}
     
-    func jumpToTargetId(_ message: AmityMessageModel) {
+    func updateForwardMessageInList(with message: AmityMessageModel) {
+        if let foundedIndex = forwardMessageList.firstIndex(where: { $0.messageId == message.messageId }) {
+            forwardMessageList.remove(at: foundedIndex)
+            print("[ForwardMessage] Found message in forward message list | Remove message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
+        } else {
+            forwardMessageList.append(message)
+            print("[ForwardMessage] Not Found message in forward message list | Add message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
+        }
+        
+        delegate?.screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: forwardMessageList.count)
+    }
+    
+    func resetDataInForwardMessageList() {
+        forwardMessageList.removeAll()
+        delegate?.screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: forwardMessageList.count)
+    }
+
+	func jumpToTargetId(_ message: AmityMessageModel) {
         for messageSection in messages {
             if let targetMessage = messageSection.first(where: { $0.messageId == message.parentId }) {
                 self.delegate?.screenViewModelDidJumpToTarget(with: targetMessage.messageId)

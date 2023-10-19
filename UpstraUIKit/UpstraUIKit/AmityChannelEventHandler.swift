@@ -130,4 +130,15 @@ open class AmityChannelEventHandler {
         vc.hidesBottomBarWhenPushed = true
         source.navigationController?.pushViewController(vc, animated: true)
     }
+    
+    /// Event for forward chat
+    /// It will be triggered when user click share in chat detail with selected forward message
+    ///
+    /// A default behavior is navigating to `AmityChannelMemberViewController`
+    open func channelOpenChannelListForForwardMessage(from source: AmityViewController, completionHandler: @escaping ([AmitySelectChannelModel]) -> ()) {
+        let vc = AmityChannelPickerTabPageViewController.make()
+        let navVc = UINavigationController(rootViewController: vc)
+        navVc.modalPresentationStyle = .fullScreen
+        source.present(navVc, animated: true, completion: nil)
+    }
 }

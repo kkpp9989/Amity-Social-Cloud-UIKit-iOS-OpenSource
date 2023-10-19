@@ -28,6 +28,7 @@
 "general_leave" = "Leave";
 "general_next" = "Next"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "general_error" = "Error"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+"general_share" = "Share"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "general_sangsun" = "สร้างสรรค์";
 "general_satsue" = "สัตย์ซื่อ";
 "general_samakki" = "สามัคคี";

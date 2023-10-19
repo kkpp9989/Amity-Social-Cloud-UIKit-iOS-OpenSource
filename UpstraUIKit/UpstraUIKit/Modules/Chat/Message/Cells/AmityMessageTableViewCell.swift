@@ -21,6 +21,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     @IBOutlet var containerView: AmityResponsiveView!
     @IBOutlet var displayNameLabel: UILabel!
     @IBOutlet var metadataLabel: UILabel!
+    @IBOutlet var readCountLabel: UILabel!
     @IBOutlet var messageImageView: UIImageView!
     @IBOutlet var statusMetadataImageView: UIImageView!
     @IBOutlet var errorButton: UIButton!
@@ -32,6 +33,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     // MARK: - Properties
     var screenViewModel: AmityMessageListScreenViewModelType!
     var message: AmityMessageModel!
+    var channelType: AmityChannelType?
     
     var indexPath: IndexPath!
     let editMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.edit.localizedString, action: #selector(editTap))
@@ -63,6 +65,14 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         }
     }
     
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .clear
+        selectedBackgroundView = backgroundView
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -75,6 +85,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         metadataLabel?.isHidden = false
         errorButton?.isHidden = true
         avatarView?.image = nil
+        readCountLabel?.isHidden = false
     }
     
     class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -113,6 +124,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             default:
                 containerView.backgroundColor = AmityColorSet.backgroundColor
             }
+            
+            setReadmoreText()
         } else {
             avatarView.placeholder = AmityIconSet.defaultAvatar
             setAvatarImage(message)
@@ -129,6 +142,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             displayNameLabel.textColor = AmityColorSet.base.blend(.shade1)
             
             setDisplayName(for: message)
+            
+            readCountLabel?.isHidden = true
         }
         
         setMetadata(message: message)
@@ -140,7 +155,6 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             containerView.layer.borderColor = UIColor.clear.cgColor
             containerView.layer.borderWidth = 0
         }
-        
     }
     
     func setMetadata(message: AmityMessageModel) {
@@ -148,6 +162,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         let style: [NSAttributedString.Key : Any]? = [.foregroundColor: AmityColorSet.base.blend(.shade2),
                                                       .font: AmityFontSet.caption]
         if message.isDeleted {
+            readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
             statusMetadataImageView.isHidden = false
             let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.deleteMessage.localizedString, message.time)
@@ -176,15 +191,23 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         metadataLabel?.attributedText = fullString
     }
     
+    func setChannelType(channelType: AmityChannelType) {
+        self.channelType = channelType
+    }
+    
     // MARK: - Setup View
     private func setupView() {
-        selectionStyle = .none
+        selectionStyle = .default
+        tintColor = AmityColorSet.primary
         
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)
         containerView?.layer.cornerRadius = 4
         containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem, reportMenuItem]
         errorButton?.isHidden = true
+        
+        readCountLabel.font =  AmityFontSet.caption
+        readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
         
         contentView.backgroundColor = AmityColorSet.backgroundColor
     }
@@ -204,7 +227,19 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTap))
         avatarView.addGestureRecognizer(tapGesture)
     }
-
+    
+    private func setReadmoreText() {
+        if let channelType = self.channelType {
+            switch channelType {
+            case .conversation:
+                readCountLabel?.text = message.object.readCount > 0 ? "• Read" : "• Sent"
+            default:
+                readCountLabel?.text = message.object.readCount > 0 ? "• Read \(message.object.readCount)" : "• Sent"
+            }
+        } else {
+            readCountLabel?.isHidden = true
+        }
+    }
 }
 
 // MARK: - Action
