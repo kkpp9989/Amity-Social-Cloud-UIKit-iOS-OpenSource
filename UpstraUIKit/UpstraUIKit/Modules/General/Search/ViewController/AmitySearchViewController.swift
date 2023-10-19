@@ -80,7 +80,7 @@ public class AmitySearchViewController: AmityPageViewController {
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     // MARK: - Setup views
@@ -136,13 +136,16 @@ private extension AmitySearchViewController {
         }
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
             communitiesVC.search(with: searchTextField.text)
-        } else if currentIndex == 3 {
-            hashtagVC.search(withText: searchTextField.text)
-        } else {
+        case 1:
             membersVC.search(with: searchTextField.text)
+        case 2:
+            hashtagVC.search(withText: searchTextField.text)
+        default:
+            break
         }
     }
 }
