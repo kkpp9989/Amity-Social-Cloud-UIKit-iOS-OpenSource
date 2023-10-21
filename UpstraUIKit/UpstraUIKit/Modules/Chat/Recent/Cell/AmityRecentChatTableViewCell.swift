@@ -38,6 +38,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         // Reset any cell-specific properties here
         statusBadgeImageView.image = nil
         badgeStatusView.isHidden = true
+        previewMessageLabel.text = "No message"
+        avatarView.image = nil
     }
     
     private func setupView() {

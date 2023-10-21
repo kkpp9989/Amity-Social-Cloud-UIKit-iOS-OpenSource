@@ -8,6 +8,8 @@
 
 import UIKit
 import AmitySDK
+import MobileCoreServices
+import AVFoundation
 
 public protocol AmityMessageListDataSource: AnyObject {
     func cellForMessageTypes() -> [AmityMessageTypes: AmityMessageCellProtocol.Type]
@@ -191,9 +193,16 @@ public final class AmityMessageListViewController: AmityViewController {
 private extension AmityMessageListViewController {
     
     func cameraTap() {
-#warning("Redundancy: camera picker should be replaced with a singleton class")
+        #warning("Redundancy: camera picker should be replaced with a singleton class")
+        
         let cameraPicker = UIImagePickerController()
+        
+        // Set the source type to the camera for capturing media
         cameraPicker.sourceType = .camera
+        
+        // Set the media types to include both photos and videos
+        cameraPicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+        
         cameraPicker.delegate = self
         present(cameraPicker, animated: true, completion: nil)
     }
@@ -215,7 +224,7 @@ private extension AmityMessageListViewController {
         let imagePicker = AmityImagePickerController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.video]
-        imagePicker.settings.selection.max = 20
+        imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
         presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
@@ -458,23 +467,74 @@ extension AmityMessageListViewController: AmityKeyboardServiceDelegate {
 
 extension AmityMessageListViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     
+//    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//
+//        guard let image = info[.originalImage] as? UIImage else { return }
+//
+//        picker.dismiss(animated: true) { [weak self] in
+//            do {
+//                let resizedImage = image
+//                    .scalePreservingAspectRatio()
+//                let media = AmityMedia(state: .image(resizedImage), type: .image)
+//                self?.screenViewModel.action.send(withMedias: [media], type: .image)
+//            } catch {
+//                Log.add(error.localizedDescription)
+//            }
+//        }
+//    }
+    
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        guard let image = info[.originalImage] as? UIImage else { return }
-        
-        picker.dismiss(animated: true) { [weak self] in
-            do {
-                let resizedImage = image
-                    .scalePreservingAspectRatio()
-                let media = AmityMedia(state: .image(resizedImage), type: .image)
-                self?.screenViewModel.action.send(withMedias: [media], type: .image)
-            } catch {
-                Log.add(error.localizedDescription)
-            }
+        guard let mediaType = info[.mediaType] as? String else {
+            return
         }
         
+        var selectedMedia: AmityMedia?
+        
+        switch mediaType {
+        case String(kUTTypeImage):
+            if let image = info[.originalImage] as? UIImage {
+                selectedMedia = AmityMedia(state: .image(image), type: .image)
+            }
+        case String(kUTTypeMovie):
+            if let mediaURL = info[.mediaURL] as? URL {
+                let media = AmityMedia(state: .localURL(url: mediaURL), type: .video)
+                media.localUrl = mediaURL
+                
+                if let thumbnailImage = generateThumbnailImage(fromVideoAt: mediaURL) {
+                    media.generatedThumbnailImage = thumbnailImage
+                }
+                
+                selectedMedia = media
+            }
+        default:
+            assertionFailure("Unsupported media type")
+            break
+        }
+        
+        // We want to process selected media only after the default UI for selecting media
+        // dismisses completely. Otherwise, we see `Attempt to present ....` error
+        picker.dismiss(animated: true) { [weak self] in
+            guard let media = selectedMedia else { return }
+            self?.screenViewModel.action.send(withMedias: [media], type: media.type)
+        }
     }
     
+    func generateThumbnailImage(fromVideoAt url: URL) -> UIImage? {
+        let asset = AVAsset(url: url)
+        let assetImageGenerator = AVAssetImageGenerator(asset: asset)
+        assetImageGenerator.appliesPreferredTrackTransform = true
+        let time = CMTime(seconds: 1.0, preferredTimescale: 1)
+        var actualTime: CMTime = CMTime.zero
+        
+        do {
+            let imageRef = try assetImageGenerator.copyCGImage(at: time, actualTime: &actualTime)
+            return UIImage(cgImage: imageRef)
+        } catch {
+            print("Unable to generate thumbnail image for kUTTypeMovie.")
+            return nil
+        }
+    }
+
 }
 
 extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegate {

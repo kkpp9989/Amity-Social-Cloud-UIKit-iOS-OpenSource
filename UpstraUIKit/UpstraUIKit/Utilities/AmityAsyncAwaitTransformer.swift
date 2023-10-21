@@ -22,4 +22,15 @@ class AmityAsyncAwaitTransformer {
             }
         }
     }
+    
+    static func toCompletionHandler<T>(asyncOperation: @escaping () async throws -> T, completion: @escaping (T?, Error?) -> Void) {
+            Task { @MainActor in
+                do {
+                    let result = try await asyncOperation()
+                    completion(result, nil)
+                } catch {
+                    completion(nil, error)
+                }
+            }
+        }
 }
