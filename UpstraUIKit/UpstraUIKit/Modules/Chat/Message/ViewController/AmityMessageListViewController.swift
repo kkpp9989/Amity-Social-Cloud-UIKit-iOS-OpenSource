@@ -417,21 +417,40 @@ private extension AmityMessageListViewController {
         audioRecordingViewController?.finishRecordingHandler = { [weak self] state in
             switch state {
             case .finish:
+                self?.circular.hide()
                 self?.screenViewModel.action.sendAudio()
                 Log.add("Finish")
             case .finishWithMaximumTime:
-                self?.screenViewModel.action.sendAudio()
-                Log.add("finishWithMaximumTime")
+                self?.circular.hide()
+                self?.alertMaxAudio()
             case .notFinish:
                 Log.add("notFinish")
             case .timeTooShort:
                 Log.add("timeTooShort")
-                self?.composeBar.showPopoverMessage()
+                self?.circular.hide()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self?.composeBar.showPopoverMessage()
+                }
+            case .deleteAndClose:
+                self?.circular.hide()
             }
         }
         
         composeBar.deletingTarget = audioRecordingViewController?.deleteButton
         
+    }
+    
+}
+
+extension AmityMessageListViewController {
+    
+    func alertMaxAudio() {
+        let alert = UIAlertController(title: "Voice Recording Stopped", message: "The Maximum length for this voice message is 59 minutes.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] action in
+            self?.screenViewModel.action.sendAudio()
+            Log.add("finishWithMaximumTime")
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
     
 }
@@ -636,7 +655,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .didDeeleteErrorMessage:
             AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
         case .didSendAudio:
-            circular.hide()
             audioRecordingViewController?.stopRecording()
         }
     }
