@@ -58,7 +58,7 @@ final class AmityMessageListRecordingViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        lblMaximumLength.isHidden = true
+        lblMaximumLength.isHidden = false
         butPauseRecord.isHidden = false
         butPlayAudio.isHidden = true
         butStopPlayAudio.isHidden = true
