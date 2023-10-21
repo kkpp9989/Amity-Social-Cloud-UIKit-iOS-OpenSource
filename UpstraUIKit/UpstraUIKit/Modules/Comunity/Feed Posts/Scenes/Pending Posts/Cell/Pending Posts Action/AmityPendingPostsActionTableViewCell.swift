@@ -76,10 +76,22 @@ final class AmityPendingPostsActionTableViewCell: UITableViewCell, Nibbable, Ami
 private extension AmityPendingPostsActionTableViewCell {
     
     @IBAction func acceptTap() {
+        acceptButton.isEnabled = false
+        
+        // Dispatch a task to re-enable the button after 2 seconds (2000 milliseconds)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.acceptButton.isEnabled = true
+        }
         delegate?.performAction(self, action: .tapAccept)
     }
     
     @IBAction func declineTap() {
+        declineButton.isEnabled = false
+        
+        // Dispatch a task to re-enable the button after 2 seconds (2000 milliseconds)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.declineButton.isEnabled = true
+        }
         delegate?.performAction(self, action: .tapDecline)
     }
     
