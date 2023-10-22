@@ -53,8 +53,15 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
 private extension AmityComposeBarOnlyTextViewController {
     
     @IBAction func sendMessageTap() {
-		delegate?.sendMessageTap()
-        clearText()
+        if textComposeBarView.textView.text.count <= 10000 {
+            delegate?.sendMessageTap()
+            clearText()
+        } else {
+            let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
+        }
     }
     
 }

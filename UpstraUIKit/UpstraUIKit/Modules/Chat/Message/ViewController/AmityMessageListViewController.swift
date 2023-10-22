@@ -10,6 +10,7 @@ import UIKit
 import AmitySDK
 import MobileCoreServices
 import AVFoundation
+import Photos
 
 public protocol AmityMessageListDataSource: AnyObject {
     func cellForMessageTypes() -> [AmityMessageTypes: AmityMessageCellProtocol.Type]
@@ -63,6 +64,7 @@ public final class AmityMessageListViewController: AmityViewController {
     @IBOutlet private var replyDescLabel: UILabel!
     @IBOutlet private var replyContainerView: UIView!
     @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var replyCloseViewButton: UIButton!
     
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
@@ -77,7 +79,7 @@ public final class AmityMessageListViewController: AmityViewController {
     private var navigationHeaderViewController: AmityMessageListHeaderView!
     private var messageViewController: AmityMessageListTableViewController!
     private var composeBar: AmityComposeBar!
-    
+
     // MARK: - Refresh Overlay
     @IBOutlet weak var refreshOverlay: UIView!
     @IBOutlet weak var refreshActivityIndicator: UIActivityIndicatorView!
@@ -91,8 +93,9 @@ public final class AmityMessageListViewController: AmityViewController {
     private var didEnterBackgroundObservation: NSObjectProtocol?
     private var willEnterForegroundObservation: NSObjectProtocol?
     
-    private var isReply: Bool = false
     private var message: AmityMessageModel?
+    
+    private var messageId: String?
     
     // MARK: - View lifecyle
     public override func viewDidLoad() {
@@ -153,13 +156,15 @@ public final class AmityMessageListViewController: AmityViewController {
     public static func make(
         channelId: String,
         subChannelId: String,
-        settings: AmityMessageListViewController.Settings = .init()
+        settings: AmityMessageListViewController.Settings = .init(),
+        messageId: String? = ""
     ) -> AmityMessageListViewController {
         let viewModel = AmityMessageListScreenViewModel(channelId: channelId, subChannelId: subChannelId)
         let vc = AmityMessageListViewController(nibName: AmityMessageListViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.settings = settings
 		vc.mentionManager = AmityMentionManager(withType: .message(channelId: channelId))
+        vc.messageId = messageId
         return vc
     }
     
@@ -180,6 +185,8 @@ public final class AmityMessageListViewController: AmityViewController {
 	}
     
     private func setupReplyView() {
+        replyCloseViewButton.setImage(AmityIconSet.iconCloseReply, for: .normal)
+        
         replyContentImageView.contentMode = .center
         replyContentImageView.layer.cornerRadius = 4
         
@@ -193,16 +200,53 @@ public final class AmityMessageListViewController: AmityViewController {
 private extension AmityMessageListViewController {
     
     func cameraTap() {
-        #warning("Redundancy: camera picker should be replaced with a singleton class")
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
         
+        switch status {
+        case .authorized:
+            // Permission has already been granted. Proceed with opening the camera.
+            openCamera()
+        case .notDetermined:
+            // Request camera permission
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                if granted {
+                    // Permission granted, open the camera
+                    self?.openCamera()
+                } else {
+                    // Permission denied, show an alert to guide the user to settings
+                    self?.showPermissionDeniedAlert()
+                }
+            }
+        case .denied, .restricted:
+            // Permission is denied or restricted, show an alert to guide the user to settings
+            showPermissionDeniedAlert()
+        @unknown default:
+            break
+        }
+    }
+    
+    func showPermissionDeniedAlert() {
+        DispatchQueue.main.async { [self] in
+            let alert = UIAlertController(title: "Camera Permission Denied", message: "To use the camera, please enable camera access in Settings.", preferredStyle: .alert)
+            
+            let settingsAction = UIAlertAction(title: "Settings", style: .default) { _ in
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsURL)
+                }
+            }
+            alert.addAction(settingsAction)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+            
+            present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func openCamera() {
         let cameraPicker = UIImagePickerController()
-        
-        // Set the source type to the camera for capturing media
         cameraPicker.sourceType = .camera
-        
-        // Set the media types to include both photos and videos
         cameraPicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
-        
         cameraPicker.delegate = self
         present(cameraPicker, animated: true, completion: nil)
     }
@@ -245,6 +289,19 @@ private extension AmityMessageListViewController {
         hideReplyContainerView()
     }
     
+    private func openAssetPreviewController(_ selectedAssets: [PHAsset]) {
+        let previewController = AssetPreviewViewController()
+        previewController.assets = selectedAssets
+        previewController.modalPresentationStyle = .overFullScreen
+        previewController.didFinishPickingAsset = { assets in
+            let medias = assets.map { asset in
+                return AmityMedia(state: .localAsset(asset), type: .image)
+            }
+            self.screenViewModel.action.send(withMedias: medias, type: .image)
+        }
+        self.present(previewController, animated: true, completion: nil)
+    }
+
 }
 
 // MARK: - Setup File picker
@@ -642,6 +699,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             let newOffset = (newcontentHeight - contentHeight) + offset
             self.messageViewController.tableView.setContentOffset(CGPoint(x: 0, y: newOffset), animated: false)
             
+            if let messageId = messageId, !messageId.isEmpty {
+                self.messageId = ""
+                screenViewModel.action.jumpToMessageId(messageId)
+            }
         case .didSendText:
             screenViewModel.shouldScrollToBottom(force: true)
         case .didEditText:
@@ -802,9 +863,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
 
     func screenViewModelDidJumpToTarget(with messageId: String) {
-        if let indexPath = screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
-            messageViewController.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
-            DispatchQueue.main.async { [self] in
+        DispatchQueue.main.async { [self] in
+            if let indexPath = screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
+                messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 shakeCell(at: indexPath)
             }
         }
@@ -959,12 +1020,18 @@ extension AmityMessageListViewController {
         
         let url = message.object.user?.getAvatarInfo()?.fileURL
         replyAvatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
-        replyDisplayNameLabel.text = message.object.user?.displayName
+        
+        var displayName = ""
+        if message.isOwner {
+            displayName = "Reply to Yourself"
+        } else {
+            displayName = message.object.user?.displayName ?? "Anonymous"
+        }
+        replyDisplayNameLabel.text = displayName
         replyDescLabel.text = message.text
     }
     
     private func showReplyContainerView() {
-        isReply = true
         UIView.animate(withDuration: 0.3) {
             self.replyContainerViewHeightConstraint.constant = 55
             self.replyContainerView.isHidden = false
@@ -972,7 +1039,6 @@ extension AmityMessageListViewController {
     }
     
     private func hideReplyContainerView() {
-        isReply = false
         UIView.animate(withDuration: 0.3) {
             self.replyContainerViewHeightConstraint.constant = 0
             self.replyContainerView.isHidden = true

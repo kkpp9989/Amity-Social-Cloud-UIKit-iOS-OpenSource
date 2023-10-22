@@ -36,7 +36,7 @@ import Photos
             return assetStore.assets
         }
     }
-
+        
     // Note this trick to get the apple localization no longer works.
     // Figure out why. Until then, expose the variable for users to set to whatever they want it localized to
     // TODO: Fix this ^^

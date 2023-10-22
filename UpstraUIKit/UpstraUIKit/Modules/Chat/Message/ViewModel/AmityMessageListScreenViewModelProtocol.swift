@@ -94,6 +94,7 @@ protocol AmityMessageListScreenViewModelAction {
     func resetDataInForwardMessageList()
 
     func jumpToTargetId(_ message: AmityMessageModel)
+    func jumpToMessageId(_ messageId: String)
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {
