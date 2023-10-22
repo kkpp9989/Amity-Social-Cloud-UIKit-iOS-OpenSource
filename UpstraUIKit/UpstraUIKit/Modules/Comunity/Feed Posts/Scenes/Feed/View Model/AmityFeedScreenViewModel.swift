@@ -34,6 +34,7 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     }
     
     private var pinPostData: [AmityPostModel] = []
+    private var pinPostIdDataNotFound: [String] = []
     private var dummyList: [String] = []
     private var tokenArray: [AmityNotificationToken?] = []
     private let dispatchGroup = DispatchGroup()
@@ -144,7 +145,9 @@ extension AmityFeedScreenViewModel {
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):
-                strongSelf.getPostId(withpostIds: data.pinposts)
+                strongSelf.getPostId(withpostIds: data.pinposts.filter({ pinPostId in
+                    return !strongSelf.pinPostIdDataNotFound.contains(where: { $0 == pinPostId } )
+                }))
             case .failure(let error):
                 print(error)
                 strongSelf.fetchFeedPosts()
@@ -153,6 +156,7 @@ extension AmityFeedScreenViewModel {
     }
     
     private func getPostId(withpostIds postIds: [String]) {
+        print("-------> Latest PinPostIds \(postIds)")
         dummyList += postIds
         DispatchQueue.main.async { [self] in
             for postId in postIds {
@@ -170,6 +174,8 @@ extension AmityFeedScreenViewModel {
                                 strongSelf.appendData(post: model)
                             }
                         } else {
+                            strongSelf.pinPostIdDataNotFound.append(postId)
+                            print("-------> Set PinPostId \(postIds) to data not found group")
                             print("-------> dispatchGroup.leave() \(postId)")
                             strongSelf.nextData()
                         }
@@ -181,6 +187,7 @@ extension AmityFeedScreenViewModel {
             
             // Move the dispatchGroup.notify block here, outside of the loop
             dispatchGroup.notify(queue: .main) {
+                print("-------> dispatchGroup.notify()")
                 let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
                 self.pinPostData = sortedArray
                 self.tokenArray.removeAll()
