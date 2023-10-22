@@ -431,6 +431,22 @@ extension AmityMessageListScreenViewModel {
         // Call the queryMessages function with the updated query options to jump to the desired message.
         queryMessages(queryOptions: queryOptions, messageId: message.messageId)
     }
+    
+    func jumpToMessageId(_ messageId: String) {
+        for messageSection in messages {
+            if let targetMessage = messageSection.first(where: { $0.messageId == messageId }) {
+                self.delegate?.screenViewModelDidJumpToTarget(with: messageId)
+                return
+            }
+        }
+        
+        // Handle case when the target message is not found.
+        var queryOptions: AmityMessageQueryOptions!
+        queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, aroundMessageId: messageId, sortOption: .lastCreated)
+        
+        // Call the queryMessages function with the updated query options to jump to the desired message.
+        queryMessages(queryOptions: queryOptions, messageId: messageId)
+    }
 }
 
 private extension AmityMessageListScreenViewModel {
