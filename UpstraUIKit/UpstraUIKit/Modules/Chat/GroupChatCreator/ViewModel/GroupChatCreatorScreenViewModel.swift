@@ -12,7 +12,7 @@ import AmitySDK
 class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
     
     private let dispatchGroup = DispatchGroupWraper()
-    private let amityUserUpdateBuilder = AmityCommunityChannelBuilder()
+    private let amityUserUpdateBuilder = AmityLiveChannelBuilder()
     private let fileRepository = AmityFileRepository(client: AmityUIKitManagerInternal.shared.client)
     private var existingChannelToken: AmityNotificationToken?
     private let channelRepository: AmityChannelRepository
@@ -49,7 +49,7 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
         createCommunityChannel(users: users, displayName: displayName)
     }
     
-    private func createNewCommiunityChannel(builder: AmityCommunityChannelBuilder) {
+    private func createNewCommiunityChannel(builder: AmityLiveChannelBuilder, userIds: [String]) {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, error in
             guard let weakSelf = self else { return }
             if let error = error {
@@ -57,8 +57,16 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
             }
             AmityEventHandler.shared.hideKTBLoading()
             if let channelId = channelObject?.channelId, let subChannelId = channelObject?.defaultSubChannelId {
-                weakSelf.delegate?.screenViewModelDidCreateCommunity(weakSelf, channelId: channelId, subChannelId: subChannelId)
+                weakSelf.assignRoleAfterCreateChannel(channelId, subChannelId: subChannelId, userIds: userIds)
             }
+        }
+    }
+    
+    private func assignRoleAfterCreateChannel(_ channelId: String, subChannelId: String, userIds: [String]) {
+        let channelModeration = AmityChannelModeration(client: AmityUIKitManagerInternal.shared.client, andChannel: channelId)
+
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncOperation: { return try await channelModeration.addRole(AmityChannelRole.channelModerator.rawValue, userIds: userIds) }) { (isSuccess, _) in
+            self.delegate?.screenViewModelDidCreateCommunity(self, channelId: channelId, subChannelId: subChannelId)
         }
     }
     
@@ -91,7 +99,7 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
                 /// Might be two reason
                 /// 1. Network error
                 /// 2. Channel haven't created yet
-                weakSelf.createNewCommiunityChannel(builder: weakSelf.amityUserUpdateBuilder)
+                weakSelf.createNewCommiunityChannel(builder: weakSelf.amityUserUpdateBuilder, userIds: userIds)
             }
             /// which mean we already have that channel and don't need to creaet new channel
             guard let channel = channel.snapshot else { return }

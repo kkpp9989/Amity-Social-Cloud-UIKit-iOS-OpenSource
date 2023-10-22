@@ -8,12 +8,14 @@
 
 import UIKit
 import AVFoundation
+import CoreMedia
 
 enum AmityAudioRecorderState {
     case finish
     case finishWithMaximumTime
     case notFinish
     case timeTooShort
+    case deleteAndClose
 }
 
 protocol AmityAudioRecorderDelegate: AnyObject {
@@ -31,8 +33,8 @@ final class AmityAudioRecorder: NSObject {
     private var recorder: AVAudioRecorder!
     
     let fileName = "amity-uikit-recording.m4a"
-    private var minimumTimeout: Int = 1
-    private var maximumTimeout: Int = 60
+    private var minimumTimeout: Int = 2
+    private var maximumTimeout: Int = 7199
     private var duration: TimeInterval = 0.0 {
         didSet {
             displayDuration()
@@ -40,6 +42,7 @@ final class AmityAudioRecorder: NSObject {
     }
     private var timer: Timer?
     private var isRecording = false
+    private var isRecordingPause = false
     // MARK: - Delegatee
     weak var delegate: AmityAudioRecorderDelegate?
     
@@ -75,11 +78,21 @@ final class AmityAudioRecorder: NSObject {
         }
     }
     
+    func pauseRecording() {
+        timeStop()
+        recorder.stop()
+    }
+    
+    func resumeRecording() {
+        timeStart()
+        recorder.record()
+    }
+    
     func stopRecording(withDelete isDelete: Bool = false) {
         
         if isDelete {
             deleteFile()
-            finishRecording(state: .notFinish)
+            finishRecording(state: .deleteAndClose)
         } else {
             if Int(duration) <= minimumTimeout {
                 deleteFile()
@@ -96,6 +109,13 @@ final class AmityAudioRecorder: NSObject {
     
     func getAudioFileURL() -> URL? {
         return AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: fileName)
+    }
+    
+    func getDurationPlay() -> Double {
+        let asset = AVAsset(url: getAudioFileURL()!)
+        let duration = asset.duration
+        let durationTime = CMTimeGetSeconds(duration)
+        return durationTime
     }
     
     func getDataFile() -> Data? {
@@ -123,17 +143,24 @@ final class AmityAudioRecorder: NSObject {
             recorder.isMeteringEnabled = true
             recorder.updateMeters()
             recorder.record()
-            
-            timer?.invalidate()
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer) in
-                self?.recorder?.updateMeters()
-                self?.duration += timer.timeInterval
-                self?.monitoring()
-            })
+            timeStart()
             
         } catch {
             finishRecording(state: .notFinish)
         }
+    }
+    
+    private func timeStart() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer) in
+            self?.recorder?.updateMeters()
+            self?.duration += timer.timeInterval
+            self?.monitoring()
+        })
+    }
+    
+    private func timeStop() {
+        timer?.invalidate()
     }
     
     private func monitoring() {
@@ -163,7 +190,7 @@ final class AmityAudioRecorder: NSObject {
         let time = Int(duration)
         let minutes = Int(time) / 60 % 60
         let seconds = Int(time) % 60
-        let display = String(format:"%01i:%02i", minutes, seconds)
+        let display = String(format:"%02i:%02i", minutes, seconds)
         delegate?.displayDuration(display)
     }
     
