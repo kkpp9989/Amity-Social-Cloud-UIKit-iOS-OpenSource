@@ -102,8 +102,8 @@ open class AmityChannelEventHandler {
     open func channelCreateNewGroupChat(from source: AmityViewController,
                                         selectUsers: [AmitySelectMemberModel],
                                         completionHandler: @escaping ((String, String)) -> ()) {
-        let vc = AmityMemberPickerChatViewController.make(withCurrentUsers: selectUsers)
-        vc.tapCreateButton = { channelId, subChannelId in
+		let vc = GroupChatCreatorViewController.make(selectUsers)
+        vc.tapNextButton = { channelId, subChannelId in
             completionHandler((channelId, subChannelId))
         }
         let navVc = UINavigationController(rootViewController: vc)

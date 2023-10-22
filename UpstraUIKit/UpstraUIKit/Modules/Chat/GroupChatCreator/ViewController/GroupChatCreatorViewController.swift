@@ -30,7 +30,7 @@ class GroupChatCreatorViewController: AmityViewController {
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
-    public var tapCreateButton: ((String, String) -> Void)?
+    public var tapNextButton: ((String, String) -> Void)?
 
     // To support reuploading image
     // use this variable to store a new image
@@ -92,7 +92,7 @@ class GroupChatCreatorViewController: AmityViewController {
     }
     
     private func setupNavigationBar() {
-        saveBarButtonItem = UIBarButtonItem(title: "Create", style: .done, target: self, action: #selector(saveButtonTap))
+        saveBarButtonItem = UIBarButtonItem(title: AmityLocalizedStringSet.General.next.localizedString, style: .done, target: self, action: #selector(saveButtonTap))
         
         // [Fix defect] Set font of save button refer to AmityFontSet
         saveBarButtonItem.tintColor = AmityColorSet.primary
@@ -140,9 +140,7 @@ class GroupChatCreatorViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         view.endEditing(true)
-        
-        // Update display name and about
-        screenViewModel?.createChannel(users: selectUsersData, displayName: displayNameTextField.text ?? "")
+		screenViewModel?.action.createChannel(displayName: displayNameTextField.text ?? "")
     }
     
     @IBAction private func avatarButtonTap(_ sender: Any) {
@@ -222,11 +220,13 @@ class GroupChatCreatorViewController: AmityViewController {
 
 extension GroupChatCreatorViewController: GroupChatCreatorScreenViewModelDelegate {
     
-    func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, channelId: String, subChannelId: String) {
-        dismiss(animated: true) { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.tapCreateButton?(channelId, subChannelId)
-        }
+	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityLiveChannelBuilder) {
+		let vc = AmityMemberPickerChatViewController.make(liveChannelBuilder: builder, displayName: displayNameTextField.text ?? "")
+		vc.tapCreateButton = { [weak self] channelId, subChannelId in
+			guard let strongSelf = self else { return }
+			strongSelf.tapNextButton?(channelId, subChannelId)
+		}
+		navigationController?.pushViewController(vc, animated: true)
     }
     
 }
