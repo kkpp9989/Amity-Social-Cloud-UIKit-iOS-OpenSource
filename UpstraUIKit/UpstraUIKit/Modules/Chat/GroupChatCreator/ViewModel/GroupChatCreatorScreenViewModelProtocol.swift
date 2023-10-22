@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import AmitySDK
 
 protocol GroupChatCreatorScreenViewModelAction {
     func update(avatar: UIImage, completion: ((Bool) -> Void)?)
-    func createChannel(users: [AmitySelectMemberModel], displayName: String)
+    func createChannel(displayName: String)
 }
 
 protocol GroupChatCreatorScreenViewModelDataSource {
@@ -18,7 +19,7 @@ protocol GroupChatCreatorScreenViewModelDataSource {
 }
 
 protocol GroupChatCreatorScreenViewModelDelegate: AnyObject {
-    func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, channelId: String, subChannelId: String)
+	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityLiveChannelBuilder)
 }
 
 protocol GroupChatCreatorScreenViewModelType: GroupChatCreatorScreenViewModelAction, GroupChatCreatorScreenViewModelDataSource {

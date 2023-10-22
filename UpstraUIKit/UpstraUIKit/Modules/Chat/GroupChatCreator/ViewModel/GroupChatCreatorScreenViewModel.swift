@@ -44,69 +44,10 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
         }
     }
     
-    func createChannel(users: [AmitySelectMemberModel], displayName: String) {
-        AmityEventHandler.shared.showKTBLoading()
-        createCommunityChannel(users: users, displayName: displayName)
-    }
-    
-    private func createNewCommiunityChannel(builder: AmityLiveChannelBuilder, userIds: [String]) {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, error in
-            guard let weakSelf = self else { return }
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            AmityEventHandler.shared.hideKTBLoading()
-            if let channelId = channelObject?.channelId, let subChannelId = channelObject?.defaultSubChannelId {
-                weakSelf.assignRoleAfterCreateChannel(channelId, subChannelId: subChannelId, userIds: userIds)
-            }
-        }
-    }
-    
-    private func assignRoleAfterCreateChannel(_ channelId: String, subChannelId: String, userIds: [String]) {
-        let channelModeration = AmityChannelModeration(client: AmityUIKitManagerInternal.shared.client, andChannel: channelId)
-
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncOperation: { return try await channelModeration.addRole(AmityChannelRole.channelModerator.rawValue, userIds: userIds) }) { (isSuccess, _) in
-            self.delegate?.screenViewModelDidCreateCommunity(self, channelId: channelId, subChannelId: subChannelId)
-        }
-    }
-    
-    func createCommunityChannel(users: [AmitySelectMemberModel], displayName: String) {
-        var allUsers = users
-        var currentUser: AmitySelectMemberModel?
-        if let user = AmityUIKitManagerInternal.shared.client.user?.snapshot {
-            let userModel = AmitySelectMemberModel(object: user)
-            currentUser = userModel
-            allUsers.append(userModel)
-        }
-        let userIds = allUsers.map{ $0.userId }
-        let channelId = userIds.sorted().joined(separator: "-")
-        let combinedDisplayName = users.map { $0.displayName ?? "" }.joined(separator: ", ")
-        let channelDisplayName = !displayName.isEmpty ? displayName : combinedDisplayName + ", " + AmityUIKitManagerInternal.shared.displayName
-        amityUserUpdateBuilder.setUserIds(userIds)
-        let metaData: [String:Any] = [
-            "isDirectChat": allUsers.count == 2,
-            "creatorId": currentUser?.userId ?? "",
-            "sdk_type":"ios",
-            "userIds": userIds
-        ]
-        amityUserUpdateBuilder.setMetadata(metaData)
-        amityUserUpdateBuilder.setDisplayName(channelDisplayName)
-        amityUserUpdateBuilder.setTags(["ch-comm","ios-sdk"])
-        existingChannelToken?.invalidate()
-        existingChannelToken = channelRepository.getChannel(channelId).observe({ [weak self] (channel, error) in
-            guard let weakSelf = self else { return }
-            if error != nil {
-                /// Might be two reason
-                /// 1. Network error
-                /// 2. Channel haven't created yet
-                weakSelf.createNewCommiunityChannel(builder: weakSelf.amityUserUpdateBuilder, userIds: userIds)
-            }
-            /// which mean we already have that channel and don't need to creaet new channel
-            guard let channel = channel.snapshot else { return }
-            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: weakSelf.channelRepository.joinChannel, parameters: channelId)
-            weakSelf.existingChannelToken?.invalidate()
-            AmityEventHandler.shared.hideKTBLoading()
-            weakSelf.delegate?.screenViewModelDidCreateCommunity(weakSelf, channelId: channelId, subChannelId: channel.defaultSubChannelId)
-        })
+    func createChannel(displayName: String) {
+		if !displayName.isEmpty {
+			amityUserUpdateBuilder.setDisplayName(displayName)
+		}
+		delegate?.screenViewModelDidCreateCommunity(self, builder: amityUserUpdateBuilder)
     }
 }
