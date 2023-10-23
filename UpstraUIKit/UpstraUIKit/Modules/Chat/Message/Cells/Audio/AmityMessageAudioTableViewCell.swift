@@ -9,11 +9,19 @@
 import UIKit
 import AmitySDK
 
+protocol AmityMessageAudioTableViewCellDelegate: NSObject {
+    func reloadDataAudioCell(indexPath: IndexPath)
+}
+
 final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
     
-    @IBOutlet private var durationLabel: UILabel!
-    @IBOutlet private var actionImageView: UIImageView!
-    @IBOutlet private var activityIndicatorView: UIActivityIndicatorView!
+    @IBOutlet var durationLabel: UILabel!
+    @IBOutlet var actionImageView: UIImageView!
+    @IBOutlet var activityIndicatorView: UIActivityIndicatorView!
+    
+    var celliIndexPath: IndexPath!
+    
+    weak var delegateCell: AmityMessageAudioTableViewCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -22,12 +30,12 @@ final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        durationLabel.text = "0:00"
+        durationLabel.text = "00:00"
         actionImageView.image = AmityIconSet.Chat.iconPlay
     }
     
     func setupView() {
-        durationLabel.text = "0:00"
+        durationLabel.text = "00:00"
         durationLabel.font = AmityFontSet.body
         durationLabel.textAlignment = .right
         actionImageView.image = AmityIconSet.Chat.iconPlay
@@ -89,22 +97,31 @@ extension AmityMessageAudioTableViewCell {
     @IBAction func playTap(_ sender: UIButton) {
         if !message.isDeleted && message.syncState == .synced {
             sender.isEnabled = false
-            AmityUIKitManagerInternal.shared.messageMediaService.download(for: message.object) { [weak self] in
-                self?.durationLabel.alpha = 0
-                self?.activityIndicatorView.startAnimating()
-            } completion: { [weak self] (result) in
-                guard let strongSelf = self else { return }
-                switch result {
-                case .success(let url):
-                    AmityAudioPlayer.shared.delegate = self
-                    AmityAudioPlayer.shared.fileName = strongSelf.message.messageId
-                    AmityAudioPlayer.shared.path = url
-                    AmityAudioPlayer.shared.play()
-                    sender.isEnabled = true
-                    strongSelf.activityIndicatorView.stopAnimating()
-                    strongSelf.durationLabel.alpha = 1
-                case .failure(let error):
-                    Log.add(error.localizedDescription)
+            if message.messageId == AmityAudioPlayer.shared.fileName {
+                sender.isEnabled = true
+                AmityAudioPlayer.shared.startAudio()
+            } else {
+                delegateCell?.reloadDataAudioCell(indexPath: celliIndexPath)
+                AmityUIKitManagerInternal.shared.messageMediaService.download(for: message.object) { [weak self] in
+                    self?.durationLabel.alpha = 0
+                    self?.activityIndicatorView.startAnimating()
+                } completion: { [weak self] (result) in
+                    guard let strongSelf = self else { return }
+                    switch result {
+                    case .success(let url):
+                        AmityAudioPlayer.shared.delegate = self
+                        AmityAudioPlayer.shared.fileName = strongSelf.message.messageId
+                        AmityAudioPlayer.shared.path = url
+                        AmityAudioPlayer.shared.getPlayAudio()
+                        AmityAudioPlayer.shared.setObserver()
+                        AmityAudioPlayer.shared.startObservingTime()
+                        AmityAudioPlayer.shared.startAudio()
+                        sender.isEnabled = true
+                        strongSelf.activityIndicatorView.stopAnimating()
+                        strongSelf.durationLabel.alpha = 1
+                    case .failure(let error):
+                        Log.add(error.localizedDescription)
+                    }
                 }
             }
         }
@@ -114,20 +131,19 @@ extension AmityMessageAudioTableViewCell {
 extension AmityMessageAudioTableViewCell: AmityAudioPlayerDelegate {
     func playing() {
         actionImageView.image = AmityIconSet.Chat.iconPause
-        delegate?.performEvent(self, events: .audioPlaying)
     }
     
     func stopPlaying() {
         actionImageView.image = AmityIconSet.Chat.iconPlay
-        durationLabel.text = "0:00"
     }
     
     func finishPlaying() {
         actionImageView.image = AmityIconSet.Chat.iconPlay
-        durationLabel.text = "0:00"
+        durationLabel.text = "00:00"
     }
     
     func displayDuration(_ duration: String) {
         durationLabel.text = duration
+        self.layoutIfNeeded()
     }
 }
