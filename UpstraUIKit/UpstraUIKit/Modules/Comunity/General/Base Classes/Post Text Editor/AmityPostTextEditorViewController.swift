@@ -248,9 +248,6 @@ public class AmityPostTextEditorViewController: AmityViewController {
             }
         }
         
-        if case .edit(let postId) = postMode {
-            screenViewModel.dataSource.loadPost(for: postId)
-        }
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
         mentionManager?.delegate = self
