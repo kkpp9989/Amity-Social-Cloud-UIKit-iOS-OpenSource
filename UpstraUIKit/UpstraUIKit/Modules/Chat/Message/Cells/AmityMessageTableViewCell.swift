@@ -25,7 +25,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     @IBOutlet var messageImageView: UIImageView!
     @IBOutlet var statusMetadataImageView: UIImageView!
     @IBOutlet var errorButton: UIButton!
-    
+    @IBOutlet var reportIconImageView: UIImageView!
+
     // MARK: Container
     @IBOutlet var containerMessageView: UIView!
     @IBOutlet var containerMetadataView: UIView!
@@ -86,6 +87,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         errorButton?.isHidden = true
         avatarView?.image = nil
         readCountLabel?.isHidden = false
+        reportIconImageView?.isHidden = true
     }
     
     class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -112,6 +114,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         
         self.message = message
         
+        reportIconImageView?.isHidden = message.flagCount > 0 ? false : true
+
         if message.isOwner {
             
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
@@ -147,14 +151,6 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         }
         
         setMetadata(message: message)
-        
-        if message.flagCount > 0 {
-            containerView.layer.borderColor = UIColor.red.cgColor
-            containerView.layer.borderWidth = 1
-        } else {
-            containerView.layer.borderColor = UIColor.clear.cgColor
-            containerView.layer.borderWidth = 0
-        }
     }
     
     func setMetadata(message: AmityMessageModel) {
@@ -210,6 +206,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
         
         contentView.backgroundColor = AmityColorSet.backgroundColor
+        
+        reportIconImageView?.image = AmityIconSet.Chat.iconReport
     }
     
     private func setDisplayName(for message: AmityMessageModel) {

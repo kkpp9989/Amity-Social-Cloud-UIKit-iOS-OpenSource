@@ -234,10 +234,14 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
 extension AmityRecentChatScreenViewModel {
     
     func viewDidLoad() {
-        AmityLog.logLevel = .all
         getChannelList()
         getSyncAllChannelPresence()
         AmityUIKitManager.checkPresenceStatus()
+    }
+    
+    func viewWillDisappear() {
+        channelsToken?.invalidate()
+        cancellables?.cancel()
     }
     
     func createChannel(users: [AmitySelectMemberModel]) {

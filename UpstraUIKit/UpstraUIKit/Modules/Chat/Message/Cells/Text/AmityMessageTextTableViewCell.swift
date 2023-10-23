@@ -30,7 +30,7 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         textMessageView.isExpanded = false
         textMessageView.font = Constant.textMessageFont
         textMessageView.backgroundColor = .clear
-        textMessageView.delegate = self
+        textMessageView.delegate = self        
     }
         
     override func display(message: AmityMessageModel) {

@@ -145,11 +145,20 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="N4O-Qq-2pk">
+                                <rect key="frame" x="215" y="64" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="jYg-PI-VUy"/>
+                                    <constraint firstAttribute="width" constant="20" id="kOc-sB-iSg"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="MQq-e6-jiz" firstAttribute="top" secondItem="rIM-J5-X7A" secondAttribute="top" id="7qh-JW-gZe"/>
+                            <constraint firstItem="N4O-Qq-2pk" firstAttribute="centerY" secondItem="fJo-NE-8OR" secondAttribute="centerY" id="Mom-mm-9p7"/>
                             <constraint firstItem="MQq-e6-jiz" firstAttribute="leading" secondItem="rIM-J5-X7A" secondAttribute="leading" id="R45-eg-ifW"/>
+                            <constraint firstItem="N4O-Qq-2pk" firstAttribute="leading" secondItem="fJo-NE-8OR" secondAttribute="trailing" constant="8" id="X8h-GS-cul"/>
                             <constraint firstAttribute="trailing" secondItem="MQq-e6-jiz" secondAttribute="trailing" id="hxS-Fz-EgN"/>
                             <constraint firstAttribute="bottom" secondItem="MQq-e6-jiz" secondAttribute="bottom" id="yp2-Qm-18l"/>
                         </constraints>
@@ -175,6 +184,7 @@
                 <outlet property="fileSize" destination="BgE-bV-w3Y" id="sPK-Dm-AYh"/>
                 <outlet property="metadataLabel" destination="Vzz-Z5-9qK" id="dH1-yd-dmc"/>
                 <outlet property="readCountLabel" destination="szx-oW-0eQ" id="afQ-EC-OnS"/>
+                <outlet property="reportIconImageView" destination="N4O-Qq-2pk" id="vQu-Oa-XHa"/>
                 <outlet property="statusMetadataImageView" destination="J16-QA-Ig7" id="qqt-CF-E2A"/>
             </connections>
             <point key="canvasLocation" x="201.44927536231884" y="427.56696428571428"/>

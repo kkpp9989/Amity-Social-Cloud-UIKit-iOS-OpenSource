@@ -165,6 +165,8 @@ public struct AmityIconSet {
         public static var iconAudioPause = UIImage(named: "ic_pause", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconAudioDelete = UIImage(named: "ic_delete", in: AmityUIKitManager.bundle, compatibleWith: nil)
         
+        public static var iconReport = UIImage(named: "icon_report_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        
         /* [Custom for ONE Krungthai] Icon of user status in chat */
         public static var iconStatusAvailable = UIImage(named: "icon_status_available", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconStatusOffline = UIImage(named: "icon_status_offline", in: AmityUIKitManager.bundle, compatibleWith: nil)

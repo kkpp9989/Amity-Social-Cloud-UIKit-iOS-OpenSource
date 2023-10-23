@@ -143,13 +143,22 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KzS-rP-61O">
+                                <rect key="frame" x="200" y="98" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="EhM-Qm-2aZ"/>
+                                    <constraint firstAttribute="width" constant="20" id="xiV-cc-2lW"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="T9c-8g-h9F" firstAttribute="leading" secondItem="Lcl-0K-Cfk" secondAttribute="leading" id="6Bd-pz-gxL"/>
                             <constraint firstAttribute="bottom" secondItem="T9c-8g-h9F" secondAttribute="bottom" id="A2x-w5-fMx"/>
                             <constraint firstItem="T9c-8g-h9F" firstAttribute="top" secondItem="Lcl-0K-Cfk" secondAttribute="top" id="MMB-a1-FHx"/>
+                            <constraint firstItem="KzS-rP-61O" firstAttribute="leading" secondItem="CVy-qz-7L5" secondAttribute="trailing" constant="8" id="W4B-S0-uQG"/>
                             <constraint firstAttribute="trailing" secondItem="T9c-8g-h9F" secondAttribute="trailing" id="ebF-Nd-ns4"/>
+                            <constraint firstItem="KzS-rP-61O" firstAttribute="centerY" secondItem="CVy-qz-7L5" secondAttribute="centerY" id="g0I-Lf-ZxS"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -172,6 +181,7 @@
                 <outlet property="metadataLabel" destination="3Q0-he-Fet" id="Y0q-m5-MHJ"/>
                 <outlet property="playVideoView" destination="KVv-Ly-5td" id="Y8t-1r-m3Z"/>
                 <outlet property="readCountLabel" destination="uqx-I6-LBC" id="b0k-97-op8"/>
+                <outlet property="reportIconImageView" destination="KzS-rP-61O" id="XoT-tM-TL8"/>
                 <outlet property="statusMetadataImageView" destination="hcs-yM-6Jh" id="Zhf-ph-kBy"/>
             </connections>
             <point key="canvasLocation" x="201.44927536231884" y="427.56696428571428"/>
