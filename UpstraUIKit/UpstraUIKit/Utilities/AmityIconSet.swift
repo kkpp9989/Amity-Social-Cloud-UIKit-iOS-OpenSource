@@ -21,6 +21,7 @@ public struct AmityIconSet {
     
     private init() { }
     
+    public static var iconDownload = UIImage(named: "icon_download", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBack = UIImage(named: "icon_back", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBackNavigationBar = UIImage(named: "icon_back_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconCloseReply = UIImage(named: "icon_close_reply", in: AmityUIKitManager.bundle, compatibleWith: nil)
