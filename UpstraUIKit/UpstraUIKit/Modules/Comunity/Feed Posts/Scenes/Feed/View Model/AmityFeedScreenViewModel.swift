@@ -159,14 +159,15 @@ extension AmityFeedScreenViewModel {
         print("-------> Latest PinPostIds \(postIds)")
         dummyList += postIds
         DispatchQueue.main.async { [self] in
+            var postIdLeaveMap: [String: Bool] = [:] // Dictionary to keep track of whether leave has been called for a specific postId
             for postId in postIds {
                 print("-------> dispatchGroup.enter() \(postId)")
                 dispatchGroup.enter()
+                postIdLeaveMap[postId] = false
                 let postCollection = postRepository.getPost(withId: postId)
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
                     if let _ = AmityError(error: error) {
-                        print("-------> dispatchGroup.leave() \(postId)")
                         strongSelf.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
@@ -176,11 +177,15 @@ extension AmityFeedScreenViewModel {
                         } else {
                             strongSelf.pinPostIdDataNotFound.append(postId)
                             print("-------> Set PinPostId \(postId) to data not found group")
-                            print("-------> dispatchGroup.leave() \(postId)")
                             strongSelf.nextData()
                         }
                     }
-                    strongSelf.dispatchGroup.leave()
+                    // Check if leave has already been called for this postId
+                    if let leaveCalled = postIdLeaveMap[postId], !leaveCalled {
+                        print("-------> dispatchGroup.leave() \(postId)")
+                        postIdLeaveMap[postId] = true
+                        strongSelf.dispatchGroup.leave()
+                    }
                 }
                 tokenArray.append(token)
             }
