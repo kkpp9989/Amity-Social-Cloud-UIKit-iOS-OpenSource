@@ -151,11 +151,20 @@
                             </stackView>
                         </subviews>
                     </stackView>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bsg-9Q-7Ba">
+                        <rect key="frame" x="212" y="70" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="7sn-Gd-0ue"/>
+                            <constraint firstAttribute="width" constant="20" id="JTW-Gw-1pd"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="bsg-9Q-7Ba" firstAttribute="centerY" secondItem="Fe8-gG-I2T" secondAttribute="centerY" id="AKv-g2-I2h"/>
                     <constraint firstItem="6yB-ge-u0i" firstAttribute="leading" secondItem="69n-tH-uPx" secondAttribute="leading" constant="16" id="I5G-gO-cIj"/>
                     <constraint firstAttribute="bottom" secondItem="6yB-ge-u0i" secondAttribute="bottom" constant="12" id="KUB-8k-cKW"/>
                     <constraint firstItem="6yB-ge-u0i" firstAttribute="top" secondItem="69n-tH-uPx" secondAttribute="top" constant="8" id="ZOD-QW-AeQ"/>
+                    <constraint firstItem="bsg-9Q-7Ba" firstAttribute="leading" secondItem="Fe8-gG-I2T" secondAttribute="trailing" constant="8" id="eGN-PX-YMB"/>
                     <constraint firstItem="6yB-ge-u0i" firstAttribute="width" secondItem="69n-tH-uPx" secondAttribute="width" multiplier="0.7" id="lxw-TJ-uex"/>
                 </constraints>
             </tableViewCellContentView>
@@ -171,6 +180,7 @@
                 <outlet property="durationLabel" destination="ubr-OK-9gX" id="pTA-DV-iHY"/>
                 <outlet property="metadataLabel" destination="hdf-Gi-qD2" id="1JY-Et-GTJ"/>
                 <outlet property="readCountLabel" destination="Vwe-h7-Ea6" id="Iah-Jr-N4z"/>
+                <outlet property="reportIconImageView" destination="bsg-9Q-7Ba" id="n9S-JU-ccp"/>
                 <outlet property="statusMetadataImageView" destination="kBG-9y-ioK" id="qid-dt-UXr"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="125.89285714285714"/>

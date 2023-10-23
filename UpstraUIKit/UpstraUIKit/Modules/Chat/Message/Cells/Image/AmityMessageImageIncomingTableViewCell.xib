@@ -132,9 +132,18 @@
                             <constraint firstItem="INA-2w-LGh" firstAttribute="leading" secondItem="K2o-Zl-TVY" secondAttribute="leading" id="lvI-Kp-UMl"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6JB-fj-tB3">
+                        <rect key="frame" x="216" y="106" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="PFt-Ii-mA8"/>
+                            <constraint firstAttribute="width" constant="20" id="y6F-9x-6hX"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="K2o-Zl-TVY" secondAttribute="trailing" constant="40" id="7jh-xT-xsy"/>
+                    <constraint firstItem="6JB-fj-tB3" firstAttribute="centerY" secondItem="Y60-Vi-vLj" secondAttribute="centerY" id="9oZ-tc-ciF"/>
+                    <constraint firstItem="6JB-fj-tB3" firstAttribute="leading" secondItem="Y60-Vi-vLj" secondAttribute="trailing" constant="8" id="AAv-09-O2v"/>
                     <constraint firstItem="K2o-Zl-TVY" firstAttribute="leading" secondItem="hen-IH-UhX" secondAttribute="leading" constant="16" id="UVA-Vd-iNw"/>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="K2o-Zl-TVY" secondAttribute="bottom" constant="12" id="ZBs-Xs-uT9"/>
                     <constraint firstItem="K2o-Zl-TVY" firstAttribute="top" secondItem="hen-IH-UhX" secondAttribute="top" constant="8" id="hpo-GY-Jvi"/>
@@ -150,6 +159,7 @@
                 <outlet property="messageImageView" destination="eKW-cm-X7M" id="ElG-NZ-h7p"/>
                 <outlet property="metadataLabel" destination="DOJ-ES-t67" id="fiw-RJ-ddU"/>
                 <outlet property="readCountLabel" destination="dkG-tX-hvq" id="Fm2-fT-dO5"/>
+                <outlet property="reportIconImageView" destination="6JB-fj-tB3" id="nCR-SI-Pkt"/>
                 <outlet property="statusMetadataImageView" destination="70Q-Wa-J6N" id="fIg-Bn-dGo"/>
             </connections>
             <point key="canvasLocation" x="201.44927536231884" y="427.56696428571428"/>

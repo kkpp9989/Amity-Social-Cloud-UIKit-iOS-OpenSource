@@ -177,7 +177,7 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
         replyAvatarImageView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
         
         var displayName = ""
-        if message.isOwner {
+        if message.parentMessageObjc?.userId == AmityUIKitManagerInternal.shared.currentUserId {
             displayName = "You"
         } else {
             displayName = message.parentMessageObjc?.user?.displayName ?? "Anonymous"

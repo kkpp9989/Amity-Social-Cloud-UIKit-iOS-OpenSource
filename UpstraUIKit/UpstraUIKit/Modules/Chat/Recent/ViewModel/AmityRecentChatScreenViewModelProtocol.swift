@@ -28,6 +28,7 @@ protocol AmityRecentChatScreenViewModelDataSource {
 
 protocol AmityRecentChatScreenViewModelAction {
     func viewDidLoad()
+    func viewWillDisappear()
     func join(at indexPath: IndexPath)
     func createChannel(users: [AmitySelectMemberModel])
     func loadMore()
