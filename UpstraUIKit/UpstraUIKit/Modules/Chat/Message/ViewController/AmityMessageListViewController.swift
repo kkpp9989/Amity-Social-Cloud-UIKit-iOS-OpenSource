@@ -128,6 +128,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        AmityAudioPlayer.shared.stop()
 		mentionManager?.delegate = nil
         AmityKeyboardService.shared.delegate = nil
         
@@ -504,6 +505,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             composeBar.isTimeout = false
             let keyWindow = UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.first { $0.isKeyWindow }
             guard let window = keyWindow else { return }
+            AmityAudioPlayer.shared.stopAudio()
             circular.show(for: window)
         case .hide:
             circular.hide()
