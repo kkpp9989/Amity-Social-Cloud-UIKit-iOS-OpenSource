@@ -39,6 +39,14 @@ open class AmityChannelEventHandler {
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
+    open func channelWithJumpMessageDidTap(from source: UIViewController,
+                            channelId: String, subChannelId: String, messageId: String) {
+        let settings = AmityMessageListViewController.Settings()
+        let viewController = AmityMessageListViewController.make(channelId: channelId, subChannelId: subChannelId, settings: settings, messageId: messageId)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
     /// Event for Leave Chat
     /// It will be triggered when leave chat is success
     ///
@@ -94,8 +102,8 @@ open class AmityChannelEventHandler {
     open func channelCreateNewGroupChat(from source: AmityViewController,
                                         selectUsers: [AmitySelectMemberModel],
                                         completionHandler: @escaping ((String, String)) -> ()) {
-        let vc = AmityMemberPickerChatViewController.make(withCurrentUsers: selectUsers)
-        vc.tapCreateButton = { channelId, subChannelId in
+		let vc = GroupChatCreatorViewController.make(selectUsers)
+        vc.tapNextButton = { channelId, subChannelId in
             completionHandler((channelId, subChannelId))
         }
         let navVc = UINavigationController(rootViewController: vc)

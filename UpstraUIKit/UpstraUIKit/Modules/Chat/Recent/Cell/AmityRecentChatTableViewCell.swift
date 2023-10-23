@@ -40,6 +40,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         badgeStatusView.isHidden = true
         previewMessageLabel.text = "No message"
         avatarView.image = nil
+        avatarView.placeholder = AmityIconSet.defaultGroupChat
     }
     
     private func setupView() {
@@ -119,13 +120,13 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                     }
                 }
             }
-        case .community:
+        case .community, .live:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(channel.memberCount))"
             statusBadgeImageView.isHidden = true
             badgeStatusView.isHidden = true
             badgeStatusView.backgroundColor = .clear
-        case .private, .live, .broadcast, .unknown:
+        case .private, .broadcast, .unknown:
             break
         @unknown default:
             break

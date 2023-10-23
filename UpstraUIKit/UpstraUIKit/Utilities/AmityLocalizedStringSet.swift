@@ -586,4 +586,10 @@ public struct AmityLocalizedStringSet {
         public static let emptyStateTitle = "reaction_empty_state_title";
         public static let emptyStateSubtitle = "reaction_empty_state_subtitle";
     }
+    
+    // MARK: - Chat
+    public enum Chat {
+        public static let chatUnableToChatTitle = "chat_unable_to_chat_title";
+        public static let chatUnableToChatDescription = "chat_unable_to_chat_description";
+    }
 }

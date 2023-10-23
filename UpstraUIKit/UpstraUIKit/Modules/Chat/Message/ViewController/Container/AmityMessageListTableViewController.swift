@@ -14,6 +14,8 @@ final class AmityMessageListTableViewController: UITableViewController {
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
     
+    var oldIndexPath: IndexPath?
+    
     // MARK: - View lifecycle
     private convenience init(viewModel: AmityMessageListScreenViewModelType) {
         self.init(style: .plain)
@@ -35,6 +37,21 @@ final class AmityMessageListTableViewController: UITableViewController {
     
     static func make(viewModel: AmityMessageListScreenViewModelType) -> AmityMessageListTableViewController {
         return AmityMessageListTableViewController(viewModel: viewModel)
+    }
+    
+}
+
+extension AmityMessageListTableViewController: AmityMessageAudioTableViewCellDelegate {
+    
+    func reloadDataAudioCell(indexPath: IndexPath) {
+        if oldIndexPath == nil {
+            oldIndexPath = indexPath
+        } else {
+            tableView.reloadRows(at: [oldIndexPath ?? IndexPath()], with: .none)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.oldIndexPath = indexPath
+            }
+        }
     }
     
 }
@@ -167,10 +184,35 @@ extension AmityMessageListTableViewController {
             let cellIdentifier = cellIdentifier(for: message) else {
                 return UITableViewCell()
         }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        configure(for: cell, at: indexPath)
-        return cell
+        if message.messageType == .audio {
+            if message.isOwner {
+                let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.display(message: message)
+                cell.setViewModel(with: screenViewModel)
+                cell.setIndexPath(with: indexPath)
+                let channelType = screenViewModel.dataSource.getChannelType()
+                cell.setChannelType(channelType: channelType)
+                cell.delegate = self
+                cell.delegateCell = self
+                cell.celliIndexPath = indexPath
+                return cell
+            } else {
+                let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.display(message: message)
+                cell.setViewModel(with: screenViewModel)
+                cell.setIndexPath(with: indexPath)
+                let channelType = screenViewModel.dataSource.getChannelType()
+                cell.setChannelType(channelType: channelType)
+                cell.delegate = self
+                cell.delegateCell = self
+                cell.celliIndexPath = indexPath
+                return cell
+            }
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+            configure(for: cell, at: indexPath)
+            return cell
+        }
     }
 }
 
@@ -232,6 +274,7 @@ extension AmityMessageListTableViewController {
         let channelType = screenViewModel.dataSource.getChannelType()
         (cell as? AmityMessageCellProtocol)?.display(message: message)
         (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
+       
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {

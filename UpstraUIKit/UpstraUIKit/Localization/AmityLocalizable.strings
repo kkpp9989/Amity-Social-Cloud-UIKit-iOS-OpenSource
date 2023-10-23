@@ -519,6 +519,10 @@
 "chat_setting_unmute_notification" = "Unmute"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_invite_via_qr_and_link" = "Invite via QR / Link"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 
+//  MARK: - Chat detail
+"chat_unable_to_chat_title" = "Unable to type more text";
+"chat_unable_to_chat_description" = "You have reached 10,000 characters limit.";
+
 // MARK: - Edit group chat profile
 // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting
 "edit_group_chat_profile_display_name_title" = "Group name";

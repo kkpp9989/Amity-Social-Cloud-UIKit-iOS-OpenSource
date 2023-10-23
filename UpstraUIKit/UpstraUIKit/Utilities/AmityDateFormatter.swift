@@ -42,13 +42,20 @@ struct AmityDateFormatter {
             return dateFormatter
         }()
         
-        static func getDate(date: Date) -> String {
+        static func getDate(date: Date, is24HourFormat: Bool = true) -> String {
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short
-            dateFormatter.dateFormat = "M/dd/yy, hh:mm a"
+            
+            if is24HourFormat {
+                dateFormatter.dateFormat = "M/dd/yy, HH:mm"
+            } else {
+                dateFormatter.dateFormat = "M/dd/yy, hh:mm a"
+            }
+            
             let dateString = dateFormatter.string(from: date)
             guard let _date = dateFormatter.date(from: dateString) else { return "" }
-            dateFormatter.dateFormat = _date.isToday ? "h:mm a" : "dd/MM/yy"
+            
+            dateFormatter.dateFormat = _date.isToday ? (is24HourFormat ? "HH:mm" : "h:mm a") : "dd/MM/yy"
             return dateFormatter.string(from: _date)
         }
     }
@@ -60,25 +67,38 @@ struct AmityDateFormatter {
             return dateFormatter
         }()
         
-        static func getDate(date: Date) -> String {
+        static func getDate(date: Date, is24HourFormat: Bool = false) -> String {
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
             dateFormatter.dateFormat = "M/dd/yy"
             let dateString = dateFormatter.string(from: date)
             guard let _date = dateFormatter.date(from: dateString) else { return "" }
-            if _date.message == "" {
+            
+            if _date.isToday {
+                return "Today"
+            }
+            
+            if _date.message.isEmpty {
                 dateFormatter.dateFormat = "MMMM dd, yyyy"
                 return dateFormatter.string(from: _date)
             }
+            
             return _date.message
         }
         
-        static func getTime(date: Date) -> String {
+        static func getTime(date: Date, is24HourFormat: Bool = true) -> String {
             dateFormatter.dateStyle = .none
             dateFormatter.timeStyle = .short
-            dateFormatter.dateFormat = "h:mm a"
+            
+            if is24HourFormat {
+                dateFormatter.dateFormat = "HH:mm"
+            } else {
+                dateFormatter.dateFormat = "h:mm a"
+            }
+            
             return dateFormatter.string(from: date)
         }
     }
-    
+
+
 }

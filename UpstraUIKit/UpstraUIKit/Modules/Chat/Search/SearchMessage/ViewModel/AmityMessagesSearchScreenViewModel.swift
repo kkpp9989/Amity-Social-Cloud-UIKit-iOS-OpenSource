@@ -84,6 +84,7 @@ extension AmityMessagesSearchScreenViewModel {
             switch result {
             case .success(let dataResponse):
                 let updatedMessageList = dataResponse
+                
                 /* Check is data not more than size request is mean is ending result */
                 if updatedMessageList.count < size {
                     isEndingResult = true
@@ -126,6 +127,11 @@ extension AmityMessagesSearchScreenViewModel {
                             strongSelf.messageList.append(message)
                             
                             // Check if leave has already been called
+                            if !leaveCalled {
+                                leaveCalled = true
+                                strongSelf.dispatchGroup.leave()
+                            }
+                        } else {
                             if !leaveCalled {
                                 leaveCalled = true
                                 strongSelf.dispatchGroup.leave()
@@ -263,6 +269,15 @@ extension AmityMessagesSearchScreenViewModel {
     private func mapMessageAndChannelToDataList() {
         // Ensure that messageList and channelList have the same count
         guard messageList.count == channelList.count else {
+            /* Hide loading indicator */
+            self.delegate?.screenViewModel(self, loadingState: .loaded)
+            self.isLoadingMore = false
+
+            if self.dataList.isEmpty {
+                self.delegate?.screenViewModelDidSearchNotFound(self)
+            } else {
+                self.delegate?.screenViewModelDidSearch(self)
+            }
             return
         }
         

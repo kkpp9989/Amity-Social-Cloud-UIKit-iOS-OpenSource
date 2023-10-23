@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AmitySDK
 
 public final class AmityMemberPickerChatViewController: AmityViewController {
     
@@ -17,14 +18,15 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
     @IBOutlet private var label: UILabel!
     
     // MARK: - Properties
-    private var screenViewModel: AmityMemberPickerScreenViewModelType!
+    private var screenViewModel: AmityMemberPickerChatScreenViewModelType!
     private var doneButton: UIBarButtonItem?
-    
+	private var displayName: String = ""
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
     public var tapCreateButton: ((String, String) -> Void)?
-
+	public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
+	
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,11 +46,14 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
         theme?.setBackgroundNavigationBar()
     }
 
-    public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerChatViewController {
-        let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
+	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
+							liveChannelBuilder: AmityLiveChannelBuilder? = nil,
+							displayName: String = "") -> AmityMemberPickerChatViewController {
+		let viewModeel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityLiveChannelBuilder())
         viewModeel.setCurrentUsers(users: users)
         let vc = AmityMemberPickerChatViewController(nibName: AmityMemberPickerChatViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
+		vc.displayName = displayName
         return vc
     }
     
@@ -56,14 +61,8 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
 
 private extension AmityMemberPickerChatViewController {
     @objc func doneTap() {
-        let selectUsersData = screenViewModel.dataSource.getStoreUsers()
-
-        let vc = GroupChatCreatorViewController.make(selectUsersData)
-        vc.tapCreateButton = { [weak self] channelId, subChannelId in
-            guard let strongSelf = self else { return }
-            strongSelf.tapCreateButton?(channelId, subChannelId)
-        }
-        navigationController?.pushViewController(vc, animated: true)
+		let selectUsers = screenViewModel.dataSource.getStoreUsers()
+		screenViewModel.action.createChannel(users: selectUsers, displayName: displayName)
     }
     
     @objc func cancelTap() {
@@ -104,7 +103,7 @@ private extension AmityMemberPickerChatViewController {
             title = String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(numberOfSelectedUseres)")
         }
         
-        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
+        doneButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
         doneButton?.isEnabled = !(numberOfSelectedUseres == 0)
         // [Improvement] Add set font style to label of done button
@@ -244,8 +243,14 @@ extension AmityMemberPickerChatViewController: UICollectionViewDelegateFlowLayou
     }
 }
 
-extension AmityMemberPickerChatViewController: AmityMemberPickerScreenViewModelDelegate {
-    
+extension AmityMemberPickerChatViewController: AmityMemberPickerChatScreenViewModelDelegate {
+	func screenViewModelDidCreateCommunity(_ viewModel: AmityMemberPickerChatScreenViewModelType, channelId: String, subChannelId: String) {
+		dismiss(animated: true) { [weak self] in
+			guard let strongSelf = self else { return }
+			strongSelf.tapCreateButton?(channelId, subChannelId)
+		}
+	}
+	
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
     }

@@ -30,11 +30,22 @@ extension AmityPhotoViewerController {
         hideInfoOverlayView(false)
         dismiss(animated: true, completion: nil)
     }
-
+    
+    @objc func downloadButtonTapped(_ sender: UIButton) {
+        if let imageToDownload = imageView.image {
+            AmityEventHandler.shared.showKTBLoading()
+            UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
+        AmityEventHandler.shared.hideKTBLoading()
+    }
+    
     func hideInfoOverlayView(_ animated: Bool) {
         configureOverlayViews(hidden: true, animated: animated)
     }
-
+    
     func showInfoOverlayView(_ animated: Bool) {
         configureOverlayViews(hidden: false, animated: animated)
     }
@@ -61,6 +72,7 @@ extension AmityPhotoViewerController {
         titleLabel.isHidden = isHidden
         cancelButton.isHidden = isHidden
         moreButton.isHidden = isHidden
+        downloadButton.isHidden = isHidden
     }
 
     func setOverlayElementsAlpha(alpha: CGFloat) {
@@ -68,6 +80,7 @@ extension AmityPhotoViewerController {
         titleLabel.alpha = alpha
         moreButton.alpha = alpha
         cancelButton.alpha = alpha
+        downloadButton.alpha = alpha
     }
 
     private func bottomButtonsVerticalPosition() -> CGFloat {
@@ -113,6 +126,16 @@ public class AmityPhotoViewerController: UIViewController {
         moreButton.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
         moreButton.addTarget(self, action: #selector(moreButtonTapped(_:)), for: UIControl.Event.touchUpInside)
         return moreButton
+    }()
+    
+    lazy var downloadButton: UIButton = {
+        let downloadButton = UIButton(frame: CGRect.zero)
+        downloadButton.setImage(AmityIconSet.iconDownload, for: .normal)
+        downloadButton.tintColor = AmityColorSet.baseInverse
+        downloadButton.addTarget(self, action: #selector(downloadButtonTapped(_:)), for: UIControl.Event.touchUpInside)
+        downloadButton.contentHorizontalAlignment = .center
+        downloadButton.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
+        return downloadButton
     }()
     
     lazy var titleLabel: UILabel = {
@@ -366,6 +389,10 @@ public class AmityPhotoViewerController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(cancelButton)
         view.addSubview(moreButton)
+        view.addSubview(downloadButton)
+        
+        // You may need to adjust the button's position and size according to your layout
+        downloadButton.frame = CGRect(x: 20, y: 20, width: 100, height: 40)
         
         super.viewDidLoad()
     }
@@ -375,7 +402,7 @@ public class AmityPhotoViewerController: UIViewController {
         backgroundView.frame = view.bounds
         scrollView.frame = view.bounds
         
-        // Update iamge view frame everytime view changes frame
+        // Update image view frame every time the view changes frame
         (imageView as? AmityPhotoImageView)?.imageChangeBlock?(imageView.image)
         
         let y = bottomButtonsVerticalPosition()
@@ -385,7 +412,9 @@ public class AmityPhotoViewerController: UIViewController {
         titleLabel.frame = CGRect(x: view.bounds.midX - 50, y: insets.top, width: 100, height: Constant.buttonHeight)
         cancelButton.frame = CGRect(origin: CGPoint(x: 10 + insets.left, y: insets.top - 5), size: CGSize(width: Constant.buttonHeight, height: Constant.buttonWidth))
         moreButton.frame = CGRect(origin: CGPoint(x: view.bounds.width - Constant.buttonWidth - insets.right, y: y - insets.bottom), size: CGSize(width: Constant.buttonWidth, height: Constant.buttonHeight))
+        downloadButton.frame = CGRect(origin: CGPoint(x: view.bounds.width - Constant.buttonHeight - insets.right - 10, y: insets.top - 5), size: CGSize(width: Constant.buttonHeight, height: Constant.buttonWidth))
     }
+
     
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)

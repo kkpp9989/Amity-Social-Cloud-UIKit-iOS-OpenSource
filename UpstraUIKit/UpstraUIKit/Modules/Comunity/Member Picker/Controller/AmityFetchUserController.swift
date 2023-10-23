@@ -37,7 +37,9 @@ final class AmityFetchUserController {
                     let model = AmitySelectMemberModel(object: object)
                     model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.userId }
                     if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
-                        strongSelf.users.append(model)
+                        if !object.isDeleted {
+                            strongSelf.users.append(model)
+                        }
                     }
                 }
                 

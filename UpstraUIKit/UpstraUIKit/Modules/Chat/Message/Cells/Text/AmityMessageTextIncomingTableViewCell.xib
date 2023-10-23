@@ -64,6 +64,13 @@
                             </view>
                         </subviews>
                     </stackView>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7uU-x5-l8z">
+                        <rect key="frame" x="248" y="77" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="B9h-15-pfm"/>
+                            <constraint firstAttribute="width" constant="20" id="oVF-Y2-GmK"/>
+                        </constraints>
+                    </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8DY-PH-B57">
                         <rect key="frame" x="68" y="137.5" width="141.5" height="20.5"/>
                         <subviews>
@@ -98,7 +105,9 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="8DY-PH-B57" firstAttribute="top" secondItem="oyg-Ia-lD0" secondAttribute="bottom" constant="4" id="DQb-fe-KLp"/>
+                    <constraint firstItem="7uU-x5-l8z" firstAttribute="centerY" secondItem="HTA-Os-JiY" secondAttribute="centerY" id="MGn-vT-ve9"/>
                     <constraint firstItem="8DY-PH-B57" firstAttribute="leading" secondItem="dSi-X6-exy" secondAttribute="trailing" constant="12" id="MgS-Bt-4XH"/>
+                    <constraint firstItem="7uU-x5-l8z" firstAttribute="leading" secondItem="HTA-Os-JiY" secondAttribute="trailing" constant="8" id="SUI-W5-xiA"/>
                     <constraint firstItem="dSi-X6-exy" firstAttribute="top" secondItem="QpO-W8-lLy" secondAttribute="top" constant="12" id="UsR-BZ-Hfe"/>
                     <constraint firstItem="oyg-Ia-lD0" firstAttribute="top" secondItem="wmC-Dp-Ze8" secondAttribute="bottom" constant="8" id="VIU-b8-VUF"/>
                     <constraint firstAttribute="trailing" secondItem="oyg-Ia-lD0" secondAttribute="trailing" constant="72" id="XDc-Xf-4tN"/>
@@ -119,6 +128,7 @@
                 <outlet property="displayNameLabel" destination="wmC-Dp-Ze8" id="G7S-qE-U7I"/>
                 <outlet property="metadataLabel" destination="Uru-Yr-4T2" id="rv8-Jw-hTg"/>
                 <outlet property="readCountLabel" destination="bUs-JH-P6d" id="PT1-wV-mHw"/>
+                <outlet property="reportIconImageView" destination="7uU-x5-l8z" id="1d7-IJ-99n"/>
                 <outlet property="statusMetadataImageView" destination="H9n-6d-rg0" id="ubY-Y1-RF8"/>
                 <outlet property="textMessageView" destination="TML-7c-OCj" id="H1P-7O-wEv"/>
             </connections>

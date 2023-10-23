@@ -17,34 +17,11 @@ struct SearchChannelsModel: Codable {
 // MARK: - Channel
 struct Channel: Codable {
     let id: String?
-    let isDistinct: Bool?
-    let type: TypeEnum?
-    let tags: [String]?
-    let lastActivity, updatedAt, createdAt: String?
-    let rateLimitWindow: Int?
     let displayName: String?
-    let messageAutoDeleteEnabled: Bool?
-    let autoDeleteMessageByFlagLimit: Int?
-    let isDeleted: Bool?
-    let path, channelID, channelInternalID, channelPublicID: String?
-    let isMuted, isRateLimited: Bool?
-    let memberCount, messageCount, moderatorMemberCount: Int?
-    let avatarFileID: String?
-    let metadata: ChannelMetadata?
-    let messagePreviewID: JSONNull?
-    let muteTimeout: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
-        case isDistinct, type, tags, lastActivity, updatedAt, createdAt, rateLimitWindow, displayName, messageAutoDeleteEnabled, autoDeleteMessageByFlagLimit, isDeleted, path
-        case channelID = "channelId"
-        case channelInternalID = "channelInternalId"
-        case channelPublicID = "channelPublicId"
-        case isMuted, isRateLimited, memberCount, messageCount, moderatorMemberCount
-        case avatarFileID = "avatarFileId"
-        case metadata
-        case messagePreviewID = "messagePreviewId"
-        case muteTimeout
+        case displayName
     }
 }
 

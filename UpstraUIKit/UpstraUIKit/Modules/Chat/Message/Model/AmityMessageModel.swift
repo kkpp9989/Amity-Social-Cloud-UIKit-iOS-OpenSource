@@ -63,7 +63,7 @@ public final class AmityMessageModel {
 		self.metadata = object.metadata
 		self.mentionees = object.mentionees
         self.parentId = object.parentId
-        self.getParentMessage {result in
+        self.getParentMessage { result in
             self.parentMessageObjc = result
             self.messageToken?.invalidate()
         }

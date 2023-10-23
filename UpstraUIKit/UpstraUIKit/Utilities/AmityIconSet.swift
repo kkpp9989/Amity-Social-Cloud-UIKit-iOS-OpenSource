@@ -21,8 +21,10 @@ public struct AmityIconSet {
     
     private init() { }
     
+    public static var iconDownload = UIImage(named: "icon_download", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBack = UIImage(named: "icon_back", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBackNavigationBar = UIImage(named: "icon_back_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
+    public static var iconCloseReply = UIImage(named: "icon_close_reply", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconClose = UIImage(named: "icon_close", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMessage = UIImage(named: "icon_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCreate = UIImage(named: "icon_create", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -163,6 +165,8 @@ public struct AmityIconSet {
         public static var iconAudioPlay = UIImage(named: "ic_play",in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconAudioPause = UIImage(named: "ic_pause", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconAudioDelete = UIImage(named: "ic_delete", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        
+        public static var iconReport = UIImage(named: "icon_report_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
         
         /* [Custom for ONE Krungthai] Icon of user status in chat */
         public static var iconStatusAvailable = UIImage(named: "icon_status_available", in: AmityUIKitManager.bundle, compatibleWith: nil)

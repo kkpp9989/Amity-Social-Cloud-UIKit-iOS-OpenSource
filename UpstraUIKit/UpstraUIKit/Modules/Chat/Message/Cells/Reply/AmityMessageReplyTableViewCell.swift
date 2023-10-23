@@ -175,7 +175,14 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
         
         let url = message.parentMessageObjc?.user?.getAvatarInfo()?.fileURL
         replyAvatarImageView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
-        replyDisplayNameLabel.text = message.parentMessageObjc?.user?.displayName ?? "Anonymous"
+        
+        var displayName = ""
+        if message.parentMessageObjc?.userId == AmityUIKitManagerInternal.shared.currentUserId {
+            displayName = "You"
+        } else {
+            displayName = message.parentMessageObjc?.user?.displayName ?? "Anonymous"
+        }
+        replyDisplayNameLabel.text = displayName
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
