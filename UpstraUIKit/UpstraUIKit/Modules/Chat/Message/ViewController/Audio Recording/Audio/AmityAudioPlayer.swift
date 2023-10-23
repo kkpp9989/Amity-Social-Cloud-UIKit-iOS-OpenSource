@@ -133,6 +133,7 @@ final class AmityAudioPlayer: NSObject {
     
     func stopAudio() {
         playerAudio.pause()
+        delegate?.stopPlaying()
     }
     
     @objc func playerDidFinishPlaying() {
