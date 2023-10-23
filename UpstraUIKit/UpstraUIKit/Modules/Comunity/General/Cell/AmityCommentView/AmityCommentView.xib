@@ -19,6 +19,7 @@
                 <outlet property="labelContainerView" destination="ffW-Ew-Kj3" id="t0Y-yq-uXX"/>
                 <outlet property="leadingAvatarImageViewConstraint" destination="QQS-Sp-FlV" id="8ej-7a-Hj3"/>
                 <outlet property="likeButton" destination="cdk-6j-3dY" id="QwM-FZ-zrU"/>
+                <outlet property="loadingIndicator" destination="Vp6-xL-WYJ" id="JYm-TH-eqy"/>
                 <outlet property="optionButton" destination="pLS-uH-QHV" id="0Mp-Zi-52t"/>
                 <outlet property="reactionDetailButton" destination="jgu-Q4-UTe" id="PBm-J2-jBC"/>
                 <outlet property="reactionDetailContainerView" destination="Pee-a1-Q1a" id="FvU-ln-9ZY"/>
@@ -32,7 +33,7 @@
                 <outlet property="trailingStaticOfContentView" destination="EO9-ko-Bcd" id="zsB-eW-6X9"/>
                 <outlet property="trailingStaticOfURLPreviewDetailView" destination="vEN-th-ub1" id="Bp6-i8-33I"/>
                 <outlet property="urlPreviewDomain" destination="7pi-LA-6iD" id="BcA-IN-gQl"/>
-                <outlet property="urlPreviewImage" destination="ZwF-aB-SHw" id="aC0-Gc-Bz5"/>
+                <outlet property="urlPreviewImage" destination="ZwF-aB-SHw" id="kje-MB-ooh"/>
                 <outlet property="urlPreviewTitle" destination="2ps-R4-Tan" id="m9X-PM-GwG"/>
                 <outlet property="urlPreviewView" destination="gHz-RG-Bdy" id="RpF-Bg-4TC"/>
                 <outlet property="viewReplyButton" destination="dLv-l7-hxu" id="wcu-WL-LG7"/>
@@ -90,6 +91,9 @@
                                                 <constraint firstAttribute="width" secondItem="ZwF-aB-SHw" secondAttribute="height" multiplier="21:20" id="4Ae-gW-Bt8"/>
                                             </constraints>
                                         </imageView>
+                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Vp6-xL-WYJ">
+                                            <rect key="frame" x="32" y="30" width="20" height="20"/>
+                                        </activityIndicatorView>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="PqI-GV-Bc2" userLabel="URL Detail">
                                             <rect key="frame" x="96" y="19.5" width="58.5" height="41"/>
                                             <subviews>
@@ -99,7 +103,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ps-R4-Tan" userLabel="Title">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ps-R4-Tan" userLabel="Title">
                                                     <rect key="frame" x="0.0" y="20.5" width="58.5" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -111,11 +115,13 @@
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <constraints>
                                         <constraint firstItem="ZwF-aB-SHw" firstAttribute="top" secondItem="gHz-RG-Bdy" secondAttribute="top" id="7EH-MT-tdj"/>
-                                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="80" id="VGY-zD-b7y"/>
+                                        <constraint firstItem="Vp6-xL-WYJ" firstAttribute="centerY" secondItem="ZwF-aB-SHw" secondAttribute="centerY" id="Jr7-pI-XiG"/>
+                                        <constraint firstAttribute="height" constant="80" id="VGY-zD-b7y"/>
                                         <constraint firstItem="ZwF-aB-SHw" firstAttribute="leading" secondItem="gHz-RG-Bdy" secondAttribute="leading" id="Xcm-R5-GFr"/>
                                         <constraint firstAttribute="bottom" secondItem="ZwF-aB-SHw" secondAttribute="bottom" id="pBD-Fs-ww7"/>
                                         <constraint firstItem="PqI-GV-Bc2" firstAttribute="centerY" secondItem="gHz-RG-Bdy" secondAttribute="centerY" id="qZe-Og-Qwr"/>
                                         <constraint firstItem="PqI-GV-Bc2" firstAttribute="leading" secondItem="ZwF-aB-SHw" secondAttribute="trailing" constant="12" id="qeO-KZ-SGS"/>
+                                        <constraint firstItem="Vp6-xL-WYJ" firstAttribute="centerX" secondItem="ZwF-aB-SHw" secondAttribute="centerX" id="stz-rc-tT9"/>
                                         <constraint firstAttribute="trailing" secondItem="PqI-GV-Bc2" secondAttribute="trailing" constant="12" id="vEN-th-ub1"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>

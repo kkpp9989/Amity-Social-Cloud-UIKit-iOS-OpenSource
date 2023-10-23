@@ -35,11 +35,13 @@
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="24Q-P7-GKn">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="187.66666666666666"/>
-                                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="24Q-P7-GKn" secondAttribute="height" multiplier="2:1" id="uIM-dh-RKN"/>
                                         </constraints>
                                     </imageView>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="kpS-C0-eJU">
+                                        <rect key="frame" x="177.66666666666666" y="83.666666666666657" width="20" height="20"/>
+                                    </activityIndicatorView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="8Yh-Lv-0vh" userLabel="URL Preview Detail">
                                         <rect key="frame" x="8" y="195.66666666666666" width="359" height="112.99999999999997"/>
                                         <subviews>
@@ -49,7 +51,7 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xlt-mz-pGj" userLabel="Title">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xlt-mz-pGj" userLabel="Title">
                                                 <rect key="frame" x="0.0" y="56.333333333333314" width="359" height="56.666666666666657"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
@@ -61,9 +63,11 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="8Yh-Lv-0vh" secondAttribute="bottom" constant="8" id="7hA-S7-QCd"/>
+                                    <constraint firstItem="kpS-C0-eJU" firstAttribute="centerX" secondItem="24Q-P7-GKn" secondAttribute="centerX" id="FUv-QG-Wbj"/>
                                     <constraint firstAttribute="trailing" secondItem="24Q-P7-GKn" secondAttribute="trailing" id="Wtq-6n-7H2"/>
                                     <constraint firstItem="24Q-P7-GKn" firstAttribute="leading" secondItem="5lA-65-nwY" secondAttribute="leading" id="Wwj-1d-3m4"/>
                                     <constraint firstItem="8Yh-Lv-0vh" firstAttribute="top" secondItem="24Q-P7-GKn" secondAttribute="bottom" constant="8" id="YZV-t3-TeU"/>
+                                    <constraint firstItem="kpS-C0-eJU" firstAttribute="centerY" secondItem="24Q-P7-GKn" secondAttribute="centerY" id="Zuu-zn-8EV"/>
                                     <constraint firstItem="8Yh-Lv-0vh" firstAttribute="leading" secondItem="5lA-65-nwY" secondAttribute="leading" constant="8" id="f59-Yp-IWC"/>
                                     <constraint firstAttribute="trailing" secondItem="8Yh-Lv-0vh" secondAttribute="trailing" constant="8" id="haD-By-7d8"/>
                                     <constraint firstItem="24Q-P7-GKn" firstAttribute="top" secondItem="5lA-65-nwY" secondAttribute="top" id="nAD-XM-03H"/>
@@ -102,6 +106,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="contentLabel" destination="DeW-v0-275" id="iQf-24-cbQ"/>
+                <outlet property="loadingIndicator" destination="kpS-C0-eJU" id="jgM-ME-o2J"/>
                 <outlet property="urlPreviewDomain" destination="PF0-gF-XHI" id="g34-lm-lC0"/>
                 <outlet property="urlPreviewImage" destination="24Q-P7-GKn" id="qho-nP-3Ia"/>
                 <outlet property="urlPreviewTitle" destination="Xlt-mz-pGj" id="a7A-y5-y9q"/>

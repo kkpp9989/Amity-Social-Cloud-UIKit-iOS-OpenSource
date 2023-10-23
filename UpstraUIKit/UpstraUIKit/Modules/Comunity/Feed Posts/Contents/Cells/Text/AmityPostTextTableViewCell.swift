@@ -26,6 +26,7 @@ public final class AmityPostTextTableViewCell: UITableViewCell, Nibbable, AmityP
     @IBOutlet var urlPreviewDomain: AmityLabel!
     @IBOutlet var urlPreviewTitle: AmityLabel!
     @IBOutlet var urlPreviewView: AmityView!
+    @IBOutlet var loadingIndicator: UIActivityIndicatorView!
     
     // MARK: - Properties
     public private(set) var post: AmityPostModel?
@@ -105,19 +106,22 @@ extension AmityPostTextTableViewCell {
     // MARK: - Setup URL Preview
     private func setupURLPreviewView() {
         // Setup image
+//        urlPreviewImage.image = nil
         urlPreviewImage.image = nil
-        urlPreviewImage.backgroundColor = .gray
         urlPreviewImage.contentMode = .scaleAspectFill
+        loadingIndicator.hidesWhenStopped = true
         
         // Setup domain
         urlPreviewDomain.text = " "
         urlPreviewDomain.font = AmityFontSet.caption
         urlPreviewDomain.textColor = AmityColorSet.disableTextField
+        urlPreviewDomain.numberOfLines = 1
         
         // Setup title
         urlPreviewTitle.text = " "
         urlPreviewTitle.font = AmityFontSet.bodyBold
         urlPreviewTitle.textColor = AmityColorSet.base
+        urlPreviewTitle.numberOfLines = 1
         
         // Setup ishidden status of view
         urlPreviewView.isHidden = true
@@ -128,11 +132,16 @@ extension AmityPostTextTableViewCell {
     }
     
     // MARK: - Display URL Preview
-    public func displayURLPreview(metadata: AmityURLMetadata) {
-        urlPreviewTitle.text = metadata.title
-        urlPreviewDomain.text = metadata.domain
-        urlPreviewImage.image = metadata.imagePreview
+    public func displayURLPreview(metadata: AmityURLMetadata, isLoadingImagePreview: Bool) {
         urlPreviewView.isHidden = false
+        urlPreviewTitle.text = metadata.title
+        urlPreviewDomain.text = metadata.domainURL
+        if isLoadingImagePreview {
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.stopAnimating()
+        }
+        urlPreviewImage.image = metadata.imagePreview
         urlData = metadata.urlData
     }
     

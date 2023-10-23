@@ -175,7 +175,7 @@ extension AmityFeedScreenViewModel {
                             }
                         } else {
                             strongSelf.pinPostIdDataNotFound.append(postId)
-                            print("-------> Set PinPostId \(postIds) to data not found group")
+                            print("-------> Set PinPostId \(postId) to data not found group")
                             print("-------> dispatchGroup.leave() \(postId)")
                             strongSelf.nextData()
                         }

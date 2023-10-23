@@ -8,13 +8,15 @@
 
 import UIKit
 import LinkPresentation
+import MobileCoreServices
 
 // MARK: - AmityURLMetadata
 public struct AmityURLMetadata {
-    let title: String
-    let domain: String
-    let urlData: URL
-    let imagePreview: UIImage
+    var title: String
+    var domainURL: String
+    var fullURL: String
+    var urlData: URL?
+    var imagePreview: UIImage?
 }
 
 // MARK: - AmityShareExternalDomainURL
@@ -49,7 +51,7 @@ public struct AmityURLCustomManager {
                 if let title = metadata.title, let domain = urlData.host?.replacingOccurrences(of: "www.", with: ""), let imageProvider = metadata.imageProvider {
                     imageProvider.loadObject(ofClass: UIImage.self) { image, error in
                         if let previewImage = image as? UIImage {
-                            completion(AmityURLMetadata(title: title, domain: domain, urlData: urlData ,imagePreview: previewImage))
+                            completion(AmityURLMetadata(title: title, domainURL: domain, fullURL: url, urlData: urlData ,imagePreview: previewImage))
                         } else {
                             completion(nil)
                         }
@@ -156,6 +158,10 @@ class AmityURLPreviewCacheManager {
     // Function to cache metadata
     func cacheMetadata(_ metadata: AmityURLMetadata, forURL url: String) {
         urlPreviewCache[url] = metadata
+    }
+    
+    func removeCacheMetadata(forURL url: String) {
+        urlPreviewCache.removeValue(forKey: url)
     }
     
     // Function to cache URL cannot preview
