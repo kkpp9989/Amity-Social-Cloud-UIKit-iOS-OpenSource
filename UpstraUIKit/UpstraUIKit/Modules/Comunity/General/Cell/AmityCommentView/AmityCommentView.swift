@@ -52,6 +52,7 @@ class AmityCommentView: AmityView {
     @IBOutlet var urlPreviewView: UIView!
     @IBOutlet var trailingStaticOfContentView: NSLayoutConstraint!
     @IBOutlet var trailingStaticOfURLPreviewDetailView: NSLayoutConstraint!
+    @IBOutlet var loadingIndicator: UIActivityIndicatorView!
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
@@ -310,18 +311,20 @@ extension AmityCommentView {
     private func setupURLPreviewView() {
         // Setup image
         urlPreviewImage.image = nil
-        urlPreviewImage.backgroundColor = .white
         urlPreviewImage.contentMode = .scaleAspectFill
+        loadingIndicator.hidesWhenStopped = true
 
         // Setup domain
         urlPreviewDomain.text = " "
         urlPreviewDomain.font = AmityFontSet.caption
         urlPreviewDomain.textColor = AmityColorSet.disableTextField
+        urlPreviewDomain.numberOfLines = 1
 
         // Setup title
         urlPreviewTitle.text = " "
         urlPreviewTitle.font = AmityFontSet.captionBold
         urlPreviewTitle.textColor = AmityColorSet.base
+        urlPreviewTitle.numberOfLines = 2
 
         // Setup ishidden status of view & constant for URL preview
         urlPreviewView.isHidden = true
@@ -334,15 +337,19 @@ extension AmityCommentView {
     }
 
     // MARK: - Display URL Preview
-    public func displayURLPreview(metadata: AmityURLMetadata) {
-        urlPreviewTitle.text = metadata.title
-        urlPreviewDomain.text = metadata.domain
-        urlPreviewImage.image = metadata.imagePreview
-        urlData = metadata.urlData
-        
+    public func displayURLPreview(metadata: AmityURLMetadata, isLoadingImagePreview: Bool) {
         urlPreviewView.isHidden = false
         trailingStaticOfContentView.isActive = true
         trailingStaticOfURLPreviewDetailView.isActive = true
+        urlPreviewTitle.text = metadata.title
+        urlPreviewDomain.text = metadata.domainURL
+        if isLoadingImagePreview {
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.stopAnimating()
+        }
+        urlPreviewImage.image = metadata.imagePreview
+        urlData = metadata.urlData
     }
 
     // MARK: - Hide URL Preview

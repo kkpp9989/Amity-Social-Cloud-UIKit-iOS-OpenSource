@@ -28,8 +28,39 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     }
     
     // MARK: - Action
-    
     func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+        // [Custom for ONE Krgunthai][URL Preview] Add get URL metadata for cache in post metadata to show URL preview
+        var updatedMetadata = metadata ?? [:]
+        if let urlInString = AmityURLCustomManager.Utilities.getURLInText(text: text) {
+            // Get URL metadata
+            AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlInString) { [self] urlMetadata in
+                DispatchQueue.main.async {
+                    if let newURLMetadata = urlMetadata {
+                        // Set title, URL and static value to post metadata
+                        updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                        updatedMetadata["url_preview_cache_url"] = newURLMetadata.fullURL
+                        updatedMetadata["is_show_url_preview"] = true
+                        
+                        // Clear cache of URL metadata
+                        AmityURLPreviewCacheManager.shared.removeCacheMetadata(forURL: newURLMetadata.fullURL)
+                    } else {
+                        updatedMetadata["url_preview_cache_title"] = ""
+                        updatedMetadata["url_preview_cache_url"] = ""
+                        updatedMetadata["is_show_url_preview"] = false
+                    }
+                    self.doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
+                }
+            }
+        } else {
+            updatedMetadata["url_preview_cache_title"] = ""
+            updatedMetadata["url_preview_cache_url"] = ""
+            updatedMetadata["is_show_url_preview"] = false
+            doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
+        }
+    }
+    
+    func doCreatePost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+//        print("[Post][Create] text: \(text) | post metadata: \(metadata)")
         
         let targetType: AmityPostTargetType = communityId == nil ? .user : .community
         var postBuilder: AmityPostBuilder
@@ -76,6 +107,10 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
+        } else if let metadata = metadata {
+            postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
+                self?.createPostResponseHandler(forPost: post, error: error)
+            }
         } else {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType) { [weak self] (post, error) in
                 self?.createPostResponseHandler(forPost: post, error: error)
@@ -91,7 +126,38 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
      - You cannot add extra images/files or replace images/files in image/file post
      */
     
-    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
+        // [Custom for ONE Krgunthai][URL Preview] Add get URL metadata for cache in post metadata to show URL preview
+        var updatedMetadata = metadata ?? [:]
+        if let urlInString = AmityURLCustomManager.Utilities.getURLInText(text: text) {
+            // Get URL metadata
+            AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlInString) { [self] urlMetadata in
+                DispatchQueue.main.async {
+                    if let newURLMetadata = urlMetadata {
+                        // Set title, URL and static value to post metadata
+                        updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                        updatedMetadata["url_preview_cache_url"] = newURLMetadata.fullURL
+                        updatedMetadata["is_show_url_preview"] = true
+                        // Clear cache of URL metadata
+                        AmityURLPreviewCacheManager.shared.removeCacheMetadata(forURL: newURLMetadata.fullURL)
+                    } else {
+                        updatedMetadata["url_preview_cache_title"] = ""
+                        updatedMetadata["url_preview_cache_url"] = ""
+                        updatedMetadata["is_show_url_preview"] = false
+                    }
+                    self.doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
+                }
+            }
+        } else {
+            updatedMetadata["url_preview_cache_title"] = ""
+            updatedMetadata["url_preview_cache_url"] = ""
+            updatedMetadata["is_show_url_preview"] = false
+            doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
+        }
+    }
+    
+    func doUpdatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+//        print("[Post][Update] text: \(text) | post metadata: \(metadata)")
         
         var postBuilder: AmityPostBuilder
         
@@ -137,6 +203,11 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         
         if let mentionees = mentionees {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+            }
+        } else if let metadata = metadata {
+            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }

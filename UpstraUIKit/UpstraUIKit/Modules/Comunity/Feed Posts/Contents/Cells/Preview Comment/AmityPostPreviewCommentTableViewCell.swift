@@ -26,7 +26,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         setupView()
     }
     
-    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath, completion: ((_ isMustToReloadCell: Bool, _ indexPath: IndexPath) -> Void)?) {
+    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath) {
         self.comment = comment
         self.post = post
         guard let comment = comment else { return }
@@ -39,49 +39,42 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         
         // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
         commentView.configure(with: comment, layout: layout, post: post)
-        
+
+//        print("[Comment][Get] text: \(comment.text) | comment metadata: \(comment.metadata)")
         /* [Custom for ONE Krungthai][URL Preview] Add check URL in text for show URL preview or not */
-        if let urlString = AmityURLCustomManager.Utilities.getURLInText(text: comment.text) { // Case : Have URL in text
-            if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: urlString) { // Case : This url have current data -> Use cached for set display URL preview
-                // Display URL Preview from cache URL metadata
-                commentView.displayURLPreview(metadata: cachedMetadata)
-                // Handle cell after display URL Preview
-                completion?(false, indexPath)
-            } else { // Case : This url don't have current data -> Get new URL metadata for set display URL preview
-                // Get new URL metadata
-                AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlString) { metadata in
+        if let title = comment.metadata?["url_preview_cache_title"] as? String, title != "",
+           let fullURLString = comment.metadata?["url_preview_cache_url"] as? String, fullURLString != "",
+           let isShowURLPreview = comment.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview,
+           let urlData = URL(string: fullURLString), let domainURL = urlData.host?.replacingOccurrences(of: "www.", with: ""),
+           let urlInText = AmityURLCustomManager.Utilities.getURLInText(text: comment.text), urlInText == fullURLString { // Case : Display URL preview
+            
+            if let cachedMetadata = AmityURLPreviewCacheManager.shared.getCachedMetadata(forURL: fullURLString) { // Case: [Display URL preview] Have URL metadata in local cache -> Display URL preview
+                commentView.displayURLPreview(metadata: cachedMetadata, isLoadingImagePreview: false)
+            } else { // Case: [Display URL preview] Don't Have URL metadata in local cache -> Set new url metadata cache in local from post metadata and display URL preview and waiting load image preview
+                // Display URL Preview (without image preview)
+                let urlMetadata = AmityURLMetadata(title: title, domainURL: domainURL, fullURL: fullURLString, urlData: urlData, imagePreview: nil)
+                commentView.displayURLPreview(metadata: urlMetadata, isLoadingImagePreview: true)
+                
+                // Get URL metadata fot image preview
+                AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: fullURLString) { [self] metadata in
                     DispatchQueue.main.async {
-                        if let urlMetadata: AmityURLMetadata = metadata { // Case : Can get new URL metadata -> set display URL preview
-                            // Save new URL metadata to cache
-                            AmityURLPreviewCacheManager.shared.cacheMetadata(urlMetadata, forURL: urlString)
-                            // Display URL Preview from new URL metadata
-                            self.commentView.displayURLPreview(metadata: urlMetadata)
-                            // Handle cell after display URL Preview
-                            completion?(true, indexPath)
-                        } else { // Case : Can get new URL metadata -> hide URL preview
-                            // Hide URL Preview
-                            self.commentView.hideURLPreview()
-                            // Handle cell after Hide URL Preview
-                            if indexPath.section <= 1 { // Case : indexPath section is 0-1 because must to reload row for fix cell in these section show other URL preview
-                                completion?(true, indexPath)
-                            } else { // Case : indexPath is more than 1 -> don't reload row
-                                completion?(false, indexPath)
-                            }
+                        // Update image preview to current URL metadata cache
+                        var currentURLMetadata: AmityURLMetadata
+                        if let newURLMetadata: AmityURLMetadata = metadata {
+                            currentURLMetadata = AmityURLMetadata(title: title, domainURL: domainURL, fullURL: fullURLString, urlData: urlData, imagePreview: newURLMetadata.imagePreview)
+                        } else {
+                            currentURLMetadata = AmityURLMetadata(title: title, domainURL: domainURL, fullURL: fullURLString, urlData: urlData)
                         }
+                        AmityURLPreviewCacheManager.shared.cacheMetadata(currentURLMetadata, forURL: fullURLString)
+                        
+                        // Display URL Preview (with image preview)
+                        self.commentView.displayURLPreview(metadata: currentURLMetadata, isLoadingImagePreview: false)
                     }
                 }
             }
-        } else { // Case : Don't have URL in text
-            // Hide URL Preview
+        } else { // Case : Hide URL preview
             commentView.hideURLPreview()
-            // Handle cell after Hide URL Preview
-            if indexPath.section <= 1 { // Case : indexPath section is 0-1 because must to reload row for fix cell in these section show other URL preview
-                completion?(true, indexPath)
-            } else { // Case : indexPath is more than 1 -> don't reload row
-                completion?(false, indexPath)
-            }
         }
-        print("[Post] comment: \(comment.text) | indexPath: \(indexPath)")
         
         commentView.delegate = self
         commentView.contentLabel.delegate = self

@@ -122,6 +122,10 @@ public class AmityEditTextViewController: AmityViewController {
         }
 
         saveBarButton.tintColor = AmityColorSet.primary
+        saveBarButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        saveBarButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveBarButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         navigationItem.rightBarButtonItem = saveBarButton
         textView.text = message
         textView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
