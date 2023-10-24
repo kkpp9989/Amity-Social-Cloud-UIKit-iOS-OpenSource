@@ -89,7 +89,7 @@ class AmityReactionUsersScreenViewModel {
         
         // Query reactions
         liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: reactionType.isEmpty ? nil : reactionType)
-        token = liveCollection?.observeOnce({ [weak self] liveCollection, _, error in
+        token = liveCollection?.observe({ [weak self] liveCollection, _, error in
             guard let weakSelf = self else { return }
 
             if let error {
@@ -116,6 +116,7 @@ class AmityReactionUsersScreenViewModel {
                 weakSelf.setupScreenState(state: .loaded(data: weakSelf.reactionList, error: nil))
                 weakSelf.isLoadingDummyData = false
             }
+            weakSelf.token?.invalidate()
         })
     }
     

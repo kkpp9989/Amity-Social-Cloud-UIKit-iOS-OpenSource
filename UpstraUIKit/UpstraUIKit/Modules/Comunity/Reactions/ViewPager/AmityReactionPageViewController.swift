@@ -13,6 +13,7 @@ public class AmityReactionPageViewController: AmityPageViewController {
 
     let info: [AmityReactionInfo]
 	var reactionViewControllerList: [AmityReactionUsersViewController] = []
+    private let orderedReactionKeys = ["create", "honest", "harmony", "success", "society", "like", "love"]
     
     // MARK: - View lifecycle
     private init(info: [AmityReactionInfo], reactionList: [String: Int]) {
@@ -25,19 +26,35 @@ public class AmityReactionPageViewController: AmityPageViewController {
 			reactionCount: info[0].reactionsCount)
 		)
 		
-		/// Tab other reactions
-		for (key, value) in reactionList where value > 0 {
-			switch key {
-			case "create", "honest", "harmony", "success", "society", "like", "love":
-				let reactionViewController = AmityReactionUsersViewController.make(
-					with: info[0],
-					reactionType: key,
-					reactionCount: value)
-				reactionViewControllerList.append(reactionViewController)
-			default:
-				break
-			}
-		}
+		/// Tab other reactions [Original][Backup]
+//		for (key, value) in reactionList where value > 0 {
+//			switch key {
+//			case "create", "honest", "harmony", "success", "society", "like", "love":
+//				let reactionViewController = AmityReactionUsersViewController.make(
+//					with: info[0],
+//					reactionType: key,
+//					reactionCount: value)
+//				reactionViewControllerList.append(reactionViewController)
+//			default:
+//				break
+//			}
+//		}
+        
+        /// Tab other reactions [Fixed]
+        for key in orderedReactionKeys {
+            switch key {
+            case "create", "honest", "harmony", "success", "society", "like", "love":
+                if let count = reactionList[key], count > 0 {
+                    let reactionViewController = AmityReactionUsersViewController.make(
+                        with: info[0],
+                        reactionType: key,
+                        reactionCount: count)
+                    reactionViewControllerList.append(reactionViewController)
+                }
+            default:
+                break
+            }
+        }
         
         super.init(nibName: AmityReactionPageViewController.identifier, bundle: AmityUIKitManager.bundle)
         title = AmityLocalizedStringSet.Reaction.reactionTitle.localizedString

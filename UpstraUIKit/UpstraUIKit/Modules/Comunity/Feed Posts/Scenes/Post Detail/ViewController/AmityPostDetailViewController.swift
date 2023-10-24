@@ -145,7 +145,7 @@ open class AmityPostDetailViewController: AmityViewController {
         screenViewModel.delegate = self
         screenViewModel.action.fetchPost()
         screenViewModel.action.fetchComments()
-        screenViewModel.action.fetchReactionList()
+//        screenViewModel.action.fetchReactionList() // Use post.reactions in screenviewModel instead
     }
     
     // MARK: Setup views

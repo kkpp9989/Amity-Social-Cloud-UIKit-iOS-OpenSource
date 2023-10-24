@@ -140,6 +140,15 @@ extension AmityPostDetailScreenViewModel {
                 post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
             }
             post.pollAnswers = pollAnswers ?? [:]
+
+            // Mapping new reaction value from updated post
+            reaction.forEach { key, value in
+                if let newValue = post.reactions[key] {
+                    reaction[key] = newValue
+                } else {
+                    reaction[key] = 0
+                }
+            }
             
             let component = prepareComponents(post: post)
             viewModels.append([.post(component)])
@@ -221,6 +230,7 @@ extension AmityPostDetailScreenViewModel {
     
     // MARK: Reaction
 
+    // Not use
     func fetchReactionList() {
         for objData in reaction {
             dispatchGroup.enter()
