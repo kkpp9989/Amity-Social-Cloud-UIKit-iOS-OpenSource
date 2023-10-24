@@ -279,6 +279,7 @@ final class AmityUIKitManagerInternal: NSObject {
     private var userCollectionToken: AmityNotificationToken?
     private var channelCollectionToken: AmityNotificationToken?
     private var disposeBag: Set<AnyCancellable> = []
+    private var postIdCannotGetSnapshotList: [String] = []
     
     var totalUnreadCount: Int = 0
     
@@ -450,6 +451,16 @@ final class AmityUIKitManagerInternal: NSObject {
         messageMediaService.fileRepository = AmityFileRepository(client: client)
         userRepository = AmityUserRepository(client: client)
         channelRepository = AmityChannelRepository(client: client)
+    }
+}
+
+extension AmityUIKitManagerInternal {
+    func addPostIdCannotGetSnapshot(postId: String) {
+        postIdCannotGetSnapshotList.append(postId)
+    }
+    
+    func getPostIdsCannotGetSnapshot() -> [String] {
+        return postIdCannotGetSnapshotList
     }
 }
 
