@@ -140,8 +140,8 @@ extension AmityPostTextTableViewCell {
             loadingIndicator.startAnimating()
         } else {
             loadingIndicator.stopAnimating()
+            urlPreviewImage.image = metadata.imagePreview ?? AmityIconSet.defaultImageURLPreview
         }
-        urlPreviewImage.image = metadata.imagePreview
         urlData = metadata.urlData
     }
     
