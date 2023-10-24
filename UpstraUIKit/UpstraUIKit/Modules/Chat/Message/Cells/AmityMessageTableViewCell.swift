@@ -235,7 +235,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                 readCountLabel?.text = message.object.readCount > 0 ? "• Read \(message.object.readCount)" : "• Sent"
             }
         } else {
-            readCountLabel?.isHidden = true
+            readCountLabel?.text = message.object.readCount > 0 ? "• Read" : "• Sent"
         }
     }
 }
