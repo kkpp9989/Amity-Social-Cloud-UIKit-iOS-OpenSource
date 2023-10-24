@@ -1,5 +1,5 @@
 //
-//  AmityMemberPickerChatViewController.swift
+//  AmityMemberPickerChatSecondViewController.swift
 //  AmityUIKit
 //
 //  Created by GuIDe'MacbookAmityHQ on 8/10/2566 BE.
@@ -9,7 +9,7 @@
 import UIKit
 import AmitySDK
 
-public final class AmityMemberPickerChatViewController: AmityViewController {
+public final class AmityMemberPickerChatSecondViewController: AmityViewController {
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -48,10 +48,10 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
 
 	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
 							liveChannelBuilder: AmityLiveChannelBuilder? = nil,
-							displayName: String = "") -> AmityMemberPickerChatViewController {
+							displayName: String = "") -> AmityMemberPickerChatSecondViewController {
 		let viewModeel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityLiveChannelBuilder())
         viewModeel.setCurrentUsers(users: users)
-        let vc = AmityMemberPickerChatViewController(nibName: AmityMemberPickerChatViewController.identifier, bundle: AmityUIKitManager.bundle)
+        let vc = AmityMemberPickerChatSecondViewController(nibName: AmityMemberPickerChatSecondViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
 		vc.displayName = displayName
         return vc
@@ -59,7 +59,7 @@ public final class AmityMemberPickerChatViewController: AmityViewController {
     
 }
 
-private extension AmityMemberPickerChatViewController {
+private extension AmityMemberPickerChatSecondViewController {
     @objc func doneTap() {
 		let selectUsers = screenViewModel.dataSource.getStoreUsers()
 		screenViewModel.action.createChannel(users: selectUsers, displayName: displayName)
@@ -74,7 +74,7 @@ private extension AmityMemberPickerChatViewController {
     }
 }
 
-private extension AmityMemberPickerChatViewController {
+private extension AmityMemberPickerChatSecondViewController {
     func setupView() {
         setupNavigationBar()
         setupSearchBar()
@@ -155,13 +155,13 @@ private extension AmityMemberPickerChatViewController {
     }
 }
 
-extension AmityMemberPickerChatViewController: UISearchBarDelegate {
+extension AmityMemberPickerChatSecondViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         screenViewModel.action.searchUser(with: searchText)
     }
 }
 
-extension AmityMemberPickerChatViewController: UITableViewDelegate {
+extension AmityMemberPickerChatSecondViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
         if !user.isCurrnetUser {
@@ -180,7 +180,7 @@ extension AmityMemberPickerChatViewController: UITableViewDelegate {
     }
 }
 
-extension AmityMemberPickerChatViewController: UITableViewDataSource {
+extension AmityMemberPickerChatSecondViewController: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
         return screenViewModel.numberOfAlphabet()
     }
@@ -206,7 +206,7 @@ extension AmityMemberPickerChatViewController: UITableViewDataSource {
     }
 }
 
-extension AmityMemberPickerChatViewController: UICollectionViewDataSource {
+extension AmityMemberPickerChatSecondViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return screenViewModel.dataSource.numberOfSelectedUsers()
     }
@@ -229,7 +229,7 @@ extension AmityMemberPickerChatViewController: UICollectionViewDataSource {
     }
 }
 
-extension AmityMemberPickerChatViewController: UICollectionViewDelegateFlowLayout {
+extension AmityMemberPickerChatSecondViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 60, height: collectionView.frame.height)
     }
@@ -243,7 +243,7 @@ extension AmityMemberPickerChatViewController: UICollectionViewDelegateFlowLayou
     }
 }
 
-extension AmityMemberPickerChatViewController: AmityMemberPickerChatScreenViewModelDelegate {
+extension AmityMemberPickerChatSecondViewController: AmityMemberPickerChatScreenViewModelDelegate {
 	func screenViewModelDidCreateCommunity(_ viewModel: AmityMemberPickerChatScreenViewModelType, channelId: String, subChannelId: String) {
 		dismiss(animated: true) { [weak self] in
 			guard let strongSelf = self else { return }
