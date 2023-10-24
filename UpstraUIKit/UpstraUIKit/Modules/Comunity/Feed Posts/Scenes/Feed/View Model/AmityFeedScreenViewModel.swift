@@ -34,7 +34,6 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     }
     
     private var pinPostData: [AmityPostModel] = []
-    private var pinPostIdDataNotFound: [String] = []
     private var dummyList: [String] = []
     private var tokenArray: [AmityNotificationToken?] = []
     private let dispatchGroup = DispatchGroup()
@@ -145,8 +144,10 @@ extension AmityFeedScreenViewModel {
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):
-                strongSelf.getPostId(withpostIds: data.pinposts.filter({ pinPostId in
-                    return !strongSelf.pinPostIdDataNotFound.contains(where: { $0 == pinPostId } )
+                let uniqueStrings = Array(Set(data.pinposts))
+                strongSelf.getPostId(withpostIds: uniqueStrings.filter({ pinPostId in
+                    let postIdsCannotGetSnapshot = AmityUIKitManagerInternal.shared.getPostIdsCannotGetSnapshot()
+                    return !postIdsCannotGetSnapshot.contains(where: { $0 == pinPostId } )
                 }))
             case .failure(let error):
                 print(error)
@@ -167,16 +168,18 @@ extension AmityFeedScreenViewModel {
                 let postCollection = postRepository.getPost(withId: postId)
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
-                    if let _ = AmityError(error: error) {
+                    if let error = AmityError(error: error) {
+                        print("-------> Get post data \(postId) fail with error \(error.localizedDescription)")
                         strongSelf.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
+                            print("-------> Get post data \(postId) success")
                             if !model.isDelete {
                                 strongSelf.appendData(post: model)
                             }
                         } else {
-                            strongSelf.pinPostIdDataNotFound.append(postId)
-                            print("-------> Set PinPostId \(postId) to data not found group")
+                            AmityUIKitManagerInternal.shared.addPostIdCannotGetSnapshot(postId: postId)
+                            print("-------> Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
                             strongSelf.nextData()
                         }
                     }
@@ -265,7 +268,6 @@ extension AmityFeedScreenViewModel {
         if !containsPostId {
             pinPostData.append(post)
         }
-        print("-------> dispatchGroup.leave() \(post.postId)")
     }
     
     func nextData() {
