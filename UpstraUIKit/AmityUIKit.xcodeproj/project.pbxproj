@@ -501,10 +501,10 @@
 		AA5B3DAD2ABC0ACF006192D6 /* RequestGetNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DAC2ABC0ACF006192D6 /* RequestGetNotification.swift */; };
 		AA5B3DAF2ABC3CB8006192D6 /* RequestGetPinPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5B3DAE2ABC3CB8006192D6 /* RequestGetPinPost.swift */; };
 		AA60AAA02AC05C09005B28B3 /* AmityPinPostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA60AA9F2AC05C09005B28B3 /* AmityPinPostModel.swift */; };
-		AA61D1832AD2F03B00CD217B /* AmityMemberPickerChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatViewController.swift */; };
-		AA61D1852AD2F0B900CD217B /* AmityMemberPickerChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatViewController.xib */; };
-		AA61D1882AD2F1C700CD217B /* GroupChatCreatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D1862AD2F1C700CD217B /* GroupChatCreatorViewController.swift */; };
-		AA61D18E2AD2F24700CD217B /* GroupChatCreatorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA61D18D2AD2F24700CD217B /* GroupChatCreatorViewController.xib */; };
+		AA61D1832AD2F03B00CD217B /* AmityMemberPickerChatSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatSecondViewController.swift */; };
+		AA61D1852AD2F0B900CD217B /* AmityMemberPickerChatSecondViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatSecondViewController.xib */; };
+		AA61D1882AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D1862AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift */; };
+		AA61D18E2AD2F24700CD217B /* GroupChatCreatorFirstViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA61D18D2AD2F24700CD217B /* GroupChatCreatorFirstViewController.xib */; };
 		AA61D19B2AD3104200CD217B /* GroupChatCreatorScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D1992AD3104200CD217B /* GroupChatCreatorScreenViewModelProtocol.swift */; };
 		AA61D19C2AD3104200CD217B /* GroupChatCreatorScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D19A2AD3104200CD217B /* GroupChatCreatorScreenViewModel.swift */; };
 		AA61D19F2AD518A500CD217B /* AmityChatSearchParentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61D19D2AD518A500CD217B /* AmityChatSearchParentViewController.swift */; };
@@ -764,6 +764,10 @@
 		DFDDF6B82A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */; };
 		DFDDF6B92A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */; };
 		DFF8DF3C2AC581B200D33D80 /* AmityMemberChatUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */; };
+		F097F38A2AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3852AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib */; };
+		F097F38B2AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3862AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift */; };
+		F097F38C2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3882AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib */; };
+		F097F38D2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */; };
 		F0C1F77F2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C1F77E2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift */; };
 		F0C1F7812AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C1F7802AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift */; };
 		FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276CE2A53B7C2003DFE4E /* AmitySDK */; };
@@ -1288,10 +1292,10 @@
 		AA5B3DAC2ABC0ACF006192D6 /* RequestGetNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetNotification.swift; sourceTree = "<group>"; };
 		AA5B3DAE2ABC3CB8006192D6 /* RequestGetPinPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestGetPinPost.swift; sourceTree = "<group>"; };
 		AA60AA9F2AC05C09005B28B3 /* AmityPinPostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPinPostModel.swift; sourceTree = "<group>"; };
-		AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatViewController.swift; sourceTree = "<group>"; };
-		AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityMemberPickerChatViewController.xib; sourceTree = "<group>"; };
-		AA61D1862AD2F1C700CD217B /* GroupChatCreatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorViewController.swift; sourceTree = "<group>"; };
-		AA61D18D2AD2F24700CD217B /* GroupChatCreatorViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupChatCreatorViewController.xib; sourceTree = "<group>"; };
+		AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatSecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatSecondViewController.swift; sourceTree = "<group>"; };
+		AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatSecondViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityMemberPickerChatSecondViewController.xib; sourceTree = "<group>"; };
+		AA61D1862AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorFirstViewController.swift; sourceTree = "<group>"; };
+		AA61D18D2AD2F24700CD217B /* GroupChatCreatorFirstViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GroupChatCreatorFirstViewController.xib; sourceTree = "<group>"; };
 		AA61D1992AD3104200CD217B /* GroupChatCreatorScreenViewModelProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorScreenViewModelProtocol.swift; sourceTree = "<group>"; };
 		AA61D19A2AD3104200CD217B /* GroupChatCreatorScreenViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorScreenViewModel.swift; sourceTree = "<group>"; };
 		AA61D19D2AD518A500CD217B /* AmityChatSearchParentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatSearchParentViewController.swift; sourceTree = "<group>"; };
@@ -1552,6 +1556,10 @@
 		DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityUserNotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityUserNotificationSettingsViewController.xib; sourceTree = "<group>"; };
 		DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberChatUtilities.swift; sourceTree = "<group>"; };
+		F097F3852AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GroupChatCreatorSecondViewController.xib; sourceTree = "<group>"; };
+		F097F3862AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorSecondViewController.swift; sourceTree = "<group>"; };
+		F097F3882AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityMemberPickerChatFirstViewController.xib; sourceTree = "<group>"; };
+		F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatFirstViewController.swift; sourceTree = "<group>"; };
 		F0C1F77E2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatScreenViewModel.swift; sourceTree = "<group>"; };
 		F0C1F7802AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatViewModelProtocol.swift; sourceTree = "<group>"; };
 		FA6276BC2A53B58C003DFE4E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = SharedFrameworksEdit/Package.swift; sourceTree = "<group>"; };
@@ -4117,29 +4125,29 @@
 		AA61D18A2AD2F1CF00CD217B /* GroupChatCreator */ = {
 			isa = PBXGroup;
 			children = (
-				AA61D18C2AD2F21A00CD217B /* AmityMemberPicker */,
+				F097F3792AE82E10001ABADE /* ForInvitePeopleFromOneOnOneChat */,
+				F097F3782AE82DDC001ABADE /* ForCreateNewGroup */,
 				AA61D1982AD3104200CD217B /* ViewModel */,
-				AA61D18B2AD2F1E900CD217B /* ViewController */,
 			);
 			path = GroupChatCreator;
 			sourceTree = "<group>";
 		};
-		AA61D18B2AD2F1E900CD217B /* ViewController */ = {
+		AA61D18B2AD2F1E900CD217B /* GroupChatCreatorFirst */ = {
 			isa = PBXGroup;
 			children = (
-				AA61D1862AD2F1C700CD217B /* GroupChatCreatorViewController.swift */,
-				AA61D18D2AD2F24700CD217B /* GroupChatCreatorViewController.xib */,
+				AA61D1862AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift */,
+				AA61D18D2AD2F24700CD217B /* GroupChatCreatorFirstViewController.xib */,
 			);
-			path = ViewController;
+			path = GroupChatCreatorFirst;
 			sourceTree = "<group>";
 		};
-		AA61D18C2AD2F21A00CD217B /* AmityMemberPicker */ = {
+		AA61D18C2AD2F21A00CD217B /* AmityMemberPickerSecond */ = {
 			isa = PBXGroup;
 			children = (
-				AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatViewController.swift */,
-				AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatViewController.xib */,
+				AA61D1822AD2F03B00CD217B /* AmityMemberPickerChatSecondViewController.swift */,
+				AA61D1842AD2F0B900CD217B /* AmityMemberPickerChatSecondViewController.xib */,
 			);
-			path = AmityMemberPicker;
+			path = AmityMemberPickerSecond;
 			sourceTree = "<group>";
 		};
 		AA61D1982AD3104200CD217B /* ViewModel */ = {
@@ -5195,6 +5203,42 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		F097F3782AE82DDC001ABADE /* ForCreateNewGroup */ = {
+			isa = PBXGroup;
+			children = (
+				AA61D18C2AD2F21A00CD217B /* AmityMemberPickerSecond */,
+				AA61D18B2AD2F1E900CD217B /* GroupChatCreatorFirst */,
+			);
+			path = ForCreateNewGroup;
+			sourceTree = "<group>";
+		};
+		F097F3792AE82E10001ABADE /* ForInvitePeopleFromOneOnOneChat */ = {
+			isa = PBXGroup;
+			children = (
+				F097F3872AE835E5001ABADE /* AmityMemberPickerFirst */,
+				F097F3842AE835E5001ABADE /* GroupChatCreatorSecond */,
+			);
+			path = ForInvitePeopleFromOneOnOneChat;
+			sourceTree = "<group>";
+		};
+		F097F3842AE835E5001ABADE /* GroupChatCreatorSecond */ = {
+			isa = PBXGroup;
+			children = (
+				F097F3852AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib */,
+				F097F3862AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift */,
+			);
+			path = GroupChatCreatorSecond;
+			sourceTree = "<group>";
+		};
+		F097F3872AE835E5001ABADE /* AmityMemberPickerFirst */ = {
+			isa = PBXGroup;
+			children = (
+				F097F3882AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib */,
+				F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */,
+			);
+			path = AmityMemberPickerFirst;
+			sourceTree = "<group>";
+		};
 		FC91930B2ACC8574006A1E33 /* ViewUserStatus */ = {
 			isa = PBXGroup;
 			children = (
@@ -5366,6 +5410,7 @@
 				727A2CEE26CD18740061E7C7 /* AmityImageView.xib in Resources */,
 				0D44378F25CCFEBD00C03616 /* AmityPostFooterTableViewCell.xib in Resources */,
 				97D723982695ADC3000735F5 /* AmitySearchCommunityTableViewCell.xib in Resources */,
+				F097F38C2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib in Resources */,
 				AA7972582A6E8ADE00ED3BC9 /* AmityPostTabbarViewController.xib in Resources */,
 				DF3F4CCF2ADADDD5009879E9 /* AmityChannelPickerViewController.xib in Resources */,
 				B7B6050724FBF1CA005FB53D /* AmitySelectMemberListCollectionViewCell.xib in Resources */,
@@ -5375,7 +5420,7 @@
 				97D7C4B6264BF92100EA24F5 /* AmityChannelMemberSettingsViewController.xib in Resources */,
 				789F81F826E2B9C800C16C68 /* AmityPollCreatorTimeframeView.xib in Resources */,
 				724A103C254156400092A3AD /* AmityPostDetailDeletedTableViewCell.xib in Resources */,
-				AA61D1852AD2F0B900CD217B /* AmityMemberPickerChatViewController.xib in Resources */,
+				AA61D1852AD2F0B900CD217B /* AmityMemberPickerChatSecondViewController.xib in Resources */,
 				72A3512924EA820800DA9D46 /* AmityCommentTableViewCell.xib in Resources */,
 				97D723E12695B133000735F5 /* AmityFollowerTableViewCell.xib in Resources */,
 				72A3514024EA820800DA9D46 /* AmityLocalizable.strings in Resources */,
@@ -5412,7 +5457,7 @@
 				B763E30E252C261E00BCB2F2 /* AmityTrendingCommunityTableViewCell.xib in Resources */,
 				AA61D1BD2AD5507000CD217B /* AmityMessageSearchTableViewCell.xib in Resources */,
 				970E784826429FA500E5FCEE /* ChatSettingsTableViewCell.xib in Resources */,
-				AA61D18E2AD2F24700CD217B /* GroupChatCreatorViewController.xib in Resources */,
+				AA61D18E2AD2F24700CD217B /* GroupChatCreatorFirstViewController.xib in Resources */,
 				B76A1022252B7E3300AFC7A8 /* AmityCategoryPreviewViewController.xib in Resources */,
 				7858D3AA26DB8C7D00A0090E /* AmityPostPollAnswerTableViewCell.xib in Resources */,
 				0D43B16125D82C7600E6B604 /* AmityFeedViewController.xib in Resources */,
@@ -5447,6 +5492,7 @@
 				A0A903AD26BA6E86002949B2 /* PostGallerySegmentedControlCell.xib in Resources */,
 				97D723DD2695B133000735F5 /* AmityUserFollowersViewController.xib in Resources */,
 				97D723AC2695AE59000735F5 /* AmitySearchMemberTableViewCell.xib in Resources */,
+				F097F38A2AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib in Resources */,
 				B77DE3142537F1BA00568DF0 /* AmityCommunityMemberSettingsViewController.xib in Resources */,
 				DF3F4CD32ADBF8B0009879E9 /* AmityChannelPickerTabPageViewController.xib in Resources */,
 				DF27F10C2AD6536E00767DDE /* AmityMessageFileOutgoingTableViewCell.xib in Resources */,
@@ -5805,6 +5851,7 @@
 				7809D64726374BD900C5B517 /* AmityMyCommunityScreenViewModelProtocol.swift in Sources */,
 				AA5B3DA72ABBFDB1006192D6 /* AmityNotificationTrayModel.swift in Sources */,
 				D42E1B8A274CED5C006C41ED /* AmityMentionManager.swift in Sources */,
+				F097F38B2AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift in Sources */,
 				72A3516A24EA820800DA9D46 /* ImagePickerController+Closure.swift in Sources */,
 				B7B604FE24FBA410005FB53D /* AmityDynamicHeightCollectionView.swift in Sources */,
 				72A3516D24EA820800DA9D46 /* AssetStore.swift in Sources */,
@@ -5843,9 +5890,10 @@
 				72A3519424EA820800DA9D46 /* AmityPhotoImageView.swift in Sources */,
 				97D723DB2695B133000735F5 /* AmityUserFollowersScreenViewModelProtocol.swift in Sources */,
 				721C8C87262D1EA100BA576C /* AmityCommentEditorViewController.swift.swift in Sources */,
-				AA61D1882AD2F1C700CD217B /* GroupChatCreatorViewController.swift in Sources */,
+				AA61D1882AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift in Sources */,
 				72A3514124EA820800DA9D46 /* AmityComunity.swift in Sources */,
 				B788B935252D8B71002F4F12 /* AmityTrendingCommunityScreenViewModelProtocol.swift in Sources */,
+				F097F38D2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift in Sources */,
 				DF3134EC2ACBF8020032B8C2 /* AmityChatUserController.swift in Sources */,
 				DFA428B52AD572AA00A6AE57 /* UploadVideoMessageOperation.swift in Sources */,
 				A0A903B226BA749B002949B2 /* Protocol.swift in Sources */,
@@ -5990,7 +6038,7 @@
 				0DA0BD2225D9802B004804BA /* AmityPostDetailViewController.swift in Sources */,
 				72A3518224EA820800DA9D46 /* GradientView.swift in Sources */,
 				A062147B2709864100037C34 /* PostGalleryEmptyStateCell.swift in Sources */,
-				AA61D1832AD2F03B00CD217B /* AmityMemberPickerChatViewController.swift in Sources */,
+				AA61D1832AD2F03B00CD217B /* AmityMemberPickerChatSecondViewController.swift in Sources */,
 				72A3514324EA820800DA9D46 /* AmityThemeManager.swift in Sources */,
 				D4C0D50C25AEA8690061B6A6 /* AmityActivityController.swift in Sources */,
 				72887A202538550F00188FAD /* PHAsset+Extension.swift in Sources */,
