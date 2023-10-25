@@ -19,7 +19,8 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var refreshErrorView: UIView!
     @IBOutlet private var refreshErrorLabel: UILabel!
-    
+	@IBOutlet private var emptyFollowView: EmptyFollowerView!
+	
     // MARK: - Properties
     private var type: AmityFollowerViewType?
     private var emptyView = AmitySearchEmptyView()
@@ -37,8 +38,7 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        screenViewModel.action.getFollowsList()
+		getFollowsList()
     }
     
     static func make(pageTitle: String, type: AmityFollowerViewType, userId: String) -> AmityFollowersListViewController {
@@ -65,6 +65,26 @@ final class AmityFollowersListViewController: AmityViewController, IndicatorInfo
         setupRefreshControl()
         setupRefreshErrorView()
     }
+	
+	private func setupEmptyFollowView() {
+		emptyFollowView.isHidden = true
+	}
+	
+	private func updateEmptyFollowView(isShow: Bool) {
+		emptyFollowView.isHidden = !isShow
+		
+		switch screenViewModel.dataSource.type {
+		case .following:
+			emptyFollowView.title.text = "Once you follow people, you’ll see them here."
+		case .followers:
+			emptyFollowView.title.text = "Once people follow you, they’ll be shown here."
+		}
+	}
+	
+	private func getFollowsList() {
+		updateEmptyFollowView(isShow: false)
+		screenViewModel.action.getFollowsList()
+	}
     
     private func setupTableView() {
         tableView.register(AmityFollowerTableViewCell.nib, forCellReuseIdentifier: AmityFollowerTableViewCell.identifier)
@@ -178,18 +198,18 @@ private extension AmityFollowersListViewController {
     }
     
     @objc func handleRefreshingControl() {
-        screenViewModel.action.getFollowsList()
+        getFollowsList()
     }
 }
 
 // MARK:- UISearchBarDelegate
 extension AmityFollowersListViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        screenViewModel.action.getFollowsList()
+        getFollowsList()
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        screenViewModel.action.getFollowsList()
+        getFollowsList()
         searchBar.setShowsCancelButton(false, animated: true)
     }
     
@@ -199,7 +219,7 @@ extension AmityFollowersListViewController: UISearchBarDelegate {
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        screenViewModel.action.getFollowsList()
+		getFollowsList()
         searchBar.resignFirstResponder()
     }
 }
@@ -252,11 +272,15 @@ extension AmityFollowersListViewController: AmityFollowersListScreenViewModelDel
     func screenViewModelDidGetListSuccess() {
         refreshControl.endRefreshing()
         tableView.reloadData()
+		
+		let isZeroFollow = screenViewModel.dataSource.numberOfItems() == 0
+		updateEmptyFollowView(isShow: isZeroFollow)
     }
     
     func screenViewModelDidGetListFail() {
         refreshControl.endRefreshing()
         refreshErrorView.isHidden = false
+		updateEmptyFollowView(isShow: false)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2) { [weak self] in
             self?.refreshErrorView.isHidden = true
         }

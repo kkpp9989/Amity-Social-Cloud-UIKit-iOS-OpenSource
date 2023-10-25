@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityChatFriendPageViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="emptyFollowView" destination="Jo5-aZ-rFN" id="zwh-v5-1a4"/>
                 <outlet property="refreshErrorLabel" destination="4AN-MJ-JCf" id="IK4-dT-hlY"/>
                 <outlet property="refreshErrorView" destination="nIt-Yx-GCd" id="3iV-iI-7XW"/>
                 <outlet property="tableView" destination="9vo-Lq-dAQ" id="iA3-MW-5o7"/>
@@ -45,6 +46,10 @@
                         <constraint firstItem="4AN-MJ-JCf" firstAttribute="centerY" secondItem="nIt-Yx-GCd" secondAttribute="centerY" id="vDP-CN-weG"/>
                     </constraints>
                 </view>
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jo5-aZ-rFN" userLabel="Empty Follow View" customClass="EmptyFollowerView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="71.666666666666686" y="384.66666666666669" width="250" height="108"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="Z3l-of-5S0"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -52,7 +57,9 @@
                 <constraint firstItem="nIt-Yx-GCd" firstAttribute="top" secondItem="Z3l-of-5S0" secondAttribute="top" id="2JI-vO-fuo"/>
                 <constraint firstItem="9vo-Lq-dAQ" firstAttribute="top" secondItem="Z3l-of-5S0" secondAttribute="top" id="5KC-Up-2rq"/>
                 <constraint firstItem="Z3l-of-5S0" firstAttribute="bottom" secondItem="9vo-Lq-dAQ" secondAttribute="bottom" id="Fbd-0i-hYq"/>
+                <constraint firstItem="Jo5-aZ-rFN" firstAttribute="centerX" secondItem="Z3l-of-5S0" secondAttribute="centerX" id="G8I-Cw-szi"/>
                 <constraint firstItem="Z3l-of-5S0" firstAttribute="trailing" secondItem="9vo-Lq-dAQ" secondAttribute="trailing" id="eou-So-Lsu"/>
+                <constraint firstItem="Jo5-aZ-rFN" firstAttribute="centerY" secondItem="Z3l-of-5S0" secondAttribute="centerY" id="hA4-3g-kUS"/>
                 <constraint firstItem="nIt-Yx-GCd" firstAttribute="leading" secondItem="Z3l-of-5S0" secondAttribute="leading" id="jZi-uT-KCC"/>
                 <constraint firstItem="9vo-Lq-dAQ" firstAttribute="leading" secondItem="Z3l-of-5S0" secondAttribute="leading" id="jaZ-XA-o3Y"/>
                 <constraint firstItem="Z3l-of-5S0" firstAttribute="trailing" secondItem="nIt-Yx-GCd" secondAttribute="trailing" id="vbf-9V-odH"/>

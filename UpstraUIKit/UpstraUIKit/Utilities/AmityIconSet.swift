@@ -222,6 +222,7 @@ public struct AmityIconSet {
     
     enum Follow {
         public static var iconFollowPendingRequest = UIImage(named: "icon_follow_pending_request", in: AmityUIKitManager.bundle, compatibleWith: nil)
+		public static var iconFollowEmpty = UIImage(named: "icon_follow_empty", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum CreatePost {
