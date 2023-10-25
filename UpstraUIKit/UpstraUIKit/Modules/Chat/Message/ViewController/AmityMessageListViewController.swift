@@ -245,11 +245,13 @@ private extension AmityMessageListViewController {
     }
 
     func openCamera() {
-        let cameraPicker = UIImagePickerController()
-        cameraPicker.sourceType = .camera
-        cameraPicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
-        cameraPicker.delegate = self
-        present(cameraPicker, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            let cameraPicker = UIImagePickerController()
+            cameraPicker.sourceType = .camera
+            cameraPicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
+            cameraPicker.delegate = self
+            self.present(cameraPicker, animated: true, completion: nil)
+        }
     }
     
     func albumTap() {
