@@ -5215,6 +5215,8 @@
 				F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */,
 			);
 			path = EmptyFollower;
+            sourceTree = "<group>";
+        };
 		F097F3782AE82DDC001ABADE /* ForCreateNewGroup */ = {
 			isa = PBXGroup;
 			children = (
