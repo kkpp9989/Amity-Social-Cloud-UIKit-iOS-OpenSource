@@ -24,7 +24,7 @@ final class AmityMessageFileIncomingTableViewCell: AmityMessageFileTableViewCell
         if message.isDeleted {
             return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
         }
-        return 132 + displaynameHeight
+        return 152 + displaynameHeight
     }
     
 }
