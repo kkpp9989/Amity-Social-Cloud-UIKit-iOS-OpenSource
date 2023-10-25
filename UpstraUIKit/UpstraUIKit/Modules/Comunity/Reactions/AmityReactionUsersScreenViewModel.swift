@@ -115,8 +115,11 @@ class AmityReactionUsersScreenViewModel {
                 // Change state
                 weakSelf.setupScreenState(state: .loaded(data: weakSelf.reactionList, error: nil))
                 weakSelf.isLoadingDummyData = false
+                
+                if liveCollection.dataStatus == .fresh {
+                    weakSelf.token?.invalidate()
+                }
             }
-            weakSelf.token?.invalidate()
         })
     }
     

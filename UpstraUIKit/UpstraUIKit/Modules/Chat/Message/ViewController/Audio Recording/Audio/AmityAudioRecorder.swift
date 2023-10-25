@@ -176,6 +176,7 @@ final class AmityAudioRecorder: NSObject {
     }
     
     func finishRecording(state: AmityAudioRecorderState) {
+        NSLog("[Recorder] recorder: \(recorder) | state: \(state)")
         if recorder != nil {
             isRecording = false
             recorder.stop()

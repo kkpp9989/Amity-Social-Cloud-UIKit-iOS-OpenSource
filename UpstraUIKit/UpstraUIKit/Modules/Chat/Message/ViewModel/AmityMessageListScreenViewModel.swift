@@ -595,8 +595,11 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Audio
 extension AmityMessageListScreenViewModel {
     func sendAudio() {
+        NSLog("[Recorder] Start send audio")
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
+        NSLog("[Recorder] Start create audio message")
         messageAudio?.create { [weak self] in
+            NSLog("[Recorder] Create audio message success")
             self?.messageAudio = nil
             self?.delegate?.screenViewModelEvents(for: .updateMessages)
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
