@@ -44,7 +44,7 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
         
         // Set file name
         fileName.text = nil
-        fileName.numberOfLines = 1
+        fileName.numberOfLines = 2
         fileName.lineBreakMode = .byTruncatingTail
         fileName.font = AmityFontSet.bodyBold
         fileName.textColor = AmityColorSet.base
@@ -52,8 +52,8 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
         
         // Set file size
         fileSize.text = nil
-        fileName.numberOfLines = 1
-        fileName.lineBreakMode = .byTruncatingTail
+		fileSize.numberOfLines = 1
+		fileSize.lineBreakMode = .byTruncatingTail
         fileSize.font = AmityFontSet.body
         fileSize.textColor = AmityColorSet.disableTextField
         fileSize.backgroundColor = .clear

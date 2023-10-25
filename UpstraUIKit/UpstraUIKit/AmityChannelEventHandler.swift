@@ -102,7 +102,7 @@ open class AmityChannelEventHandler {
     open func channelCreateNewGroupChat(from source: AmityViewController,
                                         selectUsers: [AmitySelectMemberModel],
                                         completionHandler: @escaping ((String, String)) -> ()) {
-		let vc = GroupChatCreatorViewController.make(selectUsers)
+		let vc = GroupChatCreatorFirstViewController.make(selectUsers)
         vc.tapNextButton = { channelId, subChannelId in
             completionHandler((channelId, subChannelId))
         }
@@ -113,7 +113,7 @@ open class AmityChannelEventHandler {
     
     open func channelCreateEditGroupChat(from source: AmityViewController,
                                         selectUsers: [AmitySelectMemberModel]) {
-        let vc = AmityMemberPickerChatViewController.make(withCurrentUsers: selectUsers)
+        let vc = AmityMemberPickerChatFirstViewController.make(withCurrentUsers: selectUsers)
         let navVc = UINavigationController(rootViewController: vc)
         navVc.modalPresentationStyle = .fullScreen
         source.present(navVc, animated: true, completion: nil)
