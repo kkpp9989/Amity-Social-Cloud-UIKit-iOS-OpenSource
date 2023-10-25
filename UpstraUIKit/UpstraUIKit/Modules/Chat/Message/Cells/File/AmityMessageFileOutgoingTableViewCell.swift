@@ -43,7 +43,7 @@ final class AmityMessageFileOutgoingTableViewCell: AmityMessageFileTableViewCell
         if message.isDeleted {
             return AmityMessageTableViewCell.deletedMessageCellHeight
         }
-        return 112
+        return 135
     }
     
 }
