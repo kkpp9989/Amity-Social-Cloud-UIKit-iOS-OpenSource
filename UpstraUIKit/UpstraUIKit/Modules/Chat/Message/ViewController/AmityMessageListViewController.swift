@@ -479,19 +479,21 @@ private extension AmityMessageListViewController {
             case .finish:
                 self?.circular.hide()
                 self?.screenViewModel.action.sendAudio()
-                Log.add("Finish")
+                Log.add("[Recorder] state in handler: Finish")
             case .finishWithMaximumTime:
                 self?.circular.hide()
                 self?.alertMaxAudio()
+                Log.add("[Recorder] state in handler: finishWithMaximumTime")
             case .notFinish:
-                Log.add("notFinish")
+                Log.add("[Recorder] state in handler: notFinish")
             case .timeTooShort:
-                Log.add("timeTooShort")
+                Log.add("[Recorder] state in handler: timeTooShort")
                 self?.circular.hide()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self?.composeBar.showPopoverMessage()
                 }
             case .deleteAndClose:
+                Log.add("[Recorder] state in handler: deleteAndClose")
                 self?.circular.hide()
             }
         }
@@ -720,6 +722,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .didDeeleteErrorMessage:
             AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
         case .didSendAudio:
+            NSLog("[Recorder] screenViewModelEvents .didSendAudio -> Go to audioRecordingViewController?.stopRecording()")
             audioRecordingViewController?.stopRecording()
         }
     }
