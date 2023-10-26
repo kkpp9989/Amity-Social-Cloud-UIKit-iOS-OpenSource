@@ -113,6 +113,7 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
         // - while waiting for image loading
         // - or if there's no image to load
         let placeholder = UIImage(named: "default_livestream", in: AmityUIKitManager.bundle, compatibleWith: nil)
+		thumbnailImageView.frame.size.width = UIScreen.main.bounds.width
         thumbnailImageView.image = placeholder
         
         // Load thumbnail image
