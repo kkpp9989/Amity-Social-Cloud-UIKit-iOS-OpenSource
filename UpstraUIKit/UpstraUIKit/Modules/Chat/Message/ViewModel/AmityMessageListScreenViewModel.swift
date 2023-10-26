@@ -93,6 +93,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var lastNotOnline: Date?
     private var lastEnterBackground: Date?
     
+    private let dispatchGroup = DispatchGroup()
+
     init(channelId: String, subChannelId: String) {
         self.channelId = channelId
         self.subChannelId = subChannelId
@@ -228,25 +230,25 @@ extension AmityMessageListScreenViewModel {
             self?.lastEnterBackground = Date()
         }
         
-//        connectionObservation = AmityUIKitManagerInternal.shared.client.observe(\.connectionStatus) { [weak self] client, changes in
-//            self?.connectionStateDidChanged()
-//        }
+        //        connectionObservation = AmityUIKitManagerInternal.shared.client.observe(\.connectionStatus) { [weak self] client, changes in
+        //            self?.connectionStateDidChanged()
+        //        }
         
     }
     
-	func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
         let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !textMessage.isEmpty else {
             return
         }
-		let createOptioins = AmityTextMessageCreateOptions(
-			subChannelId: subChannelId,
-			text: textMessage,
-			tags: nil,
-			parentId: nil,
-			metadata: metadata,
-			mentioneesBuilder: mentionees)
-                        
+        let createOptioins = AmityTextMessageCreateOptions(
+            subChannelId: subChannelId,
+            text: textMessage,
+            tags: nil,
+            parentId: nil,
+            metadata: metadata,
+            mentioneesBuilder: mentionees)
+        
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
@@ -258,7 +260,7 @@ extension AmityMessageListScreenViewModel {
         guard !textMessage.isEmpty else { return }
         
         editor = AmityMessageEditor(client: AmityUIKitManagerInternal.shared.client, messageId: messageId)
-		editor?.editText(textMessage, metadata: metadata, mentionees: mentionees, completion: { [weak self] (isSuccess, error) in
+        editor?.editText(textMessage, metadata: metadata, mentionees: mentionees, completion: { [weak self] (isSuccess, error) in
             guard isSuccess else { return }
             
             self?.delegate?.screenViewModelEvents(for: .didEditText)
@@ -302,10 +304,74 @@ extension AmityMessageListScreenViewModel {
             parentId: parentId,
             metadata: metadata,
             mentioneesBuilder: mentionees)
-                        
+        
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
+        }
+    }
+    
+    func forward(withChannelIdList channelIdList: [String]) {
+        AmityEventHandler.shared.showKTBLoading()
+        for channelId in channelIdList {
+            for forwardMessage in forwardMessageList {
+                dispatchGroup.enter()
+                let serviceRequest = RequestChat()
+                serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
+                    guard let strongSelf = self else { return }
+                    switch result {
+                    case .success(let isSuccess):
+                        print(isSuccess)
+                        strongSelf.dispatchGroup.leave()
+                    case .failure(let error):
+                        print(error)
+                        strongSelf.dispatchGroup.leave()
+                    }
+                }
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [self] in
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            forwardMessageList.removeAll()
+        }
+    }
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel]) {
+        var channelIdList: [String] = []
+        AmityEventHandler.shared.showKTBLoading()
+        for user in selectChannel {
+            dispatchGroup.enter()
+            switch user.type {
+            case .user:
+                let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+                let builder = AmityConversationChannelBuilder()
+                builder.setUserId(user.userId)
+                builder.setDisplayName(user.displayName ?? "")
+                builder.setMetadata(["user_id_member": userIds])
+                
+                let channelRepo = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+                AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [self] channelObject, _ in
+                    if let channel = channelObject {
+                        channelIdList.append(channel.channelId)
+                    }
+                    
+                    dispatchGroup.leave()
+                }
+            case .channel:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            case .community:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [self] in
+            forward(withChannelIdList: channelIdList)
         }
     }
     

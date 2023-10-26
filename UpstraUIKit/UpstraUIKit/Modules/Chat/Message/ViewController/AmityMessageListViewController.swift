@@ -971,6 +971,10 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
     
     func composeViewDidSelectForwardMessage() {
         AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+            print(selectedChannels)
+            self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels)
+            self.messageViewController.updateEditMode(isEdit: false)
+            self.composeBar.showForwardMenuButton(show: false)
         }
     }
 	

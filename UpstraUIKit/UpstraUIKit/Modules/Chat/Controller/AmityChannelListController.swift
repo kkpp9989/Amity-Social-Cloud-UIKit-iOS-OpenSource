@@ -9,6 +9,10 @@
 import Foundation
 import AmitySDK
 
+public enum AmityChannelListViewType {
+    case conversation, groupchat
+}
+
 final class AmityChannelListController {
     
     typealias GroupChannel = [(key: String, value: [AmitySelectChannelModel])]
