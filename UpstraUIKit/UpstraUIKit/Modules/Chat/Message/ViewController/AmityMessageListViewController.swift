@@ -281,7 +281,7 @@ private extension AmityMessageListViewController {
     }
     
     func fileTap() {
-        filePicker?.present(from: UIView())
+        filePicker?.present(from: UIView(), files: [])
     }
     
     func locationTap() {
