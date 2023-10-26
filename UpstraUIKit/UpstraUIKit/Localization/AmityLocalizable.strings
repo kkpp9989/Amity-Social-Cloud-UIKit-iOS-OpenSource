@@ -75,6 +75,7 @@
 "general_forward" = "Forward";
 "general_reply" = "Reply";
 "general_unsend" = "Unsend";
+"general_resend" = "Resend";
 "general_copy" = "Copy";
 
 "title_placeholder" = "Title";
@@ -133,7 +134,7 @@
 "no_internet_connection" = "No internet connection";
 
 // MARK: - Message List
-"message_list_alert_error_message_title" = "Error sending message";
+"message_list_alert_error_message_title" = "Your message was not sent.\nTap Resend to send this message";
 "message_list_alert_error_message_desc" = "Please try again";
 "message_list_alert_delete_error_title" = "Your message was not sent";
 "message_list_alert_delete_title" = "Delete this message?";

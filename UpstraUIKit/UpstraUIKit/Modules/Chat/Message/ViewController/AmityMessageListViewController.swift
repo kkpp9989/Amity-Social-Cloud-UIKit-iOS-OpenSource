@@ -765,13 +765,16 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertErrorMessageTitle.localizedString,
                                                         message: nil, preferredStyle: .actionSheet)
             let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.unsend.localizedString, style: .destructive, handler: { [weak self] _ in
+            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
                 self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath)
             })
+            let resend = UIAlertAction(title: AmityLocalizedStringSet.General.resend.localizedString, style: .default, handler: { [weak self] _ in
+                self?.screenViewModel.action.resend(with: message, at: indexPath)
+            })
             alertViewController.addAction(cancel)
+            alertViewController.addAction(resend)
             alertViewController.addAction(delete)
             present(alertViewController, animated: true)
-            
         case .report(let indexPath):
             screenViewModel.action.reportMessage(at: indexPath)
         case .imageViewer(let indexPath, let imageView):

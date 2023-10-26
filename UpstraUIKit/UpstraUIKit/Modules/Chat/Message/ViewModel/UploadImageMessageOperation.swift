@@ -53,14 +53,17 @@ class UploadImageMessageOperation: AsyncOperation {
                     
                     repository.createImageMessage(options: createOptions) { message, error in
                         guard error == nil, let message = message else {
+                            Log.add("[UIKit] Create image message (URL: \(imageUrl)) fail with error: \(error?.localizedDescription)")
                             return
                         }
+                        Log.add("[UIKit] Create Create image message (URL: \(imageUrl)) success with message Id: \(message.messageId) | type: \(message.messageType)")
                         self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
                             guard error == nil, let message = liveObject.object else {
                                 self?.token = nil
                                 self?.finish()
                                 return
                             }
+                            Log.add("[UIKit] Sync state image (URL: \(imageUrl)) message : \(message.syncState) | type: \(message.messageType)")
                             switch message.syncState {
                             case .syncing, .default:
                                 // We don't cache local file URL as sdk handles itself

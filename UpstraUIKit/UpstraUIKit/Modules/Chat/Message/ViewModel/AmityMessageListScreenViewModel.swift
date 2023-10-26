@@ -568,6 +568,30 @@ private extension AmityMessageListScreenViewModel {
         
     }
 }
+// MARK: - Resend message
+extension AmityMessageListScreenViewModel {
+    func resend(with message: AmityMessageModel, at indexPath: IndexPath) {
+        switch message.messageType {
+        case .text:
+            // Not ready
+            break
+        case .image:
+            // Not ready
+            break
+        case .file:
+            // Not ready
+            break
+        case .audio:
+            // Not ready
+            break
+        case .video:
+            // Not ready
+            break
+        default:
+            break
+        }
+    }
+}
 
 // MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
