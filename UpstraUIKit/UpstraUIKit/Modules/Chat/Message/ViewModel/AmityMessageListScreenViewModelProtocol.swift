@@ -58,12 +58,14 @@ protocol AmityMessageListScreenViewModelAction {
     func getSubChannel()
     func getMessage()
     
-	func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func send(withMedias medias: [AmityMedia], type: AmityMediaType)
     func send(withFiles files: [AmityFile])
     func sendAudio()
     func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType)
-
+    func forward(withChannelIdList channelIdList: [String])
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel])
+    
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath)
     func deleteErrorMessage(with messageId: String, at indexPath: IndexPath)

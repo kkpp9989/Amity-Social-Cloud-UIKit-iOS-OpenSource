@@ -12,7 +12,6 @@ struct RequestChat {
     
     let requestMeta = BaseRequestMeta()
     let currentUserToken = AmityUIKitManager.currentUserToken
-    var streamId: String = ""
     
     func requestDeleteChat(channelId: String, _ completion: @escaping(Result<ResponseDeleteChannelModel,Error>) -> ()) {
         var domainURL = DomainManager.Domain.getDomainURLMainAPI(region: .SG)
@@ -58,6 +57,57 @@ struct RequestChat {
                 completion(.failure(HandleError.rateLimitExceed))
             default:
                 print("[Chat][Delete chat] Can't delete channelId \(channelId) because of connection or unexpected error")
+                completion(.failure(HandleError.connectionError))
+            }
+        }
+        
+    }
+    
+    func requestSendMessage(channelId: String, message: AmityMessageModel, completion: @escaping(Result<Bool,Error>) -> ()) {
+        let domainURL = "https://api.sg.amity.co"
+        requestMeta.urlRequest = "\(domainURL)/api/v3/messages"
+        requestMeta.header = [["Content-Type": "application/json",
+                               "Accept": "application/json",
+                               "Authorization": "Bearer \(currentUserToken)"]]
+        requestMeta.method = .post
+        requestMeta.encoding = .jsonEncoding
+        
+        var type: String = "text"
+        switch message.messageType {
+        case .text:
+            type = "text"
+        case .image:
+            type = "image"
+        case .audio:
+            type = "audio"
+        case.file:
+            type = "file"
+        case .video:
+            type = "video"
+        case .custom:
+            type = "custom"
+        }
+        var params: [String: Any] = ["channelId": channelId, "type": type]
+        
+        if let fileId = message.object.fileId, !fileId.isEmpty {
+            params["fileId"] = fileId
+        }
+        if let text = message.data?["text"] as? String, !text.isEmpty {
+            params["data"] = ["text": text]
+        }
+        
+        requestMeta.params = params
+        NetworkManager().request(requestMeta) { (data, response, error) in
+            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(.failure(HandleError.notFound))
+                return
+            }
+            switch httpResponse.statusCode {
+            case 200:
+                completion(.success(true))
+            case 400...499:
+                completion(.failure(HandleError.notFound))
+            default:
                 completion(.failure(HandleError.connectionError))
             }
         }
