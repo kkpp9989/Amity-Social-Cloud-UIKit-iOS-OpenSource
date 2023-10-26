@@ -20,10 +20,10 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gEd-7L-Mwt" userLabel="Stream Info View">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="196"/>
+                        <rect key="frame" x="0.0" y="0.0" width="392" height="221"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_livestream" translatesAutoresizingMaskIntoConstraints="NO" id="MWO-hD-glN" userLabel="Thumbnail Image View">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="196"/>
+                                <rect key="frame" x="0.0" y="0.0" width="392" height="221"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ooy-WH-M0r" userLabel="Stream State Container">
                                 <rect key="frame" x="16" y="16" width="134" height="28.5"/>
@@ -71,7 +71,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uQO-vO-ask" userLabel="Play Button">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="196"/>
+                                <rect key="frame" x="0.0" y="0.0" width="392" height="221"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="play_livestream_button"/>
                                 <connections>
@@ -86,21 +86,21 @@
                             <constraint firstItem="hE8-l0-Of6" firstAttribute="centerY" secondItem="Ooy-WH-M0r" secondAttribute="centerY" id="NRK-W0-imQ"/>
                             <constraint firstAttribute="bottom" secondItem="MWO-hD-glN" secondAttribute="bottom" id="UEj-6x-tiB"/>
                             <constraint firstItem="uQO-vO-ask" firstAttribute="leading" secondItem="gEd-7L-Mwt" secondAttribute="leading" id="Wic-Kn-Qgc"/>
+                            <constraint firstAttribute="width" secondItem="gEd-7L-Mwt" secondAttribute="height" multiplier="39:22" id="XuX-xI-yw5"/>
                             <constraint firstItem="Ooy-WH-M0r" firstAttribute="top" secondItem="gEd-7L-Mwt" secondAttribute="top" constant="16" id="YEJ-td-yq3"/>
                             <constraint firstItem="MWO-hD-glN" firstAttribute="top" secondItem="gEd-7L-Mwt" secondAttribute="top" id="d5o-U7-bv6"/>
                             <constraint firstItem="Ooy-WH-M0r" firstAttribute="leading" secondItem="gEd-7L-Mwt" secondAttribute="leading" constant="16" id="ii4-Bd-8vg"/>
                             <constraint firstItem="MWO-hD-glN" firstAttribute="leading" secondItem="gEd-7L-Mwt" secondAttribute="leading" id="kbf-ha-btn"/>
                             <constraint firstItem="uQO-vO-ask" firstAttribute="top" secondItem="gEd-7L-Mwt" secondAttribute="top" id="qEf-A1-ysP"/>
-                            <constraint firstAttribute="height" priority="999" constant="220" id="qk0-EJ-o4I"/>
                             <constraint firstAttribute="bottom" secondItem="uQO-vO-ask" secondAttribute="bottom" id="uyA-xv-Sz0"/>
                             <constraint firstItem="hE8-l0-Of6" firstAttribute="leading" secondItem="Ooy-WH-M0r" secondAttribute="trailing" constant="8" symbolic="YES" id="zdB-ki-uBl"/>
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tIm-uJ-NaV" userLabel="Stream End View">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="196"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="221"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="cNw-da-jbT">
-                                <rect key="frame" x="15" y="63.5" width="290" height="69.5"/>
+                                <rect key="frame" x="15" y="76" width="290" height="69.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This livestream has ended." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CaT-MX-CeB">
                                         <rect key="frame" x="0.0" y="0.0" width="290" height="20.5"/>

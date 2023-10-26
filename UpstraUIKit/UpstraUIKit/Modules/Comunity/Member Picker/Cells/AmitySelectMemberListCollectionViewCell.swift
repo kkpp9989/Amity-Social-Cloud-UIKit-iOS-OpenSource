@@ -53,8 +53,25 @@ final class AmitySelectMemberListCollectionViewCell: UICollectionViewCell {
     }
 
     func display(with user: AmitySelectMemberModel) {
-        displayNameLabel.text = user.displayName ?? user.defaultDisplayName
-        avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        if user.type == .channel {
+            if let channelType = user.object?.channelType, channelType == .conversation {
+                AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: user.userId) { [self] user in
+                    DispatchQueue.main.async { [self] in
+                        if let otherMember = user {
+                            // Set avatar
+                            displayNameLabel.text = otherMember.displayName
+                            avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL ?? "", placeholder: AmityIconSet.defaultAvatar)
+                        }
+                    }
+                }
+            } else {
+                displayNameLabel.text = user.displayName ?? user.defaultDisplayName
+                avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+            }
+        } else {
+            displayNameLabel.text = user.displayName ?? user.defaultDisplayName
+            avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        }
     }
     
 }

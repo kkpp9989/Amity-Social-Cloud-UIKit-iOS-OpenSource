@@ -53,7 +53,7 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         titleLabel.attributedText = highlightText
         avatarView.setImage(withImageURL: data.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
         
-//        joinButton.isHidden = data.channelType == .community ? false : true
+        joinButton.isHidden = data.object.currentUserMembership == .member ? false : true
     }
     
     // MARK: - Perform Action
