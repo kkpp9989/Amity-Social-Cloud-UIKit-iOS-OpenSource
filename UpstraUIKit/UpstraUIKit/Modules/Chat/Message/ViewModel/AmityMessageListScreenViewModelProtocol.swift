@@ -97,6 +97,9 @@ protocol AmityMessageListScreenViewModelAction {
 
     func jumpToTargetId(_ message: AmityMessageModel)
     func jumpToMessageId(_ messageId: String)
+    
+    func startRealtimeSubscription()
+    func stopRealtimeSubscription()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {
