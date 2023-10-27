@@ -754,6 +754,7 @@
 		DF3F4CE72ADD2A12009879E9 /* AmityChannelListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3F4CE62ADD2A12009879E9 /* AmityChannelListController.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
 		DF816EA02A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */; };
+		DF8C49252AEAC84200DFBB59 /* AmityTempSendImageMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF8C49242AEAC84200DFBB59 /* AmityTempSendImageMessageData.swift */; };
 		DF9818E92A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */; };
 		DF9DE36C2ACD4DAE00A722CA /* RequestChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9DE36B2ACD4DAE00A722CA /* RequestChat.swift */; };
 		DF9DE36E2ACD507500A722CA /* ResponseDeleteChannelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF9DE36D2ACD507500A722CA /* ResponseDeleteChannelModel.swift */; };
@@ -772,12 +773,12 @@
 		DFDDF6B82A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */; };
 		DFDDF6B92A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */; };
 		DFF8DF3C2AC581B200D33D80 /* AmityMemberChatUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */; };
-		F097F3AD2AE8C2F9001ABADE /* EmptyFollowerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */; };
-		F097F3AF2AE8C3A0001ABADE /* EmptyFollowerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */; };
 		F097F38A2AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3852AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib */; };
 		F097F38B2AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3862AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift */; };
 		F097F38C2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3882AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib */; };
 		F097F38D2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */; };
+		F097F3AD2AE8C2F9001ABADE /* EmptyFollowerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */; };
+		F097F3AF2AE8C3A0001ABADE /* EmptyFollowerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */; };
 		F0C1F77F2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C1F77E2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift */; };
 		F0C1F7812AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0C1F7802AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift */; };
 		FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276CE2A53B7C2003DFE4E /* AmitySDK */; };
@@ -1556,6 +1557,7 @@
 		DF3F4CE62ADD2A12009879E9 /* AmityChannelListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChannelListController.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
 		DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberCommunityUtilities.swift; sourceTree = "<group>"; };
+		DF8C49242AEAC84200DFBB59 /* AmityTempSendImageMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityTempSendImageMessageData.swift; sourceTree = "<group>"; };
 		DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityPullDownMenuFromButtonView.swift; sourceTree = "<group>"; };
 		DF9DE36B2ACD4DAE00A722CA /* RequestChat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestChat.swift; sourceTree = "<group>"; };
 		DF9DE36D2ACD507500A722CA /* ResponseDeleteChannelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseDeleteChannelModel.swift; sourceTree = "<group>"; };
@@ -1574,12 +1576,12 @@
 		DFDDF6B62A9F49040091CC94 /* AmityUserNotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityUserNotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		DFDDF6B72A9F49040091CC94 /* AmityUserNotificationSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityUserNotificationSettingsViewController.xib; sourceTree = "<group>"; };
 		DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberChatUtilities.swift; sourceTree = "<group>"; };
-		F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFollowerView.xib; sourceTree = "<group>"; };
-		F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFollowerView.swift; sourceTree = "<group>"; };
 		F097F3852AE835E5001ABADE /* GroupChatCreatorSecondViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GroupChatCreatorSecondViewController.xib; sourceTree = "<group>"; };
 		F097F3862AE835E5001ABADE /* GroupChatCreatorSecondViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupChatCreatorSecondViewController.swift; sourceTree = "<group>"; };
 		F097F3882AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityMemberPickerChatFirstViewController.xib; sourceTree = "<group>"; };
 		F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatFirstViewController.swift; sourceTree = "<group>"; };
+		F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EmptyFollowerView.xib; sourceTree = "<group>"; };
+		F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFollowerView.swift; sourceTree = "<group>"; };
 		F0C1F77E2AE550DC00B52231 /* AmityMemberPickerChatScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatScreenViewModel.swift; sourceTree = "<group>"; };
 		F0C1F7802AE5510000B52231 /* AmityMemberPickerChatViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMemberPickerChatViewModelProtocol.swift; sourceTree = "<group>"; };
 		FA6276BC2A53B58C003DFE4E /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Package.swift; path = SharedFrameworksEdit/Package.swift; sourceTree = "<group>"; };
@@ -2519,6 +2521,7 @@
 				72A3509C24EA820700DA9D46 /* AmityMessageListScreenViewModel.swift */,
 				DFA428B42AD572AA00A6AE57 /* UploadVideoMessageOperation.swift */,
 				DF27F10D2AD684BA00767DDE /* UploadFileMessageOperation.swift */,
+				DF8C49242AEAC84200DFBB59 /* AmityTempSendImageMessageData.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -5240,15 +5243,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		F097F3AB2AE8C2B9001ABADE /* EmptyFollower */ = {
-			isa = PBXGroup;
-			children = (
-				F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */,
-				F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */,
-			);
-			path = EmptyFollower;
-            sourceTree = "<group>";
-        };
 		F097F3782AE82DDC001ABADE /* ForCreateNewGroup */ = {
 			isa = PBXGroup;
 			children = (
@@ -5283,6 +5277,15 @@
 				F097F3892AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift */,
 			);
 			path = AmityMemberPickerFirst;
+			sourceTree = "<group>";
+		};
+		F097F3AB2AE8C2B9001ABADE /* EmptyFollower */ = {
+			isa = PBXGroup;
+			children = (
+				F097F3AC2AE8C2F9001ABADE /* EmptyFollowerView.xib */,
+				F097F3AE2AE8C3A0001ABADE /* EmptyFollowerView.swift */,
+			);
+			path = EmptyFollower;
 			sourceTree = "<group>";
 		};
 		FC91930B2ACC8574006A1E33 /* ViewUserStatus */ = {
@@ -6108,6 +6111,7 @@
 				72A3513B24EA820800DA9D46 /* UINavigationController+Extension.swift in Sources */,
 				AACF11882A680930006C2907 /* AmityHashtagSearchTableViewCell.swift in Sources */,
 				B7B31C62250F4ACF000AC6E4 /* ButtonBarViewCell.swift in Sources */,
+				DF8C49252AEAC84200DFBB59 /* AmityTempSendImageMessageData.swift in Sources */,
 				2B4876BA2A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.swift in Sources */,
 				97D7C4E2264C093A00EA24F5 /* AmityChanneluserModeratorController.swift in Sources */,
 				97D7C49C264BF90000EA24F5 /* AmityChannelMemberSettingsTableViewCell.swift in Sources */,

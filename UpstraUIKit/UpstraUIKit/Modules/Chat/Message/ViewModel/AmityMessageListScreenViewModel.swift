@@ -283,10 +283,12 @@ extension AmityMessageListScreenViewModel {
     }
     
     
-    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath) {
+    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool = false) {
         messageRepository.deleteFailedMessage(messageId) { [weak self] (isSuccess, error) in
             if isSuccess {
-                self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
+                if !isFromResend {
+                    self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
+                }
                 self?.delegate?.screenViewModelEvents(for: .updateMessages)
             }
         }
@@ -638,20 +640,57 @@ private extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     func resend(with message: AmityMessageModel, at indexPath: IndexPath) {
         switch message.messageType {
-        case .text:
-            // Not ready
+        case .text: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด และ มี concern mentions -> ต้องลองเทสที่เครื่องจริง
+            // Get text, metadata and mentionees from error message
+            let text = message.text
+            let metadata = message.metadata
+            let mentionManager = AmityMentionManager(withType: .message(channelId: channelId))
+            let mentioneesBuilder = mentionManager.getMentioneesFromErrorMessage(with: message.mentionees)
+            // Send text message again
+            send(withText: text, metadata: metadata, mentionees: mentioneesBuilder)
+            // remove error message
+            deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             break
-        case .image:
-            // Not ready
-            break
-        case .file:
-            // Not ready
-            break
-        case .audio:
-            // Not ready
-            break
-        case .video:
-            // Not ready
+        case .image: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+            // Get image info and image URL data from path in image info from error message
+            if let imageInfoFromMessage = message.object.getImageInfo(),
+               let image = AmityTempSendImageMessageData.shared.data[imageInfoFromMessage.fileURL] {
+                // Generate AmityMedia type .image in state .local
+                let media = AmityMedia(state: .image(image), type: .image)
+                // Send image message again
+                send(withMedias: [media], type: .image)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        case .file: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+            // Get file info and file URL data from path in file info from error message
+            if let fileInfoFromMessage = message.object.getFileInfo(),
+               let fileURLData = URL(string: fileInfoFromMessage.fileURL) {
+                // Generate AmityFile in state .local
+                let document = AmityDocument(fileURL: fileURLData)
+                let file = AmityFile(state: .local(document: document))
+                // Send file message again
+                send(withFiles: [file])
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        case .audio: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+            /* Concern about send many audio */
+            // Send audio message again
+            sendAudio()
+            // remove error message
+            deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+        case .video: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+            // Get video info and image URL data from path in video info from error message
+            if let videoInfoFromMessage = message.object.getVideoInfo(),
+               let videoURLData = URL(string: videoInfoFromMessage.fileURL) {
+                // Generate AmityMedia type .video in state .local
+                let media = AmityMedia(state: .localURL(url: videoURLData), type: .video)
+                // Send video message again
+                send(withMedias: [media], type: .video)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
             break
         default:
             break

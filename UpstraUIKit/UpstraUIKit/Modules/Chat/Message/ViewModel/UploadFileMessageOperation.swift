@@ -62,7 +62,7 @@ class UploadFileMessageOperation: AsyncOperation {
                     self?.finish()
                     return
                 }
-                Log.add("[UIKit] Sync state file (URL: \(fileURL)) message : \(message.syncState) | type: \(message.messageType)")
+                Log.add("[UIKit] Sync state file message (URL: \(fileURL)) : \(message.syncState) | type: \(message.messageType)")
                 switch message.syncState {
                 case .syncing, .default:
                     // We don't cache local file URL as sdk handles itself

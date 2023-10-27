@@ -318,6 +318,7 @@ private extension AmityRecentChatScreenViewModel {
             break
         }
         channelsToken = channelsCollection?.observe { [weak self] (collection, change, error) in
+            print("[Channel List] live collection datastatus: \(collection.dataStatus)")
             self?.prepareDataSource()
         }
     }
@@ -331,6 +332,7 @@ private extension AmityRecentChatScreenViewModel {
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
+            print("[Channel List] channel model: \(model.object.channelId) | previewId: \(model.previewMessage?.messagePreviewId)")
             _channels.append(model)
         }
         channels = _channels

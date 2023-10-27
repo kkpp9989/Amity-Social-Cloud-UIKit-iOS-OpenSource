@@ -45,7 +45,7 @@ class UploadVideoMessageOperation: AsyncOperation {
     
     private func createVideoMessage(videoURL: URL) {
         let channelId = self.subChannelId
-        let createOptions = AmityVideoMessageCreateOptions(subChannelId: channelId, videoFileURL: videoURL)
+        let createOptions = AmityVideoMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: videoURL))
         
         guard let repository = repository else {
             finish()
@@ -54,17 +54,17 @@ class UploadVideoMessageOperation: AsyncOperation {
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createVideoMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
-                Log.add("[UIKit] Create video message fail with error: \(error?.localizedDescription)")
+                Log.add("[UIKit] Create video message (URL: \(videoURL)) fail with error: \(error?.localizedDescription)")
                 return
             }
-            Log.add("[UIKit] Create video message success with message Id: \(message.messageId)")
+            Log.add("[UIKit] Create video message (URL: \(videoURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
                 guard error == nil, let message = liveObject.snapshot else {
                     self?.token = nil
                     self?.finish()
                     return
                 }
-                Log.add("[UIKit] Sync state video message : \(message.syncState)")
+                Log.add("[UIKit] Sync state video message (URL: \(videoURL)) : \(message.syncState) | type: \(message.messageType)")
                 switch message.syncState {
                 case .syncing, .default:
                     // We don't cache local file URL as sdk handles itself

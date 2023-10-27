@@ -358,6 +358,29 @@ public extension AmityMentionManager {
         return mentionees
     }
     
+    func getMentioneesFromErrorMessage(with mentionees: [AmityMentionees]?) -> AmityMentioneesBuilder? {
+        guard let currentMentionees = mentionees else { return nil }
+        
+        let newMentionees: AmityMentioneesBuilder = AmityMentioneesBuilder()
+        
+        let users = currentMentionees.filter{ $0.type == .user }
+        var userIds: [String] = []
+        users.forEach { mentionees in
+            if let users = mentionees.users {
+                users.forEach { user in
+                    userIds.append(user.userId)
+                }
+            }
+        }
+        
+        if !userIds.isEmpty {
+            newMentionees.mentionUsers(userIds: userIds)
+        }
+        
+        return newMentionees
+    }
+        
+    
     func setColor(_ foregroundColor: UIColor, highlightColor: UIColor) {
         self.foregroundColor = foregroundColor
         self.highlightColor = highlightColor

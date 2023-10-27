@@ -69,7 +69,7 @@ protocol AmityMessageListScreenViewModelAction {
     
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath)
-    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath)
+    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool)
     func startReading()
     func stopReading()
     

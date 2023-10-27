@@ -766,7 +766,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                                                         message: nil, preferredStyle: .actionSheet)
             let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
             let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
-                self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath)
+                self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: false)
             })
             let resend = UIAlertAction(title: AmityLocalizedStringSet.General.resend.localizedString, style: .default, handler: { [weak self] _ in
                 self?.screenViewModel.action.resend(with: message, at: indexPath)
