@@ -140,6 +140,7 @@ public final class AmityMessageListViewController: AmityViewController {
         screenViewModel.action.toggleKeyboardVisible(visible: false)
         screenViewModel.action.inputSource(for: .default)
         screenViewModel.action.stopReading()
+        screenViewModel.action.stopRealtimeSubscription()
         
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
