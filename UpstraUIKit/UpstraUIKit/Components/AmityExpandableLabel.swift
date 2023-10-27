@@ -168,13 +168,29 @@ open class AmityExpandableLabel: UILabel {
                     guard let textRange = Range(match.range, in: text) else { continue }
                     let urlString = String(text[textRange])
                     let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-                    guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                          let url = URL(string: formattedString) else { continue }
-                    attributedString.addAttributes([
-                        .foregroundColor: hyperLinkColor,
-                        .attachment: url], range: match.range)
-//                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
-                    hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                    
+                    if AmityURLCustomManager.Utilities.isURLEncoded(validUrlString) {
+                        guard let url = URL(string: validUrlString) else { continue }
+                        
+                        attributedString.addAttributes([
+                            .foregroundColor: hyperLinkColor,
+                            .attachment: url], range: match.range)
+    //                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
+                        hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                        
+//                        print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
+                    } else {
+                        guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                              let url = URL(string: formattedString) else { continue }
+                        
+                        attributedString.addAttributes([
+                            .foregroundColor: hyperLinkColor,
+                            .attachment: url], range: match.range)
+    //                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
+                        hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                        
+//                        print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
+                    }
                 }
                 
                 // Detect and process hashtags using regular expression
@@ -270,6 +286,7 @@ extension AmityExpandableLabel {
         if let hyperLink = hyperLinks.first(where: { check(touch: touch, isInRange: $0.range) }) {
             switch hyperLink.type {
             case .url(let url):
+//                print("[URL] click hyperlink | url.absoluteString: \(url.absoluteString)")
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             case .mention(let userId):
                 delegate?.didTapOnMention(self, withUserId: userId)
@@ -726,13 +743,29 @@ extension AmityExpandableLabel {
             guard let textRange = Range(match.range, in: text) else { continue }
             let urlString = String(text[textRange])
             let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-            guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                  let url = URL(string: formattedString) else { continue }
-            let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
-            attributedString.addAttributes([
-                .foregroundColor: hyperLinkColor,
-                .attachment: url], range: clampedRange)
-            hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
+
+            if AmityURLCustomManager.Utilities.isURLEncoded(validUrlString) {
+                guard let url = URL(string: validUrlString) else { continue }
+                
+                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
+                attributedString.addAttributes([
+                    .foregroundColor: hyperLinkColor,
+                    .attachment: url], range: clampedRange)
+                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
+                
+//                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
+            } else {
+                guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                      let url = URL(string: formattedString) else { continue }
+                
+                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
+                attributedString.addAttributes([
+                    .foregroundColor: hyperLinkColor,
+                    .attachment: url], range: clampedRange)
+                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
+                
+//                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
+            }
         }
         
         // Detect and process hashtags using regular expression

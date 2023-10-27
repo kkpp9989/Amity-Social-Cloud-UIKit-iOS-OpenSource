@@ -75,9 +75,21 @@ public struct AmityURLCustomManager {
                 guard let textRange = Range(match.range, in: text) else { continue }
                 let urlString = String(text[textRange])
                 let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-                guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                      let url = URL(string: formattedString) else { continue }
-                hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                
+                if AmityURLCustomManager.Utilities.isURLEncoded(validUrlString) {
+                    guard let url = URL(string: validUrlString) else { continue }
+                    
+                    hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                    
+//                    print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
+                } else {
+                    guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                          let url = URL(string: formattedString) else { continue }
+                    
+                    hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+                    
+//                    print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
+                }
             }
             
             // Check and get URL founded in text
@@ -92,6 +104,12 @@ public struct AmityURLCustomManager {
             } else {
                 return nil
             }
+        }
+        static func isURLEncoded(_ url: String) -> Bool {
+            if let decodedString = url.removingPercentEncoding {
+                return decodedString != url
+            }
+            return false
         }
     }
     
