@@ -36,9 +36,11 @@ extension AmityImagePickerController {
 
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
         if settings.dismiss.enabled {
-            dismiss(animated: true) { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.imagePickerDelegate?.imagePicker(strongSelf, didFinishWithAssets: strongSelf.assetStore.assets)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.dismiss(animated: false) { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.imagePickerDelegate?.imagePicker(strongSelf, didFinishWithAssets: strongSelf.assetStore.assets)
+                }
             }
         } else {
             imagePickerDelegate?.imagePicker(self, didFinishWithAssets: assetStore.assets)

@@ -17,6 +17,7 @@
 "general_decline" = "Decline";
 "general_close" = "Close";
 "general_save" = "Save";
+"general_send" = "Send";
 "general_saved" = "Saved";
 "general_cancel" = "Cancel";
 "general_delete" = "Delete";
