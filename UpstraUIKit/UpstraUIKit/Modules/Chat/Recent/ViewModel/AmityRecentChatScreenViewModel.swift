@@ -79,6 +79,9 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     private var existingChannelToken: AmityNotificationToken?
     private var channelType: AmityChannelType = .conversation
     private var channelPresenceRepo: AmityChannelPresenceRepository
+    
+    // MARK: - Utilities
+    private let debouncer = Debouncer(delay: 0.5)
 
     init(channelType: AmityChannelType) {
         self.channelType = channelType
@@ -334,8 +337,10 @@ private extension AmityRecentChatScreenViewModel {
             _channels.append(model)
         }
         channels = _channels
-        delegate?.screenViewModelLoadingState(for: .loaded)
-        delegate?.screenViewModelDidGetChannel()
-        delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
+        debouncer.run { [self] in
+            delegate?.screenViewModelLoadingState(for: .loaded)
+            delegate?.screenViewModelDidGetChannel()
+            delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
+        }
     }
 }
