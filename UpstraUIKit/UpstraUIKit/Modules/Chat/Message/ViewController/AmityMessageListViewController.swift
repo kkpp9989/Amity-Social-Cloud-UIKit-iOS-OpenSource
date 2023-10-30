@@ -255,39 +255,43 @@ private extension AmityMessageListViewController {
     }
     
     func albumTap() {
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
         imagePicker.settings.selection.max = 20
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let media = assets.map { asset in
                 AmityMedia(state: .image(self?.getAssetThumbnail(asset: asset) ?? UIImage()), type: .image)
             }
             
             let vc = PreviewImagePickerController.make(media: media,
                                                     viewModel: (self?.screenViewModel)!,
-                                                    mediaType: .image)
+                                                       mediaType: .image,
+                                                       title: AmityLocalizedStringSet.General.selectedImages.localizedString)
+            vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
-            self?.navigationController?.pushViewController(vc, animated: false)
+            imagePicker.present(vc, animated: false, completion: nil)
         })
     }
     
     func videoAlbumTap() {
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.video]
         imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .video) }
             let vc = PreviewImagePickerController.make(media: medias,
                                                     viewModel: (self?.screenViewModel)!,
-                                                    mediaType: .video)
+                                                    mediaType: .video,
+                                                    title: AmityLocalizedStringSet.General.selectedVideos.localizedString)
+            vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
-            self?.navigationController?.pushViewController(vc, animated: false)
+            imagePicker.present(vc, animated: false, completion: nil)
         })
     }
     

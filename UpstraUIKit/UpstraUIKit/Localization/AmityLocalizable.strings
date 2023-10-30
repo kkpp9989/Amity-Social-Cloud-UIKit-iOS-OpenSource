@@ -77,6 +77,8 @@
 "general_reply" = "Reply";
 "general_unsend" = "Unsend";
 "general_copy" = "Copy";
+"general_selected_images" = "Selected images";
+"general_selected_videos" = "Selected videos";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";

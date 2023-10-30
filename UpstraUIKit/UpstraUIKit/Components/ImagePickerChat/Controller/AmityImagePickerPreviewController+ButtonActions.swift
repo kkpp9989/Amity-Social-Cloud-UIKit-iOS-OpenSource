@@ -22,7 +22,7 @@
 
 import UIKit
 
-extension AmityImagePickerController {
+extension AmityImagePickerPreviewController {
     @objc func albumsButtonPressed(_ sender: UIButton) {
         albumsViewController.albums = albums
         
@@ -36,10 +36,7 @@ extension AmityImagePickerController {
 
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
         if settings.dismiss.enabled {
-            dismiss(animated: false) { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.imagePickerDelegate?.imagePicker(strongSelf, didFinishWithAssets: strongSelf.assetStore.assets)
-            }
+            imagePickerDelegate?.imagePicker(self, didFinishWithAssets: assetStore.assets)
         } else {
             imagePickerDelegate?.imagePicker(self, didFinishWithAssets: assetStore.assets)
         }

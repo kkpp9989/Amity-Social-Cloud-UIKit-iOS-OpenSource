@@ -11,7 +11,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PreviewImagePickerController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="navigationTitleLabel" destination="BB3-ha-Vn8" id="HCX-4W-vzs"/>
                 <outlet property="previweCollectionView" destination="2vJ-vz-DY5" id="wvI-U4-SbA"/>
+                <outlet property="sendButton" destination="z3s-LL-YQQ" id="5uX-Hz-B4R"/>
                 <outlet property="view" destination="e0T-VI-2mU" id="CHK-RA-Ymw"/>
             </connections>
         </placeholder>
@@ -20,8 +22,56 @@
             <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B8x-eB-a0t">
+                    <rect key="frame" x="0.0" y="-12" width="390" height="98"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select image" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BB3-ha-Vn8">
+                            <rect key="frame" x="119.66666666666669" y="70" width="151" height="21"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="151" id="aOz-gh-6EW"/>
+                                <constraint firstAttribute="height" constant="21" id="y3h-fA-Gue"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VuN-EM-eLQ">
+                            <rect key="frame" x="20" y="68.666666666666657" width="28" height="28"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="28" id="KR3-HJ-KsM"/>
+                                <constraint firstAttribute="height" constant="28" id="WvM-OQ-cem"/>
+                            </constraints>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="icon_back_navigation"/>
+                            <connections>
+                                <action selector="backButtonTap:" destination="-1" eventType="touchUpInside" id="zQC-sT-xGS"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="z3s-LL-YQQ">
+                            <rect key="frame" x="314" y="63" width="62" height="35"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="35" id="7Cd-pf-Anf"/>
+                                <constraint firstAttribute="width" constant="62" id="MeQ-Ut-AQG"/>
+                            </constraints>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" title="send"/>
+                            <connections>
+                                <action selector="sendButtonTap:" destination="-1" eventType="touchUpInside" id="oho-5m-UN1"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="VuN-EM-eLQ" firstAttribute="centerY" secondItem="BB3-ha-Vn8" secondAttribute="centerY" constant="2.1666666666666572" id="5Vu-xf-dTA"/>
+                        <constraint firstItem="z3s-LL-YQQ" firstAttribute="centerY" secondItem="BB3-ha-Vn8" secondAttribute="centerY" id="6J6-1x-QbG"/>
+                        <constraint firstAttribute="trailing" secondItem="z3s-LL-YQQ" secondAttribute="trailing" constant="14" id="8jk-ai-Fzq"/>
+                        <constraint firstItem="VuN-EM-eLQ" firstAttribute="leading" secondItem="B8x-eB-a0t" secondAttribute="leading" constant="20" id="Rsh-UD-ERH"/>
+                        <constraint firstItem="BB3-ha-Vn8" firstAttribute="centerX" secondItem="B8x-eB-a0t" secondAttribute="centerX" id="hao-56-JfT"/>
+                        <constraint firstItem="BB3-ha-Vn8" firstAttribute="top" secondItem="B8x-eB-a0t" secondAttribute="top" constant="70" id="loS-rN-i1B"/>
+                    </constraints>
+                </view>
                 <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="2vJ-vz-DY5">
-                    <rect key="frame" x="0.0" y="47" width="390" height="763"/>
+                    <rect key="frame" x="0.0" y="94" width="390" height="716"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="EIT-4R-YSC">
                         <size key="itemSize" width="128" height="128"/>
@@ -39,14 +89,19 @@
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="2oS-1T-BFy" firstAttribute="bottom" secondItem="2vJ-vz-DY5" secondAttribute="bottom" id="4Sc-IO-3Vd"/>
-                <constraint firstItem="2vJ-vz-DY5" firstAttribute="top" secondItem="2oS-1T-BFy" secondAttribute="top" id="8kB-Gf-zUX"/>
+                <constraint firstItem="2vJ-vz-DY5" firstAttribute="top" secondItem="2oS-1T-BFy" secondAttribute="top" constant="47" id="8kB-Gf-zUX"/>
                 <constraint firstItem="2vJ-vz-DY5" firstAttribute="leading" secondItem="2oS-1T-BFy" secondAttribute="leading" id="Hgt-b7-okp"/>
+                <constraint firstItem="2oS-1T-BFy" firstAttribute="trailing" secondItem="B8x-eB-a0t" secondAttribute="trailing" id="MOK-m9-zdv"/>
+                <constraint firstItem="2vJ-vz-DY5" firstAttribute="top" secondItem="B8x-eB-a0t" secondAttribute="bottom" constant="8" id="a6x-Ni-pTt"/>
+                <constraint firstItem="2oS-1T-BFy" firstAttribute="top" secondItem="B8x-eB-a0t" secondAttribute="top" constant="59" id="h2b-R8-GGm"/>
+                <constraint firstItem="B8x-eB-a0t" firstAttribute="leading" secondItem="2oS-1T-BFy" secondAttribute="leading" id="kuZ-wb-Wsp"/>
                 <constraint firstItem="2oS-1T-BFy" firstAttribute="trailing" secondItem="2vJ-vz-DY5" secondAttribute="trailing" id="quk-g6-kLF"/>
             </constraints>
             <point key="canvasLocation" x="-35.384615384615387" y="21.327014218009477"/>
         </view>
     </objects>
     <resources>
+        <image name="icon_back_navigation" width="28" height="28"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
