@@ -66,7 +66,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var userRepository: AmityUserRepository!
     private var editor: AmityMessageEditor?
     private var messageFlagger: AmityMessageFlagger?
-    
+    private var topicSubscription: AmityTopicSubscription?
+
     // MARK: - Collection
     private var messagesCollection: AmityCollection<AmityMessage>?
     
@@ -102,6 +103,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
         subChannelRepository = AmitySubChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+        topicSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
     }
     
     // MARK: - DataSource
@@ -215,6 +217,9 @@ extension AmityMessageListScreenViewModel {
         subChannelNotificationToken = subChannelRepository.getSubChannel(withId: subChannelId).observe { [weak self] (subChannel, error) in
             guard let object = subChannel.snapshot else { return }
             self?.subChannel = object
+            if self?.channelType == .conversation {
+                self?.startRealtimeSubscription()
+            }
         }
     }
     
@@ -314,7 +319,6 @@ extension AmityMessageListScreenViewModel {
     }
     
     func forward(withChannelIdList channelIdList: [String]) {
-        AmityEventHandler.shared.showKTBLoading()
         for channelId in channelIdList {
             for forwardMessage in forwardMessageList {
                 dispatchGroup.enter()
@@ -323,10 +327,8 @@ extension AmityMessageListScreenViewModel {
                     guard let strongSelf = self else { return }
                     switch result {
                     case .success(let isSuccess):
-                        print(isSuccess)
                         strongSelf.dispatchGroup.leave()
                     case .failure(let error):
-                        print(error)
                         strongSelf.dispatchGroup.leave()
                     }
                 }
@@ -336,6 +338,7 @@ extension AmityMessageListScreenViewModel {
         // Wait for all requests to complete
         dispatchGroup.notify(queue: .main) { [self] in
             // All channels have been created
+            print("------------> forward: finish")
             AmityEventHandler.shared.hideKTBLoading()
             forwardMessageList.removeAll()
         }
@@ -757,5 +760,20 @@ extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     func performAudioRecordingEvents(for event: AudioRecordingEvents) {
         delegate?.screenViewModelAudioRecordingEvents(for: event)
+    }
+}
+
+extension AmityMessageListScreenViewModel {
+    
+    func startRealtimeSubscription() {
+        guard let channel = subChannel else { return }
+        let topic = AmitySubChannelTopic(subChannel: channel)
+        topicSubscription?.subscribeTopic(topic) { _, _ in }
+    }
+    
+    func stopRealtimeSubscription() {
+        guard let channel = subChannel else { return }
+        let topic = AmitySubChannelTopic(subChannel: channel)
+        topicSubscription?.unsubscribeTopic(topic) { _, _ in }
     }
 }
