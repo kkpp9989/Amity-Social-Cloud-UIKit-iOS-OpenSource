@@ -43,7 +43,7 @@ class UploadFileMessageOperation: AsyncOperation {
     
     private func createFileMessage(fileURL: URL) {
         let channelId = self.subChannelId
-        let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, fileURL: fileURL)
+        let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: fileURL))
         
         guard let repository = repository else {
             finish()

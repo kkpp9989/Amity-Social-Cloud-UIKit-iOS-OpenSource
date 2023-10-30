@@ -254,7 +254,14 @@ extension AmityMessageListScreenViewModel {
             metadata: metadata,
             mentioneesBuilder: mentionees)
         
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] message ,error in
+            
+            guard error == nil, let message = message else {
+                Log.add(#"[UIKit] Create text message "\#(textMessage)" fail with error: \#(error?.localizedDescription)"#)
+                return
+            }
+            Log.add(#"[UIKit] Create text message "\#(textMessage)" success with message Id: \#(message.messageId) | type: \#(message.messageType)"#)
+            
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
         }
@@ -643,7 +650,7 @@ private extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     func resend(with message: AmityMessageModel, at indexPath: IndexPath) {
         switch message.messageType {
-        case .text: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด และ มี concern mentions -> ต้องลองเทสที่เครื่องจริง
+        case .text:
             // Get text, metadata and mentionees from error message
             let text = message.text
             let metadata = message.metadata
@@ -654,7 +661,7 @@ extension AmityMessageListScreenViewModel {
             // remove error message
             deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             break
-        case .image: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+        case .image:
             // Get image info and image URL data from path in image info from error message
             if let imageInfoFromMessage = message.object.getImageInfo(),
                let image = AmityTempSendImageMessageData.shared.data[imageInfoFromMessage.fileURL] {
@@ -665,7 +672,7 @@ extension AmityMessageListScreenViewModel {
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
-        case .file: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+        case .file:
             // Get file info and file URL data from path in file info from error message
             if let fileInfoFromMessage = message.object.getFileInfo(),
                let fileURLData = URL(string: fileInfoFromMessage.fileURL) {
@@ -677,13 +684,13 @@ extension AmityMessageListScreenViewModel {
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
-        case .audio: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+        case .audio:
             /* Concern about send many audio */
             // Send audio message again
             sendAudio()
             // remove error message
             deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
-        case .video: // Pass แต่ลองเทสในกรณีที่ถ้า message ที่ resend ไม่ได้อยู่ล่างสุด
+        case .video:
             // Get video info and image URL data from path in video info from error message
             if let videoInfoFromMessage = message.object.getVideoInfo(),
                let videoURLData = URL(string: videoInfoFromMessage.fileURL) {
