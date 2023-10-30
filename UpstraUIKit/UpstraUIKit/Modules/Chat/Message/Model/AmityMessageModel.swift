@@ -134,5 +134,4 @@ extension AmityMessageModel {
             }
         }
     }
-
 }
