@@ -81,7 +81,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     private var channelPresenceRepo: AmityChannelPresenceRepository
     
     // MARK: - Utilities
-    private let debouncer = Debouncer(delay: 0.5)
+    private let debouncer = Debouncer(delay: 0.3)
 
     init(channelType: AmityChannelType) {
         self.channelType = channelType
