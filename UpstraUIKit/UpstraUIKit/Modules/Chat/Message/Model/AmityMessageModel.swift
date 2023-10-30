@@ -121,7 +121,11 @@ extension AmityMessageModel: Hashable {
 
 extension AmityMessageModel {
     private func getParentMessage(completion: @escaping (AmityMessage?) -> Void) {
-        messageToken = messageRepository.getMessage(parentId ?? "").observe { (message, error) in
+        guard let parentId = parentId else {
+            completion(nil)
+            return
+        }
+        messageToken = messageRepository.getMessage(parentId).observe { (message, error) in
             if let message = message.snapshot {
                 //  Handle message result
                 completion(message)
@@ -130,5 +134,4 @@ extension AmityMessageModel {
             }
         }
     }
-
 }
