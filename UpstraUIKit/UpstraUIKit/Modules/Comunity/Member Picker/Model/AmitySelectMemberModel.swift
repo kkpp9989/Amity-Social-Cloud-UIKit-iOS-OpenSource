@@ -55,11 +55,12 @@ public final class AmitySelectMemberModel: Equatable {
         self.type = .channel
     }
     
-    init(object: AmityFollowRelationship) {
-        self.userId = object.sourceUser?.userId ?? ""
-        self.displayName = object.sourceUser?.displayName ?? ""
-        self.avatarURL = object.sourceUser?.getAvatarInfo()?.fileURL ?? ""
-        if let metadata = object.sourceUser?.metadata {
+    init(object: AmityFollowRelationship, type: AmityFollowerViewType) {
+        let data = type == .followers ? object.sourceUser : object.targetUser
+        self.userId = data?.userId ?? ""
+        self.displayName = data?.displayName ?? ""
+        self.avatarURL = data?.getAvatarInfo()?.fileURL ?? ""
+        if let metadata = data?.metadata {
             self.email = metadata["email"] as? String ?? ""
         }
         self.type = .user

@@ -30,7 +30,7 @@ struct RequestGetPinPost {
         default:
             endpointUrl = "\(domainURL)/pin-post"
         }
-        
+                
         requestMeta.urlRequest = endpointUrl
         requestMeta.header = [["Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .get

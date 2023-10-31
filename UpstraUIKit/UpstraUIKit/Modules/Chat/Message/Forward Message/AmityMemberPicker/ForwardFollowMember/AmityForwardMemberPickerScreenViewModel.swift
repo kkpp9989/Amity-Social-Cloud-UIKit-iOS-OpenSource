@@ -14,7 +14,7 @@ class AmityForwardMemberPickerScreenViewModel: AmityForwardMemberPickerScreenVie
     
     // MARK: - Repository
     private var userRepository: AmityUserRepository?
-    private var userRelationship: AmityUserRelationship?
+    private var userRelationship: AmityUserFollowManager?
 
     // MARK: - Controller
     private var fetchUserController: AmityFetchForwardUserController?
@@ -33,7 +33,7 @@ class AmityForwardMemberPickerScreenViewModel: AmityForwardMemberPickerScreenVie
     
     init(type: AmityFollowerViewType) {
         userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
-        userRelationship = AmityUserRelationship(client: AmityUIKitManagerInternal.shared.client)
+        userRelationship = AmityUserFollowManager(client: AmityUIKitManagerInternal.shared.client)
         fetchUserController = AmityFetchForwardUserController(repository: userRelationship, type: type)
         searchUserController = AmityForwardSearchUserController(repository: userRepository)
         selectUserContrller = AmityForwardSelectUserController()
