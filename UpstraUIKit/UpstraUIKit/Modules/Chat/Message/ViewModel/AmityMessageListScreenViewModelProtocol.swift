@@ -34,6 +34,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int)
     
+    func screenViewModelDidUpdateJoinChannelSuccess()
 }
 
 protocol AmityMessageListScreenViewModelDataSource {
@@ -101,6 +102,8 @@ protocol AmityMessageListScreenViewModelAction {
     
     func startRealtimeSubscription()
     func stopRealtimeSubscription()
+    
+    func join()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {

@@ -244,6 +244,13 @@ extension AmityRecentChatViewController: UserStatusDelegate {
             switch result {
             case .success:
                 reloadData()
+                
+                switch AmityUIKitManagerInternal.shared.userStatus {
+                case .DO_NOT_DISTURB, .OUT_SICK:
+                    AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
+                default:
+                    AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+                }
             case .failure(let error):
                 print("Update failed with error: \(error)")
             }

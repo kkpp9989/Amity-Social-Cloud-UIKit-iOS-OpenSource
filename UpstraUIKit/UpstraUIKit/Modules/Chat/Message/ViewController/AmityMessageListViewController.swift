@@ -256,29 +256,55 @@ private extension AmityMessageListViewController {
     }
     
     func albumTap() {
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
         imagePicker.settings.selection.max = 20
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
-            let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
-            self?.screenViewModel.action.send(withMedias: medias, type: .image)
+        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+            let media = assets.map { asset in
+                AmityMedia(state: .image(self?.getAssetThumbnail(asset: asset) ?? UIImage()), type: .image)
+            }
+            
+            let vc = PreviewImagePickerController.make(media: media,
+                                                    viewModel: (self?.screenViewModel)!,
+                                                       mediaType: .image,
+                                                       title: AmityLocalizedStringSet.General.selectedImages.localizedString)
+            vc.modalPresentationStyle = .fullScreen
+            vc.tabBarController?.tabBar.isHidden = true
+            imagePicker.present(vc, animated: false, completion: nil)
         })
     }
     
     func videoAlbumTap() {
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.video]
         imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .video) }
-            self?.screenViewModel.action.send(withMedias: medias, type: .video)
+            let vc = PreviewImagePickerController.make(media: medias,
+                                                    viewModel: (self?.screenViewModel)!,
+                                                    mediaType: .video,
+                                                    title: AmityLocalizedStringSet.General.selectedVideos.localizedString)
+            vc.modalPresentationStyle = .fullScreen
+            vc.tabBarController?.tabBar.isHidden = true
+            imagePicker.present(vc, animated: false, completion: nil)
         })
+    }
+    
+    func getAssetThumbnail(asset: PHAsset) -> UIImage {
+        let manager = PHImageManager.default()
+        let option = PHImageRequestOptions()
+        var thumbnail = UIImage()
+        option.isSynchronous = true
+        manager.requestImage(for: asset, targetSize: CGSize(width: 100.0, height: 100.0), contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
+                thumbnail = result!
+        })
+        return thumbnail
     }
     
     func fileTap() {
@@ -662,6 +688,18 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
         navigationHeaderViewController?.updateViews(channel: channel)
+        
+        if channel.object.currentUserMembership != .member {
+            composeBar.showJoinMenuButton(show: true)
+            
+            if #available(iOS 16.0, *) {
+                // iOS 16.0 and newer
+                navigationItem.rightBarButtonItem?.isHidden = true
+            } else {
+                // iOS version prior to 16.0
+                navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+            }
+        }
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
@@ -882,6 +920,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
     }
 
+    func screenViewModelDidUpdateJoinChannelSuccess() {
+        composeBar.showJoinMenuButton(show: false)
+        setupCustomNavigationBar()
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -985,6 +1027,10 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
             self.messageViewController.updateEditMode(isEdit: false)
             self.composeBar.showForwardMenuButton(show: false)
         }
+    }
+    
+    func composeViewDidSelectJoinChannel() {
+        screenViewModel.action.join()
     }
 	
 	func sendMessageTap() {

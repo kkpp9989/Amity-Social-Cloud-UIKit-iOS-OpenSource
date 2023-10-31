@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -15,6 +15,8 @@
                 <outlet property="forwardButton" destination="PKb-jk-Sp1" id="6Ef-w6-KuK"/>
                 <outlet property="forwardMenuView" destination="Cbd-wO-r6o" id="PTX-ub-uOE"/>
                 <outlet property="inputMenuView" destination="kdj-Df-qWR" id="chZ-rr-Hjx"/>
+                <outlet property="joinButton" destination="eNy-7y-siT" id="tRJ-8c-jtf"/>
+                <outlet property="joinMenuView" destination="Ftw-8p-zud" id="DGg-dn-f0o"/>
                 <outlet property="recordButton" destination="esJ-Dw-sKh" id="IcP-IN-PDZ"/>
                 <outlet property="sendMessageButton" destination="yfB-uX-rGz" id="zSu-TI-Pr0"/>
                 <outlet property="separatorView" destination="fep-sX-u9j" id="Jyt-Cy-Zzt"/>
@@ -75,11 +77,11 @@
                                             </subviews>
                                         </stackView>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gU0-nB-1dd" customClass="AmityTextComposeBarView" customModule="AmityUIKit" customModuleProvider="target">
-                                            <rect key="frame" x="68" y="0.0" width="192" height="43"/>
+                                            <rect key="frame" x="68" y="0.0" width="208" height="43"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         </view>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="esJ-Dw-sKh" customClass="AmityRecordingButton" customModule="AmityUIKit" customModuleProvider="target">
-                                            <rect key="frame" x="268" y="1.6666666666666643" width="46" height="40"/>
+                                            <rect key="frame" x="284" y="1.6666666666666643" width="30" height="40"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="AsM-0b-dih"/>
                                             </constraints>
@@ -141,13 +143,28 @@
                                         </button>
                                     </subviews>
                                 </stackView>
+                                <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Ftw-8p-zud" userLabel="Join menu View">
+                                    <rect key="frame" x="16" y="52" width="382" height="0.0"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eNy-7y-siT">
+                                            <rect key="frame" x="0.0" y="0.0" width="382" height="0.0"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Join"/>
+                                            <connections>
+                                                <action selector="joinChannelTap:" destination="-1" eventType="touchUpInside" id="izX-8Z-1oT"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </stackView>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="kdj-Df-qWR" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" constant="16" id="7Au-zx-mBQ"/>
                                 <constraint firstAttribute="bottom" secondItem="Cbd-wO-r6o" secondAttribute="bottom" id="90U-YM-WaY"/>
                                 <constraint firstItem="fep-sX-u9j" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" id="Hai-Nb-vCe"/>
                                 <constraint firstAttribute="trailing" secondItem="fep-sX-u9j" secondAttribute="trailing" id="OLo-1R-562"/>
+                                <constraint firstItem="Ftw-8p-zud" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" constant="16" id="U0l-Vd-0ym"/>
                                 <constraint firstAttribute="trailing" secondItem="kdj-Df-qWR" secondAttribute="trailing" constant="16" id="aVk-uN-q0n"/>
+                                <constraint firstAttribute="trailing" secondItem="Ftw-8p-zud" secondAttribute="trailing" constant="16" id="aoc-ve-qpB"/>
                                 <constraint firstAttribute="trailing" secondItem="Cbd-wO-r6o" secondAttribute="trailing" constant="16" id="rcJ-fy-IHo"/>
                                 <constraint firstItem="Cbd-wO-r6o" firstAttribute="leading" secondItem="UIT-aS-D2v" secondAttribute="leading" constant="16" id="tZK-zF-CXx"/>
                             </constraints>
