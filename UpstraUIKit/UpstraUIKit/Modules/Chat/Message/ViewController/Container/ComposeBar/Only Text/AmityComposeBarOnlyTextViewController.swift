@@ -97,6 +97,11 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+    func showJoinMenuButton(show: Bool) {
+        // Intentionally left empty
+        // This class doesn't support showJoinMenuButton.
+    }
+    
     func updateViewDidSelectForwardMessage(amount: Int) {
         // Intentionally left empty
         // This class doesn't support updateViewDidSelectForwardMessage.

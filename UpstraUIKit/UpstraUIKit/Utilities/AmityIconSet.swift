@@ -51,6 +51,7 @@ public struct AmityIconSet {
     public static var iconCheckMark =  UIImage(named: "icon_checkmark", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconExclamation =  UIImage(named: "icon_exclamation", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconAdd = UIImage(named: "icon_add", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconAddWhite = UIImage(named: "icon_add_white", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconAddNavigationBar = UIImage(named: "icon_add_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconChat = UIImage(named: "icon_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconEdit = UIImage(named: "icon_edit", in: AmityUIKitManager.bundle, compatibleWith: nil)

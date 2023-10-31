@@ -76,7 +76,7 @@ public class AmityChatHomeParentViewController: AmityViewController {
             // Title
             // [Custom for ONE Krungthai] Move title to left navigation bar item
             let title = UILabel()
-            title.text = AmityLocalizedStringSet.communityHomeTitle.localizedString
+            title.text = AmityLocalizedStringSet.chatTitle.localizedString
             title.font = AmityFontSet.headerLine
             // Back button (Refer default leftBarButtonItem from AmityViewController)
             let backButton = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme

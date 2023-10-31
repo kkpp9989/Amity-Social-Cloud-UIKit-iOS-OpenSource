@@ -42,10 +42,11 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         
         avatarView.placeholder = AmityIconSet.defaultGroupChat
         
-        joinButton.titleLabel?.font = AmityFontSet.title
-        joinButton.setTitle(    AmityLocalizedStringSet.communityDetailJoinButton.localizedString
-                                , for: .normal)
-        joinButton.setTitleColor(AmityColorSet.primary, for: .normal)
+        joinButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.communityDetailJoinButton.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.primary,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        
     }
     
     func display(with data: AmityChannelModel, keyword: String) {
@@ -53,7 +54,7 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         titleLabel.attributedText = highlightText
         avatarView.setImage(withImageURL: data.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
         
-        joinButton.isHidden = data.object.currentUserMembership == .member ? false : true
+        joinButton.isHidden = data.object.currentUserMembership == .member ? true : false
     }
     
     // MARK: - Perform Action

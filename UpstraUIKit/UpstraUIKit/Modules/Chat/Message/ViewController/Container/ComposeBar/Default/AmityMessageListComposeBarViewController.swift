@@ -13,6 +13,7 @@ protocol AmityMessageListComposeBarDelegate: AnyObject {
 	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
     func composeViewDidCancelForwardMessage()
     func composeViewDidSelectForwardMessage()
+    func composeViewDidSelectJoinChannel()
 	func sendMessageTap()
 }
 
@@ -33,6 +34,9 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet var forwardMenuView: UIStackView!
     @IBOutlet private var cancelForwardButton: UIButton!
     @IBOutlet private var forwardButton: UIButton!
+    
+    @IBOutlet var joinMenuView: UIStackView!
+    @IBOutlet private var joinButton: UIButton!
     
     // MARK: - Properties
 	weak var delegate: AmityMessageListComposeBarDelegate?
@@ -68,6 +72,10 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBAction func cancelForwardTap(_ sender: UIButton) {
         showForwardMenuButton(show: false)
         delegate?.composeViewDidCancelForwardMessage()
+    }
+    
+    @IBAction func joinChannelTap(_ sender: UIButton) {
+        delegate?.composeViewDidSelectJoinChannel()
     }
 }
 
@@ -112,6 +120,7 @@ private extension AmityMessageListComposeBarViewController {
         setupLeftItems()
         setupRecordButton()
         setupForwardMenuView()
+        setupJoinChannelButton()
     }
     
     func setupTextComposeBarView() {
@@ -176,6 +185,17 @@ private extension AmityMessageListComposeBarViewController {
         sendMessageButton.isHidden = true
     }
     
+    func setupJoinChannelButton() {
+        joinButton.backgroundColor = AmityColorSet.primary
+        joinButton.layer.cornerRadius = 18
+        joinButton.setImage(AmityIconSet.iconAddWhite, for: .normal)
+        joinButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.communityDetailJoinButton.localizedString, attributes: [
+            .foregroundColor: UIColor.white,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        joinButton.clipsToBounds = true
+    }
+    
     func setupShowKeyboardComposeBarButton() {
         showKeyboardComposeBarButton.setTitle(nil, for: .normal)
         showKeyboardComposeBarButton.setImage(AmityIconSet.iconAdd, for: .normal)
@@ -224,6 +244,7 @@ private extension AmityMessageListComposeBarViewController {
 }
 
 extension AmityMessageListComposeBarViewController: AmityComposeBar {
+    
 	var textView: AmityTextView {
 		get {
 			textComposeBarView.textView
@@ -305,6 +326,18 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
                 showKeyboardComposeBarButton.isHidden = false
                 sendMessageButton.isHidden = true
             }
+        }
+    }
+    
+    func showJoinMenuButton(show: Bool) {
+        if show {
+            inputMenuView.isHidden = true
+            forwardMenuView.isHidden = true
+            joinMenuView.isHidden = false
+        } else {
+            inputMenuView.isHidden = false
+            forwardMenuView.isHidden = true
+            joinMenuView.isHidden = true
         }
     }
     
