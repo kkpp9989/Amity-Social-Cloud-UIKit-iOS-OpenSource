@@ -201,6 +201,14 @@ public final class AmityUIKitManager {
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .social, isEnabled: false, roleFilter: nil)]) { _, _ in }
     }
     
+    public static func enableChatNotificationSetting() {
+        AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+    }
+    
+    public static func disableChatNotificationSetting() {
+        AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
+    }
+    
     public static func checkPresenceStatus() {
         Task {
             do {
@@ -397,6 +405,34 @@ final class AmityUIKitManagerInternal: NSObject {
         
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .videoStreaming, isEnabled: false, roleFilter: nil)]) { result, error in
             print("[Livestream-notification] Disable livestream user level notification result : \(result)")
+        }
+    }
+    
+    func enableChatNotificationSetting() {
+        let userNotificationManager = client.notificationManager
+        let moduleSettings = [
+            AmityUserNotificationModule(moduleType: .chat, isEnabled: true, roleFilter: nil)
+        ]
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userNotificationManager.enable(for:), parameters: moduleSettings) { result, error in
+            if let error = error {
+                print("[Notification] Enable chat user level notification fail with error : \(error.localizedDescription)")
+            } else if let result = result {
+                print("[Notification] Enable chat user level notification result : \(result)")
+            }
+        }
+    }
+    
+    func disableChatNotificationSetting() {
+        let userNotificationManager = client.notificationManager
+        let moduleSettings = [
+            AmityUserNotificationModule(moduleType: .chat, isEnabled: false, roleFilter: nil)
+        ]
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userNotificationManager.enable(for:), parameters: moduleSettings) { result, error in
+            if let error = error {
+                print("[Notification] Disable chat user level notification fail with error : \(error.localizedDescription)")
+            } else if let result = result {
+                print("[Notification] Disable chat user level notification result : \(result)")
+            }
         }
     }
     
