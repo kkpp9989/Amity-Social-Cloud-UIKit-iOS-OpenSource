@@ -691,6 +691,14 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         
         if channel.object.currentUserMembership != .member {
             composeBar.showJoinMenuButton(show: true)
+            
+            if #available(iOS 16.0, *) {
+                // iOS 16.0 and newer
+                navigationItem.rightBarButtonItem?.isHidden = true
+            } else {
+                // iOS version prior to 16.0
+                navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+            }
         }
     }
     
@@ -911,6 +919,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 
     func screenViewModelDidUpdateJoinChannelSuccess() {
         composeBar.showJoinMenuButton(show: false)
+        setupCustomNavigationBar()
     }
 }
 
