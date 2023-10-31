@@ -121,8 +121,14 @@ extension AmityRecentChatViewController: UITableViewDelegate {
             let userStatusVC = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
             userStatusVC.delegate = self
             userStatusVC.view.tag = 1
-            window?.rootViewController?.addChild(userStatusVC)
-            window?.addSubview(userStatusVC.view)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // This code is executed on an iPad
+                userStatusVC.modalPresentationStyle = .overFullScreen // Set the modal presentation style to full screen
+                present(userStatusVC, animated: true, completion: nil)
+            } else {
+                window?.rootViewController?.addChild(userStatusVC)
+                window?.addSubview(userStatusVC.view)
+            }
         }
     }
     
@@ -239,20 +245,40 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
 
 extension AmityRecentChatViewController: UserStatusDelegate {
     func didClose() {
-        window?.subviews.filter({$0.tag == 1}).forEach({$0.removeFromSuperview()})
-        screenViewModel?.action.update { [self] result in
-            switch result {
-            case .success:
-                reloadData()
-                
-                switch AmityUIKitManagerInternal.shared.userStatus {
-                case .DO_NOT_DISTURB, .OUT_SICK:
-                    AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
-                default:
-                    AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.dismiss(animated: true) { [self] in
+                screenViewModel?.action.update { [self] result in
+                    switch result {
+                    case .success:
+                        reloadData()
+                        
+                        switch AmityUIKitManagerInternal.shared.userStatus {
+                        case .DO_NOT_DISTURB, .OUT_SICK:
+                            AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
+                        default:
+                            AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+                        }
+                    case .failure(let error):
+                        print("Update failed with error: \(error)")
+                    }
                 }
-            case .failure(let error):
-                print("Update failed with error: \(error)")
+            }
+        } else {
+            window?.subviews.filter({$0.tag == 1}).forEach({$0.removeFromSuperview()})
+            screenViewModel?.action.update { [self] result in
+                switch result {
+                case .success:
+                    reloadData()
+                    
+                    switch AmityUIKitManagerInternal.shared.userStatus {
+                    case .DO_NOT_DISTURB, .OUT_SICK:
+                        AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
+                    default:
+                        AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+                    }
+                case .failure(let error):
+                    print("Update failed with error: \(error)")
+                }
             }
         }
     }
