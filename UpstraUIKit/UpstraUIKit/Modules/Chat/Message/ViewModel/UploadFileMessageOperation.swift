@@ -53,8 +53,17 @@ class UploadFileMessageOperation: AsyncOperation {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
                 Log.add("[UIKit] Create file message (URL: \(fileURL)) fail with error: \(error?.localizedDescription)")
+                
+                // Add file to temp file message data
+                AmityTempSendFileMessageData.shared.add(currentFileURL: fileURL)
+
                 return
             }
+            
+            // Delete file to temp file message data if cache its
+            let fileName = fileURL.lastPathComponent
+            AmityTempSendFileMessageData.shared.remove(fileName: fileName)
+            
             Log.add("[UIKit] Create file message (URL: \(fileURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
                 guard error == nil, let message = liveObject.snapshot else {

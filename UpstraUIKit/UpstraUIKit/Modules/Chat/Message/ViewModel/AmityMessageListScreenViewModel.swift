@@ -688,13 +688,16 @@ extension AmityMessageListScreenViewModel {
             // Get file info and file URL data from path in file info from error message
             if let fileInfoFromMessage = message.object.getFileInfo(),
                let fileURLData = URL(string: fileInfoFromMessage.fileURL) {
-                // Generate AmityFile in state .local
-                let document = AmityDocument(fileURL: fileURLData)
-                let file = AmityFile(state: .local(document: document))
-                // Send file message again
-                send(withFiles: [file])
-                // remove error message
-                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+                // Get file in temp folder
+                let fileName = fileURLData.lastPathComponent
+                if let tempFileURL = AmityTempSendFileMessageData.shared.data[fileName] {
+                    // Generate AmityFile in state .local
+                    let file = AmityFile(state: .local(document: AmityDocument(fileURL: tempFileURL)))
+                    // Send file message again
+                    send(withFiles: [file])
+                    // remove error message
+                    deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+                }
             }
         case .audio:
             /* Concern about send many audio */
