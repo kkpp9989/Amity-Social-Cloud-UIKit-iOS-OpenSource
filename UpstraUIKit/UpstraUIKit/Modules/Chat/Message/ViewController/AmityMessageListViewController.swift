@@ -688,6 +688,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
         navigationHeaderViewController?.updateViews(channel: channel)
+        
+        if channel.object.currentUserMembership != .member {
+            composeBar.showJoinMenuButton(show: true)
+        }
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
@@ -905,6 +909,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
     }
 
+    func screenViewModelDidUpdateJoinChannelSuccess() {
+        composeBar.showJoinMenuButton(show: false)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -1008,6 +1015,10 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
             self.messageViewController.updateEditMode(isEdit: false)
             self.composeBar.showForwardMenuButton(show: false)
         }
+    }
+    
+    func composeViewDidSelectJoinChannel() {
+        screenViewModel.action.join()
     }
 	
 	func sendMessageTap() {

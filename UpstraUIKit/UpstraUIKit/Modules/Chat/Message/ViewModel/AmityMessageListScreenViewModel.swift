@@ -378,6 +378,18 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
+    func join() {
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: channelId) {result, error in
+            if let error = AmityError(error: error) {
+                print(error)
+            } else {
+                if result?.currentUserMembership != .member {
+                    self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
+                }
+            }
+        }
+    }
+    
     func startReading() {
         guard let subChannel = subChannel else { return }
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: subChannel.startReading, parameters: ()) { _,_ in }
