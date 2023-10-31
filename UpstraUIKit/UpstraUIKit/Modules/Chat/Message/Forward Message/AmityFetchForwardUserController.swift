@@ -13,7 +13,7 @@ final class AmityFetchForwardUserController {
     
     typealias GroupUser = [(key: String, value: [AmitySelectMemberModel])]
     
-    private weak var repository: AmityUserRelationship?
+    private weak var repository: AmityUserFollowManager?
     private var collection: AmityCollection<AmityFollowRelationship>?
     private var token: AmityNotificationToken?
     
@@ -22,31 +22,34 @@ final class AmityFetchForwardUserController {
     private var users: [AmitySelectMemberModel] = []
     var storeUsers: [AmitySelectMemberModel] = []
     
-    init(repository: AmityUserRelationship?, type: AmityFollowerViewType) {
+    init(repository: AmityUserFollowManager?, type: AmityFollowerViewType) {
         self.repository = repository
         self.targetType = type
     }
     
     func getUser(_ completion: @escaping (Result<GroupUser, Error>) -> Void) {
         if targetType == .following {
-            collection = repository?.getMyFollowings(with: .accepted)
+            collection = repository?.getMyFollowingList(with: .accepted)
         } else {
-            collection = repository?.getMyFollowers(with: .accepted)
+            collection = repository?.getMyFollowerList(with: .accepted)
         }
         
         token = collection?.observe { [weak self] (userCollection, change, error) in
             guard let strongSelf = self else { return }
+            strongSelf.token?.invalidate()
             if let error = error {
                 completion(.failure(error))
             } else {
                 for index in 0..<userCollection.count() {
                     guard let object = userCollection.object(at: index) else { continue }
-                    let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
-                    if !strongSelf.users.contains(where: { $0.userId == object.sourceUserId }) {
-                        if !(object.sourceUser?.isDeleted ?? false) {
-                            strongSelf.users.append(model)
-                        }
+                    let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
+                    if strongSelf.targetType == .followers {
+                        model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
+                    } else {
+                        model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.targetUserId }
+                    }
+                    if !(object.sourceUser?.isDeleted ?? false) {
+                        strongSelf.users.append(model)
                     }
                 }
                 
