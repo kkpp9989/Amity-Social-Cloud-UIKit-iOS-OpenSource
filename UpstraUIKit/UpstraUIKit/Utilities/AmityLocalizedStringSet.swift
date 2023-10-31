@@ -30,6 +30,7 @@ public struct AmityLocalizedStringSet {
         static let decline = "general_decline"
         static let close = "general_close"
         static let save = "general_save"
+        static let send = "general_send"
         static let saved = "general_saved"
         static let cancel = "general_cancel"
         static let delete = "general_delete"
@@ -88,6 +89,9 @@ public struct AmityLocalizedStringSet {
         static let forward = "general_forward"
         static let unsend = "general_unsend"
         static let copy = "general_copy"
+        static let selectedImages = "general_selected_images"
+        static let selectedVideos = "general_selected_videos"
+        
     }
     
     static let communitySettings = "community_settings"
