@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import AmitySDK
+import Combine
 
 final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType {
     
@@ -117,6 +118,9 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
             delegate?.screenViewModelDidTextChange(text: text)
         }
     }
+    
+    // MARK: - AnyCancellable
+    private var disposeBag: Set<AnyCancellable> = []
     
     private var channelType: AmityChannelType = .conversation
     
@@ -536,6 +540,13 @@ extension AmityMessageListScreenViewModel {
         
         // Call the queryMessages function with the updated query options to jump to the desired message.
         queryMessages(queryOptions: queryOptions, messageId: messageId)
+    }
+    
+    func getTotalUnreadCount() {
+        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
+            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
+        }).store(in: &disposeBag)
     }
 }
 

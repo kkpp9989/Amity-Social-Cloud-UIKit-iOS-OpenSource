@@ -264,6 +264,10 @@ public final class AmityUIKitManager {
     public static func getUnreadCount() {
         AmityUIKitManagerInternal.shared.getTotalUnreadCount()
     }
+    
+    public static func setUnreadCount(unreadCount: Int) {
+        AmityUIKitManagerInternal.shared.totalUnreadCount = unreadCount
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
