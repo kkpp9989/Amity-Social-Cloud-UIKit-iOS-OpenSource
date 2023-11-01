@@ -63,6 +63,7 @@ protocol AmityMessageListScreenViewModelAction {
     func send(withMedias medias: [AmityMedia], type: AmityMediaType)
     func send(withFiles files: [AmityFile])
     func sendAudio()
+    func sendAudio(tempAudioURL: URL)
     func resend(with message: AmityMessageModel, at indexPath: IndexPath)
     func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType)
     func forward(withChannelIdList channelIdList: [String])

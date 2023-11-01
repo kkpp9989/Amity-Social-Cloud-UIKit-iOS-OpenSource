@@ -700,11 +700,14 @@ extension AmityMessageListScreenViewModel {
                 }
             }
         case .audio:
-            /* Concern about send many audio */
-            // Send audio message again
-            sendAudio()
-            // remove error message
-            deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            // Get file info and file URL data from path in file info from error message
+            if let fileInfoFromMessage = message.object.getFileInfo(),
+               let audioURLData = URL(string: fileInfoFromMessage.fileURL) {
+                // Send audio message again
+                sendAudio(tempAudioURL: audioURLData)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
         case .video:
             // Get video info and image URL data from path in video info from error message
             if let videoInfoFromMessage = message.object.getVideoInfo(),
@@ -716,7 +719,6 @@ extension AmityMessageListScreenViewModel {
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
-            break
         default:
             break
         }
@@ -749,7 +751,6 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Audio
 extension AmityMessageListScreenViewModel {
     func sendAudio() {
-        NSLog("[Recorder] Start send audio")
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         NSLog("[Recorder] Start create audio message")
         messageAudio?.create { [weak self] in
@@ -760,7 +761,18 @@ extension AmityMessageListScreenViewModel {
             self?.shouldScrollToBottom(force: true)
         }
     }
-
+    
+    func sendAudio(tempAudioURL: URL) {
+        messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
+        NSLog("[Recorder] Start resend audio message")
+        messageAudio?.create(tempAudioURL: tempAudioURL) { [weak self] in
+            NSLog("[Recorder] Resend audio message success")
+            self?.messageAudio = nil
+            self?.delegate?.screenViewModelEvents(for: .updateMessages)
+            self?.delegate?.screenViewModelEvents(for: .didSendAudio)
+            self?.shouldScrollToBottom(force: true)
+        }
+    }
 }
 
 // MARK: - Send File

@@ -57,8 +57,10 @@ final class AmityFileCache {
         let path = getFileURL(for: directory, fileName: fileName)
         do {
             try fileManager.removeItem(atPath: path.absoluteString)
+            NSLog("[Recorder] Delete recorded cache file path: \(path.absoluteString) success")
         } catch {
             Log.add(error.localizedDescription)
+            NSLog("[Recorder] Delete recorded cache file path: \(path.absoluteString) fail with error \(error.localizedDescription)")
         }
     }
     
