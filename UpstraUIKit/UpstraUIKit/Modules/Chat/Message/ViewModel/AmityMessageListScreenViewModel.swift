@@ -668,6 +668,9 @@ private extension AmityMessageListScreenViewModel {
             lastMessageHash = lastMessage.hashValue
         }
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            AmityEventHandler.shared.hideKTBLoading()
+        }
     }
 }
 // MARK: - Resend message
