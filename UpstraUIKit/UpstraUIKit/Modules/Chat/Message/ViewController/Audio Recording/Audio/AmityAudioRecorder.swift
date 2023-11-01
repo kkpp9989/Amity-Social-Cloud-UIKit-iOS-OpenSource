@@ -103,11 +103,15 @@ final class AmityAudioRecorder: NSObject {
         }
     }
     
-    func updateFilename(withFilename newFileName: String) {
-        AmityFileCache.shared.updateFile(for: .audioDirectory, originFilename: fileName, destinationFilename: newFileName + ".m4a")
+    func updateFilename(from originFilename: String? = nil, to newFileName: String) {
+        AmityFileCache.shared.updateFile(for: .audioDirectory, originFilename: originFilename ?? self.fileName, destinationFilename: newFileName + ".m4a")
     }
     
     func getAudioFileURL() -> URL? {
+        return AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: fileName)
+    }
+    
+    func getAudioFileURL(fileName: String) -> URL? {
         return AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: fileName)
     }
     

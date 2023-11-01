@@ -254,7 +254,14 @@ extension AmityMessageListScreenViewModel {
             metadata: metadata,
             mentioneesBuilder: mentionees)
         
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] _,_ in
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] message ,error in
+            
+            guard error == nil, let message = message else {
+                Log.add(#"[UIKit] Create text message "\#(textMessage)" fail with error: \#(error?.localizedDescription)"#)
+                return
+            }
+            Log.add(#"[UIKit] Create text message "\#(textMessage)" success with message Id: \#(message.messageId) | type: \#(message.messageType)"#)
+            
             self?.text = ""
             self?.delegate?.screenViewModelEvents(for: .didSendText)
         }
@@ -288,10 +295,12 @@ extension AmityMessageListScreenViewModel {
     }
     
     
-    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath) {
+    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool = false) {
         messageRepository.deleteFailedMessage(messageId) { [weak self] (isSuccess, error) in
             if isSuccess {
-                self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
+                if !isFromResend {
+                    self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
+                }
                 self?.delegate?.screenViewModelEvents(for: .updateMessages)
             }
         }
@@ -649,6 +658,74 @@ private extension AmityMessageListScreenViewModel {
         
     }
 }
+// MARK: - Resend message
+extension AmityMessageListScreenViewModel {
+    func resend(with message: AmityMessageModel, at indexPath: IndexPath) {
+        switch message.messageType {
+        case .text:
+            // Get text, metadata and mentionees from error message
+            let text = message.text
+            let metadata = message.metadata
+            let mentionManager = AmityMentionManager(withType: .message(channelId: channelId))
+            let mentioneesBuilder = mentionManager.getMentioneesFromErrorMessage(with: message.mentionees)
+            // Send text message again
+            send(withText: text, metadata: metadata, mentionees: mentioneesBuilder)
+            // remove error message
+            deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            break
+        case .image:
+            // Get image info and image URL data from path in image info from error message
+            if let imageInfoFromMessage = message.object.getImageInfo(),
+               let fileName = URL(string: imageInfoFromMessage.fileURL)?.lastPathComponent,
+               let tempImageURLPath = AmityFileCache.shared.getCacheURL(for: .imageDirectory, fileName: fileName)?.path {
+                // Get image
+                let tempImageURL = URL(fileURLWithPath: tempImageURLPath)
+                guard let imageData = try? Data(contentsOf: tempImageURL),
+                      let image = UIImage(data: imageData) else { return }
+                // Generate AmityMedia type .image in state .local
+                let media = AmityMedia(state: .image(image), type: .image)
+                // Send image message again
+                send(withMedias: [media], type: .image)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        case .file:
+            // Get file info and file URL data from path in file info from error message
+            if let fileInfoFromMessage = message.object.getFileInfo(),
+               let fileName = URL(string: fileInfoFromMessage.fileURL)?.lastPathComponent,
+               let tempFileURL = AmityFileCache.shared.getCacheURL(for: .fileDirectory, fileName: fileName) {
+                // Generate AmityFile in state .local
+                let file = AmityFile(state: .local(document: AmityDocument(fileURL: URL(fileURLWithPath: tempFileURL.path))))
+                // Send file message again
+                send(withFiles: [file])
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        case .audio:
+            // Get file info and file URL data from path in file info from error message
+            if let fileInfoFromMessage = message.object.getFileInfo(),
+               let audioURLData = URL(string: fileInfoFromMessage.fileURL) {
+                // Send audio message again
+                sendAudio(tempAudioURL: audioURLData)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        case .video:
+            // Get video info and image URL data from path in video info from error message
+            if let videoInfoFromMessage = message.object.getVideoInfo(),
+               let videoURLData = URL(string: videoInfoFromMessage.fileURL) {
+                // Generate AmityMedia type .video in state .local
+                let media = AmityMedia(state: .localURL(url: videoURLData), type: .video)
+                // Send video message again
+                send(withMedias: [media], type: .video)
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
+            }
+        default:
+            break
+        }
+    }
+}
 
 // MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
@@ -676,7 +753,6 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Audio
 extension AmityMessageListScreenViewModel {
     func sendAudio() {
-        NSLog("[Recorder] Start send audio")
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         NSLog("[Recorder] Start create audio message")
         messageAudio?.create { [weak self] in
@@ -687,7 +763,18 @@ extension AmityMessageListScreenViewModel {
             self?.shouldScrollToBottom(force: true)
         }
     }
-
+    
+    func sendAudio(tempAudioURL: URL) {
+        messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
+        NSLog("[Recorder] Start resend audio message")
+        messageAudio?.create(tempAudioURL: tempAudioURL) { [weak self] in
+            NSLog("[Recorder] Resend audio message success")
+            self?.messageAudio = nil
+            self?.delegate?.screenViewModelEvents(for: .updateMessages)
+            self?.delegate?.screenViewModelEvents(for: .didSendAudio)
+            self?.shouldScrollToBottom(force: true)
+        }
+    }
 }
 
 // MARK: - Send File

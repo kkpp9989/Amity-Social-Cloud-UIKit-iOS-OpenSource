@@ -209,6 +209,11 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
     }
     
+    /* Not used is for back up only */
+    public static func clearCustomTempData() {
+        AmityUIKitManagerInternal.shared.clearCustomTempData()
+    }
+    
     public static func checkPresenceStatus() {
         Task {
             do {
@@ -490,6 +495,7 @@ final class AmityUIKitManagerInternal: NSObject {
     }
 }
 
+// Handle post id can't get snapshot
 extension AmityUIKitManagerInternal {
     func addPostIdCannotGetSnapshot(postId: String) {
         postIdCannotGetSnapshotList.append(postId)
@@ -497,6 +503,15 @@ extension AmityUIKitManagerInternal {
     
     func getPostIdsCannotGetSnapshot() -> [String] {
         return postIdCannotGetSnapshotList
+    }
+}
+
+/* Not used is for back up only */
+// Custom temp data
+extension AmityUIKitManagerInternal {
+    func clearCustomTempData() {
+        // Clear all temp send file message data (delete custom temp folder)
+        AmityTempSendFileMessageData.shared.removeAll()
     }
 }
 

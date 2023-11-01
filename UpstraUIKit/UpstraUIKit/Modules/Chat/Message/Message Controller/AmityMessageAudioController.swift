@@ -23,31 +23,55 @@ final class AmityMessageAudioController {
         self.repository = repository
     }
     
+    // Send message
     func create(completion: @escaping () -> Void) {
-        
-        guard let audioURL = AmityAudioRecorder.shared.getAudioFileURL() else {
+        guard let audioURL = AmityAudioRecorder.shared.getAudioFileURL(),
+              let tempAudioURL = cacheAudioFile(at: audioURL) else {
             Log.add("Audio file not found")
             return
         }
-                
+        
+        createAudioMessage(from: tempAudioURL, completion: completion)
+    }
+    
+    // Resend message
+    func create(tempAudioURL: URL, completion: @escaping () -> Void) {
+        createAudioMessage(from: tempAudioURL, completion: completion)
+    }
+    
+    private func createAudioMessage(from audioURL: URL, completion: @escaping () -> Void) {
         guard let repository = repository else {
             return
         }
-        let createOptions = AmityAudioMessageCreateOptions(subChannelId: subChannelId, audioFileURL: audioURL, fileName: AmityAudioRecorder.shared.fileName)
-        repository.createAudioMessage(options: createOptions) { message, error in
+        let createOptions = AmityAudioMessageCreateOptions(subChannelId: subChannelId, attachment: .localURL(url: audioURL))
+        
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createAudioMessage(options:), parameters: createOptions) { message, error in
             guard error == nil, let message = message else {
                 return
             }
             self.token = repository.getMessage(message.messageId).observe { [weak self] (collection, error) in
-                guard error == nil, let message = collection.object else {
+                guard error == nil, let message = collection.snapshot else {
                     self?.token = nil
                     return
                 }
-                AmityAudioRecorder.shared.updateFilename(withFilename: message.messageId)
+                let currentFileName = audioURL.lastPathComponent
+                AmityAudioRecorder.shared.updateFilename(from: currentFileName, to: message.messageId)
                 completion()
             }
         }
-        
     }
     
+    private func cacheAudioFile(at fileURL: URL) -> URL? {
+        // Generate filename with timestamp
+        let timestamp = Int64(Date().timeIntervalSince1970 * 1000)
+        let tempFileName = "amity-uikit-recording_\(timestamp)"
+        
+        // Change current recording file to temp file by rename file
+        AmityAudioRecorder.shared.updateFilename(to: tempFileName)
+        
+        // Return temp audio URL
+        let tempAudioURL = AmityAudioRecorder.shared.getAudioFileURL(fileName: tempFileName + ".m4a")
+        return tempAudioURL
+    }
 }
+

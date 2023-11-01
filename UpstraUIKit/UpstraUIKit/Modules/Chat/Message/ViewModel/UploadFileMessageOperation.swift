@@ -34,6 +34,7 @@ class UploadFileMessageOperation: AsyncOperation {
         DispatchQueue.main.async { [weak self] in
             // get local file url for uploading
             if let fileURL = self?.file.fileURL {
+                self?.cacheFile(fileURL: fileURL)
                 self?.createFileMessage(fileURL: fileURL)
             } else {
                 self?.finish()
@@ -41,9 +42,18 @@ class UploadFileMessageOperation: AsyncOperation {
         }
     }
     
+    private func cacheFile(fileURL: URL) {
+        guard let fileData = try? Data(contentsOf: fileURL) else { return }
+        AmityFileCache.shared.cacheData(for: .fileDirectory, data: fileData, fileName: fileURL.lastPathComponent, completion: {_ in})
+    }
+    
+    private func deleteCacheFile(fileURL: URL) {
+        AmityFileCache.shared.deleteFile(for: .fileDirectory, fileName: fileURL.lastPathComponent)
+    }
+    
     private func createFileMessage(fileURL: URL) {
         let channelId = self.subChannelId
-        let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, fileURL: fileURL)
+        let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: fileURL))
         
         guard let repository = repository else {
             finish()
@@ -55,6 +65,10 @@ class UploadFileMessageOperation: AsyncOperation {
                 Log.add("[UIKit] Create file message (URL: \(fileURL)) fail with error: \(error?.localizedDescription)")
                 return
             }
+            
+            // Delete file to temp file message data if cache its
+            self?.deleteCacheFile(fileURL: fileURL)
+            
             Log.add("[UIKit] Create file message (URL: \(fileURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
                 guard error == nil, let message = liveObject.snapshot else {
@@ -62,7 +76,7 @@ class UploadFileMessageOperation: AsyncOperation {
                     self?.finish()
                     return
                 }
-                Log.add("[UIKit] Sync state file (URL: \(fileURL)) message : \(message.syncState) | type: \(message.messageType)")
+                Log.add("[UIKit] Sync state file message (URL: \(fileURL)) : \(message.syncState) | type: \(message.messageType)")
                 switch message.syncState {
                 case .syncing, .default:
                     // We don't cache local file URL as sdk handles itself

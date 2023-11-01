@@ -88,6 +88,7 @@ public struct AmityLocalizedStringSet {
         static let unPinpost = "general_unpinpost"
         static let forward = "general_forward"
         static let unsend = "general_unsend"
+        static let resend = "general_resend"
         static let copy = "general_copy"
         static let selectedImages = "general_selected_images"
         static let selectedVideos = "general_selected_videos"
