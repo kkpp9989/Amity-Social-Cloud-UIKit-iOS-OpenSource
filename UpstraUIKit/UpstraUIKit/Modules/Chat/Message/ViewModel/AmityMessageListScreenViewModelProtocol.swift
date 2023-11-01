@@ -105,6 +105,8 @@ protocol AmityMessageListScreenViewModelAction {
     func stopRealtimeSubscription()
     
     func join()
+    
+    func getTotalUnreadCount()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {

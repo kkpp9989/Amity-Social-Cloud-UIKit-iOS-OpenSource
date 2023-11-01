@@ -82,6 +82,9 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     
     // MARK: - Utilities
     private let debouncer = Debouncer(delay: 0.3)
+    
+    // MARK: - AnyCancellable
+    private var disposeBag: Set<AnyCancellable> = []
 
     init(channelType: AmityChannelType) {
         self.channelType = channelType
@@ -230,7 +233,13 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
             
         }
     }
-
+    
+    func getTotalUnreadCount() {
+        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
+            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
+        }).store(in: &disposeBag)
+    }
 }
 
 // MARK: - Action
@@ -238,6 +247,7 @@ extension AmityRecentChatScreenViewModel {
     
     func viewDidLoad() {
         getChannelList()
+        getTotalUnreadCount()
         getSyncAllChannelPresence()
         AmityUIKitManager.checkPresenceStatus()
     }
