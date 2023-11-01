@@ -551,7 +551,7 @@ private extension AmityMessageListViewController {
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
         screenViewModel.startReading()
-        screenViewModel.action.getTotalUnreadCount
+        screenViewModel.action.getTotalUnreadCount()
     }
 }
 
