@@ -1,4 +1,4 @@
-//
+// /* Not used is for back up only */
 //  AmityTempSendImageMessageData.swift
 //  AmityUIKit
 //

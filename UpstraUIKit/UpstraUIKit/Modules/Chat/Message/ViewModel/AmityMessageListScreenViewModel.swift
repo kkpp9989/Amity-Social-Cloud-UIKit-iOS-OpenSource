@@ -676,7 +676,12 @@ extension AmityMessageListScreenViewModel {
         case .image:
             // Get image info and image URL data from path in image info from error message
             if let imageInfoFromMessage = message.object.getImageInfo(),
-               let image = AmityTempSendImageMessageData.shared.data[imageInfoFromMessage.fileURL] {
+               let fileName = URL(string: imageInfoFromMessage.fileURL)?.lastPathComponent,
+               let tempImageURLPath = AmityFileCache.shared.getCacheURL(for: .imageDirectory, fileName: fileName)?.path {
+                // Get image
+                let tempImageURL = URL(fileURLWithPath: tempImageURLPath)
+                guard let imageData = try? Data(contentsOf: tempImageURL),
+                      let image = UIImage(data: imageData) else { return }
                 // Generate AmityMedia type .image in state .local
                 let media = AmityMedia(state: .image(image), type: .image)
                 // Send image message again
@@ -687,17 +692,14 @@ extension AmityMessageListScreenViewModel {
         case .file:
             // Get file info and file URL data from path in file info from error message
             if let fileInfoFromMessage = message.object.getFileInfo(),
-               let fileURLData = URL(string: fileInfoFromMessage.fileURL) {
-                // Get file in temp folder
-                let fileName = fileURLData.lastPathComponent
-                if let tempFileURL = AmityTempSendFileMessageData.shared.data[fileName] {
-                    // Generate AmityFile in state .local
-                    let file = AmityFile(state: .local(document: AmityDocument(fileURL: tempFileURL)))
-                    // Send file message again
-                    send(withFiles: [file])
-                    // remove error message
-                    deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
-                }
+               let fileName = URL(string: fileInfoFromMessage.fileURL)?.lastPathComponent,
+               let tempFileURL = AmityFileCache.shared.getCacheURL(for: .fileDirectory, fileName: fileName) {
+                // Generate AmityFile in state .local
+                let file = AmityFile(state: .local(document: AmityDocument(fileURL: URL(fileURLWithPath: tempFileURL.path))))
+                // Send file message again
+                send(withFiles: [file])
+                // remove error message
+                deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
         case .audio:
             // Get file info and file URL data from path in file info from error message

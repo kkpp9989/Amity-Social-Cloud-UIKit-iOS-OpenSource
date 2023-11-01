@@ -26,7 +26,7 @@ final class AmityMessageAudioController {
     // Send message
     func create(completion: @escaping () -> Void) {
         guard let audioURL = AmityAudioRecorder.shared.getAudioFileURL(),
-              let tempAudioURL = tempAudioFile(at: audioURL) else {
+              let tempAudioURL = cacheAudioFile(at: audioURL) else {
             Log.add("Audio file not found")
             return
         }
@@ -61,7 +61,7 @@ final class AmityMessageAudioController {
         }
     }
     
-    private func tempAudioFile(at fileURL: URL) -> URL? {
+    private func cacheAudioFile(at fileURL: URL) -> URL? {
         // Generate filename with timestamp
         let timestamp = Int64(Date().timeIntervalSince1970 * 1000)
         let tempFileName = "amity-uikit-recording_\(timestamp)"

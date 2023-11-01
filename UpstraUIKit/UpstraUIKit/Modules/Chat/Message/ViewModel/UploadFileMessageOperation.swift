@@ -34,11 +34,21 @@ class UploadFileMessageOperation: AsyncOperation {
         DispatchQueue.main.async { [weak self] in
             // get local file url for uploading
             if let fileURL = self?.file.fileURL {
+                self?.cacheFile(fileURL: fileURL)
                 self?.createFileMessage(fileURL: fileURL)
             } else {
                 self?.finish()
             }
         }
+    }
+    
+    private func cacheFile(fileURL: URL) {
+        guard let fileData = try? Data(contentsOf: fileURL) else { return }
+        AmityFileCache.shared.cacheData(for: .fileDirectory, data: fileData, fileName: fileURL.lastPathComponent, completion: {_ in})
+    }
+    
+    private func deleteCacheFile(fileURL: URL) {
+        AmityFileCache.shared.deleteFile(for: .fileDirectory, fileName: fileURL.lastPathComponent)
     }
     
     private func createFileMessage(fileURL: URL) {
@@ -53,16 +63,11 @@ class UploadFileMessageOperation: AsyncOperation {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
                 Log.add("[UIKit] Create file message (URL: \(fileURL)) fail with error: \(error?.localizedDescription)")
-                
-                // Add file to temp file message data
-                AmityTempSendFileMessageData.shared.add(currentFileURL: fileURL)
-
                 return
             }
             
             // Delete file to temp file message data if cache its
-            let fileName = fileURL.lastPathComponent
-            AmityTempSendFileMessageData.shared.remove(fileName: fileName)
+            self?.deleteCacheFile(fileURL: fileURL)
             
             Log.add("[UIKit] Create file message (URL: \(fileURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in

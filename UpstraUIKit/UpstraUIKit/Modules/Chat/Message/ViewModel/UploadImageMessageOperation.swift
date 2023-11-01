@@ -54,16 +54,27 @@ class UploadImageMessageOperation: AsyncOperation {
         }
     }
     
+    private func cacheImageFile(imageData: Data, fileName: String) {
+        AmityFileCache.shared.cacheData(for: .imageDirectory, data: imageData, fileName: fileName, completion: {_ in})
+    }
+    
+    private func deleteCacheImageFile(fileName: String) {
+        AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
+    }
+    
     private func createTempImage(image: UIImage) -> URL {
         // save image to temp directory and send local url path for uploading
         let imageName = "\(UUID().uuidString).jpg"
         
+        // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
-        let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 0.8)
+        let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
         try? data?.write(to: imageUrl)
         
-        // Cached data for resend message
-        AmityTempSendImageMessageData.shared.add(image: image, fileURLString: imageUrl.absoluteString)
+        // Cached image file for resend message
+        if let imageData = data {
+            cacheImageFile(imageData: imageData, fileName: imageName)
+        }
         
         return imageUrl
     }
@@ -83,8 +94,8 @@ class UploadImageMessageOperation: AsyncOperation {
                 return
             }
             
-            // Remove cached data
-            AmityTempSendImageMessageData.shared.remove(fileURLString: fileURLString)
+            // Delete cache if exists
+            self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
             
             Log.add("[UIKit] Create image message (URL: \(imageURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in

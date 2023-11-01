@@ -761,8 +761,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .didDeeleteErrorMessage:
             AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
         case .didSendAudio:
-//            NSLog("[Recorder] screenViewModelEvents .didSendAudio -> Go to audioRecordingViewController?.stopRecording()")
-//            audioRecordingViewController?.stopRecording()
             break
         }
     }
