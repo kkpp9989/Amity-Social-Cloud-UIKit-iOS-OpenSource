@@ -29,6 +29,9 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
         
         badgeStatusView.backgroundColor = .white
         badgeStatusView.layer.cornerRadius = badgeStatusView.frame.height / 2
+        badgeStatusView.layer.borderColor = UIColor.white.cgColor
+        badgeStatusView.layer.borderWidth = 2.0
+        badgeStatusView.contentMode = .scaleAspectFit
         badgeStatusView.clipsToBounds = true
     }
     
