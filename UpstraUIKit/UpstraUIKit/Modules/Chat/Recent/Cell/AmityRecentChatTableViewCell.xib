@@ -33,16 +33,16 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fW8-I9-20E">
-                                        <rect key="frame" x="20" y="20" width="20" height="20"/>
+                                        <rect key="frame" x="25" y="25" width="15" height="15"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tlq-rZ-mxr">
-                                                <rect key="frame" x="1.6666666666666643" y="1.6666666666666643" width="17" height="17"/>
+                                                <rect key="frame" x="1.6666666666666643" y="1.6666666666666643" width="12" height="12"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="20" id="7Fx-bN-Sw9"/>
-                                            <constraint firstAttribute="height" constant="20" id="9yV-QH-Svp"/>
+                                            <constraint firstAttribute="width" constant="15" id="7Fx-bN-Sw9"/>
+                                            <constraint firstAttribute="height" constant="15" id="9yV-QH-Svp"/>
                                             <constraint firstAttribute="trailing" secondItem="tlq-rZ-mxr" secondAttribute="trailing" constant="1.5" id="ZDT-mJ-w2a"/>
                                             <constraint firstItem="tlq-rZ-mxr" firstAttribute="top" secondItem="fW8-I9-20E" secondAttribute="top" constant="1.5" id="bGN-3b-JhC"/>
                                             <constraint firstAttribute="bottom" secondItem="tlq-rZ-mxr" secondAttribute="bottom" constant="1.5" id="cHc-hz-7VD"/>

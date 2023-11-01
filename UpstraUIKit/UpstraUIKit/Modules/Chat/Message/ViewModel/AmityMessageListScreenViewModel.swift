@@ -228,6 +228,7 @@ extension AmityMessageListScreenViewModel {
     }
     
     func getMessage() {
+        AmityEventHandler.shared.showKTBLoading()
         let queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, messageParentFilter: .noParent, sortOption: .lastCreated)
         messagesCollection = messageRepository.getMessages(options: queryOptions)
         
@@ -667,6 +668,9 @@ private extension AmityMessageListScreenViewModel {
             lastMessageHash = lastMessage.hashValue
         }
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            AmityEventHandler.shared.hideKTBLoading()
+        }
     }
 }
 // MARK: - Resend message
