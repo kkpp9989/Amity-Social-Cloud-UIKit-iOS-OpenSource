@@ -228,6 +228,7 @@ extension AmityMessageListScreenViewModel {
     }
     
     func getMessage() {
+        AmityEventHandler.shared.showKTBLoading()
         let queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, messageParentFilter: .noParent, sortOption: .lastCreated)
         messagesCollection = messageRepository.getMessages(options: queryOptions)
         

@@ -114,11 +114,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                         if status != "available" {
                             statusBadgeImageView.image = setImageFromStatus(status)
                         } else {
-                            if channel.isOnline {
+//                            if channel.isOnline {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
-                            } else {
-                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
-                            }
+//                            } else {
+//                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+//                            }
                         }
                     }
                 }

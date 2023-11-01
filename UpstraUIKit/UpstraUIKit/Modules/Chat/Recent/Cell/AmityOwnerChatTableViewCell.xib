@@ -57,14 +57,35 @@
                             <constraint firstAttribute="height" constant="8" id="kLM-FA-3bS"/>
                         </constraints>
                     </view>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2Ee-kH-bmU">
+                        <rect key="frame" x="500" y="23.666666666666671" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="25" id="82m-Tj-xDz"/>
+                            <constraint firstAttribute="height" constant="25" id="ufJ-r1-PHB"/>
+                        </constraints>
+                    </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hl1-Fh-X8Z">
+                        <rect key="frame" x="16" y="12" width="40" height="40"/>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain"/>
+                        <connections>
+                            <action selector="avatarViewTap" destination="ESl-1M-gyd" eventType="touchUpInside" id="T2L-Rq-PoM"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Crb-ep-vqF" firstAttribute="leading" secondItem="DRO-ru-ODU" secondAttribute="leading" constant="16" id="1US-e6-hCk"/>
                     <constraint firstAttribute="trailing" secondItem="Doz-Xj-wfl" secondAttribute="trailing" id="2Fn-U2-Rxn"/>
+                    <constraint firstItem="2Ee-kH-bmU" firstAttribute="centerY" secondItem="DRO-ru-ODU" secondAttribute="centerY" id="EUZ-eI-FAn"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="leading" secondItem="Crb-ep-vqF" secondAttribute="trailing" constant="14" id="KlT-qP-IyD"/>
+                    <constraint firstAttribute="trailing" secondItem="2Ee-kH-bmU" secondAttribute="trailing" constant="20" symbolic="YES" id="Osj-tf-4k9"/>
                     <constraint firstItem="UAM-cf-hqK" firstAttribute="centerY" secondItem="Crb-ep-vqF" secondAttribute="centerY" id="SRU-ov-GtT"/>
                     <constraint firstItem="v37-OI-9dz" firstAttribute="bottom" secondItem="Crb-ep-vqF" secondAttribute="bottom" id="UDs-Lb-c8A"/>
+                    <constraint firstItem="hl1-Fh-X8Z" firstAttribute="top" secondItem="Crb-ep-vqF" secondAttribute="top" id="VNt-fV-HBT"/>
+                    <constraint firstItem="hl1-Fh-X8Z" firstAttribute="bottom" secondItem="Crb-ep-vqF" secondAttribute="bottom" id="WhW-Sr-dgy"/>
+                    <constraint firstItem="hl1-Fh-X8Z" firstAttribute="trailing" secondItem="Crb-ep-vqF" secondAttribute="trailing" id="Y5a-eO-XTB"/>
                     <constraint firstItem="Crb-ep-vqF" firstAttribute="top" secondItem="DRO-ru-ODU" secondAttribute="top" constant="12" id="cRd-3J-wFX"/>
+                    <constraint firstItem="hl1-Fh-X8Z" firstAttribute="leading" secondItem="Crb-ep-vqF" secondAttribute="leading" id="dT5-RL-9bT"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="top" secondItem="Crb-ep-vqF" secondAttribute="bottom" constant="12" id="rVb-iy-MWQ"/>
                     <constraint firstAttribute="bottom" secondItem="Doz-Xj-wfl" secondAttribute="bottom" id="ro9-Pp-E6P"/>
                     <constraint firstItem="Doz-Xj-wfl" firstAttribute="leading" secondItem="DRO-ru-ODU" secondAttribute="leading" id="vj3-dl-lU6"/>
@@ -73,9 +94,11 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="sLb-2b-Va5"/>
             <connections>
+                <outlet property="avatarButton" destination="hl1-Fh-X8Z" id="95G-LI-NWW"/>
                 <outlet property="avatarView" destination="Crb-ep-vqF" id="NZc-wm-OtY"/>
                 <outlet property="badgeStatusIcon" destination="V8h-aZ-aYj" id="VUE-AA-NOb"/>
                 <outlet property="badgeStatusView" destination="v37-OI-9dz" id="HyT-Tt-00A"/>
+                <outlet property="chevonIcon" destination="2Ee-kH-bmU" id="3Tq-xK-5Ua"/>
                 <outlet property="statusLabel" destination="UAM-cf-hqK" id="ETM-hQ-hc6"/>
             </connections>
             <point key="canvasLocation" x="300" y="241.90140845070422"/>

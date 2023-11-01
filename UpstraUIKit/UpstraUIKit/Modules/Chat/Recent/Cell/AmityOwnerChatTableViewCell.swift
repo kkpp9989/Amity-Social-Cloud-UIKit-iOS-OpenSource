@@ -9,23 +9,35 @@
 import UIKit
 import AmitySDK
 
+public protocol AmityOwnerChatTableViewCellDelegate: AnyObject {
+    func didTapAvatar()
+}
+
 class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
     
     @IBOutlet private var avatarView: AmityAvatarView!
     @IBOutlet private var badgeStatusIcon: UIImageView!
     @IBOutlet private var badgeStatusView: UIView!
     @IBOutlet private var statusLabel: UILabel!
+    @IBOutlet private var chevonIcon: UIImageView!
+    @IBOutlet private var avatarButton: UIButton!
+
     private var repository: AmityUserRepository?
+    
+    var delegate: AmityOwnerChatTableViewCellDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
     }
     
+    
     private func setupView() {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         avatarView.placeholder = AmityIconSet.defaultAvatar
         statusLabel.font = AmityFontSet.body
+        
+        chevonIcon.image = AmityIconSet.iconChevonRight
         
         badgeStatusView.backgroundColor = .white
         badgeStatusView.layer.cornerRadius = badgeStatusView.frame.height / 2
@@ -33,6 +45,8 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
         badgeStatusView.layer.borderWidth = 2.0
         badgeStatusView.contentMode = .scaleAspectFit
         badgeStatusView.clipsToBounds = true
+        
+        avatarButton.setTitle("", for: .normal)
     }
     
     func setupDisplay() {
@@ -87,5 +101,9 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
         default:
             return ""
         }
+    }
+    
+    @IBAction func avatarViewTap() {
+        delegate?.didTapAvatar()
     }
 }

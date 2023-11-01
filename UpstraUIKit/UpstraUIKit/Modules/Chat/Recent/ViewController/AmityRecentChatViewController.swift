@@ -196,6 +196,7 @@ extension AmityRecentChatViewController: UITableViewDataSource {
     private func configureOwner(for cell: UITableViewCell) {
         if let cell = cell as? AmityOwnerChatTableViewCell {
             cell.setupDisplay()
+            cell.delegate = self
         }
     }
     
@@ -289,4 +290,10 @@ extension AmityRecentChatViewController: UserStatusDelegate {
         }
     }
     
+}
+
+extension AmityRecentChatViewController: AmityOwnerChatTableViewCellDelegate {
+    public func didTapAvatar() {
+        AmityEventHandler.shared.userDidTap(from: self, userId: AmityUIKitManagerInternal.shared.currentUserId)
+    }
 }
