@@ -46,8 +46,12 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         case .downloadableVideo: break
         case .localAsset(let asset):
             coverImageView.image = getAssetThumbnail(asset: asset)
-            durationView.isHidden = false
-            durationLabel.text = getDurationFormatter(showHour: asset.duration >= 3600).string(from: asset.duration)
+            if asset.mediaType == .video {
+                durationView.isHidden = false
+                durationLabel.text = getDurationFormatter(showHour: asset.duration >= 3600).string(from: asset.duration)
+            } else {
+                durationLabel.isHidden = true
+            }
         case .localURL, .uploadedImage, .uploadedVideo, .none: break
         case .uploading, .error:break
         }
@@ -66,6 +70,7 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         let option = PHImageRequestOptions()
         var thumbnail = UIImage()
         option.isSynchronous = true
+        option.deliveryMode = .opportunistic
         manager.requestImage(for: asset, targetSize: CGSize(width: 100.0, height: 100.0), contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
                 thumbnail = result!
         })
