@@ -34,16 +34,10 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     private var screenViewModel: AmityForwardChannelPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
     
-    // MARK: - Custom Theme Properties [Additional]
-    private var theme: ONEKrungthaiCustomTheme?
-    
     var pageTitle: String?
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Initial ONE Krungthai Custom theme
-        theme = ONEKrungthaiCustomTheme(viewController: self)
         
         setupView()
         
@@ -53,9 +47,6 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Set color navigation bar by custom theme
-        theme?.setBackgroundNavigationBar()
     }
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType) -> AmityForwatdChannelPickerViewController {

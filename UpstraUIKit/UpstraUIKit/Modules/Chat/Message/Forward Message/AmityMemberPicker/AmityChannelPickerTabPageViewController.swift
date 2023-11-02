@@ -23,11 +23,21 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     
     private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         delegate = self
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     public static func make() -> AmityChannelPickerTabPageViewController {
@@ -93,6 +103,9 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         
         navigationItem.leftBarButtonItem = cancelButton
         navigationItem.rightBarButtonItem = doneButton
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     @objc func doneTap() {
