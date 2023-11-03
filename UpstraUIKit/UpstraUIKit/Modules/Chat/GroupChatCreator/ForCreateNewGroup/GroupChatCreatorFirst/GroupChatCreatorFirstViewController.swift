@@ -44,9 +44,8 @@ class GroupChatCreatorFirstViewController: AmityViewController {
         guard let user = screenViewModel?.dataSource.user else {
             return false
         }
-        let isValueChanged = (displayNameTextField.text != user.displayName) || (uploadingAvatarImage != nil)
         let isValueExisted = !displayNameTextField.text!.isEmpty
-        return isValueChanged && isValueExisted
+        return isValueExisted
     }
     
     // [Custom for ONE Krungthai] Seperate max character each data

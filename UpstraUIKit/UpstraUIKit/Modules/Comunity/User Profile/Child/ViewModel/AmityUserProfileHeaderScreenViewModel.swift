@@ -99,9 +99,11 @@ extension AmityUserProfileHeaderScreenViewModel {
     }
     
     func createChannel() {
+        let userIds: [String] = [userId, AmityUIKitManagerInternal.shared.currentUserId]
         let builder = AmityConversationChannelBuilder()
         builder.setUserId(userId)
         builder.setDisplayName(user?.displayName ?? "")
+        builder.setMetadata(["user_id_member": userIds])
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, _ in
             guard let strongSelf = self else { return }
