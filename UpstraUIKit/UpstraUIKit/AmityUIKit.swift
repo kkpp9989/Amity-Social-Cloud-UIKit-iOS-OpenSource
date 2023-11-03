@@ -364,17 +364,11 @@ final class AmityUIKitManagerInternal: NSObject {
             // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
             self?.disableLivestreamUserLevelNotification()
             
-            // [Custom for ONE Krungthai] Set observer isDeletingChat for prevent app crash when delete chat then collection observer send old data
-            NotificationCenter.default.addObserver(self, selector: #selector(self?.setIsDeletingChat), name: Notification.Name.Chat.isDeletingChat, object: nil)
-            
             completion?(true, error)
         }
     }
     
     func unregisterDevice() {
-        // [Custom for ONE Krungthai] Delete observer isDeletingChat for prevent app crash when delete chat then collection observer send old data
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.Chat.isDeletingChat, object: nil)
-        
         AmityFileCache.shared.clearCache()
         self._client?.logout()
     }
@@ -449,11 +443,6 @@ final class AmityUIKitManagerInternal: NSObject {
                 print("[Notification] Disable chat user level notification result : \(result)")
             }
         }
-    }
-    
-    @objc func setIsDeletingChat() {
-        AmityMemberChatUtilities.Static.isDeletingChat = true
-        print("[Channel List] set isDeletingChat to true")
     }
     
     public func getUser(_ source: UIViewController, userId: String) {
