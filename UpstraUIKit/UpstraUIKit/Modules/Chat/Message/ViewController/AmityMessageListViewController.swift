@@ -71,6 +71,7 @@ public final class AmityMessageListViewController: AmityViewController {
     private var connectionStatatusObservation: NSKeyValueObservation?
 	private var mentionManager: AmityMentionManager?
     private var filePicker: AmityFilePicker?
+    private var isFromNotification: Bool = false
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -96,6 +97,8 @@ public final class AmityMessageListViewController: AmityViewController {
     private var message: AmityMessageModel?
     
     private var messageId: String?
+    
+    public var backHandler: (() -> Void)?
     
     // MARK: - View lifecyle
     public override func viewDidLoad() {
@@ -126,9 +129,6 @@ public final class AmityMessageListViewController: AmityViewController {
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
-        
-        /* [Custom for ONE Krungthai] Hide tabber when open chat detail view */
-        tabBarController?.tabBar.isHidden = true
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -145,9 +145,6 @@ public final class AmityMessageListViewController: AmityViewController {
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
         view.endEditing(true)
-        
-        /* [Custom for ONE Krungthai] Hide tabber when go to another view */
-        tabBarController?.tabBar.isHidden = false
     }
     
     /// Create `AmityMessageListViewController` instance.
@@ -159,7 +156,8 @@ public final class AmityMessageListViewController: AmityViewController {
         channelId: String,
         subChannelId: String,
         settings: AmityMessageListViewController.Settings = .init(),
-        messageId: String? = ""
+        messageId: String? = "",
+        isFromNotification: Bool = false
     ) -> AmityMessageListViewController {
         let viewModel = AmityMessageListScreenViewModel(channelId: channelId, subChannelId: subChannelId)
         let vc = AmityMessageListViewController(nibName: AmityMessageListViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -167,6 +165,7 @@ public final class AmityMessageListViewController: AmityViewController {
         vc.settings = settings
 		vc.mentionManager = AmityMentionManager(withType: .message(channelId: channelId))
         vc.messageId = messageId
+        vc.isFromNotification = isFromNotification
         return vc
     }
     
@@ -681,7 +680,12 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelRoute(route: AmityMessageListScreenViewModel.Route) {
         switch route {
         case .pop:
-            navigationController?.popViewController(animated: true)
+            if isFromNotification,
+               let completion = backHandler {
+                completion()
+            } else {
+                navigationController?.popViewController(animated: true)
+            }
         }
     }
     
