@@ -147,8 +147,9 @@ extension AmityRecentChatViewController: UITableViewDelegate {
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let _ = cell as? AmityRecentChatTableViewCell {
-            let channel = screenViewModel.dataSource.channel(at: indexPath)
+        if let cell = cell as? AmityRecentChatTableViewCell {
+//            let channel = screenViewModel.dataSource.channel(at: indexPath)
+            guard let channel = cell.channel else { return }
             if channel.channelType == .conversation {
                 screenViewModel.action.unsyncChannelPresence(channel.channelId)
             }
@@ -165,8 +166,10 @@ extension AmityRecentChatViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
+//            print("[Channel List] numberOfRowsInSection when reloading table view (section 0): 1")
             return 1
         } else {
+//            print("[Channel List] numberOfRowsInSection when reloading table view (section 1)(channels.count): \(screenViewModel.dataSource.numberOfRow(in: section))")
             return screenViewModel.dataSource.numberOfRow(in: section)
         }
     }
@@ -187,7 +190,7 @@ extension AmityRecentChatViewController: UITableViewDataSource {
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath)
-            configure(for: cell, at: indexPath)
+//            configure(for: cell, at: indexPath)
             return cell
         }
         
@@ -218,6 +221,7 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
     }
     
     func screenViewModelDidGetChannel() {
+//        print("[Channel List] start reload table view of channel list")
         tableView.reloadData()
     }
     
