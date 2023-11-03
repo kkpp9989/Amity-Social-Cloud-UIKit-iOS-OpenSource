@@ -53,6 +53,9 @@ final class AmityChannelController: AmityChannelControllerProtocol {
         serviceRequest.requestDeleteChat(channelId: channelId) { result in
             switch result {
             case .success:
+                // [Custom for ONE Krungthai] Post observer isDeletingChat for prevent app crash when delete chat then collection observer send old data
+                NotificationCenter.default.post(name: Notification.Name.Chat.isDeletingChat, object: nil)
+                print("[Channel List] postObserver: Chat.isDeletingChat")
                 completion(true, nil)
             case .failure(let failure):
                 completion(false, failure)

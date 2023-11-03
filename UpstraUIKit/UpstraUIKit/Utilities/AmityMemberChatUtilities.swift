@@ -30,6 +30,10 @@ struct AmityMemberChatUtilities {
             }
         }
     }
+    
+    struct Static {
+       static var isDeletingChat: Bool = false
+    }
 }
 
 public enum AmityMemberChatStatus {
