@@ -24,6 +24,7 @@ protocol AmityMessagesSearchScreenViewModelDataSource {
 protocol AmityMessagesSearchScreenViewModelAction {
     func search(withText text: String?)
     func loadMore()
+    func clearData()
 }
 
 protocol AmityMessagesSearchScreenViewModelType: AmityMessagesSearchScreenViewModelAction, AmityMessagesSearchScreenViewModelDataSource {

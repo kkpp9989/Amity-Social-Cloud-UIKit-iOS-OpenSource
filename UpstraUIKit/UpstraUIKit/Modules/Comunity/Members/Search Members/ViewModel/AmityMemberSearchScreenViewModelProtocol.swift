@@ -23,6 +23,7 @@ protocol AmityMemberSearchScreenViewModelDataSource {
 protocol AmityMemberSearchScreenViewModelAction {
     func search(withText text: String?)
     func loadMore()
+    func clearData()
 }
 
 protocol AmityMemberSearchScreenViewModelType: AmityMemberSearchScreenViewModelAction, AmityMemberSearchScreenViewModelDataSource {

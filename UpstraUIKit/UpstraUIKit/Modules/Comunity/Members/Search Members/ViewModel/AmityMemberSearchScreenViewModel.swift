@@ -64,9 +64,14 @@ extension AmityMemberSearchScreenViewModel {
     }
     
     private func prepareData(memberList: [AmityUserModel]) {
-        let filterList = memberList.filter({ $0.object.isDeleted == false })
-        self.memberList = filterList
-//        print("[Search][member][model] memberList: \(memberList) | count: \(memberList.count)")
+        let notDeletedList = memberList.filter({ $0.object.isDeleted == false })
+        let notGlobalBannedList = notDeletedList.filter({ $0.object.isGlobalBanned == false })
+        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+        let filteredList = notGlobalBannedList.filter { user in
+            return user.userId.rangeOfCharacter(from: specialCharacterSet) == nil
+        }
+        
+        self.memberList = filteredList
         if memberList.isEmpty {
             delegate?.screenViewModelDidSearchNotFound(self)
         } else {
@@ -88,5 +93,10 @@ extension AmityMemberSearchScreenViewModel {
                 delegate?.screenViewModel(self, loadingState: .loaded)
             }
         }
+    }
+    
+    func clearData() {
+        memberList.removeAll()
+        delegate?.screenViewModelDidSearchNotFound(self)
     }
 }

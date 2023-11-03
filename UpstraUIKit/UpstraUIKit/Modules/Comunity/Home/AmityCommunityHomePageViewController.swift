@@ -84,7 +84,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             
             // Create a label for displaying the unread count
             let unreadCountLabel = UILabel()
-            unreadCountLabel.text = "\(totalUnreadCount)"
+            unreadCountLabel.text = totalUnreadCount > 99 ? "99+" : String(totalUnreadCount)
             unreadCountLabel.textColor = UIColor.white
             unreadCountLabel.font = AmityFontSet.caption
             unreadCountLabel.backgroundColor = UIColor.red
@@ -94,7 +94,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             
             // Calculate the width based on the text
             let textSize = unreadCountLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: unreadCountLabel.frame.size.height))
-            unreadCountLabel.frame = CGRect(x: notificationButton.frame.size.width - textSize.width - 5, y: 0, width: textSize.width + 20, height: 20)
+            unreadCountLabel.frame = CGRect(x: notificationButton.frame.size.width - textSize.width - 5, y: 0, width: textSize.width + 15, height: 20)
             
             // Add the red dot view to the notificationButton
             if totalUnreadCount > 0 {

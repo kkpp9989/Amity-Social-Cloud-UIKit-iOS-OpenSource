@@ -118,7 +118,6 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     
     @IBAction func textFieldEditingChanged(_ sender: UITextField) {
         debouncer.run {
-//            print("[Search] textFieldEditingChanged| text: \(sender.text ?? "")")
             self.setButtonBarHidden(hidden: false)
             self.handleSearch(with: sender.text)
         }
@@ -149,7 +148,6 @@ private extension AmityChatSearchParentViewController {
 
 extension AmityChatSearchParentViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        print("[Search] textFieldShouldReturn")
         setButtonBarHidden(hidden: false)
         textField.resignFirstResponder()
         return true
