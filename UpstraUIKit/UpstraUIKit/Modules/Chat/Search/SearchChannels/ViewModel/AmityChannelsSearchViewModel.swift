@@ -191,4 +191,10 @@ extension AmityChannelsSearchViewModel {
         return sortedArray
     }
 
+    func clearData() {
+        channelList.removeAll()
+        dummyList.removeAll()
+        
+        delegate?.screenViewModelDidSearchNotFound(self)
+    }
 }

@@ -25,6 +25,7 @@ protocol AmityChannelsSearchScreenViewModelAction {
     func search(withText text: String?)
     func loadMore()
     func join(withModel model: AmityChannelModel)
+    func clearData()
 }
 
 protocol AmityChannelsSearchScreenViewModelType: AmityChannelsSearchScreenViewModelAction, AmityChannelsSearchScreenViewModelDataSource {

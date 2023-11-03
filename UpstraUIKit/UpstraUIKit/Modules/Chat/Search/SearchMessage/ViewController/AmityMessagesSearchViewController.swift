@@ -62,7 +62,7 @@ class AmityMessagesSearchViewController: AmityViewController, IndicatorInfoProvi
 extension AmityMessagesSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
-        AmityChannelEventHandler.shared.channelWithJumpMessageDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId, messageId: model.messageObjc.messageId)
+        AmityChannelEventHandler.shared.channelWithJumpMessageDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId, messageId: model.messageObjc.messageID ?? "")
     }
     
     func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -135,12 +135,22 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelD
 }
 
 extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelAction {
+    func clearData() {
+        screenViewModel.action.clearData()
+    }
+    
     func loadMore() {
         screenViewModel.action.loadMore()
     }
     
     func search(withText text: String?) {
-        screenViewModel.action.search(withText: text)
-        keyword = text ?? ""
+        guard let keyword = text else { return }
+        if keyword != self.keyword {
+            screenViewModel.action.clearData()
+        }
+        if !keyword.isEmpty {
+            screenViewModel.action.search(withText: text)
+            self.keyword = keyword
+        }
     }
 }

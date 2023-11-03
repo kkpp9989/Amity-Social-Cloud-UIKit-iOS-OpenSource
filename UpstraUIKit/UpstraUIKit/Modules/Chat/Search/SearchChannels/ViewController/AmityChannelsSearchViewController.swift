@@ -142,8 +142,18 @@ extension AmityChannelsSearchViewController: AmityHashtagSearchScreenViewModelAc
     }
     
     func search(withText text: String?) {
-        screenViewModel.action.search(withText: text)
-        keyword = text ?? ""
+        guard let keyword = text else { return }
+        if keyword != self.keyword {
+            screenViewModel.action.clearData()
+        }
+        if !keyword.isEmpty {
+            screenViewModel.action.search(withText: text)
+            self.keyword = keyword
+        }
+    }
+    
+    func clearData() {
+        screenViewModel.action.clearData()
     }
 }
 

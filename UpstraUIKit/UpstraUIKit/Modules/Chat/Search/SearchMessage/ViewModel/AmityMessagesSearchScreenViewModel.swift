@@ -10,7 +10,7 @@ import UIKit
 import AmitySDK
 
 struct MessageSearchModelData {
-    var messageObjc: AmitySDK.AmityMessage
+    var messageObjc: Message
     var channelObjc: AmityChannelModel
 }
 
@@ -24,7 +24,7 @@ class AmityMessagesSearchScreenViewModel: AmityMessagesSearchScreenViewModelType
 
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
-    private var messageList: [AmitySDK.AmityMessage] = []
+    private var messageList: [Message] = []
     private var channelList: [AmityChannelModel] = []
     private var dataList: [MessageSearchModelData] = []
     private var fromIndex: Int = 0
@@ -34,6 +34,7 @@ class AmityMessagesSearchScreenViewModel: AmityMessagesSearchScreenViewModelType
     private var isLoadingMore: Bool = false
     private let dispatchGroup = DispatchGroup()
     private var dummyList: [String] = []
+    private var paginateToken: String = ""
     private var tokenArray: [AmityNotificationToken?] = []
 
     init() {
@@ -61,6 +62,8 @@ extension AmityMessagesSearchScreenViewModel {
         /* Check text is nil or is searching for ignore searching */
         guard let newKeyword = text else { return }
         
+        tokenArray.removeAll()
+        
         /* Check is current keyword with input text for clear data and reset static value or not */
         if currentKeyword != newKeyword {
             if !isLoadingMore {
@@ -78,98 +81,52 @@ extension AmityMessagesSearchScreenViewModel {
         var serviceRequest = RequestSearchingChat()
         serviceRequest.keyword = currentKeyword
         serviceRequest.size = size
-        serviceRequest.from = fromIndex
+        serviceRequest.paginateToken = paginateToken
         /* Set static value to true for block new searching in this time */
-        serviceRequest.requestSearchMessages { [self] result in
+        serviceRequest.requestSearchMessages { [weak self] result in
+            guard let strongSelf = self else { return }
             switch result {
             case .success(let dataResponse):
                 let updatedMessageList = dataResponse
                 
                 /* Check is data not more than size request is mean is ending result */
-                if updatedMessageList.count < size {
-                    isEndingResult = true
+                if updatedMessageList.messages.count < strongSelf.size {
+                    strongSelf.isEndingResult = true
                 }
-                getMessageIds(updatedMessageList)
+
+                strongSelf.dummyList = updatedMessageList.messages.compactMap { $0.messageID }
+                
+                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: updatedMessageList.messages)
+                strongSelf.prepareData(updatedMessageList: sortedArray)
             case .failure(let error):
                 print(error)
                 
+                DispatchQueue.main.async {
+                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
+                    strongSelf.isLoadingMore = false
+                }
                 /* Hide loading indicator */
                 DispatchQueue.main.async {
-                    self.mapMessageAndChannelToDataList()
+                    strongSelf.mapMessageAndChannelToDataList()
                 }
             }
         }
     }
     
-    private func getMessageIds(_ messageIds: [String]) {
-        dummyList += messageIds
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            for messageId in messageIds {
-                strongSelf.dispatchGroup.enter()
-                
-                // Use a flag to track whether leave has been called for this task
-                var leaveCalled = false
-
-                let messageObject = strongSelf.messageRepository.getMessage(messageId)
-                let token = messageObject.observe { [weak self] (message, error) in
-                    guard let strongSelf = self else { return }
-                    if let _ = AmityError(error: error) {
-                        // Check if leave has already been called
-                        if !leaveCalled {
-                            leaveCalled = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    } else {
-                        if let message = message.snapshot {
-                            //  Handle message result
-                            strongSelf.messageList.append(message)
-                            
-                            // Check if leave has already been called
-                            if !leaveCalled {
-                                leaveCalled = true
-                                strongSelf.dispatchGroup.leave()
-                            }
-                        } else {
-                            if !leaveCalled {
-                                leaveCalled = true
-                                strongSelf.dispatchGroup.leave()
-                            }
-                        }
-                    }
-                }
-                
-                strongSelf.tokenArray.append(token)
-            }
-            
-            strongSelf.dispatchGroup.notify(queue: .main) {
-                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.messageList)
-                strongSelf.prepareData(updatedMessageList: sortedArray)
-                strongSelf.tokenArray.removeAll()
-            }
-            
-            if strongSelf.dummyList.isEmpty {
-                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.messageList)
-                strongSelf.prepareData(updatedMessageList: sortedArray)
-            }
-        }
-    }
-    
-    private func prepareData(updatedMessageList: [AmitySDK.AmityMessage]) {
+    private func prepareData(updatedMessageList: [Message]) {
         DispatchQueue.main.async { [self] in
             /* Check is loading result more from the current keyword or result from a new keyword */
             if isLoadingMore {
                 // Filter out messages that are already in the messageList
                 let filteredMessages = updatedMessageList.filter { message in
-                    !messageList.contains { $0.messageId == message.messageId }
+                    !messageList.contains { $0.messageID == message.messageID }
                 }
                 messageList += filteredMessages
             } else {
                 messageList = updatedMessageList
             }
             
-            let filteredChannelIds = messageList.compactMap { $0.channelId }
+            let filteredChannelIds = messageList.compactMap { $0.channelID }
             getChannel(channelList: filteredChannelIds)
         }
     }
@@ -216,7 +173,6 @@ extension AmityMessagesSearchScreenViewModel {
             }
         }
     }
-
     
     private func prepareData(updatedChannelList: [AmityChannelModel]) {
         DispatchQueue.main.async { [self] in
@@ -242,11 +198,11 @@ extension AmityMessagesSearchScreenViewModel {
     }
     
     //  Sort function by list from fetchPosts
-    private func sortArrayPositions(array1: [String], array2: [AmitySDK.AmityMessage]) -> [AmitySDK.AmityMessage] {
-        var sortedArray: [AmitySDK.AmityMessage] = []
+    private func sortArrayPositions(array1: [String], array2: [Message]) -> [Message] {
+        var sortedArray: [Message] = []
         
         for messageId in array1 {
-            if let index = array2.firstIndex(where: { $0.messageId == messageId }) {
+            if let index = array2.firstIndex(where: { $0.messageID == messageId }) {
                 sortedArray.append(array2[index])
             }
         }
@@ -315,4 +271,12 @@ extension AmityMessagesSearchScreenViewModel {
         }
     }
 
+    func clearData() {
+        dataList.removeAll()
+        messageList.removeAll()
+        channelList.removeAll()
+        dummyList.removeAll()
+        
+        delegate?.screenViewModelDidSearchNotFound(self)
+    }
 }

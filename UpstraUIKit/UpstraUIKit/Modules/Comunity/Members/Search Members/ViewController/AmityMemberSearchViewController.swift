@@ -17,7 +17,8 @@ final class AmityMemberSearchViewController: AmityViewController, IndicatorInfoP
     private var pageTitle: String?
     private var screenViewModel: AmityMemberSearchScreenViewModelType!
     private var emptyView = AmitySearchEmptyView()
-    
+    private var keyword: String = ""
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -141,7 +142,14 @@ extension AmityMemberSearchViewController: AmityMemberSearchScreenViewModelDeleg
 
 extension AmityMemberSearchViewController: AmitySearchViewControllerAction {
     func search(with text: String?) {
-        screenViewModel.action.search(withText: text)
+        guard let keyword = text else { return }
+        if keyword != self.keyword {
+            screenViewModel.action.clearData()
+        }
+        if !keyword.isEmpty {
+            screenViewModel.action.search(withText: text)
+            self.keyword = keyword
+        }
     }
 }
 
