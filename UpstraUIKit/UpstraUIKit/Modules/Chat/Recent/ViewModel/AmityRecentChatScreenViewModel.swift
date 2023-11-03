@@ -331,8 +331,15 @@ private extension AmityRecentChatScreenViewModel {
             break
         }
         channelsToken = channelsCollection?.observe { [weak self] (collection, change, error) in
-            print("[Channel List] live collection datastatus: \(collection.dataStatus)")
-            self?.prepareDataSource()
+            guard let strongSelf = self else { return }
+            print("[Channel List] isDeletingChat: \(AmityMemberChatUtilities.Static.isDeletingChat) | live collection datastatus: \(collection.dataStatus)")
+            if AmityMemberChatUtilities.Static.isDeletingChat && collection.dataStatus != .fresh {
+                return
+            } else {
+                AmityMemberChatUtilities.Static.isDeletingChat = false
+                print("[Channel List] set isDeletingChat to false")
+                self?.prepareDataSource()
+            }
         }
     }
     
@@ -349,10 +356,8 @@ private extension AmityRecentChatScreenViewModel {
             _channels.append(model)
         }
         channels = _channels
-        debouncer.run { [self] in
-            delegate?.screenViewModelLoadingState(for: .loaded)
-            delegate?.screenViewModelDidGetChannel()
-            delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
-        }
+        delegate?.screenViewModelLoadingState(for: .loaded)
+        delegate?.screenViewModelDidGetChannel()
+        delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
     }
 }

@@ -16,4 +16,8 @@ extension Notification.Name {
         static let didDelete = Notification.Name("postDidDelete")
     }
     
+    struct Chat {
+        static let isDeletingChat = Notification.Name("isDeletingChat")
+    }
+    
 }
