@@ -54,7 +54,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
     func display(with data: MessageSearchModelData, keyword: String) {
         statusImageView.isHidden = false
         memberLabel.text = ""
-        dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: data.channelObjc.lastActivity)
+        dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: data.messageObjc.createdAt)
         titleLabel.text = data.channelObjc.displayName
 
         let text = data.messageObjc.data?["text"] as? String ?? "No message"

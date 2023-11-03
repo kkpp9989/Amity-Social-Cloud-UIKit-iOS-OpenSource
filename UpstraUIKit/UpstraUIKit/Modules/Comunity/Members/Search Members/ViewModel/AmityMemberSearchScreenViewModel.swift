@@ -64,7 +64,8 @@ extension AmityMemberSearchScreenViewModel {
     }
     
     private func prepareData(memberList: [AmityUserModel]) {
-        self.memberList = memberList
+        let filterList = memberList.filter({ $0.object.isDeleted == false })
+        self.memberList = filterList
 //        print("[Search][member][model] memberList: \(memberList) | count: \(memberList.count)")
         if memberList.isEmpty {
             delegate?.screenViewModelDidSearchNotFound(self)

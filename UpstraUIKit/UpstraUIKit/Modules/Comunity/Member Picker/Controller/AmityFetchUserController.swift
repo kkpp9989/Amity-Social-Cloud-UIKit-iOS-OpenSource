@@ -39,7 +39,7 @@ final class AmityFetchUserController {
                     if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
                         if !object.isDeleted {
                             strongSelf.users.append(model)
-                        }
+                        }                        
                     }
                 }
                 

@@ -397,7 +397,7 @@ extension AmityMessageListScreenViewModel {
             if let error = AmityError(error: error) {
                 print(error)
             } else {
-                if result?.currentUserMembership != .member {
+                if result?.currentUserMembership == .member {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
                 }
             }
