@@ -929,6 +929,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelDidUpdateJoinChannelSuccess() {
         composeBar.showJoinMenuButton(show: false)
         setupCustomNavigationBar()
+        screenViewModel.action.getMessage()
     }
 }
 

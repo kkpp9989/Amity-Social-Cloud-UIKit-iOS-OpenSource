@@ -82,15 +82,23 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             notificationButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
             rightButtonItems.append(notificationButton)
             
-            // Create a red dot view
-            let redDotView = UIView()
-            redDotView.backgroundColor = UIColor.red
-            redDotView.layer.cornerRadius = 4 // Adjust the corner radius as needed
-            redDotView.frame = CGRect(x: notificationButton.frame.width - 10, y: 0, width: 8, height: 8) // Adjust the position and size as needed
+            // Create a label for displaying the unread count
+            let unreadCountLabel = UILabel()
+            unreadCountLabel.text = "\(totalUnreadCount)"
+            unreadCountLabel.textColor = UIColor.white
+            unreadCountLabel.font = AmityFontSet.caption
+            unreadCountLabel.backgroundColor = UIColor.red
+            unreadCountLabel.textAlignment = .center
+            unreadCountLabel.layer.cornerRadius = 10
+            unreadCountLabel.layer.masksToBounds = true
+            
+            // Calculate the width based on the text
+            let textSize = unreadCountLabel.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: unreadCountLabel.frame.size.height))
+            unreadCountLabel.frame = CGRect(x: notificationButton.frame.size.width - textSize.width - 5, y: 0, width: textSize.width + 20, height: 20)
             
             // Add the red dot view to the notificationButton
             if totalUnreadCount > 0 {
-                notificationButton.addSubview(redDotView)
+                notificationButton.addSubview(unreadCountLabel)
             }
             
             // Create post button
@@ -133,6 +141,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             }
         }
     }
+
 }
 
 // MARK: - Action
