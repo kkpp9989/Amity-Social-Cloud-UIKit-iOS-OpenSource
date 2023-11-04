@@ -113,7 +113,7 @@ open class AmityChannelEventHandler {
     
     open func channelCreateEditGroupChat(from source: AmityViewController,
                                         selectUsers: [AmitySelectMemberModel]) {
-        let vc = AmityMemberPickerChatFirstViewController.make(withCurrentUsers: selectUsers)
+        let vc = AmityAllTypeMemberPickerFirstViewController.make()
         let navVc = UINavigationController(rootViewController: vc)
         navVc.modalPresentationStyle = .fullScreen
         source.present(navVc, animated: true, completion: nil)

@@ -1,28 +1,30 @@
 //
-//  AmityChannelPickerTabPageViewController.swift
+//  AmityAllTypeMemberPickerChatSecondViewController.swift
 //  AmityUIKit
 //
-//  Created by Thanaphat Thanawatpanya on 15/10/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 4/11/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 import AmitySDK
 
-public final class AmityChannelPickerTabPageViewController: AmityPageViewController {
-        
-    public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
-
+class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController {
+    
     // MARK: - Child ViewController
-    private var recentVC: AmityForwatdChannelPickerViewController?
     private var followingVC: AmityForwardMemberPickerViewController?
     private var followerVC: AmityForwardMemberPickerViewController?
-    private var groupChatVC: AmityForwatdChannelPickerViewController?
+    private var memberVC: AmityForwardAccountMemberPickerViewController?
     
     private var doneButton: UIBarButtonItem?
     
     private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
-    
+        
+    private var screenViewModel: AmityMemberPickerChatScreenViewModelType!
+    private var displayName: String = ""
+
+    public var tapCreateButton: ((String, String) -> Void)?
+
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
@@ -30,6 +32,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        screenViewModel.delegate = self
         delegate = self
     }
     
@@ -40,25 +43,22 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         theme?.setBackgroundNavigationBar()
     }
     
-    public static func make() -> AmityChannelPickerTabPageViewController {
-        let vc = AmityChannelPickerTabPageViewController(nibName: AmityChannelPickerTabPageViewController.identifier,
-                                                          bundle: AmityUIKitManager.bundle)
+    public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
+                            liveChannelBuilder: AmityLiveChannelBuilder? = nil,
+                            displayName: String = "") -> AmityAllTypeMemberPickerChatSecondViewController {
+        let viewModel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityLiveChannelBuilder())
+        viewModel.setCurrentUsers(users: users)
+        let vc = AmityAllTypeMemberPickerChatSecondViewController(nibName: AmityAllTypeMemberPickerChatSecondViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.displayName = displayName
         return vc
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        recentVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Recent", users: [], type: .recent)
         followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: [], type: .following)
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
-        groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Group", users: [], type: .group)
+        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: [])
         
-        recentVC?.selectUsersHandler = { [weak self] selectedUsers in
-            guard let strongSelf = self else { return }
-            // Here you can access the selectedUsers from the child controller
-            // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
-        }
         followingVC?.selectUsersHandler = { [weak self] selectedUsers in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
@@ -73,14 +73,14 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        groupChatVC?.selectUsersHandler = { [weak self] selectedUsers in
+        memberVC?.selectUsersHandler = { [weak self] selectedUsers in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        return [recentVC!, followingVC!, followerVC!, groupChatVC!]
+        return [memberVC!, followingVC!, followerVC!]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
@@ -90,11 +90,12 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     }
     
     func setupNavigationBar() {
-        title = "Forward to"
         titleFont = AmityFontSet.title
+        title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
 
-        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
+        doneButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
+        doneButton?.isEnabled = !numberOfSelectedUseres.isEmpty
         // [Improvement] Add set font style to label of done button
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
@@ -115,10 +116,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     }
     
     @objc func doneTap() {
-        dismiss(animated: true) { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.selectUsersHandler?(strongSelf.numberOfSelectedUseres)
-        }
+        screenViewModel.action.createChannel(users: numberOfSelectedUseres, displayName: displayName)
     }
     
     @objc func cancelTap() {
@@ -127,13 +125,36 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     
     func viewControllerWillMove() {
         if currentIndex == 1 {
-            recentVC?.setCurrentUsers(users: numberOfSelectedUseres)
+            memberVC?.setCurrentUsers(users: numberOfSelectedUseres)
         } else if currentIndex == 2 {
             followingVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        }  else if currentIndex == 3 {
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
         } else {
-            groupChatVC?.setCurrentUsers(users: numberOfSelectedUseres)
+            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
         }
+    }
+}
+
+extension AmityAllTypeMemberPickerChatSecondViewController: AmityMemberPickerChatScreenViewModelDelegate {
+    func screenViewModelDidCreateCommunity(_ viewModel: AmityMemberPickerChatScreenViewModelType, channelId: String, subChannelId: String) {
+        dismiss(animated: true) { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.tapCreateButton?(channelId, subChannelId)
+        }
+    }
+    
+    func screenViewModelDidFetchUser() {
+    }
+    
+    func screenViewModelDidSearchUser() {
+    }
+    
+    func screenViewModelCanDone(enable: Bool) {
+        doneButton?.isEnabled = enable
+    }
+    
+    func screenViewModelDidSelectUser(title: String, isEmpty: Bool) {
+    }
+    
+    func screenViewModelLoadingState(for state: AmityLoadingState) {
     }
 }

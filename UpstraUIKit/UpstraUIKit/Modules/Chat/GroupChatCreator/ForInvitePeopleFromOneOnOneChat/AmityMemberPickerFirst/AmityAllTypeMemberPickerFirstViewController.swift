@@ -1,28 +1,25 @@
 //
-//  AmityChannelPickerTabPageViewController.swift
+//  AmityAllTypeMemberPickerFirstViewController.swift
 //  AmityUIKit
 //
-//  Created by Thanaphat Thanawatpanya on 15/10/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 4/11/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 import AmitySDK
 
-public final class AmityChannelPickerTabPageViewController: AmityPageViewController {
+public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewController {
         
-    public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
-
     // MARK: - Child ViewController
-    private var recentVC: AmityForwatdChannelPickerViewController?
     private var followingVC: AmityForwardMemberPickerViewController?
     private var followerVC: AmityForwardMemberPickerViewController?
-    private var groupChatVC: AmityForwatdChannelPickerViewController?
-    
+    private var memberVC: AmityForwardAccountMemberPickerViewController?
+
     private var doneButton: UIBarButtonItem?
     
     private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
-    
+        
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
@@ -40,25 +37,17 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         theme?.setBackgroundNavigationBar()
     }
     
-    public static func make() -> AmityChannelPickerTabPageViewController {
-        let vc = AmityChannelPickerTabPageViewController(nibName: AmityChannelPickerTabPageViewController.identifier,
+    public static func make() -> AmityAllTypeMemberPickerFirstViewController {
+        let vc = AmityAllTypeMemberPickerFirstViewController(nibName: AmityAllTypeMemberPickerFirstViewController.identifier,
                                                           bundle: AmityUIKitManager.bundle)
         return vc
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        recentVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Recent", users: [], type: .recent)
         followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: [], type: .following)
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
-        groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Group", users: [], type: .group)
+        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: [])
         
-        recentVC?.selectUsersHandler = { [weak self] selectedUsers in
-            guard let strongSelf = self else { return }
-            // Here you can access the selectedUsers from the child controller
-            // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
-        }
         followingVC?.selectUsersHandler = { [weak self] selectedUsers in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
@@ -73,14 +62,14 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        groupChatVC?.selectUsersHandler = { [weak self] selectedUsers in
+        memberVC?.selectUsersHandler = { [weak self] selectedUsers in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        return [recentVC!, followingVC!, followerVC!, groupChatVC!]
+        return [memberVC!, followingVC!, followerVC!]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
@@ -90,8 +79,8 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     }
     
     func setupNavigationBar() {
-        title = "Forward to"
         titleFont = AmityFontSet.title
+        title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
 
         doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
@@ -115,10 +104,9 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     }
     
     @objc func doneTap() {
-        dismiss(animated: true) { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.selectUsersHandler?(strongSelf.numberOfSelectedUseres)
-        }
+
+        let vc = GroupChatCreatorSecondViewController.make(numberOfSelectedUseres)
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func cancelTap() {
@@ -127,13 +115,11 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     
     func viewControllerWillMove() {
         if currentIndex == 1 {
-            recentVC?.setCurrentUsers(users: numberOfSelectedUseres)
+            memberVC?.setCurrentUsers(users: numberOfSelectedUseres)
         } else if currentIndex == 2 {
             followingVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        }  else if currentIndex == 3 {
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
         } else {
-            groupChatVC?.setCurrentUsers(users: numberOfSelectedUseres)
+            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
         }
     }
 }
