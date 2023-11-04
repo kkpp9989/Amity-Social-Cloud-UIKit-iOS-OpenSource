@@ -84,6 +84,12 @@ extension AmityMemberPickerScreenViewModel {
     
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
         storeUsers = users
+        
+        if storeUsers.count == 0 {
+            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+        } else {
+            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+        }
     }
     
     func getUsers() {

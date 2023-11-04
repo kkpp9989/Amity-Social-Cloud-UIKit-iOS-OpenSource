@@ -38,8 +38,13 @@ final class AmityFetchUserController {
                     model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.userId }
                     if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
                         if !object.isDeleted {
-                            strongSelf.users.append(model)
-                        }                        
+                            if !object.isGlobalBanned {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if object.userId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    strongSelf.users.append(model)
+                                }
+                            }
+                        }
                     }
                 }
                 

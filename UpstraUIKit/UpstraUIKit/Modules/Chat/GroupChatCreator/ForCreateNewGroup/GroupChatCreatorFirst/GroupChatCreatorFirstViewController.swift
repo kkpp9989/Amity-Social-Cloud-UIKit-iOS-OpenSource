@@ -41,9 +41,6 @@ class GroupChatCreatorFirstViewController: AmityViewController {
     open var delegate: GroupChatCreatorViewControllerDelegate?
 
     private var isValueChanged: Bool {
-        guard let user = screenViewModel?.dataSource.user else {
-            return false
-        }
         let isValueExisted = !displayNameTextField.text!.isEmpty
         return isValueExisted
     }
@@ -210,7 +207,7 @@ class GroupChatCreatorFirstViewController: AmityViewController {
     }
     
     private func updateViewState() {
-//        saveBarButtonItem?.isEnabled = isValueChanged
+        saveBarButtonItem?.isEnabled = isValueChanged
         displayNameCounterLabel?.text = "\(displayNameTextField.text?.count ?? 0)/\(displayNameTextField.maxLength)"
     }
 
@@ -224,7 +221,7 @@ extension GroupChatCreatorFirstViewController: GroupChatCreatorScreenViewModelDe
 	}
     
 	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityLiveChannelBuilder) {
-		let vc = AmityMemberPickerChatSecondViewController.make(liveChannelBuilder: builder, displayName: displayNameTextField.text ?? "")
+		let vc = AmityAllTypeMemberPickerChatSecondViewController.make(liveChannelBuilder: builder, displayName: displayNameTextField.text ?? "")
 		vc.tapCreateButton = { [weak self] channelId, subChannelId in
 			guard let strongSelf = self else { return }
 			strongSelf.tapNextButton?(channelId, subChannelId)

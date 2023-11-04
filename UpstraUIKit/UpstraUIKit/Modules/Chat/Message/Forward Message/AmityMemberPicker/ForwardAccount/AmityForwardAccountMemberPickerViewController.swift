@@ -1,25 +1,21 @@
 //
-//  AmityForwatdChannelPickerViewController.swift
+//  AmityForwardAccountMemberPickerViewController.swift
 //  AmityUIKit
 //
-//  Created by GuIDe'MacbookAmityHQ on 25/10/2566 BE.
+//  Created by GuIDe'MacbookAmityHQ on 4/11/2566 BE.
 //  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 import AmitySDK
 
-public enum AmityChannelViewType {
-    case recent, group
-}
-
-extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
+extension AmityForwardAccountMemberPickerViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
     }
 }
 
-class AmityForwatdChannelPickerViewController: AmityViewController {
+class AmityForwardAccountMemberPickerViewController: AmityViewController {
     
     // MARK: - Callback
     public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
@@ -31,29 +27,38 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     @IBOutlet private var label: UILabel!
     
     // MARK: - Properties
-    private var screenViewModel: AmityForwardChannelPickerScreenViewModelType!
+    private var screenViewModel: AmityMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
+    
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
     
     var pageTitle: String?
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
         setupView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getChannels()
+        screenViewModel.action.getUsers()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
 
-    public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType) -> AmityForwatdChannelPickerViewController {
-        let viewModel: AmityForwardChannelPickerScreenViewModelType = AmityForwardChannelPickerScreenViewModel(type: type)
-        viewModel.setCurrentUsers(users: users)
-        let vc = AmityForwatdChannelPickerViewController(nibName: AmityForwatdChannelPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
-        vc.screenViewModel = viewModel
+    public static func make(pageTitle: String, users: [AmitySelectMemberModel] = []) -> AmityForwardAccountMemberPickerViewController {
+        let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
+        viewModeel.setCurrentUsers(users: users)
+        let vc = AmityForwardAccountMemberPickerViewController(nibName: AmityForwardAccountMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModeel
         vc.pageTitle = pageTitle
         return vc
     }
@@ -63,7 +68,7 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     }
 }
 
-private extension AmityForwatdChannelPickerViewController {
+private extension AmityForwardAccountMemberPickerViewController {
     @objc func doneTap() {
         dismiss(animated: true) { [weak self] in
             guard let strongSelf = self else { return }
@@ -80,7 +85,7 @@ private extension AmityForwatdChannelPickerViewController {
     }
 }
 
-private extension AmityForwatdChannelPickerViewController {
+private extension AmityForwardAccountMemberPickerViewController {
     func setupView() {
         setupNavigationBar()
         setupSearchBar()
@@ -157,13 +162,13 @@ private extension AmityForwatdChannelPickerViewController {
     }
 }
 
-extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
+extension AmityForwardAccountMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        screenViewModel.action.searchUser(with: searchText)
+        screenViewModel.action.searchUser(with: searchText)
     }
 }
 
-extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
+extension AmityForwardAccountMemberPickerViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
         if !user.isCurrnetUser {
@@ -182,7 +187,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
     }
 }
 
-extension AmityForwatdChannelPickerViewController: UITableViewDataSource {
+extension AmityForwardAccountMemberPickerViewController: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
         return screenViewModel.numberOfAlphabet()
     }
@@ -208,7 +213,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDataSource {
     }
 }
 
-extension AmityForwatdChannelPickerViewController: UICollectionViewDataSource {
+extension AmityForwardAccountMemberPickerViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return screenViewModel.dataSource.numberOfSelectedUsers()
     }
@@ -231,7 +236,7 @@ extension AmityForwatdChannelPickerViewController: UICollectionViewDataSource {
     }
 }
 
-extension AmityForwatdChannelPickerViewController: UICollectionViewDelegateFlowLayout {
+extension AmityForwardAccountMemberPickerViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 60, height: collectionView.frame.height)
     }
@@ -245,7 +250,7 @@ extension AmityForwatdChannelPickerViewController: UICollectionViewDelegateFlowL
     }
 }
 
-extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScreenViewModelDelegate {
+extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreenViewModelDelegate {
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()

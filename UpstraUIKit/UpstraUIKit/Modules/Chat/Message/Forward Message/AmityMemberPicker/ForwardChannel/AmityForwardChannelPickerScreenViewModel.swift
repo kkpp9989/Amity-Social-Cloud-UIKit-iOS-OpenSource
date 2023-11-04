@@ -13,7 +13,7 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     weak var delegate: AmityForwardChannelPickerScreenViewModelDelegate?
     
     // MARK: - Repository
-    private var userRepository: AmityUserRepository?
+    private var userRepository: AmityUserFollowManager?
     private var channelRepository: AmityChannelRepository?
 
     // MARK: - Controller
@@ -32,10 +32,10 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     private var isSearch: Bool = false
     
     init(type: AmityChannelViewType) {
-        userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+        userRepository = AmityUserFollowManager(client: AmityUIKitManagerInternal.shared.client)
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         fetchChannelController = AmityFetchForwardChannelController(repository: channelRepository, type: type)
-        searchUserController = AmityForwardSearchUserController(repository: userRepository)
+        searchUserController = AmityForwardSearchUserController(repository: userRepository, type: .followers)
         selectUserContrller = AmityForwardSelectUserController()
     }
 }

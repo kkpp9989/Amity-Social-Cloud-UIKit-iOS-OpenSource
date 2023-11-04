@@ -69,7 +69,8 @@ extension GroupChatCreatorScreenViewModel {
 			}
 			AmityEventHandler.shared.hideKTBLoading()
 			if let channelId = channelObject?.channelId, let subChannelId = channelObject?.defaultSubChannelId {
-				weakSelf.assignRoleAfterCreateChannel(channelId, subChannelId: subChannelId, userIds: userIds)
+//				weakSelf.assignRoleAfterCreateChannel(channelId, subChannelId: subChannelId, userIds: userIds)
+                weakSelf.delegate?.screenViewModelDidCreateCommunity(weakSelf, channelId: channelId, subChannelId: subChannelId)
 			}
 		}
 	}

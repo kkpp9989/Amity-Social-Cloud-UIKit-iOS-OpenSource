@@ -54,6 +54,9 @@ class AmityForwardMemberPickerViewController: AmityViewController {
         return vc
     }
     
+    public func setCurrentUsers(users: [AmitySelectMemberModel]) {
+        screenViewModel.setCurrentUsers(users: users)
+    }
 }
 
 private extension AmityForwardMemberPickerViewController {
@@ -152,7 +155,7 @@ private extension AmityForwardMemberPickerViewController {
 
 extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        screenViewModel.action.searchUser(with: searchText)
+        screenViewModel.action.searchUser(with: searchText)
     }
 }
 

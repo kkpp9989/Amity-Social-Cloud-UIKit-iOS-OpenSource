@@ -41,12 +41,8 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 	open var delegate: GroupChatCreatorViewControllerDelegate?
 
 	private var isValueChanged: Bool {
-		guard let user = screenViewModel?.dataSource.user else {
-			return false
-		}
-		let isValueChanged = (displayNameTextField.text != user.displayName) || (uploadingAvatarImage != nil)
 		let isValueExisted = !displayNameTextField.text!.isEmpty
-		return isValueChanged && isValueExisted
+		return isValueExisted
 	}
 	
 	// [Custom for ONE Krungthai] Seperate max character each data
@@ -133,7 +129,7 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 		displaynameSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
 		
 		let combinedDisplayName = selectUsersData.map { $0.displayName ?? "" }.joined(separator: ", ")
-		displayNameTextField.placeholder = combinedDisplayName + ", " + AmityUIKitManagerInternal.shared.displayName
+		displayNameTextField.placeholder = "Enter group name"
 		
 		updateViewState()
 	}
@@ -214,7 +210,7 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 	}
 	
 	private func updateViewState() {
-//        saveBarButtonItem?.isEnabled = isValueChanged
+        saveBarButtonItem?.isEnabled = isValueChanged
 		displayNameCounterLabel?.text = "\(displayNameTextField.text?.count ?? 0)/\(displayNameTextField.maxLength)"
 	}
 

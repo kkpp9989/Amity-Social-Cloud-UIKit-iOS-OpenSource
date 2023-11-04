@@ -45,11 +45,24 @@ final class AmityFetchForwardUserController {
                     let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
                     if strongSelf.targetType == .followers {
                         model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
+                        if !(object.sourceUser?.isDeleted ?? false) {
+                            if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if object.sourceUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    strongSelf.users.append(model)
+                                }
+                            }
+                        }
                     } else {
                         model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.targetUserId }
-                    }
-                    if !(object.sourceUser?.isDeleted ?? false) {
-                        strongSelf.users.append(model)
+                        if !(object.sourceUser?.isDeleted ?? false) {
+                            if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if object.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    strongSelf.users.append(model)
+                                }
+                            }
+                        }
                     }
                 }
                 

@@ -12,15 +12,20 @@ import AmitySDK
 
 final class AmityForwardSearchUserController {
     
-    private weak var repository: AmityUserRepository?
+    private weak var repository: AmityUserFollowManager?
     
-    private var collection: AmityCollection<AmityUser>?
+    private var collection: AmityCollection<AmityFollowRelationship>?
     private var token: AmityNotificationToken?
     private var users: [AmitySelectMemberModel] = []
     private var searchTask: DispatchWorkItem?
     
-    init(repository: AmityUserRepository?) {
+    private var targetType: AmityFollowerViewType
+
+    var storeUsers: [AmitySelectMemberModel] = []
+
+    init(repository: AmityUserFollowManager?, type: AmityFollowerViewType) {
         self.repository = repository
+        self.targetType = type
     }
     
     func search(with text: String, storeUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
@@ -29,22 +34,69 @@ final class AmityForwardSearchUserController {
         if text == "" {
             completion(.failure(.textEmpty))
         } else {
+            if targetType == .following {
+                collection = repository?.getMyFollowingList(with: .accepted)
+            } else {
+                collection = repository?.getMyFollowerList(with: .accepted)
+            }
+            
             let request =  DispatchWorkItem { [weak self] in
-                self?.collection = self?.repository?.searchUser(text, sortBy: .displayName)
-                self?.token = self?.collection?.observe { (userCollection, change, error) in
+                self?.token = self?.collection?.observe { [weak self] (userCollection, change, error) in
                     guard let strongSelf = self else { return }
+                    strongSelf.token?.invalidate()
                     if let error = error {
                         completion(.failure(.unknown))
                     } else {
                         for index in 0..<userCollection.count() {
                             guard let object = userCollection.object(at: index) else { continue }
-                            let model = AmitySelectMemberModel(object: object)
-                            model.isSelected = storeUsers.contains { $0.userId == object.userId }
-                            if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
-                                strongSelf.users.append(model)
+                            let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
+                            if strongSelf.targetType == .followers {
+                                model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
+                                if !(object.sourceUser?.isDeleted ?? false) {
+                                    if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                        if object.sourceUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                            strongSelf.users.append(model)
+                                        }
+                                    }
+                                }
+                            } else {
+                                model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.targetUserId }
+                                if !(object.sourceUser?.isDeleted ?? false) {
+                                    if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                        if object.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                            strongSelf.users.append(model)
+                                        }
+                                    }
+                                }
                             }
                         }
-                        completion(.success(strongSelf.users))
+                        
+                        if let collection = strongSelf.collection {
+                            switch collection.loadingStatus {
+                            case .loaded:
+                                if collection.hasNext {
+                                    collection.nextPage()
+                                } else {
+                                    let filteredUsers = strongSelf.users.filter { user in
+                                        if let displayName = user.displayName {
+                                            return displayName.lowercased().contains(text.lowercased())
+                                        }
+                                        return false // Handle the case where displayName is nil
+                                    }
+                                    completion(.success(filteredUsers))
+                                }
+                            default:
+                                let filteredUsers = strongSelf.users.filter { user in
+                                    if let displayName = user.displayName {
+                                        return displayName.lowercased().contains(text.lowercased())
+                                    }
+                                    return false // Handle the case where displayName is nil
+                                }
+                                completion(.success(filteredUsers))
+                            }
+                        }
                     }
                 }
             }

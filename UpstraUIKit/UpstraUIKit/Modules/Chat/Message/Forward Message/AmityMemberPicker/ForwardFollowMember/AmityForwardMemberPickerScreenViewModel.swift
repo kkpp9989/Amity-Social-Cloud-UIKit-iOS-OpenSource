@@ -35,7 +35,7 @@ class AmityForwardMemberPickerScreenViewModel: AmityForwardMemberPickerScreenVie
         userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         userRelationship = AmityUserFollowManager(client: AmityUIKitManagerInternal.shared.client)
         fetchUserController = AmityFetchForwardUserController(repository: userRelationship, type: type)
-        searchUserController = AmityForwardSearchUserController(repository: userRepository)
+        searchUserController = AmityForwardSearchUserController(repository: userRelationship, type: type)
         selectUserContrller = AmityForwardSelectUserController()
     }
 }
@@ -86,6 +86,12 @@ extension AmityForwardMemberPickerScreenViewModel {
     
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
         storeUsers = users
+        
+        if storeUsers.count == 0 {
+            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+        } else {
+            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+        }
     }
     
     func getUsers() {
@@ -103,6 +109,7 @@ extension AmityForwardMemberPickerScreenViewModel {
     
     func searchUser(with text: String) {
         isSearch = true
+        searchUserController?.storeUsers = storeUsers
         searchUserController?.search(with: text, storeUsers: storeUsers, { [weak self] (result) in
             switch result {
             case .success(let users):
