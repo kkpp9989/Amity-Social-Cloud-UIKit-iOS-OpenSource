@@ -81,7 +81,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     private var channelPresenceRepo: AmityChannelPresenceRepository
     
     // MARK: - Utilities
-    private let debouncer = Debouncer(delay: 0.3)
+    private let debouncer = Debouncer(delay: 0.5)
     
     // MARK: - AnyCancellable
     private var disposeBag: Set<AnyCancellable> = []
@@ -104,6 +104,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     }
     
     func channel(at indexPath: IndexPath) -> AmityChannelModel {
+//        print("[Channel List] get channel indexPath.row: \(indexPath.row)")
         return channels[indexPath.row]
     }
     
@@ -333,14 +334,9 @@ private extension AmityRecentChatScreenViewModel {
         }
         channelsToken = channelsCollection?.observe { [weak self] (collection, change, error) in
             guard let strongSelf = self else { return }
-            print("[Channel List] isDeletingChat: \(AmityMemberChatUtilities.Static.isDeletingChat) | live collection datastatus: \(collection.dataStatus)")
-            if AmityMemberChatUtilities.Static.isDeletingChat && collection.dataStatus != .fresh {
-                return
-            } else {
-                AmityMemberChatUtilities.Static.isDeletingChat = false
-                print("[Channel List] set isDeletingChat to false")
-                self?.prepareDataSource()
-            }
+//            print("[Channel List] ---------------------------------------------------------------------")
+//            print("[Channel List] live collection datastatus: \(collection.dataStatus)")
+            self?.prepareDataSource()
         }
     }
     
@@ -353,10 +349,11 @@ private extension AmityRecentChatScreenViewModel {
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
-            print("[Channel List] channel model: \(model.object.channelId) | previewId: \(model.previewMessage?.messagePreviewId)")
+//            print("[Channel List] channel model: \(model.object.channelId) | previewId: \(model.previewMessage?.messagePreviewId) | isDeleted: \(model.object.isDeleted)")
             _channels.append(model)
         }
         channels = _channels
+//        print("[Channel List] channels.count before reload table view: \(channels.count)")
         delegate?.screenViewModelLoadingState(for: .loaded)
         delegate?.screenViewModelDidGetChannel()
         delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)

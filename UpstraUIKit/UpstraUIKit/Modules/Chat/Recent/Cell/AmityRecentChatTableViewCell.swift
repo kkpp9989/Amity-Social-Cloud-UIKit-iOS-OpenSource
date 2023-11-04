@@ -28,6 +28,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     private var token: AmityNotificationToken?
     private var repository: AmityUserRepository?
     
+    public var channel: AmityChannelModel?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
@@ -41,6 +43,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         previewMessageLabel.text = "No message"
         avatarView.image = nil
         avatarView.placeholder = AmityIconSet.defaultGroupChat
+        channel = nil
     }
     
     private func setupView() {
@@ -83,6 +86,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with channel: AmityChannelModel) {
+        self.channel = channel
+        
         statusImageView.isHidden = true
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
