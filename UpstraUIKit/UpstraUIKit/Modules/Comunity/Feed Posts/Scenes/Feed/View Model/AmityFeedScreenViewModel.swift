@@ -343,6 +343,8 @@ extension AmityFeedScreenViewModel {
                     delegate?.screenViewModelRouteToPostDetail(postId, viewModel: self)
                 }
             }
+        } else if notification.name == Notification.Name.NotificationTray.didUpdate {
+            
         }
     }
 }

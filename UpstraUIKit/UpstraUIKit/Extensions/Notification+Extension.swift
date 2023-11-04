@@ -16,4 +16,7 @@ extension Notification.Name {
         static let didDelete = Notification.Name("postDidDelete")
     }
 
+    struct NotificationTray {
+        static let didUpdate = Notification.Name("unreadCountDidUpdate")
+    }
 }

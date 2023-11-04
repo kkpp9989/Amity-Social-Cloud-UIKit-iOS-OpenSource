@@ -56,6 +56,12 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         /* [Custom for ONE Krungthai] Clear setting navigation bar (normal) from ONE Krungthai custom theme */
         theme?.clearNavigationBarSetting()
         getUnreadCount()
+        startObserveUpdate()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopObserveUpdate()
     }
     
     public static func make() -> AmityCommunityHomePageViewController {
@@ -141,7 +147,14 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             }
         }
     }
-
+    
+    func startObserveUpdate() {
+        NotificationCenter.default.addObserver(self, selector: #selector(getUnreadCount), name: Notification.Name.NotificationTray.didUpdate, object: nil)
+    }
+    
+    func stopObserveUpdate() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.NotificationTray.didUpdate, object: nil)
+    }
 }
 
 // MARK: - Action
@@ -187,7 +200,7 @@ private extension AmityCommunityHomePageViewController {
         }
     }
     
-    func getUnreadCount() {
+    @objc func getUnreadCount() {
         let serviceRequest = RequestGetNotification()
         serviceRequest.requestNotificationTotalUnreadCount() { [weak self] result in
             guard let strongSelf = self else { return }
