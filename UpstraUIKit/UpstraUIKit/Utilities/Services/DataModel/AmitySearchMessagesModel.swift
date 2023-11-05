@@ -17,7 +17,7 @@ struct AmitySearchMessagesModel: Codable {
 // MARK: - Message
 struct Message: Codable {
     let messageID: String?
-    let parentID: JSONNull?
+    let parentID: String?
     let channelID, channelPublicID: String?
     let reactionCount: Int?
     let hasFlags: Bool?

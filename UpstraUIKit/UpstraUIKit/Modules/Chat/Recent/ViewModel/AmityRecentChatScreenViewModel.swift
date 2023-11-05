@@ -214,9 +214,9 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
             // Handle completion
             switch completion {
             case .failure(let error):
-                print("------------> getSyncingChannelPresence error: \(error.localizedDescription)")
+                print("\(error.localizedDescription)")
             default:
-                print("------------> getSyncingChannelPresence error: nil")
+                break
             }
         } receiveValue: { presences in
             
@@ -238,7 +238,6 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     func getTotalUnreadCount() {
         AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
             AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
-            print("----------> unread update \(userUnread.unreadCount)")
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
         }).store(in: &disposeBag)
     }

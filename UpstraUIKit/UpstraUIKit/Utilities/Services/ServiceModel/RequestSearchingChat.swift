@@ -58,10 +58,14 @@ struct RequestSearchingChat {
     }
     
     func requestSearchChannels(_ completion: @escaping(Result<SearchChannelsModel,Error>) -> ()) {
-        let type: [String] = ["live", "community"]
-        let options = jsonChannelOptions(limit: 20, next: paginateToken)
         let domainURL = "https://api.sg.amity.co"
-        requestMeta.urlRequest = "\(domainURL)/api/v3/channels?keyword=\(keyword)&isDeleted=false&types[]=live&types[]=community"
+        
+        var urlReuest = "\(domainURL)/api/v3/channels?keyword=\(keyword)&isDeleted=false&types[]=live&types[]=community&options[limit]=\(size)"
+
+        if !paginateToken.isEmpty {
+            urlReuest += "&options[token]=\(paginateToken)"
+        }
+        requestMeta.urlRequest = urlReuest
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]

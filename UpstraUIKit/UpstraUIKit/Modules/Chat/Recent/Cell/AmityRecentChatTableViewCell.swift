@@ -109,6 +109,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             statusBadgeImageView.isHidden = false
             badgeStatusView.isHidden = false
             badgeStatusView.backgroundColor = .white
+            iconImageView.isHidden = true
             AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
@@ -134,6 +135,12 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             statusBadgeImageView.isHidden = true
             badgeStatusView.isHidden = true
             badgeStatusView.backgroundColor = .clear
+            iconImageView.isHidden = false
+            var iconBadge = AmityIconSet.Chat.iconPublicBadge
+            if channel.channelType == .live {
+                iconBadge = AmityIconSet.Chat.iconPrivateBadge
+            }
+            iconImageView.image = iconBadge
         case .private, .broadcast, .unknown:
             break
         @unknown default:

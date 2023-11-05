@@ -269,9 +269,10 @@ private extension AmityMessageListViewController {
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
             
             let vc = PreviewImagePickerController.make(media: medias,
-                                                    viewModel: (self?.screenViewModel)!,
+                                                       viewModel: (self?.screenViewModel)!,
                                                        mediaType: .image,
-                                                       title: AmityLocalizedStringSet.General.selectedImages.localizedString)
+                                                       title: AmityLocalizedStringSet.General.selectedImages.localizedString,
+                                                       asset: assets)
             vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
             imagePicker.present(vc, animated: false, completion: nil)
@@ -288,9 +289,10 @@ private extension AmityMessageListViewController {
         presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .video) }
             let vc = PreviewImagePickerController.make(media: medias,
-                                                    viewModel: (self?.screenViewModel)!,
-                                                    mediaType: .video,
-                                                    title: AmityLocalizedStringSet.General.selectedVideos.localizedString)
+                                                       viewModel: (self?.screenViewModel)!,
+                                                       mediaType: .video,
+                                                       title: AmityLocalizedStringSet.General.selectedVideos.localizedString,
+                                                       asset: assets)
             vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
             imagePicker.present(vc, animated: false, completion: nil)

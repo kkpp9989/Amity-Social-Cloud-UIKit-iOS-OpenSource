@@ -229,7 +229,7 @@ extension AmityMessageListScreenViewModel {
     
     func getMessage() {
         AmityEventHandler.shared.showKTBLoading()
-        let queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, messageParentFilter: .noParent, sortOption: .lastCreated)
+        let queryOptions = AmityMessageQueryOptions(subChannelId: channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
         messagesCollection = messageRepository.getMessages(options: queryOptions)
         
         messagesNotificationToken = messagesCollection?.observe { [weak self] (liveCollection, change, error) in
@@ -350,7 +350,6 @@ extension AmityMessageListScreenViewModel {
         // Wait for all requests to complete
         dispatchGroup.notify(queue: .main) { [self] in
             // All channels have been created
-            print("------------> forward: finish")
             AmityEventHandler.shared.hideKTBLoading()
             forwardMessageList.removeAll()
         }

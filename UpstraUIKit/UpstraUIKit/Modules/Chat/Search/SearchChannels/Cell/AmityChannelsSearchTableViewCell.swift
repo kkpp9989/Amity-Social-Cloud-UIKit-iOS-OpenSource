@@ -18,7 +18,8 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var avatarView: AmityAvatarView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var joinButton: UIButton!
-    
+    @IBOutlet private var iconImageView: UIImageView!
+
     var delegate: AmityChannelsSearchTableViewCellDelegate?
     var indexPath: IndexPath?
     
@@ -55,6 +56,12 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         avatarView.setImage(withImageURL: data.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
         
         joinButton.isHidden = data.object.currentUserMembership == .member ? true : false
+        
+        var iconBadge = AmityIconSet.Chat.iconPublicBadge
+        if data.channelType == .live {
+            iconBadge = AmityIconSet.Chat.iconPrivateBadge
+        }
+        iconImageView.image = iconBadge
     }
     
     // MARK: - Perform Action
