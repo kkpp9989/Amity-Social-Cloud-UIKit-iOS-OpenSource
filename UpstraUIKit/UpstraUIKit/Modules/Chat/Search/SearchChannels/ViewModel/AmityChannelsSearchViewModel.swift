@@ -56,6 +56,7 @@ extension AmityChannelsSearchViewModel {
         if currentKeyword != newKeyword {
             if !isLoadingMore {
                 dummyList = []
+                paginateToken = ""
             }
             channelList = []
             currentKeyword = newKeyword

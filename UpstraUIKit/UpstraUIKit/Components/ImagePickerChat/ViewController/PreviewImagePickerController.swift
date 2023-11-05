@@ -19,6 +19,7 @@ class PreviewImagePickerController: AmityViewController {
     
     // MARK: - Properties
     var imageList: [AmityMedia] = []
+    var assets: [PHAsset] = []
     var mediaType: AmityMediaType!
     var navigationTitle: String = ""
     private var screenViewModel: AmityMessageListScreenViewModelType!
@@ -35,15 +36,16 @@ class PreviewImagePickerController: AmityViewController {
     }
     
     public static func make(media: [AmityMedia],
-                          viewModel: AmityMessageListScreenViewModelType,
-                          mediaType: AmityMediaType,
-                          title: String) -> PreviewImagePickerController {
+                            viewModel: AmityMessageListScreenViewModelType,
+                            mediaType: AmityMediaType,
+                            title: String,
+                            asset: [PHAsset]) -> PreviewImagePickerController {
         let vc = PreviewImagePickerController(nibName: PreviewImagePickerController.identifier, bundle: AmityUIKitManager.bundle)
         vc.imageList = media
         vc.screenViewModel = viewModel
         vc.mediaType = mediaType
         vc.navigationTitle = title
-        
+        vc.assets = asset
         return vc
     }
     
@@ -63,7 +65,8 @@ class PreviewImagePickerController: AmityViewController {
     
     @IBAction func sendButtonTap(_ sender: UIButton) {
         AmityHUD.show(.loading)
-        self.screenViewModel.action.send(withMedias: imageList, type: mediaType)
+        let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
+        self.screenViewModel.action.send(withMedias: medias, type: mediaType)
         
         var presentingViewController = self.presentingViewController
         while presentingViewController != nil {

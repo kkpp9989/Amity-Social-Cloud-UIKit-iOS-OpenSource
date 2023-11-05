@@ -59,7 +59,8 @@ public class AmityMedia: Equatable, Hashable {
     
     private func showImage(from asset: PHAsset, in imageView: UIImageView, size preferredSize: CGSize?) {
     
-        let targetSize = preferredSize ?? imageView.bounds.size
+        let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
+//        let targetSize = preferredSize ?? imageView.bounds.size
         let manager = PHImageManager.default()
     
         let option = PHImageRequestOptions()

@@ -57,7 +57,7 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <textInputTraits key="textInputTraits" returnKeyType="search"/>
                                     <connections>
-                                        <action selector="textFieldEditingChanged:" destination="-1" eventType="editingChanged" id="Gcz-RP-1Ho"/>
+                                        <action selector="textFieldEditingChanged:" destination="-1" eventType="editingDidEnd" id="UYn-fX-ree"/>
                                     </connections>
                                 </textField>
                             </subviews>

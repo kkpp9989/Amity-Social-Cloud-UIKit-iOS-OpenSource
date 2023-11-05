@@ -36,7 +36,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         iconImageView.isHidden = true
         statusImageView.isHidden = true
         
-        titleLabel.font = AmityFontSet.title
+        titleLabel.font = AmityFontSet.body
         titleLabel.textColor = AmityColorSet.base
         memberLabel.font = AmityFontSet.caption
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
@@ -66,11 +66,13 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(data.channelObjc.memberCount))"
             statusImageView.isHidden = true
+            iconImageView.isHidden = true
             avatarView.placeholder = AmityIconSet.defaultAvatar
         case .conversation:
             avatarView.placeholder = AmityIconSet.defaultAvatar
             memberLabel.text = nil
             statusImageView.isHidden = false
+            iconImageView.isHidden = true
             AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: data.channelObjc.channelId) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
@@ -90,12 +92,18 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
                     }
                 }
             }
-        case .community:
+        case .community, .live:
             avatarView.placeholder = AmityIconSet.defaultGroupChat
             avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(data.channelObjc.memberCount))"
             statusImageView.isHidden = true
-        case .private, .live, .broadcast, .unknown:
+            iconImageView.isHidden = false
+            var iconBadge = AmityIconSet.Chat.iconPublicBadge
+            if data.channelObjc.channelType == .live {
+                iconBadge = AmityIconSet.Chat.iconPrivateBadge
+            }
+            iconImageView.image = iconBadge
+        case .private, .broadcast, .unknown:
             break
         @unknown default:
             break
