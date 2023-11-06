@@ -96,38 +96,46 @@ final class AmityAudioPlayer: NSObject {
     }
     
     func startAudio() {
-        if playerAudio.rate == 1 {
-            if _fileName == fileName {
-                if isPlayFinish {
-                    delegate?.playing()
-                    playerAudio.pause()
-                    getPlayAudio()
-                    playerAudio.play()
-                    isPlayFinish = false
+        do {
+            // Add audio session
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            
+            // Process play or pause audio
+            if playerAudio.rate == 1 {
+                if _fileName == fileName {
+                    if isPlayFinish {
+                        delegate?.playing()
+                        playerAudio.pause()
+                        getPlayAudio()
+                        playerAudio.play()
+                        isPlayFinish = false
+                    } else {
+                        delegate?.stopPlaying()
+                        playerAudio.pause()
+                    }
                 } else {
                     delegate?.stopPlaying()
                     playerAudio.pause()
+                    getPlayAudio()
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
                 }
             } else {
-                delegate?.stopPlaying()
-                playerAudio.pause()
-                getPlayAudio()
-                delegate?.playing()
-                playerAudio.play()
-                _fileName = fileName
+                if _fileName != fileName {
+                    playerAudio.pause()
+                    getPlayAudio()
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
+                } else {
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
+                }
             }
-        } else {
-            if _fileName != fileName {
-                playerAudio.pause()
-                getPlayAudio()
-                delegate?.playing()
-                playerAudio.play()
-                _fileName = fileName
-            } else {
-                delegate?.playing()
-                playerAudio.play()
-                _fileName = fileName
-            }
+        } catch {
+            Log.add("Error while preparing audio session [playing audio]: \(error.localizedDescription)")
         }
     }
     
