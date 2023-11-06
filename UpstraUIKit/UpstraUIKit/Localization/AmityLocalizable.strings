@@ -130,6 +130,7 @@
 "text_message_placeholder" = "Write a message";
 
 "message_delete" = "Message deleted • %@";
+"message_unsent" = "Message unsent • %@";
 "message_edit" = "Edited • %@";
 "message_readmore" = "...Read more";
 

@@ -161,7 +161,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
             statusMetadataImageView.isHidden = false
-            let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.deleteMessage.localizedString, message.time)
+            let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.unsentMessage.localizedString, message.time)
             fullString.append(NSAttributedString(string: deleteMessage, attributes: style))
             statusMetadataImageView.image = AmityIconSet.iconDeleteMessage
         } else if message.isEdited {
