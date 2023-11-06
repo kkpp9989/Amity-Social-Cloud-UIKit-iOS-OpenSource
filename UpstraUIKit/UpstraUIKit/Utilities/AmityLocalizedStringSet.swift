@@ -155,6 +155,7 @@ public struct AmityLocalizedStringSet {
         static let alertDeleteDesc = "message_list_alert_delete_desc"
         static let sending = "message_list_sending"
         static let deleteMessage = "message_delete"
+        static let unsentMessage = "message_unsent"
         static let editMessage = "message_edit"
     }
     
