@@ -12,21 +12,24 @@ import AmitySDK
 struct AmityMemberChatUtilities {
 
     struct Conversation {
-        static func getOtherUserByMemberShip(channelId : String, completion: (_ user: AmityUser?) -> Void) {
+        static func getOtherUserByMemberShip(channelId : String, completion: @escaping (_ user: AmityUser?) -> Void) {
             let membershipParticipation = AmityChannelMembership(client: AmityUIKitManager.client, andChannel: channelId)
-            let currentMemberList = membershipParticipation.getMembers(filter: .all, sortBy: .firstCreated, roles: []).allObjects()
-            if currentMemberList.count > 0 {
-                let currentLoginedUserId = AmityUIKitManagerInternal.shared.currentUserId
-                let otherMember = currentMemberList.filter { member in
-                    return member.userId != currentLoginedUserId
-                }
-                if otherMember.count > 0, let otherMemberModel = otherMember[0].user {
-                    completion(otherMemberModel)
+            let currentMemberList = membershipParticipation.getMembers(filter: .all, sortBy: .firstCreated, roles: []).observe { collection, change, error in
+                print("------> error: \(error?.localizedDescription)")
+                let object = collection.allObjects()
+                if object.count > 0 {
+                    let currentLoginedUserId = AmityUIKitManagerInternal.shared.currentUserId
+                    let otherMember = object.filter { member in
+                        return member.userId != currentLoginedUserId
+                    }
+                    if otherMember.count > 0, let otherMemberModel = otherMember[0].user {
+                        completion(otherMemberModel)
+                    } else {
+                        completion(nil)
+                    }
                 } else {
                     completion(nil)
                 }
-            } else {
-                completion(nil)
             }
         }
     }

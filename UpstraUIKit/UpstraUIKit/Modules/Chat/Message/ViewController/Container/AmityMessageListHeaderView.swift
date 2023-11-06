@@ -105,7 +105,7 @@ extension AmityMessageListHeaderView {
 //                }
 //            }
             /* [Custom for ONE Krungthai] Get other user by membership in SDK */
-            AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
+            getOtherUser(channel: channel) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
                         // Set avatar
@@ -161,6 +161,18 @@ extension AmityMessageListHeaderView {
         default:
             statusImageView.image = AmityIconSet.Chat.iconOfflineIndicator
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
+        }
+    }
+    
+    func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {
+        token?.invalidate()
+        if !channel.getOtherUserId().isEmpty {
+            token = repository?.getUser(channel.getOtherUserId()).observe({ [weak self] user, error in
+                guard let weakSelf = self else { return }
+                let userObject = user.snapshot
+                weakSelf.token?.invalidate()
+                completion(userObject)
+            })
         }
     }
 }

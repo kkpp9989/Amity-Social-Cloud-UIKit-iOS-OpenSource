@@ -46,7 +46,7 @@ public struct AmityChannelModel {
     }
     
     func getOtherUserId() -> String {
-        if let userIds = metadata["userIds"] as? [String] {
+        if let userIds = metadata["user_id_member"] as? [String] {
             for id in userIds {
                 if id != AmityUIKitManagerInternal.shared.client.currentUserId {
                     return id

@@ -41,7 +41,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         statusBadgeImageView.image = nil
         badgeStatusView.isHidden = true
         previewMessageLabel.text = "No message"
-        avatarView.image = nil
+//        avatarView.image = nil
         avatarView.placeholder = AmityIconSet.defaultGroupChat
         channel = nil
     }
@@ -110,7 +110,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             badgeStatusView.isHidden = false
             badgeStatusView.backgroundColor = .white
             iconImageView.isHidden = true
-            AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: channel.channelId) { user in
+            
+            getOtherUser(channel: channel) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
                         // Set avatar
@@ -194,6 +195,44 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             statusBadgeImageView.isHidden = true
             badgeStatusView.backgroundColor = .clear
             return UIImage()
+        }
+    }
+    
+    func getOtherUserByMemberShip(channelId : String, completion: @escaping (_ user: AmityUser?) -> Void) {
+        let membershipParticipation = AmityChannelMembership(client: AmityUIKitManager.client, andChannel: channelId)
+        token = membershipParticipation.getMembers(filter: .all, sortBy: .firstCreated, roles: []).observe { collection, change, error in
+            if let error = error {
+                print("------> error: \(error.localizedDescription)")
+            }
+            let object = collection.allObjects()
+            if collection.dataStatus == .fresh {
+                self.token?.invalidate()
+            }
+            if object.count > 0 {
+                let currentLoginedUserId = AmityUIKitManagerInternal.shared.currentUserId
+                let otherMember = object.filter { member in
+                    return member.userId != currentLoginedUserId
+                }
+                if otherMember.count > 0, let otherMemberModel = otherMember[0].user {
+                    completion(otherMemberModel)
+                } else {
+                    completion(nil)
+                }
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {
+        token?.invalidate()
+        if !channel.getOtherUserId().isEmpty {
+            token = repository?.getUser(channel.getOtherUserId()).observe({ [weak self] user, error in
+                guard let weakSelf = self else { return }
+                let userObject = user.snapshot
+                weakSelf.token?.invalidate()
+                completion(userObject)
+            })
         }
     }
 }
