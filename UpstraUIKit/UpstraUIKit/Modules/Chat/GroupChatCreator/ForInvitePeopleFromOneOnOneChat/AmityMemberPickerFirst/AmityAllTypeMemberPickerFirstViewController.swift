@@ -16,9 +16,12 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
     private var followerVC: AmityForwardMemberPickerViewController?
     private var memberVC: AmityForwardAccountMemberPickerViewController?
 
+    // MARK: - Component
     private var doneButton: UIBarButtonItem?
     
+    // MARK: - Properties
     private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
+    private(set) var currentUsersInChat: [AmitySelectMemberModel] = []
         
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -37,16 +40,17 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         theme?.setBackgroundNavigationBar()
     }
     
-    public static func make() -> AmityAllTypeMemberPickerFirstViewController {
+    public static func make(currentUsers: [AmitySelectMemberModel]) -> AmityAllTypeMemberPickerFirstViewController {
         let vc = AmityAllTypeMemberPickerFirstViewController(nibName: AmityAllTypeMemberPickerFirstViewController.identifier,
                                                           bundle: AmityUIKitManager.bundle)
+        vc.currentUsersInChat = currentUsers
         return vc
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: [], type: .following)
-        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
-        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: [])
+        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: currentUsersInChat, type: .following)
+        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: currentUsersInChat, type: .followers)
+        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: currentUsersInChat)
         
         followingVC?.selectUsersHandler = { [weak self] selectedUsers in
             guard let strongSelf = self else { return }
