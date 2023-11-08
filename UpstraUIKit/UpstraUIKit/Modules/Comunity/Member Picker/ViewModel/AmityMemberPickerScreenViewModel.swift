@@ -20,6 +20,7 @@ final class AmityMemberPickerScreenViewModel: AmityMemberPickerScreenViewModelTy
     private var searchUserController: AmitySearchUserController?
     private var selectUserContrller: AmitySelectUserController?
     
+    // MARK: - Properties
     private var users: AmityFetchUserController.GroupUser = []
     private var searchUsers: [AmitySelectMemberModel] = []
     private var storeUsers: [AmitySelectMemberModel] = [] {
@@ -27,7 +28,7 @@ final class AmityMemberPickerScreenViewModel: AmityMemberPickerScreenViewModelTy
             delegate?.screenViewModelCanDone(enable: !storeUsers.isEmpty)
         }
     }
-    
+    private var currentUsersInGroupChat: [AmitySelectMemberModel] = []
     private var isSearch: Bool = false
     
     init() {
@@ -75,7 +76,15 @@ extension AmityMemberPickerScreenViewModel {
     }
     
     func getStoreUsers() -> [AmitySelectMemberModel] {
-        return storeUsers
+        return storeUsers + currentUsersInGroupChat
+    }
+    
+    func isCurrentMember(user: AmitySelectMemberModel) -> Bool {
+        if currentUsersInGroupChat.contains(where: { $0.userId == user.userId }) {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
@@ -83,7 +92,8 @@ extension AmityMemberPickerScreenViewModel {
 extension AmityMemberPickerScreenViewModel {
     
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
-        storeUsers = users
+//        storeUsers = users
+        if currentUsersInGroupChat.count == 0 { currentUsersInGroupChat = users }
         
         if storeUsers.count == 0 {
             delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
