@@ -13,7 +13,8 @@ protocol AmityChatUserControllerProtocol {
     func reportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
     func unreportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
     func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void)
-    func getOtherUserInConversationChatByMemberShip(completion: (_ user: AmityUserModel?) -> Void)
+    func getOtherUserInConversationChatByMemberShip(completion:  @escaping (_ user: AmityUserModel?) -> Void)
+    func getOtherUserInConversationChatByOtherUserId(otherUserId: String, completion: @escaping (_ user: AmityUserModel?) -> Void)
     func getEditGroupChannelPermission(_ completion: @escaping (_ result: Bool) -> Void)
 }
 
@@ -21,6 +22,8 @@ final class AmityChatUserController: AmityChatUserControllerProtocol {
 
     private let userRepository: AmityUserRepository
     private let channelId: String
+    
+    private var token: AmityNotificationToken?
     
     init(channelId: String) {
         self.channelId = channelId
@@ -48,6 +51,15 @@ final class AmityChatUserController: AmityChatUserControllerProtocol {
         }
     }
     
+    func getOtherUserInConversationChatByOtherUserId(otherUserId: String, completion: @escaping (_ user: AmityUserModel?) -> Void) {
+        token = userRepository.getUser(otherUserId).observe { liveObject, error in
+            guard let user = liveObject.snapshot else {
+                completion(nil)
+                return
+            }
+            completion(AmityUserModel(user: user))
+        }
+    }
     
     // MARK: Report / unreport user
     func getStatusReportUser(with userId: String, _ completion: @escaping (_ result: Bool?, _ error: Error?) -> Void) {

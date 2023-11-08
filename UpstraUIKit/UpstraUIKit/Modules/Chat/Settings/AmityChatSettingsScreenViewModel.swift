@@ -63,7 +63,26 @@ extension AmityChatSettingsScreenViewModel {
                 strongSelf.channel = channel
                 // Get title
                 if channel.channelType == .conversation { // Case: Conversation type (1:1 Chat) -> Get other member displayname for set title
-                    strongSelf.userController.getOtherUserInConversationChatByMemberShip { user in
+                    // [Backup] [Old solution] -> Use member ship and get first member
+//                    strongSelf.userController.getOtherUserInConversationChatByMemberShip { user in
+//                        if let otheruser = user {
+//                            strongSelf.otherUser = otheruser
+//                            strongSelf.title = otheruser.displayName
+//                            strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+//                            strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
+//                                if let statusReportUser = result {
+//                                    strongSelf.isReportedOtherUser = statusReportUser
+//                                    strongSelf.retrieveSettingsMenu()
+//                                }
+//                            }
+//                        } else {
+//                            strongSelf.title = channel.displayName
+//                            strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+//                        }
+//                    }
+                    // [Current] [New solution] -> Use other user Id with user repository
+                    let otherUserId = channel.getOtherUserId()
+                    strongSelf.userController.getOtherUserInConversationChatByOtherUserId(otherUserId: otherUserId) { user in
                         if let otheruser = user {
                             strongSelf.otherUser = otheruser
                             strongSelf.title = otheruser.displayName

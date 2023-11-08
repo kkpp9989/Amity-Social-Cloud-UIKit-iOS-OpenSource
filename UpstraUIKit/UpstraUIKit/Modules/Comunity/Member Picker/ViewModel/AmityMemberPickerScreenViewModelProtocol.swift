@@ -26,6 +26,7 @@ protocol AmityMemberPickerScreenViewModelDataSource {
     func selectUser(at indexPath: IndexPath) -> AmitySelectMemberModel
     func isSearching() -> Bool
     func getStoreUsers() -> [AmitySelectMemberModel]
+    func isCurrentMemberInChat(user: AmitySelectMemberModel) -> Bool
 }
 
 protocol AmityMemberPickerScreenViewModelAction {

@@ -196,7 +196,8 @@ extension AmityForwardMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            let isCurrentMemberInChat = screenViewModel.dataSource.isCurrentMemberInChat(user: user)
+            cell.display(with: user, isCurrentMemberInChat: isCurrentMemberInChat)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
