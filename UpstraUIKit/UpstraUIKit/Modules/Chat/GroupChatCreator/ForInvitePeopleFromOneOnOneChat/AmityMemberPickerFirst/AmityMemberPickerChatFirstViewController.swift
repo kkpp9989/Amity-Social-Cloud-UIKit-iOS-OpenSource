@@ -46,7 +46,7 @@ public final class AmityMemberPickerChatFirstViewController: AmityViewController
 
 	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerChatFirstViewController {
 		let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-		viewModeel.setCurrentUsers(users: users)
+		viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
 		let vc = AmityMemberPickerChatFirstViewController(nibName: AmityMemberPickerChatFirstViewController.identifier, bundle: AmityUIKitManager.bundle)
 		vc.screenViewModel = viewModeel
 		return vc
@@ -264,6 +264,10 @@ extension AmityMemberPickerChatFirstViewController: AmityMemberPickerScreenViewM
 		tableView.reloadData()
 		collectionView.reloadData()
 	}
+    
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        // Not use
+    }
 	
 	func screenViewModelLoadingState(for state: AmityLoadingState) {
 		switch state {

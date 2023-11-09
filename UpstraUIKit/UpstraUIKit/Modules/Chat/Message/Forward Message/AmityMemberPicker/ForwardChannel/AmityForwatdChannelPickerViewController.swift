@@ -22,7 +22,7 @@ extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
 class AmityForwatdChannelPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
+    public var selectUsersHandler: (([AmitySelectMemberModel], String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -51,15 +51,15 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType) -> AmityForwatdChannelPickerViewController {
         let viewModel: AmityForwardChannelPickerScreenViewModelType = AmityForwardChannelPickerScreenViewModel(type: type)
-        viewModel.setCurrentUsers(users: users)
+        viewModel.setCurrentUsers(users: users, isFromAnotherTab: false)
         let vc = AmityForwatdChannelPickerViewController(nibName: AmityForwatdChannelPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.pageTitle = pageTitle
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel]) {
-        screenViewModel.setCurrentUsers(users: users)
+    public func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        screenViewModel.setCurrentUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
 }
 
@@ -264,7 +264,21 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers())
+        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+    }
+    
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        self.title = title
+        collectionView.isHidden = isEmpty
+        collectionView.reloadData()
+        
+        if isFromAnotherTab {
+            screenViewModel.action.updateSelectedUserInfo()
+        }
+            
+        tableView.reloadData()
+        
+        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {

@@ -76,29 +76,20 @@ extension AmityMemberPickerScreenViewModel {
     }
     
     func getStoreUsers() -> [AmitySelectMemberModel] {
-        return storeUsers + currentUsersInChat
-    }
-    
-    func isCurrentMemberInChat(user: AmitySelectMemberModel) -> Bool {
-        if currentUsersInChat.contains(where: { $0.userId == user.userId }) {
-            return true
-        } else {
-            return false
-        }
+        return storeUsers
     }
 }
 
 // MARK: - Action
 extension AmityMemberPickerScreenViewModel {
     
-    func setCurrentUsers(users: [AmitySelectMemberModel]) {
-//        storeUsers = users
-        if currentUsersInChat.count == 0 { currentUsersInChat = users }
+    func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        storeUsers = users
         
         if storeUsers.count == 0 {
-            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            delegate?.screenViewModelDidSetCurrentUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
         } else {
-            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+            delegate?.screenViewModelDidSetCurrentUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab)
         }
     }
     
@@ -132,6 +123,30 @@ extension AmityMemberPickerScreenViewModel {
                 }
             }
         })
+    }
+    
+    func updateSelectedUserInfo() {
+        if isSearch {
+            // Edit selected of search user
+            for (index, data) in searchUsers.enumerated() {
+                if storeUsers.contains(where: { $0.userId == data.userId } ) {
+                    searchUsers[index].isSelected = true
+                } else {
+                    searchUsers[index].isSelected = false
+                }
+            }
+        } else {
+            // Edit selected of user
+            for (indexGroup, (key, group)) in users.enumerated() {
+                for (indexUser, user) in group.enumerated() {
+                    if storeUsers.contains(where: { $0.userId == user.userId } ) {
+                        users[indexGroup].value[indexUser].isSelected = true
+                    } else {
+                        users[indexGroup].value[indexUser].isSelected = false
+                    }
+                }
+            }
+        }
     }
     
     func selectUser(at indexPath: IndexPath) {

@@ -18,7 +18,7 @@ extension AmityForwardMemberPickerViewController: IndicatorInfoProvider {
 class AmityForwardMemberPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: (([AmitySelectMemberModel]) -> Void)?
+    public var selectUsersHandler: (([AmitySelectMemberModel], String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -29,6 +29,7 @@ class AmityForwardMemberPickerViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityForwardMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
+    private var lastSearchKeyword: String = ""
     
     var pageTitle: String?
 
@@ -47,15 +48,15 @@ class AmityForwardMemberPickerViewController: AmityViewController {
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityFollowerViewType) -> AmityForwardMemberPickerViewController {
         let viewModel: AmityForwardMemberPickerScreenViewModelType = AmityForwardMemberPickerScreenViewModel(type: type)
-        viewModel.setCurrentUsers(users: users)
+        viewModel.setCurrentUsers(users: users, isFromAnotherTab: false)
         let vc = AmityForwardMemberPickerViewController(nibName: AmityForwardMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.pageTitle = pageTitle
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel]) {
-        screenViewModel.setCurrentUsers(users: users)
+    public func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        screenViewModel.setCurrentUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
 }
 
@@ -155,6 +156,7 @@ private extension AmityForwardMemberPickerViewController {
 
 extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        lastSearchKeyword = searchText
         screenViewModel.action.searchUser(with: searchText)
     }
 }
@@ -196,8 +198,7 @@ extension AmityForwardMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            let isCurrentMemberInChat = screenViewModel.dataSource.isCurrentMemberInChat(user: user)
-            cell.display(with: user, isCurrentMemberInChat: isCurrentMemberInChat)
+            cell.display(with: user)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -246,6 +247,7 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
+        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
     }
     
     func screenViewModelDidSearchUser() {
@@ -261,7 +263,21 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers())
+        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+    }
+    
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        self.title = title
+        collectionView.isHidden = isEmpty
+        collectionView.reloadData()
+        
+        if isFromAnotherTab {
+            screenViewModel.action.updateSelectedUserInfo()
+        }
+            
+        tableView.reloadData()
+        
+        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
