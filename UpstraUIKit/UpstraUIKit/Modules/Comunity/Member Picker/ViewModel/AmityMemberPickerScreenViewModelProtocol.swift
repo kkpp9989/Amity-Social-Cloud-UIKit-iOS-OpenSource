@@ -13,6 +13,7 @@ protocol AmityMemberPickerScreenViewModelDelegate: AnyObject {
     func screenViewModelDidFetchUser()
     func screenViewModelDidSearchUser()
     func screenViewModelDidSelectUser(title: String, isEmpty: Bool)
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool)
     func screenViewModelLoadingState(for state: AmityLoadingState)
     func screenViewModelCanDone(enable: Bool)
 }
@@ -26,7 +27,6 @@ protocol AmityMemberPickerScreenViewModelDataSource {
     func selectUser(at indexPath: IndexPath) -> AmitySelectMemberModel
     func isSearching() -> Bool
     func getStoreUsers() -> [AmitySelectMemberModel]
-    func isCurrentMemberInChat(user: AmitySelectMemberModel) -> Bool
 }
 
 protocol AmityMemberPickerScreenViewModelAction {
@@ -35,7 +35,8 @@ protocol AmityMemberPickerScreenViewModelAction {
     func selectUser(at indexPath: IndexPath)
     func deselectUser(at indexPath: IndexPath)
     func loadmore()
-    func setCurrentUsers(users: [AmitySelectMemberModel])
+    func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool)
+    func updateSelectedUserInfo()
 }
 
 protocol AmityMemberPickerScreenViewModelType: AmityMemberPickerScreenViewModelAction, AmityMemberPickerScreenViewModelDataSource {

@@ -84,13 +84,19 @@ extension AmityForwardChannelPickerScreenViewModel {
 // MARK: - Action
 extension AmityForwardChannelPickerScreenViewModel {
     
-    func setCurrentUsers(users: [AmitySelectMemberModel]) {
+    func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
         storeUsers = users
+        
+        if storeUsers.count == 0 {
+            delegate?.screenViewModelDidSetCurrentUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
+        } else {
+            delegate?.screenViewModelDidSetCurrentUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab)
+        }
     }
     
     func getChannels() {
         fetchChannelController?.storeUsers = storeUsers
-        fetchChannelController?.getChannel { (result) in
+        fetchChannelController?.getChannel(isMustToChangeSomeChannelToUser: true) { (result) in
             switch result {
             case .success(let users):
                 self.users = users
@@ -135,6 +141,30 @@ extension AmityForwardChannelPickerScreenViewModel {
             delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+        }
+    }
+    
+    func updateSelectedUserInfo() {
+        if isSearch {
+            // Edit selected of search user
+            for (index, data) in searchUsers.enumerated() {
+                if storeUsers.contains(where: { $0.userId == data.userId } ) {
+                    searchUsers[index].isSelected = true
+                } else {
+                    searchUsers[index].isSelected = false
+                }
+            }
+        } else {
+            // Edit selected of user
+            for (indexGroup, (key, group)) in users.enumerated() {
+                for (indexUser, user) in group.enumerated() {
+                    if storeUsers.contains(where: { $0.userId == user.userId } ) {
+                        users[indexGroup].value[indexUser].isSelected = true
+                    } else {
+                        users[indexGroup].value[indexUser].isSelected = false
+                    }
+                }
+            }
         }
     }
     

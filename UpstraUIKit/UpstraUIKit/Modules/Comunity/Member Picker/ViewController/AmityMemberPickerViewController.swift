@@ -47,7 +47,7 @@ public final class AmityMemberPickerViewController: AmityViewController {
 
     public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerViewController {
         let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-        viewModeel.setCurrentUsers(users: users)
+        viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
         let vc = AmityMemberPickerViewController(nibName: AmityMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
         return vc
@@ -192,8 +192,7 @@ extension AmityMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            let isCurrentMemberInChat = screenViewModel.dataSource.isCurrentMemberInChat(user: user)
-            cell.display(with: user, isCurrentMemberInChat: isCurrentMemberInChat)
+            cell.display(with: user)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -257,6 +256,10 @@ extension AmityMemberPickerViewController: AmityMemberPickerScreenViewModelDeleg
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
+    }
+    
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        // Not use because viewcontroller isn't child of tabpage view controller
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {

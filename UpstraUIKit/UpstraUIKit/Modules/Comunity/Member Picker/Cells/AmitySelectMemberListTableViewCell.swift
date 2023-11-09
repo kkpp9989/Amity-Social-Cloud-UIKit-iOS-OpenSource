@@ -41,31 +41,11 @@ final class AmitySelectMemberListTableViewCell: UITableViewCell {
         radioImageView.image = AmityIconSet.iconRadioOff
     }
     
-    func display(with user: AmitySelectMemberModel, isCurrentMemberInChat: Bool = false) {
-        if user.type == .channel {
-            if let channelType = user.object?.channelType, channelType == .conversation {
-                AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: user.userId) { [self] user in
-                    DispatchQueue.main.async { [self] in
-                        if let otherMember = user {
-                            // Set avatar
-                            displayNameLabel.text = otherMember.displayName
-                            avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL ?? "", placeholder: AmityIconSet.defaultAvatar)
-                        }
-                    }
-                }
-            } else {
-                displayNameLabel.text = user.displayName ?? user.defaultDisplayName
-                avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
-            }
-        } else {
-            displayNameLabel.text = user.displayName ?? user.defaultDisplayName
-            avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
-        }
+    func display(with user: AmitySelectMemberModel) {
+        displayNameLabel.text = user.displayName ?? user.defaultDisplayName
+        avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
         
-        radioImageView.image = user.isSelected || isCurrentMemberInChat ? AmityIconSet.iconRadioCheck : AmityIconSet.iconRadioCheckOff
+        radioImageView.image = user.isSelected ? AmityIconSet.iconRadioCheck : AmityIconSet.iconRadioCheckOff
         radioImageView.isHidden = user.isCurrnetUser
-        self.isUserInteractionEnabled = !isCurrentMemberInChat
-        
-//        print("[User] display user cell | id: \(user.userId) | displayName: \(user.displayName) | isUserInteractionEnabled: \(!isCurrentMember) | isRadioCheck [\(user.isSelected) || \(isCurrentMember)]: \(user.isSelected || isCurrentMember)")
     }
 }

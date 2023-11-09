@@ -52,26 +52,29 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: currentUsersInChat, type: .followers)
         memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: currentUsersInChat)
         
-        followingVC?.selectUsersHandler = { [weak self] selectedUsers in
+        followingVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.title = newTitle
         }
-        followerVC?.selectUsersHandler = { [weak self] selectedUsers in
+        followerVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.title = newTitle
         }
-        memberVC?.selectUsersHandler = { [weak self] selectedUsers in
+        memberVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.title = newTitle
         }
         return [memberVC!, followingVC!, followerVC!]
     }
@@ -79,7 +82,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     func setupNavigationBar() {
@@ -117,13 +120,19 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         dismiss(animated: true)
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
-            memberVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        } else if currentIndex == 2 {
-            followingVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        } else {
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
+//            print("--------> [User] Go to tab acoount")
+            memberVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        case 1:
+//            print("--------> [User] Go to tab following")
+            followingVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        case 2:
+//            print("--------> [User] Go to tab follower")
+            followerVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        default:
+            break
         }
     }
 }

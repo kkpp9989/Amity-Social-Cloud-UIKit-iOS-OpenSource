@@ -52,28 +52,28 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
         groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Group", users: [], type: .group)
         
-        recentVC?.selectUsersHandler = { [weak self] selectedUsers in
+        recentVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        followingVC?.selectUsersHandler = { [weak self] selectedUsers in
+        followingVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        followerVC?.selectUsersHandler = { [weak self] selectedUsers in
+        followerVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUseres = selectedUsers
             strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
         }
-        groupChatVC?.selectUsersHandler = { [weak self] selectedUsers in
+        groupChatVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
@@ -86,14 +86,14 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     func setupNavigationBar() {
         title = "Forward to"
         titleFont = AmityFontSet.title
 
-        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
+        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.forward.localizedString, style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
         // [Improvement] Add set font style to label of done button
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
@@ -125,15 +125,22 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         dismiss(animated: true)
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
-            recentVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        } else if currentIndex == 2 {
-            followingVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        }  else if currentIndex == 3 {
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres)
-        } else {
-            groupChatVC?.setCurrentUsers(users: numberOfSelectedUseres)
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
+//            print("--------> [User] Go to tab recent")
+            recentVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        case 1:
+//            print("--------> [User] Go to tab following")
+            followingVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        case 2:
+//            print("--------> [User] Go to tab follower")
+            followerVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        case 3:
+//            print("--------> [User] Go to tab group")
+            groupChatVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+        default:
+            break
         }
     }
 }
