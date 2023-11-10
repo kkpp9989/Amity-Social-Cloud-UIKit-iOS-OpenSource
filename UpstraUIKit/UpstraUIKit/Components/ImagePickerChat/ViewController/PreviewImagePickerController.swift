@@ -28,6 +28,7 @@ class PreviewImagePickerController: AmityViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUpView()
+        setupSendButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -61,6 +62,14 @@ class PreviewImagePickerController: AmityViewController {
         (previweCollectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection = .vertical
     }
     
+    func setupSendButton() {
+        checkFileSize(for: assets) { isShouldEnable in
+            DispatchQueue.main.async {
+                self.sendButton.isEnabled = !isShouldEnable
+            }
+        }
+    }
+    
     // MARK: - Action
     
     @IBAction func sendButtonTap(_ sender: UIButton) {
@@ -84,10 +93,53 @@ class PreviewImagePickerController: AmityViewController {
     
     func deleteItem(at indexPath: IndexPath) {
         imageList.remove(at: indexPath.row)
+        assets.remove(at: indexPath.row)
         previweCollectionView.reloadData()
         
+        setupSendButton()
         if imageList.count == 0 {
             sendButton.isEnabled = false
+        }
+    }
+    
+    func checkFileSize(for assets: [PHAsset], completion: @escaping (Bool) -> Void) {
+        var isAnyFileSizeGreaterThan300MB = false
+        
+        let dispatchGroup = DispatchGroup()
+        
+        for asset in assets {
+            dispatchGroup.enter()
+            
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: nil) { (avAsset, _, _) in
+                defer {
+                    dispatchGroup.leave()
+                }
+                
+                guard let avAsset = avAsset as? AVURLAsset else {
+                    completion(false)
+                    return
+                }
+                
+                do {
+                    let fileURL = avAsset.url
+                    let fileAttributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
+                    
+                    if let fileSize = fileAttributes[.size] as? Double {
+                        let fileSizeInMB = fileSize / (1024 * 1024)
+                        if fileSizeInMB > 300.0 {
+                            isAnyFileSizeGreaterThan300MB = true
+                        }
+                    } else {
+                        completion(false)
+                    }
+                } catch {
+                    completion(false)
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: DispatchQueue.global()) {
+            completion(isAnyFileSizeGreaterThan300MB)
         }
     }
 }
