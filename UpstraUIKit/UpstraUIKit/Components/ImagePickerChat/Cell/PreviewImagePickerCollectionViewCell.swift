@@ -17,6 +17,10 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
     @IBOutlet private var durationView: UIStackView!
     @IBOutlet private var durationLabel: UILabel!
     
+    @IBOutlet private var alertView: UIView!
+    @IBOutlet private var alertLabel: UILabel!
+    @IBOutlet private var alertImageView: UIImageView!
+
     // MARK: - Properties
     var indexPath: IndexPath?
     private let durationFormatter = DateComponentsFormatter()
@@ -36,6 +40,13 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         durationView.layer.cornerRadius = 4
         durationLabel.font = AmityFontSet.caption
         durationLabel.textColor = AmityThemeManager.currentTheme.baseInverse
+        
+        alertView.isHidden = true
+        alertView.backgroundColor = .black.withAlphaComponent(0.4)
+        alertLabel.font = AmityFontSet.bodyBold
+        alertLabel.textColor = .white
+        alertLabel.text = "Too large"
+        alertImageView.image = AmityIconSet.iconAlertInfoWhite
     }
     
     func setCell(media: AmityMedia) {
@@ -51,6 +62,12 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
                 durationLabel.text = getDurationFormatter(showHour: asset.duration >= 3600).string(from: asset.duration)
             } else {
                 durationLabel.isHidden = true
+            }
+            
+            checkFileSize(for: asset) { isShouldHidden in
+                DispatchQueue.main.async {
+                    self.alertView.isHidden = !isShouldHidden
+                }
             }
         case .localURL, .uploadedImage, .uploadedVideo, .none: break
         case .uploading, .error:break
@@ -83,6 +100,28 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         return thumbnail
     }
 
+    func checkFileSize(for asset: PHAsset, completion: @escaping (Bool) -> Void) {
+        PHImageManager.default().requestAVAsset(forVideo: asset, options: nil) { (avAsset, _, _) in
+            guard let avAsset = avAsset as? AVURLAsset else {
+                completion(false)
+                return
+            }
+            
+            do {
+                let fileURL = avAsset.url
+                let fileAttributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
+                if let fileSize = fileAttributes[.size] as? Double {
+                    let fileSizeInMB = fileSize / (1024 * 1024)
+                    let isFileSizeGreaterThan300MB = fileSizeInMB > 300.0
+                    completion(isFileSizeGreaterThan300MB)
+                } else {
+                    completion(false)
+                }
+            } catch {
+                completion(false)
+            }
+        }
+    }
 }
 
 private extension PreviewImagePickerCollectionViewCell {
@@ -92,4 +131,3 @@ private extension PreviewImagePickerCollectionViewCell {
         deleteHandler?(indexPath)
     }
 }
-
