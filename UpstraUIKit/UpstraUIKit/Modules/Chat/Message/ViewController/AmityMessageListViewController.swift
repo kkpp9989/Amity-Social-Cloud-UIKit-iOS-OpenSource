@@ -512,21 +512,17 @@ private extension AmityMessageListViewController {
             case .finish:
                 self?.circular.hide()
                 self?.screenViewModel.action.sendAudio()
-                Log.add("[Recorder] state in handler: Finish")
             case .finishWithMaximumTime:
                 self?.circular.hide()
                 self?.alertMaxAudio()
-                Log.add("[Recorder] state in handler: finishWithMaximumTime")
             case .notFinish:
-                Log.add("[Recorder] state in handler: notFinish")
+                break
             case .timeTooShort:
-                Log.add("[Recorder] state in handler: timeTooShort")
                 self?.circular.hide()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     self?.composeBar.showPopoverMessage()
                 }
             case .deleteAndClose:
-                Log.add("[Recorder] state in handler: deleteAndClose")
                 self?.circular.hide()
             }
         }

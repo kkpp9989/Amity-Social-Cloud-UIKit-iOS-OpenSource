@@ -291,7 +291,7 @@ extension AmityMessageListTableViewController {
             case .file:
                 return message.isOwner ? AmityMessageTypes.fileOutgoing.identifier : AmityMessageTypes.fileIncoming.identifier
             case .custom:
-                fallthrough
+                return AmityMessageTypes.operation.identifier
             default:
                 return nil
             }

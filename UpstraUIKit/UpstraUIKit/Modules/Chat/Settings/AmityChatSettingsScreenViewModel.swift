@@ -18,6 +18,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
     private let channelController: AmityChannelControllerProtocol
     private let userController: AmityChatUserControllerProtocol
+    private var customMessageController: AmityCustomMessageController
     
     // MARK: - SubViewModel
     private var menuViewModel: AmityChatSettingsCreateMenuViewModelProtocol?
@@ -27,6 +28,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     var title: String?
     let channelId: String
     private var isNotificationEnabled: Bool = false
+    private let dispatchGroup = DispatchGroup()
     
     // For 1:1 chat only
     var otherUser: AmityUserModel?
@@ -43,6 +45,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
         self.channelController = channelController
         self.userController = userController
         self.channelId = channelId
+        customMessageController = AmityCustomMessageController(channelId: channelId)
     }
 }
 
@@ -206,13 +209,33 @@ extension AmityChatSettingsScreenViewModel {
 
     // MARK: Update Action - Leave chat (Group Chat)
     func leaveChat() {
-        channelController.leaveChannel { [weak self] result, error in
-            guard let strongSelf = self else { return }
-            DispatchQueue.main.async {
-                if let error = error {
-                    strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
-                } else {
-                    strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
+        // Send custom message with leave chat scenario (Must to send before leave channel)
+        var isDispatchGroupLeave = false
+        dispatchGroup.enter()
+        let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
+        customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+            switch result {
+            case .success(_):
+                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+            case .failure(_):
+                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+            }
+            if !isDispatchGroupLeave {
+                isDispatchGroupLeave = true
+                self.dispatchGroup.leave()
+            }
+        }
+        
+        // Leave chat when send custom message complete
+        dispatchGroup.notify(queue: .main) {
+            self.channelController.leaveChannel { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let error = error {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
+                    } else {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
+                    }
                 }
             }
         }
