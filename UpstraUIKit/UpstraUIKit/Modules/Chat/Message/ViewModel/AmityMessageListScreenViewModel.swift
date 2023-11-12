@@ -768,9 +768,7 @@ extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     func sendAudio() {
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
-        NSLog("[Recorder] Start create audio message")
         messageAudio?.create { [weak self] in
-            NSLog("[Recorder] Create audio message success")
             self?.messageAudio = nil
             self?.delegate?.screenViewModelEvents(for: .updateMessages)
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
@@ -780,9 +778,7 @@ extension AmityMessageListScreenViewModel {
     
     func sendAudio(tempAudioURL: URL) {
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
-        NSLog("[Recorder] Start resend audio message")
         messageAudio?.create(tempAudioURL: tempAudioURL) { [weak self] in
-            NSLog("[Recorder] Resend audio message success")
             self?.messageAudio = nil
             self?.delegate?.screenViewModelEvents(for: .updateMessages)
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)

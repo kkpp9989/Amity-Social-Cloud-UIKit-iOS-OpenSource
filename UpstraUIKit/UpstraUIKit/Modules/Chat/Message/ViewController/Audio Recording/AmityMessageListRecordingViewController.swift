@@ -79,7 +79,6 @@ final class AmityMessageListRecordingViewController: UIViewController {
     }
     
     func stopRecording() {
-        NSLog("[Recorder] Start stop recording")
         AmityAudioRecorder.shared.stopRecording()
     }
     
@@ -249,7 +248,6 @@ private extension AmityMessageListRecordingViewController {
 extension AmityMessageListRecordingViewController: AmityAudioRecorderDelegate {
     
     func finishRecording(state: AmityAudioRecorderState) {
-        NSLog("[Recorder] Start finish recording handler")
         finishRecordingHandler?(state)
     }
     
