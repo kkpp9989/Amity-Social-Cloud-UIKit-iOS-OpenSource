@@ -68,6 +68,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var editor: AmityMessageEditor?
     private var messageFlagger: AmityMessageFlagger?
     private var topicSubscription: AmityTopicSubscription?
+    private var customMessageController: AmityCustomMessageController
 
     // MARK: - Collection
     private var messagesCollection: AmityCollection<AmityMessage>?
@@ -105,6 +106,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
         subChannelRepository = AmitySubChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         topicSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
+        customMessageController = AmityCustomMessageController(channelId: channelId)
     }
     
     // MARK: - DataSource
@@ -398,6 +400,17 @@ extension AmityMessageListScreenViewModel {
             } else {
                 if result?.currentUserMembership == .member {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
+                    
+                    // Send custom message with join chat scenario
+                    let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
+                    self.customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                        switch result {
+                        case .success(_):
+                            print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+                        case .failure(_):
+                            print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+                        }
+                    }
                 }
             }
         }
