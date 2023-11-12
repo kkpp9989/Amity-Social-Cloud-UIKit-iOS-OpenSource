@@ -166,10 +166,8 @@ extension AmityRecentChatViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-//            print("[Channel List] numberOfRowsInSection when reloading table view (section 0): 1")
             return 1
         } else {
-//            print("[Channel List] numberOfRowsInSection when reloading table view (section 1)(channels.count): \(screenViewModel.dataSource.numberOfRow(in: section))")
             return screenViewModel.dataSource.numberOfRow(in: section)
         }
     }
@@ -189,8 +187,7 @@ extension AmityRecentChatViewController: UITableViewDataSource {
             configureOwner(for: cell)
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath)
-//            configure(for: cell, at: indexPath)
+            let cell: AmityRecentChatTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath) as! AmityRecentChatTableViewCell
             return cell
         }
         
