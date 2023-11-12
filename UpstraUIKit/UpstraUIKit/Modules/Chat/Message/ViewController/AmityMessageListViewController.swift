@@ -870,7 +870,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find file for message: \(message.messageId)")
             }
-        case .forward(indexPath: let indexPath):
+        case .forward(_):
             messageViewController.updateEditMode(isEdit: true)
             composeBar.showForwardMenuButton(show: true)
         case .copy(indexPath: let indexPath):
@@ -880,9 +880,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             setReplyContainerView(message)
             showReplyContainerView()
+            composeBar.prepareTypingText()
         case .jumpReply(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
-            screenViewModel.action.jumpToTargetId(message)
+            screenViewModel.action.jumpToMessageId(message.parentId ?? "")
         case .avatar(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             AmityEventHandler.shared.userDidTap(from: self, userId: message.userId)
