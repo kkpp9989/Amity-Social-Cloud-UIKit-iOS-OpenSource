@@ -174,7 +174,8 @@ open class AmityExpandableLabel: UILabel {
                         
                         attributedString.addAttributes([
                             .foregroundColor: hyperLinkColor,
-                            .attachment: url], range: match.range)
+                            .attachment: url,
+                            .underlineStyle: NSUnderlineStyle.single.rawValue], range: match.range)
     //                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
                         hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
                         
@@ -185,7 +186,8 @@ open class AmityExpandableLabel: UILabel {
                         
                         attributedString.addAttributes([
                             .foregroundColor: hyperLinkColor,
-                            .attachment: url], range: match.range)
+                            .attachment: url,
+                            .underlineStyle: NSUnderlineStyle.single.rawValue], range: match.range)
     //                    attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
                         hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
                         
@@ -750,7 +752,9 @@ extension AmityExpandableLabel {
                 let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
                 attributedString.addAttributes([
                     .foregroundColor: hyperLinkColor,
-                    .attachment: url], range: clampedRange)
+                    .attachment: url,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+                    .underlineColor: hyperLinkColor],range: clampedRange)
                 hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
                 
 //                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
@@ -761,7 +765,9 @@ extension AmityExpandableLabel {
                 let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
                 attributedString.addAttributes([
                     .foregroundColor: hyperLinkColor,
-                    .attachment: url], range: clampedRange)
+                    .attachment: url,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+                    .underlineColor: hyperLinkColor],range: clampedRange)
                 hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
                 
 //                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
