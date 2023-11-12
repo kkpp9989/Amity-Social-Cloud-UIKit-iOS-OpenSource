@@ -39,10 +39,10 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         super.prepareForReuse()
         // Reset any cell-specific properties here
         statusBadgeImageView.image = nil
+        statusBadgeImageView.isHidden = true
         badgeStatusView.isHidden = true
         previewMessageLabel.text = "No message"
-//        avatarView.image = nil
-        avatarView.placeholder = AmityIconSet.defaultGroupChat
+        avatarView.image = nil
         channel = nil
     }
     
@@ -93,13 +93,14 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)
         titleLabel.text = channel.displayName
-        avatarView.placeholder = AmityIconSet.defaultAvatar
+//        avatarView.placeholder = AmityIconSet.defaultAvatar
         mentionBadgeImageView.isHidden = !channel.object.hasMentioned
         badgeView.isHidden = channel.unreadCount < 1
 
         switch channel.channelType {
         case .standard:
-            avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
+            avatarView.setImage(withImageURL: channel.avatarURL)
+            avatarView.placeholder = AmityIconSet.defaultGroupChat
             memberLabel.text = "(\(channel.memberCount))"
             statusBadgeImageView.isHidden = true
             badgeStatusView.isHidden = true
@@ -110,28 +111,38 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             badgeStatusView.isHidden = false
             badgeStatusView.backgroundColor = .white
             iconImageView.isHidden = true
-            
+            avatarView.placeholder = AmityIconSet.defaultAvatar
+
             getOtherUser(channel: channel) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
                         // Set avatar
-                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL)
                         titleLabel.text = otherMember.displayName
                         let status = otherMember.metadata?["user_presence"] as? String ?? ""
                         if status != "available" {
                             statusBadgeImageView.image = setImageFromStatus(status)
-                        } else {
+                        } else if status == "available" {
 //                            if channel.isOnline {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
 //                            } else {
 //                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
 //                            }
+                        } else {
+                            statusBadgeImageView.isHidden = true
+                            badgeStatusView.isHidden = true
+                            badgeStatusView.backgroundColor = .clear
                         }
+                    } else {
+                        statusBadgeImageView.isHidden = true
+                        badgeStatusView.isHidden = true
+                        badgeStatusView.backgroundColor = .clear
                     }
                 }
             }
         case .community, .live:
-            avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
+            avatarView.setImage(withImageURL: channel.avatarURL)
+            avatarView.placeholder = AmityIconSet.defaultGroupChat
             memberLabel.text = "(\(channel.memberCount))"
             statusBadgeImageView.isHidden = true
             badgeStatusView.isHidden = true
@@ -193,41 +204,16 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
             statusBadgeImageView.isHidden = true
+            badgeStatusView.isHidden = true
             badgeStatusView.backgroundColor = .clear
             return UIImage()
-        }
-    }
-    
-    func getOtherUserByMemberShip(channelId : String, completion: @escaping (_ user: AmityUser?) -> Void) {
-        let membershipParticipation = AmityChannelMembership(client: AmityUIKitManager.client, andChannel: channelId)
-        token = membershipParticipation.getMembers(filter: .all, sortBy: .firstCreated, roles: []).observe { collection, change, error in
-            if let error = error {
-                print("------> error: \(error.localizedDescription)")
-            }
-            let object = collection.allObjects()
-            if collection.dataStatus == .fresh {
-                self.token?.invalidate()
-            }
-            if object.count > 0 {
-                let currentLoginedUserId = AmityUIKitManagerInternal.shared.currentUserId
-                let otherMember = object.filter { member in
-                    return member.userId != currentLoginedUserId
-                }
-                if otherMember.count > 0, let otherMemberModel = otherMember[0].user {
-                    completion(otherMemberModel)
-                } else {
-                    completion(nil)
-                }
-            } else {
-                completion(nil)
-            }
         }
     }
     
     func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {
         token?.invalidate()
         if !channel.getOtherUserId().isEmpty {
-            token = repository?.getUser(channel.getOtherUserId()).observe({ [weak self] user, error in
+            token = repository?.getUser(channel.getOtherUserId()).observeOnce({ [weak self] user, error in
                 guard let weakSelf = self else { return }
                 let userObject = user.snapshot
                 weakSelf.token?.invalidate()
