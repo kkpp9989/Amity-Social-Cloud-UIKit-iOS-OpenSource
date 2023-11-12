@@ -63,9 +63,10 @@ public final class AmityMessageListViewController: AmityViewController {
     @IBOutlet private var replyDisplayNameLabel: UILabel!
     @IBOutlet private var replyDescLabel: UILabel!
     @IBOutlet private var replyContainerView: UIView!
+    @IBOutlet private var replySeparatorContainerView: UIView!
     @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var replyCloseViewButton: UIButton!
-    
+
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var connectionStatatusObservation: NSKeyValueObservation?
@@ -186,14 +187,16 @@ public final class AmityMessageListViewController: AmityViewController {
 	}
     
     private func setupReplyView() {
+        replySeparatorContainerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         replyCloseViewButton.setImage(AmityIconSet.iconCloseReply, for: .normal)
         
         replyContentImageView.contentMode = .center
         replyContentImageView.layer.cornerRadius = 4
-        
+
         replyAvatarView.placeholder = AmityIconSet.defaultAvatar
         replyDisplayNameLabel.font = AmityFontSet.body
         replyDescLabel.font = AmityFontSet.body
+        replyDescLabel.textColor = AmityColorSet.base.blend(.shade3)
     }
 }
 
@@ -863,7 +866,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find file for message: \(message.messageId)")
             }
-        case .forward(indexPath: let indexPath):
+        case .forward(_):
             messageViewController.updateEditMode(isEdit: true)
             composeBar.showForwardMenuButton(show: true)
         case .copy(indexPath: let indexPath):
@@ -873,9 +876,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             setReplyContainerView(message)
             showReplyContainerView()
+            composeBar.prepareTypingText()
         case .jumpReply(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
-            screenViewModel.action.jumpToTargetId(message)
+            screenViewModel.action.jumpToMessageId(message.parentId ?? "")
         case .avatar(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             AmityEventHandler.shared.userDidTap(from: self, userId: message.userId)
@@ -1066,6 +1070,18 @@ extension AmityMessageListViewController: AmityFilePickerDelegate {
 extension AmityMessageListViewController {
     private func setReplyContainerView(_ message: AmityMessageModel) {
         self.message = message
+        
+        let url = message.object.user?.getAvatarInfo()?.fileURL
+        replyAvatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
+        
+        var displayName = ""
+        if message.isOwner {
+            displayName = "Reply to Yourself"
+        } else {
+            displayName = message.object.user?.displayName ?? "Anonymous"
+        }
+        replyDisplayNameLabel.text = displayName
+        
         if message.messageType == .image {
             AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: message.object, size: .medium) { [weak self] in
                 self?.replyContentImageView.image = AmityIconSet.defaultMessageImage
@@ -1082,19 +1098,35 @@ extension AmityMessageListViewController {
                     self?.replyContentImageView.contentMode = .center
                 }
             }
-        }
-        
-        let url = message.object.user?.getAvatarInfo()?.fileURL
-        replyAvatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
-        
-        var displayName = ""
-        if message.isOwner {
-            displayName = "Reply to Yourself"
+            replyDescLabel.text = "Image"
+        } else if message.messageType == .video {
+            if let thumbnailInfo = message.object.getVideoThumbnailInfo() {
+                // Set video thumbnail
+                replyContentImageView.isHidden = false
+                replyContentImageView.loadImage(with: thumbnailInfo.fileURL, size: .medium, placeholder: AmityIconSet.videoThumbnailPlaceholder, optimisticLoad: true)
+                replyContentImageView.contentMode = .scaleAspectFill
+            }
+            replyDescLabel.text = "Video"
+        } else if message.messageType == .file {
+            if let fileInfo = message.object.getFileInfo() {
+                let file = AmityFile(state: .downloadable(fileData: fileInfo))
+                replyContentImageView.image = file.fileIcon
+                replyContentImageView.isHidden = false
+                replyContentImageView.contentMode = .center
+            } else {
+                replyContentImageView.isHidden = true
+            }
+            replyDescLabel.text = "File"
+        } else if message.messageType == .audio {
+            replyContentImageView.tintColor = AmityColorSet.base
+            replyContentImageView.isHidden = false
+            replyContentImageView.image = AmityIconSet.Chat.iconPlay
+            replyContentImageView.contentMode = .center
+            replyDescLabel.text = "Voice message"
         } else {
-            displayName = message.object.user?.displayName ?? "Anonymous"
+            replyContentImageView.isHidden = true
+            replyDescLabel.text = message.text
         }
-        replyDisplayNameLabel.text = displayName
-        replyDescLabel.text = message.text
     }
     
     private func showReplyContainerView() {

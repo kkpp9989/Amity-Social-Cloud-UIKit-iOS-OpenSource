@@ -172,11 +172,14 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                 switch message.syncState {
                 case .error:
                     errorButton.isHidden = false
+                    readCountLabel?.isHidden = true
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
                 case .syncing:
                     fullString.append(NSAttributedString(string: AmityLocalizedStringSet.MessageList.sending.localizedString, attributes: style))
+                    readCountLabel?.isHidden = true
                 case .synced:
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
+                    readCountLabel?.isHidden = false
                 default:
                     break
                 }

@@ -98,7 +98,6 @@ protocol AmityMessageListScreenViewModelAction {
     func updateForwardMessageInList(with message: AmityMessageModel)
     func resetDataInForwardMessageList()
 
-    func jumpToTargetId(_ message: AmityMessageModel)
     func jumpToMessageId(_ messageId: String)
     
     func startRealtimeSubscription()
