@@ -27,7 +27,8 @@ protocol AmityComposeBar: AnyObject {
     func showForwardMenuButton(show: Bool)
     func updateViewDidSelectForwardMessage(amount: Int)
     func showJoinMenuButton(show: Bool)
-    
+    func prepareTypingText()
+
     var deletingTarget: UIView? { get set }
     var isTimeout: Bool { get set }
     var selectedMenuHandler: ((AmityKeyboardComposeBarModel.MenuType) -> Void)? { get set }

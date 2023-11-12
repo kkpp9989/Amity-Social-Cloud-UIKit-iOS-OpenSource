@@ -253,7 +253,6 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
 			textComposeBarView.textView = newValue
 		}
 	}
-	
     
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
@@ -420,6 +419,10 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         present(vc, animated: true, completion: nil)
     }
     
+    func prepareTypingText() {
+        textComposeBarView.becomeFirstResponder()
+        textComposeBarView.textView.becomeFirstResponder()
+    }
 }
 
 extension AmityMessageListComposeBarViewController: UIPopoverPresentationControllerDelegate {
