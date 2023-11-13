@@ -73,9 +73,9 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             
             // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles])
             let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(false).identifier,
-                                                                      icon: AmityChatSettingsItem.delete(false).icon,
-                                                                      title: AmityChatSettingsItem.delete(false).title,
-                                                                      description: nil,
+                                                                      icon: AmityChatSettingsItem.leave.icon,
+                                                                      title: AmityChatSettingsItem.leave.title,
+                                                                     description: nil,
                                                                       titleTextColor: AmityColorSet.alert)
             settingsItems.append(.textContent(content: itemDeleteChatContent))
             
@@ -124,10 +124,10 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                           title: AmityChatSettingsItem.delete(isCanEditGroupChannel).title,
                                                                           description: AmityChatSettingsItem.delete(isCanEditGroupChannel).description,
                                                                           titleTextColor: AmityColorSet.alert)
-                settingsItems.append(.textContent(content: itemDeleteChatContent))
+//                settingsItems.append(.textContent(content: itemDeleteChatContent))
                 
                 // MARK: Separator
-                settingsItems.append(.separator)
+//                settingsItems.append(.separator)
             } else {
                 // MARK: Member list (Group Chat)
                 let itemMembersContent = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.members.identifier,

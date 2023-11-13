@@ -114,18 +114,28 @@ final class AmityChatSettingsViewController: AmityViewController {
                         from: self)
                 }
             case "delete": // (1:1 Chat, Group Chat [Moderator role])
+                
+                // Disable for 
+                /*
                 let alertTitle = AmityLocalizedStringSet.ChatSettings.deleteChatTitle.localizedString
-                var description: String
+
                 if channel.channelType == .conversation {
                     description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
                 } else {
                     description = AmityLocalizedStringSet.ChatSettings.deleteGroupChatMessage.localizedString
                 }
+                */
+                
+                var description: String
+
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
+                description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+
                 
                 AmityAlertController.present(
                     title: alertTitle,
                     message: description,
-                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] in
+                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
                         guard let strongSelf = self else { return }
                         strongSelf.screenViewModel.action.deleteChat()
                     })],
