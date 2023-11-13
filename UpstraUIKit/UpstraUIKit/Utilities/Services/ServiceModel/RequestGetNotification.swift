@@ -15,11 +15,16 @@ struct RequestGetNotification {
     
     func requestNotificationHistory(_ timeStamp: Int, _ completion: @escaping(Result<AmityNotificationTrayModel,Error>) -> ()) {
         let domainURL = "https://beta.amity.services"
-        requestMeta.urlRequest = "\(domainURL)/notifications/v3/history"
+        var endpointURL = "/notifications/v3/history"
+        if timeStamp != 0 {
+            endpointURL += "?startAfter=\(timeStamp)"
+        }
+        requestMeta.urlRequest = "\(domainURL)\(endpointURL)"
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.encoding = .withQueryParameters(queryParameters: [:])
+        requestMeta.method = .get
+        requestMeta.encoding = .urlEncoding
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))

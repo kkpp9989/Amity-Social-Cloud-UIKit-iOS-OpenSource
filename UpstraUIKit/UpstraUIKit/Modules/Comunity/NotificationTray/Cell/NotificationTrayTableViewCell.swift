@@ -16,10 +16,15 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+       setupView()
+    }
+    
+    private func setupView() {
         selectionStyle = .none
         backgroundColor = AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
-        descLabel.font = AmityFontSet.bodyBold
+        avatarView.placeholder = AmityIconSet.defaultAvatar
+        descLabel.font = AmityFontSet.body
         descLabel.textColor = AmityColorSet.base
         descLabel.numberOfLines = 0
         dateLabel.font = AmityFontSet.caption
@@ -37,6 +42,12 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
         } else {
             contentView.backgroundColor = UIColor(hex: "F0FBFF")
         }
+        
+        let targetNames: [String] = model.actors.map { $0.name } + [model.targetName]
+        let attributedString = NSMutableAttributedString(string: model.description)
+        attributedString.setFont(AmityFontSet.bodyBold, forStrings: targetNames)
+        
+        descLabel.attributedText = attributedString
     }
     
     func relativeTime(from timestamp: Int) -> String {
@@ -63,6 +74,16 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
         } else {
             let years = timeDifference / 29030400
             return "\(years)y"
+        }
+    }
+}
+
+extension NSMutableAttributedString {
+    
+    func setFont(_ font: UIFont, forStrings strings: [String]) {
+        for string in strings {
+            let range = (self.string as NSString).range(of: string)
+            addAttribute(.font, value: font, range: range)
         }
     }
 }
