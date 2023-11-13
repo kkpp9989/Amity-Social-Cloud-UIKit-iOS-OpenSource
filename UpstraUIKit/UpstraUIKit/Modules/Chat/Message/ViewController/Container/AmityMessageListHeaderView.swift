@@ -47,10 +47,6 @@ private extension AmityMessageListHeaderView {
 private extension AmityMessageListHeaderView {
     func setupView() {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
-        
-        /* [Custom for ONE Krungthai] Change background color of view to clear for use background of navigation bar */
-        // [Original]
-//        contentView.backgroundColor = AmityColorSet.backgroundColor
         contentView.backgroundColor = .clear
         
         backButton.tintColor = AmityColorSet.base
@@ -93,18 +89,6 @@ extension AmityMessageListHeaderView {
             memberCount.isHidden = false
             statusView.isHidden = true
         case .conversation:
-            // [Original]
-//            avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultAvatar)
-//            if !channel.getOtherUserId().isEmpty {
-//                token?.invalidate()
-//                token = repository?.getUser(channel.getOtherUserId()).observeOnce { [weak self] user, error in
-//                    guard let weakSelf = self else { return }
-//                    if let userObject = user.object {
-//                        weakSelf.displayNameLabel.text = userObject.displayName
-//                    }
-//                }
-//            }
-            /* [Custom for ONE Krungthai] Get other user by membership in SDK */
             getOtherUser(channel: channel) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
@@ -119,8 +103,7 @@ extension AmityMessageListHeaderView {
                     }
                 }
             }
-
-        case .community:
+        case .community, .live:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
             /* [Custom for ONE Krungthai] Show member count and hide status view for group chat */
