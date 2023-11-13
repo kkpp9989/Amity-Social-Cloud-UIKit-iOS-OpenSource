@@ -76,7 +76,8 @@ extension AmityMessagesSearchScreenViewModel {
             isEndingResult = false
         }
 
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
+//        delegate?.screenViewModel(self, loadingState: .loading)
         var serviceRequest = RequestSearchingChat()
         serviceRequest.keyword = currentKeyword
         serviceRequest.size = size
@@ -101,7 +102,8 @@ extension AmityMessagesSearchScreenViewModel {
                 print(error)
 
                 DispatchQueue.main.async {
-                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
+                    AmityEventHandler.shared.hideKTBLoading()
+//                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
                     strongSelf.isLoadingMore = false
                 }
                 /* Hide loading indicator */
@@ -198,7 +200,8 @@ extension AmityMessagesSearchScreenViewModel {
         isLoadingMore = true
 
         /* Get data next section */
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
+//        delegate?.screenViewModel(self, loadingState: .loading)
         debouncer.run { [self] in
             search(withText: currentKeyword)
         }
@@ -253,7 +256,8 @@ extension AmityMessagesSearchScreenViewModel {
         // Wait for all iterations to complete
         dispatchGroup.notify(queue: .main) {
             /* Hide loading indicator */
-            self.delegate?.screenViewModel(self, loadingState: .loaded)
+            AmityEventHandler.shared.hideKTBLoading()
+//            self.delegate?.screenViewModel(self, loadingState: .loaded)
             self.isLoadingMore = false
 
             if self.dataList.isEmpty {
@@ -270,6 +274,6 @@ extension AmityMessagesSearchScreenViewModel {
         channelList.removeAll()
         dummyList.removeAll()
 
-        delegate?.screenViewModelDidSearchNotFound(self)
+        delegate?.screenViewModelDidSearch(self)
     }
 }
