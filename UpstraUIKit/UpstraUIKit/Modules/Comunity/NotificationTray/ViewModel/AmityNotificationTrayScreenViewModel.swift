@@ -13,24 +13,30 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
     
     weak var delegate: AmityNotificationTrayScreenViewModelDelegate?
     
-    private var collectionData: AmityNotificationTrayModel?
+    private var collectionData: [NotificationTray] = []
     
-    private var page: Int = 1
-    
+    private var page: Int = 0
+    private var totalPages: Int = 1
+    private var pageCount: Int = 0
+
     init() {}
     
     func fetchData() {
-        let timeStamp = getCurrentTimestamp()
+        if pageCount >= totalPages { return }
+        AmityEventHandler.shared.showKTBLoading()
         let serviceRequest = RequestGetNotification()
-        serviceRequest.requestNotificationHistory(timeStamp) { [self] result in
+        serviceRequest.requestNotificationHistory(page) { [self] result in
             switch result {
             case .success(let dataResponse):
-                collectionData = dataResponse
+                collectionData += dataResponse.data
+                page = dataResponse.nextPage ?? 0
+                totalPages = dataResponse.totalPages
                 delegate?.screenViewModelDidUpdateData(self)
             case .failure(let error):
                 print(error)
                 delegate?.screenViewModelDidUpdateData(self)
             }
+            pageCount += 1
         }
     }
 
@@ -46,42 +52,20 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
         }
     }
     
-    private func getCurrentTimestamp() -> Int {
-        // Get the current date and time in the user's local time zone
-        let currentDate = Date()
-
-        // Create a DateFormatter to specify the time zone as local
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current
-
-        // Format the current date as a Unix timestamp string
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let timestampString = dateFormatter.string(from: currentDate)
-
-        // Convert the timestamp string to a Date object
-        if let timestampDate = dateFormatter.date(from: timestampString) {
-            // Get the Unix timestamp as an integer (number of seconds since 1970)
-            let unixTimestamp = Int(timestampDate.timeIntervalSince1970)
-            return unixTimestamp
-        } else {
-            // Return a default value or handle the error as needed
-            return Int(currentDate.timeIntervalSince1970)
-        }
-    }
-    
     // MARK: - Data Source
     
     func numberOfItems() -> Int {
-        return collectionData?.data.count ?? 0
+        return collectionData.count
     }
     
     func item(at indexPath: IndexPath) -> NotificationTray? {
-        return collectionData?.data[indexPath.row]
+        return collectionData[indexPath.row]
     }
     
     func loadMore() {
-        page += 1
-//        fetchData()
+        if pageCount < totalPages {
+            fetchData()
+        }
     }
     
     func updateReadItem(model: NotificationTray) {

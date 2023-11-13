@@ -11,6 +11,7 @@ import Foundation
 // MARK: - AmityNotificationTray
 public struct AmityNotificationTrayModel: Codable {
     let totalPages: Int
+    let nextPage: Int?
     let data: [NotificationTray]
 }
 

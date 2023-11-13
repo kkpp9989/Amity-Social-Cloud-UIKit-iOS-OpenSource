@@ -46,7 +46,6 @@ class AmityNotificationTrayViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        AmityEventHandler.shared.showKTBLoading()
         screenViewModel.fetchData()
         screenViewModel.updateReadTray()
     }
@@ -60,6 +59,7 @@ class AmityNotificationTrayViewController: AmityViewController {
         tableView.delegate = self
         tableView.separatorStyle = .singleLine
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = UITableView.automaticDimension
     }
     
     private func setupScreenViewModel() {
@@ -85,8 +85,9 @@ extension AmityNotificationTrayViewController: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: NotificationTrayTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        if tableView.isBottomReached {
-//            screenViewModel.loadNext()
+        if let item = screenViewModel.item(at: indexPath) {
+            cell.configure(model: item)
+            cell.layoutIfNeeded()
         }
         return cell
     }
@@ -103,6 +104,7 @@ extension AmityNotificationTrayViewController: UITableViewDelegate {
         guard let cell = cell as? NotificationTrayTableViewCell else { return }
         if let item = screenViewModel.item(at: indexPath) {
             cell.configure(model: item)
+            cell.layoutIfNeeded()
         }
     }
 
