@@ -135,7 +135,7 @@ final class AmityAudioPlayer: NSObject {
                 }
             }
         } catch {
-            Log.add("Error while preparing audio session [playing audio]: \(error.localizedDescription)")
+            Log.add("Error while preparing audio session [playing audio in chat]: \(error.localizedDescription)")
         }
     }
     
