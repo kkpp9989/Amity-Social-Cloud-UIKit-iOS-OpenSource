@@ -138,7 +138,15 @@ extension AmityMessageListRecordingViewController {
     }
     
     func startAudio() {
-        player.play()
+        do {
+            // Add audio session
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            // Play audio
+            player.play()
+        } catch {
+            Log.add("Error while preparing audio session [playing audio in recording view]: \(error.localizedDescription)")
+        }
+        
     }
     
     func stopAudio() {
