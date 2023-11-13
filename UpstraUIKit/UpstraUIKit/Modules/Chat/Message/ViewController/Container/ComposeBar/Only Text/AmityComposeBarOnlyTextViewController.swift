@@ -78,7 +78,14 @@ private extension AmityComposeBarOnlyTextViewController {
 		textComposeBarView.delegate = self
         textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
         textComposeBarView.textViewDidChanged = { [weak self] text in
-            self?.screenViewModel.action.setText(withText: text)
+            if text.count >= 10000 {
+                let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self?.present(alertController, animated: true, completion: nil)
+            } else {
+                self?.screenViewModel.action.setText(withText: text)
+            }
         }
         
         textComposeBarView.textViewShouldBeginEditing = { [weak self] textView in
