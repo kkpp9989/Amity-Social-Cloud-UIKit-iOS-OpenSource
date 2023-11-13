@@ -167,7 +167,7 @@ extension AmityChannelMemberScreenViewModel {
     }
     
     private func sendOperationMessage(users: [String], event: AmityGroupChatEvent) {
-        let currentUserName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
+        let currentUserName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
         switch event {
         case .addMember:
             for user in users {
@@ -240,7 +240,7 @@ extension AmityChannelMemberScreenViewModel {
                 strongSelf.delegate?.screenViewModelDidRemoveMemberSuccess()
                 
                 // Send custom message with remove user scenario
-                let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
+                let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
                 let objectDisplayName = strongSelf.member(at: indexPath).displayName
                 strongSelf.customMessageController.send(event: .removeMember, subjectUserName: subjectDisplayName, objectUserName: objectDisplayName) { result in
                     switch result {

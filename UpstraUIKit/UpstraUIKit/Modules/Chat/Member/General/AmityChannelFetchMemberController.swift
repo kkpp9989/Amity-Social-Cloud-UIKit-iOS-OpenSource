@@ -11,6 +11,7 @@ import AmitySDK
 
 protocol AmityChannelFetchMemberControllerProtocol {
     func fetch(roles: [String], _ completion: @escaping (Result<[AmityChannelMembershipModel], Error>) -> Void)
+    func fetchOnce(roles: [String], _ completion: @escaping (Result<[AmityChannelMembershipModel], Error>) -> Void)
     func loadMore(_ completion: (Bool) -> Void)
 }
 
@@ -19,6 +20,7 @@ final class AmityChannelFetchMemberController: AmityChannelFetchMemberController
     private var membershipParticipation: AmityChannelParticipation?
     private var memberCollection: AmityCollection<AmityChannelMember>?
     private var memberToken: AmityNotificationToken?
+    private var memberTokenOnce: AmityNotificationToken?
     
     init(channelId: String) {
         membershipParticipation = AmityChannelParticipation(client: AmityUIKitManagerInternal.shared.client, andChannel: channelId)
@@ -38,6 +40,26 @@ final class AmityChannelFetchMemberController: AmityChannelFetchMemberController
                         members.append(AmityChannelMembershipModel(member: member))
                     }
                     completion(.success(members))
+                }
+            }
+        }
+    }
+    
+    func fetchOnce(roles: [String], _ completion: @escaping (Result<[AmityChannelMembershipModel], Error>) -> Void) {
+        memberCollection = membershipParticipation?.getMembers(filter: .all, sortBy: .lastCreated, roles: roles)
+        memberTokenOnce = memberCollection?.observe { (collection, change, error) in
+            if let error = error {
+                completion(.failure(error))
+                self.memberTokenOnce?.invalidate()
+            } else {
+                if collection.dataStatus == .fresh {
+                    var members: [AmityChannelMembershipModel] = []
+                    for index in 0..<collection.count() {
+                        guard let member = collection.object(at: index) else { continue }
+                        members.append(AmityChannelMembershipModel(member: member))
+                    }
+                    completion(.success(members))
+                    self.memberTokenOnce?.invalidate()
                 }
             }
         }
