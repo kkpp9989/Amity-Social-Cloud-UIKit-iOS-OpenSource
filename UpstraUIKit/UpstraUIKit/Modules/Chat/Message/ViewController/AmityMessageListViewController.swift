@@ -251,6 +251,7 @@ private extension AmityMessageListViewController {
         DispatchQueue.main.async {
             let cameraPicker = UIImagePickerController()
             cameraPicker.sourceType = .camera
+            cameraPicker.videoQuality = .typeHigh
             cameraPicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
             cameraPicker.delegate = self
             self.present(cameraPicker, animated: true, completion: nil)
