@@ -63,7 +63,7 @@ extension AmityChannelsSearchViewModel {
             isEndingResult = false
         }
         
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
         var serviceRequest = RequestSearchingChat()
         serviceRequest.keyword = currentKeyword
         serviceRequest.paginateToken = paginateToken
@@ -85,7 +85,7 @@ extension AmityChannelsSearchViewModel {
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async { [self] in
-                    delegate?.screenViewModel(self, loadingState: .loaded)
+                    AmityEventHandler.shared.hideKTBLoading()
                     if channelList.isEmpty {
                         delegate?.screenViewModelDidSearchNotFound(self)
                     } else {
@@ -145,7 +145,7 @@ extension AmityChannelsSearchViewModel {
         DispatchQueue.main.async { [self] in
             channelList = updatedChannelList
             /* Hide loading indicator */
-            delegate?.screenViewModel(self, loadingState: .loaded)
+            AmityEventHandler.shared.hideKTBLoading()
             isLoadingMore = false
             
             if channelList.isEmpty {
@@ -164,7 +164,7 @@ extension AmityChannelsSearchViewModel {
         isLoadingMore = true
         
         /* Get data next section */
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
             search(withText: currentKeyword)
         }
@@ -196,6 +196,6 @@ extension AmityChannelsSearchViewModel {
         channelList.removeAll()
         dummyList.removeAll()
         
-        delegate?.screenViewModelDidSearchNotFound(self)
+        delegate?.screenViewModelDidSearch(self)
     }
 }

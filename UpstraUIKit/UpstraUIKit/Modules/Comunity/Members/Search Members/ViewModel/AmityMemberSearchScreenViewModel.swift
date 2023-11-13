@@ -45,11 +45,11 @@ extension AmityMemberSearchScreenViewModel {
         isEndingResult = false
         guard let text = text, !text.isEmpty else {
             delegate?.screenViewModelDidClearText(self)
-            delegate?.screenViewModel(self, loadingState: .loaded)
+            AmityEventHandler.shared.hideKTBLoading()
             return
         }
 
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
         memberListRepositoryManager.search(withText: text, sortyBy: .displayName) { [weak self] (updatedMemberList) in
             /* Set is ending result static value to true if result is not more than 20 */
             guard let strongSelf = self else { return }
@@ -77,7 +77,7 @@ extension AmityMemberSearchScreenViewModel {
         } else {
             delegate?.screenViewModelDidSearch(self)
         }
-        delegate?.screenViewModel(self, loadingState: .loaded)
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func loadMore() {
@@ -85,18 +85,18 @@ extension AmityMemberSearchScreenViewModel {
         if isEndingResult || memberList.isEmpty { return }
         
         /* Get data next section */
-        delegate?.screenViewModel(self, loadingState: .loading)
+        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
             let isEndPage = memberListRepositoryManager.loadMore()
             if isEndPage {
                 isEndingResult = true
-                delegate?.screenViewModel(self, loadingState: .loaded)
+                AmityEventHandler.shared.hideKTBLoading()
             }
         }
     }
     
     func clearData() {
         memberList.removeAll()
-        delegate?.screenViewModelDidSearchNotFound(self)
+        delegate?.screenViewModelDidSearch(self)
     }
 }
