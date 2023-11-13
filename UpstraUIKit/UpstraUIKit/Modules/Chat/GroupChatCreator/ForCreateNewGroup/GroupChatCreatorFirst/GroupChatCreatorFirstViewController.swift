@@ -41,7 +41,7 @@ class GroupChatCreatorFirstViewController: AmityViewController {
     open var delegate: GroupChatCreatorViewControllerDelegate?
 
     private var isValueChanged: Bool {
-        let isValueExisted = !displayNameTextField.text!.isEmpty
+        let isValueExisted = !displayNameTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         return isValueExisted
     }
     
@@ -135,7 +135,7 @@ class GroupChatCreatorFirstViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         view.endEditing(true)
-		screenViewModel?.action.createChannel(displayName: displayNameTextField.text ?? "")
+        screenViewModel?.action.createChannel(displayName: displayNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
     }
     
     @IBAction private func avatarButtonTap(_ sender: Any) {

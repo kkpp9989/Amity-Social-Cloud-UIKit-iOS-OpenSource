@@ -35,7 +35,7 @@ class AmityGroupChatEditViewController: AmityViewController {
             return false
         }
         let isValueChanged = (nameTextField.text != channel.displayName) || (uploadingAvatarImage != nil)
-        let isValueExisted = !nameTextField.text!.isEmpty
+        let isValueExisted = !nameTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         return (isValueChanged && isValueExisted)
     }
     
@@ -186,7 +186,7 @@ class AmityGroupChatEditViewController: AmityViewController {
                 }
             })
         } else if isValueChanged {
-            screenViewModel?.action.update(displayName: nameTextField.text ?? "")
+            screenViewModel?.action.update(displayName: nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
         }
     }
 }
