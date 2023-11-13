@@ -17,6 +17,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     // MARK: - Controller
     private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
     private let channelController: AmityChannelControllerProtocol
+    private let channelMemberController: AmityChannelFetchMemberControllerProtocol
     private let userController: AmityChatUserControllerProtocol
     private var customMessageController: AmityCustomMessageController
     
@@ -46,6 +47,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
         self.userController = userController
         self.channelId = channelId
         customMessageController = AmityCustomMessageController(channelId: channelId)
+        channelMemberController = AmityChannelFetchMemberController(channelId: channelId)
     }
 }
 
@@ -209,24 +211,61 @@ extension AmityChatSettingsScreenViewModel {
 
     // MARK: Update Action - Leave chat (Group Chat)
     func leaveChat() {
-        // Send custom message with leave chat scenario (Must to send before leave channel)
+        // Start concurrency processing
         var isDispatchGroupLeave = false
         dispatchGroup.enter()
-        let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
-        customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
-            switch result {
-            case .success(_):
-                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
-            case .failure(_):
-                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+        
+        // Check is can leave chat : Current user is moderator and have moderator more than one in group chat
+        if let checkIsCanEditGroupChannel = isCanEditGroupChannel, checkIsCanEditGroupChannel { // Case : Is moderator -> Check amount of moderator before
+            channelMemberController.fetchOnce(roles: [AmityChannelRole.moderator.rawValue, AmityChannelRole.channelModerator.rawValue]) { [weak self] (result) in
+                switch result {
+                case .success(let members):
+                    if members.count > 1 { // Case : Is moderator and have moderator more than one -> Send custom message and leave channel
+                        // Send custom message with leave chat scenario (!!! Must to send before leave channel !!!)
+                        let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+                        self?.customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                            switch result {
+                            case .success(_):
+                                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                            case .failure(_):
+                                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                            }
+                            if !isDispatchGroupLeave {
+                                isDispatchGroupLeave = true
+                                self?.dispatchGroup.leave() // Go to leave channel processing
+                            }
+                        }
+                    } else { // Case : Is moderator and have one moderator only -> Force leave channel with receive error
+                        if !isDispatchGroupLeave {
+                            isDispatchGroupLeave = true
+                            self?.dispatchGroup.leave() // Go to leave channel processing
+                        }
+                    }
+                case .failure: // Case : Is moderator but can't get moderator member -> Try leave channel
+                    if !isDispatchGroupLeave {
+                        isDispatchGroupLeave = true
+                        self?.dispatchGroup.leave() // Go to leave channel processing
+                    }
+                }
             }
-            if !isDispatchGroupLeave {
-                isDispatchGroupLeave = true
-                self.dispatchGroup.leave()
+        } else { // Case : Isn't moderator -> Send custom message and leave channel
+            // Send custom message with leave chat scenario (!!! Must to send before leave channel !!!)
+            let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+            customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                switch result {
+                case .success(_):
+                    print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                case .failure(_):
+                    print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                }
+                if !isDispatchGroupLeave {
+                    isDispatchGroupLeave = true
+                    self.dispatchGroup.leave() // Go to leave channel processing
+                }
             }
         }
         
-        // Leave chat when send custom message complete
+        // Leave chat when check condition and send custom message complete
         dispatchGroup.notify(queue: .main) {
             self.channelController.leaveChannel { [weak self] result, error in
                 guard let strongSelf = self else { return }

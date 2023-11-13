@@ -402,7 +402,7 @@ extension AmityMessageListScreenViewModel {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
                     
                     // Send custom message with join chat scenario
-                    let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? ""
+                    let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
                     self.customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
                         switch result {
                         case .success(_):
