@@ -744,8 +744,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     
     func screenViewModelEvents(for events: AmityMessageListScreenViewModel.Events) {
         switch events {
-        case .updateMessages:
-            
+        case .updateMessages(let isScrollUp):
             let offset = messageViewController.tableView.contentOffset.y
             let contentHeight = messageViewController.tableView.contentSize.height
 
@@ -754,7 +753,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             
             let newcontentHeight = self.messageViewController.tableView.contentSize.height
             let newOffset = (newcontentHeight - contentHeight) + offset
-            self.messageViewController.tableView.setContentOffset(CGPoint(x: 0, y: newOffset), animated: false)
+            if isScrollUp {
+                self.messageViewController.tableView.setContentOffset(CGPoint(x: 0, y: newOffset), animated: false)
+            }
             
             if let messageId = messageId, !messageId.isEmpty {
                 self.messageId = ""

@@ -85,6 +85,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     
     // MARK: - AnyCancellable
     private var disposeBag: Set<AnyCancellable> = []
+    private var disposeBagPresece: Set<AnyCancellable> = []
 
     init(channelType: AmityChannelType) {
         self.channelType = channelType
