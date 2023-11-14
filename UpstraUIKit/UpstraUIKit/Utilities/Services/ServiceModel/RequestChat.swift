@@ -65,7 +65,7 @@ struct RequestChat {
     
     func requestSendMessage(channelId: String, message: AmityMessageModel, completion: @escaping(Result<Bool,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co"
-        requestMeta.urlRequest = "\(domainURL)/api/v3/messages"
+        requestMeta.urlRequest = "\(domainURL)/api/v5/messages"
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
@@ -86,8 +86,10 @@ struct RequestChat {
             type = "video"
         case .custom:
             type = "custom"
+        @unknown default:
+            break
         }
-        var params: [String: Any] = ["channelId": channelId, "type": type]
+        var params: [String: Any] = ["messageFeedId": channelId, "dataType": type, "referenceId": message.messageId]
         
         if let fileId = message.object.fileId, !fileId.isEmpty {
             params["fileId"] = fileId
