@@ -217,8 +217,8 @@ public final class AmityUIKitManager {
     public static func checkPresenceStatus() {
         Task {
             do {
-                try await client.presence.isEnabled()
-                print("------> User presence isEnable")
+                let isEnable = try await client.presence.isEnabled()
+                print("------> User presence \(isEnable)")
             } catch let error {
                 print(error)
             }

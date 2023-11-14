@@ -18,7 +18,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     }
     
     enum Events {
-        case updateMessages
+        case updateMessages(isScrollUp: Bool)
         case didSendText
         case didEditText
         case didDelete(indexPath: IndexPath)
@@ -79,7 +79,6 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var messagesNotificationToken: AmityNotificationToken?
     private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
-    private var navigatingNotificationToken: AmityNotificationToken?
     
     private var messageAudio: AmityMessageAudioController?
     
@@ -87,6 +86,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private let channelId: String
     private let subChannelId: String
     private var isFirstTimeLoaded: Bool = true
+    private var isJumpMessage: Bool = false
+    private var isScrollUp: Bool = false
 
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
@@ -308,7 +309,7 @@ extension AmityMessageListScreenViewModel {
                 if !isFromResend {
                     self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
                 }
-                self?.delegate?.screenViewModelEvents(for: .updateMessages)
+                self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             }
         }
     }
@@ -468,10 +469,10 @@ extension AmityMessageListScreenViewModel {
             guard let collection = messagesCollection else { return }
             switch collection.loadingStatus {
             case .loaded:
-                print("------------> hasNext: \(collection.hasNext)")
                 if collection.hasNext {
                     collection.nextPage()
                     delegate?.screenViewModelLoadingState(for: .loading)
+                    isScrollUp = true
                 }
             default:
                 break
@@ -480,10 +481,10 @@ extension AmityMessageListScreenViewModel {
             guard let collection = messagesCollection else { return }
             switch collection.loadingStatus {
             case .loaded:
-                print("------------> hasPrevious: \(collection.hasPrevious)")
                 if collection.hasPrevious {
                     collection.previousPage()
                     delegate?.screenViewModelLoadingState(for: .loading)
+                    isScrollUp = false
                 }
             default:
                 break
@@ -548,6 +549,8 @@ extension AmityMessageListScreenViewModel {
                 return
             }
         }
+        
+        isJumpMessage = true
                 
         // Handle case when the target message is not found.
         var queryOptions: AmityMessageQueryOptions!
@@ -622,7 +625,7 @@ private extension AmityMessageListScreenViewModel {
     func groupMessagesAndJumpToTarget(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?, messageId: String) {
         
         // First we get message from the collection
-        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
@@ -632,26 +635,25 @@ private extension AmityMessageListScreenViewModel {
         }
         
         dataSourceHash = storedMessages.hashValue
-        storedMessages += unsortedMessages
         unsortedMessages = storedMessages
                 
         // We use debouncer to prevent data updating too frequently and interupting UI.
         // When data is settled for a particular second, then updating UI in one time.
         debouncer.run { [weak self] in
-            self?.notifyView()
-            self?.delegate?.screenViewModelDidJumpToTarget(with: messageId)
+            guard let strongSelf = self else { return }
+            strongSelf.notifyView()
+            if strongSelf.isJumpMessage {
+                strongSelf.delegate?.screenViewModelDidJumpToTarget(with: messageId)
+                strongSelf.isJumpMessage = false
+            }
         }
     }
     
     private func queryMessages(queryOptions: AmityMessageQueryOptions, messageId: String) {
-        // Invalidate the existing observer token to stop the previous observation.
-        navigatingNotificationToken?.invalidate()
-        
         AmityEventHandler.shared.showKTBLoading()
                         
-        // Fetch messages using the specified query options and observe changes.
-        let messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
-        navigatingNotificationToken = messageRepository.getMessages(options: queryOptions).observeOnce({ collection, change, error in
+        messagesCollection = messageRepository.getMessages(options: queryOptions)
+        messagesNotificationToken = messagesCollection?.observe { (liveCollection, change, error) in
             if let error = error {
                 print("Error: \(error).")
                 return
@@ -659,8 +661,8 @@ private extension AmityMessageListScreenViewModel {
                                     
             // Use the 'collection' as the data source for the message table view.
             // Reload the message table view when the data source changes due to new messages or updates.
-            self.groupMessagesAndJumpToTarget(in: collection, change: change, messageId: messageId)
-        })
+            self.groupMessagesAndJumpToTarget(in: liveCollection, change: change, messageId: messageId)
+        }
     }
     
     // MARK: - Helper
@@ -668,7 +670,7 @@ private extension AmityMessageListScreenViewModel {
     private func notifyView() {
         messages = unsortedMessages.groupSort(byDate: { $0.createdAtDate })
         delegate?.screenViewModelLoadingState(for: .loaded)
-        delegate?.screenViewModelEvents(for: .updateMessages)
+        delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: isScrollUp))
         delegate?.screenViewModelIsRefreshing(false)
         
         if isFirstTimeLoaded {
@@ -790,7 +792,7 @@ extension AmityMessageListScreenViewModel {
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         messageAudio?.create { [weak self] in
             self?.messageAudio = nil
-            self?.delegate?.screenViewModelEvents(for: .updateMessages)
+            self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
             self?.shouldScrollToBottom(force: true)
         }
@@ -800,7 +802,7 @@ extension AmityMessageListScreenViewModel {
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         messageAudio?.create(tempAudioURL: tempAudioURL) { [weak self] in
             self?.messageAudio = nil
-            self?.delegate?.screenViewModelEvents(for: .updateMessages)
+            self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
             self?.shouldScrollToBottom(force: true)
         }
