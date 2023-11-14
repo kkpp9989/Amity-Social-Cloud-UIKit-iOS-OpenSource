@@ -165,12 +165,14 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             let type = previewMessage.dataType
 
             var displayName: String = ""
-            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId {
+            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId, type != .custom {
                 displayName = "You: "
             }
             
             switch type {
             case .text:
+                displayName += text
+            case .custom:
                 displayName += text
             case .file:
                 displayName += "Sent a file"
