@@ -80,7 +80,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     // MARK: - Setup views
@@ -126,6 +126,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
 
 private extension AmityChatSearchParentViewController {
     func handleSearch(with key: String?) {
+        print(#"[Search][Channel] Handle search with keyword \#(key) of currentIndex: \#(currentIndex)"#)
         if viewControllers[currentIndex] == messageVC {
             messageVC.search(withText: key)
         } else if viewControllers[currentIndex] == groupVC {
@@ -135,13 +136,29 @@ private extension AmityChatSearchParentViewController {
         }
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
+//    func viewControllerWillMove() {
+//        if currentIndex == 1 {
+//            messageVC.search(withText: searchTextField.text)
+//        } else if currentIndex == 3 {
+//            groupVC.search(withText: searchTextField.text)
+//        } else {
+//            membersVC.search(with: searchTextField.text)
+//        }
+//    }
+    
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
+            print("[Search][Channel] Go to tab Messages with newIndex: \(newIndex)")
             messageVC.search(withText: searchTextField.text)
-        } else if currentIndex == 3 {
-            groupVC.search(withText: searchTextField.text)
-        } else {
+        case 1:
+            print("[Search][Channel] Go to tab Accounts with newIndex: \(newIndex)")
             membersVC.search(with: searchTextField.text)
+        case 2:
+            print("[Search][Channel] Go to tab Groups with newIndex: \(newIndex)")
+            groupVC.search(withText: searchTextField.text)
+        default:
+            break
         }
     }
 }

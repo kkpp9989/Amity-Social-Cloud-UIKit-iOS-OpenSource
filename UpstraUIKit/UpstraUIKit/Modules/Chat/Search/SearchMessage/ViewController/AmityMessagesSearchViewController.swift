@@ -65,11 +65,11 @@ extension AmityMessagesSearchViewController: UITableViewDelegate {
         AmityChannelEventHandler.shared.channelWithJumpMessageDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId, messageId: model.messageObjc.messageID ?? "")
     }
     
-    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.isBottomReached {
-            screenViewModel.action.loadMore()
-        }
-    }
+//    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if tableView.isBottomReached {
+//            screenViewModel.action.loadMore()
+//        }
+//    }
     
     /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

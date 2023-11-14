@@ -100,11 +100,11 @@ extension AmityChannelsSearchViewModel {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             
+            var channelIdsMapLeave: [String: Bool] = [:]
             for channelId in channelIds {
                 strongSelf.dispatchGroup.enter()
-                
                 // Use a flag to track whether leave has been called for this task
-                var leaveCalled = false
+                channelIdsMapLeave[channelId] = false
                 
                 let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
                     guard let strongSelf = self else { return }
@@ -112,8 +112,8 @@ extension AmityChannelsSearchViewModel {
                     
                     if let _ = AmityError(error: error) {
                         // Check if leave has already been called
-                        if !leaveCalled {
-                            leaveCalled = true
+                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
+                            channelIdsMapLeave[channelId] = true
                             strongSelf.dispatchGroup.leave()
                         }
                     } else {
@@ -121,8 +121,8 @@ extension AmityChannelsSearchViewModel {
                         strongSelf.channelList.append(channelModel)
                         
                         // Check if leave has already been called
-                        if !leaveCalled {
-                            leaveCalled = true
+                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
+                            channelIdsMapLeave[channelId] = true
                             strongSelf.dispatchGroup.leave()
                         }
                     }
