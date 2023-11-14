@@ -340,12 +340,7 @@ extension AmityMessageListScreenViewModel {
                 let serviceRequest = RequestChat()
                 serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
                     guard let strongSelf = self else { return }
-                    switch result {
-                    case .success(let isSuccess):
-                        strongSelf.dispatchGroup.leave()
-                    case .failure(let error):
-                        strongSelf.dispatchGroup.leave()
-                    }
+                    strongSelf.dispatchGroup.leave()
                 }
             }
         }

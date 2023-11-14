@@ -49,7 +49,7 @@ class AmityMessageVideoTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         if !message.isDeleted {
             let indexPath = self.indexPath
-            if let thumbnailInfo = message.object.getVideoThumbnailInfo(), let videoInfo = message.object.getVideoInfo()  {
+            if let thumbnailInfo = message.object.getVideoThumbnailInfo(), let videoInfo = message.object.getVideoInfo() {
                 if indexPath == self.indexPath {
                     // Set video thumbnail
                     messageImageView.loadImage(with: thumbnailInfo.fileURL, size: .full, placeholder: AmityIconSet.videoThumbnailPlaceholder, optimisticLoad: true)
@@ -95,8 +95,6 @@ class AmityMessageVideoTableViewCell: AmityMessageTableViewCell {
 private extension AmityMessageVideoTableViewCell {
     @objc
     func imageViewTap() {
-        if messageImageView.image != AmityIconSet.videoThumbnailPlaceholder {
-            screenViewModel.action.performCellEvent(for: .videoViewer(indexPath: indexPath))
-        }
+        screenViewModel.action.performCellEvent(for: .videoViewer(indexPath: indexPath))
     }
 }
