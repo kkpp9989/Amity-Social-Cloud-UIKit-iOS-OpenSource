@@ -11,17 +11,40 @@ import Foundation
 // MARK: - SearchChannelsDataModel
 struct SearchChannelsModel: Codable {
     let channels: [Channel]?
+    let channelsPermission: [ChannelUserPermission]?
     let paging: Paging?
+    
+    enum CodingKeys: String, CodingKey {
+        case channels
+        case channelsPermission = "channelUsers"
+        case paging
+    }
 }
 
 // MARK: - Channel
 struct Channel: Codable {
-    let id: String?
+    let channelId: String?
     let displayName: String?
+    let channelType: String?
+    let avatarFileId: String?
+    var membership: String?
 
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
+        case channelId = "_id"
         case displayName
+        case channelType = "type"
+        case avatarFileId
+    }
+}
+
+// MARK: - Channel User Permission
+struct ChannelUserPermission: Codable {
+    let membership: String?
+    let channelId: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case membership
+        case channelId
     }
 }
 

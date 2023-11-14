@@ -11,6 +11,7 @@ import AmitySDK
 
 class AmityChannelsSearchViewModel: AmityChannelsSearchScreenViewModelType {
     
+    
     weak var delegate: AmityChannelsSearchScreenViewModelDelegate?
     
     // MARK: Repository
@@ -18,12 +19,13 @@ class AmityChannelsSearchViewModel: AmityChannelsSearchScreenViewModelType {
 
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
-    private var channelList: [AmityChannelModel] = []
+    private var channelList: [Channel] = []
     private var currentKeyword: String = ""
     private var isEndingResult: Bool = false
     private var isLoadingMore: Bool = false
     private let dispatchGroup = DispatchGroup()
-    private var dummyList: [String] = []
+//    private var dummyList: [String] = [] // [Original]
+    private var dummyList: [Channel] = []
     private var tokenArray: [AmityNotificationToken?] = []
     private var paginateToken: String = ""
 
@@ -38,7 +40,7 @@ extension AmityChannelsSearchViewModel {
         return channelList.count
     }
     
-    func item(at indexPath: IndexPath) -> AmityChannelModel? {
+    func item(at indexPath: IndexPath) -> Channel? {
         guard !channelList.isEmpty else { return nil }
         return channelList[indexPath.row]
     }
@@ -77,9 +79,24 @@ extension AmityChannelsSearchViewModel {
                 } else {
                     isEndingResult = true
                 }
-                let channelIds = dataResponse.channels?.compactMap { $0.id } ?? []
-                dummyList = channelIds
-                getChannelIds(channelIds)
+                // [Original]
+//                let channelIds = dataResponse.channels?.compactMap { $0.id } ?? []
+//                dummyList = channelIds
+//                getChannelIds(channelIds)
+                
+                // [New]
+                var channels: [Channel] = dataResponse.channels ?? []
+                let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
+
+                // Map data user permission to channels data : .membership
+                for (index, data) in channels.enumerated() {
+                    if let indexOfChannelId = channelsPermission.firstIndex(where: { $0.channelId == data.channelId }) {
+                        channels[index].membership = channelsPermission[indexOfChannelId].membership
+                    }
+                }
+                
+                // Prepare data
+                prepareData(updatedChannelList: channels)
             case .failure(let error):
                 print(error)
                 
@@ -96,58 +113,58 @@ extension AmityChannelsSearchViewModel {
         }
     }
     
-    private func getChannelIds(_ channelIds: [String]) {
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            var channelIdsMapLeave: [String: Bool] = [:]
-            for channelId in channelIds {
-                strongSelf.dispatchGroup.enter()
-                // Use a flag to track whether leave has been called for this task
-                channelIdsMapLeave[channelId] = false
-                
-                let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
-                    guard let strongSelf = self else { return }
-                    guard let object = channel.snapshot else { return }
-                    
-                    if let _ = AmityError(error: error) {
-                        // Check if leave has already been called
-                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
-                            channelIdsMapLeave[channelId] = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    } else {
-                        let channelModel = AmityChannelModel(object: object)
-                        strongSelf.channelList.append(channelModel)
-                        
-                        // Check if leave has already been called
-                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
-                            channelIdsMapLeave[channelId] = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    }
-                }
-                
-                strongSelf.tokenArray.append(token)
-            }
-            
-            // Wait for all iterations to complete
-            strongSelf.dispatchGroup.notify(queue: .main) {
-                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.channelList)
-                strongSelf.prepareData(updatedChannelList: sortedArray)
-                strongSelf.tokenArray.removeAll()
-            }
-        }
-    }
+//    private func getChannelIds(_ channelIds: [String]) {
+//        DispatchQueue.main.async { [weak self] in
+//            guard let strongSelf = self else { return }
+//            
+//            var channelIdsMapLeave: [String: Bool] = [:]
+//            for channelId in channelIds {
+//                strongSelf.dispatchGroup.enter()
+//                // Use a flag to track whether leave has been called for this task
+//                channelIdsMapLeave[channelId] = false
+//                
+//                let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
+//                    guard let strongSelf = self else { return }
+//                    guard let object = channel.snapshot else { return }
+//                    
+//                    if let _ = AmityError(error: error) {
+//                        // Check if leave has already been called
+//                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
+//                            channelIdsMapLeave[channelId] = true
+//                            strongSelf.dispatchGroup.leave()
+//                        }
+//                    } else {
+//                        let channelModel = AmityChannelModel(object: object)
+//                        strongSelf.channelList.append(channelModel)
+//                        
+//                        // Check if leave has already been called
+//                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
+//                            channelIdsMapLeave[channelId] = true
+//                            strongSelf.dispatchGroup.leave()
+//                        }
+//                    }
+//                }
+//                
+//                strongSelf.tokenArray.append(token)
+//            }
+//            
+//            // Wait for all iterations to complete
+//            strongSelf.dispatchGroup.notify(queue: .main) {
+//                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.channelList)
+//                strongSelf.prepareData(updatedChannelList: sortedArray)
+//                strongSelf.tokenArray.removeAll()
+//            }
+//        }
+//    }
 
     
-    private func prepareData(updatedChannelList: [AmityChannelModel]) {
+    private func prepareData(updatedChannelList: [Channel]) {
         DispatchQueue.main.async { [self] in
             channelList = updatedChannelList
             /* Hide loading indicator */
             AmityEventHandler.shared.hideKTBLoading()
             isLoadingMore = false
-            
+
             if channelList.isEmpty {
                 delegate?.screenViewModelDidSearchNotFound(self)
             } else {
@@ -170,27 +187,28 @@ extension AmityChannelsSearchViewModel {
         }
     }
     
-    func join(withModel model: AmityChannelModel) {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId) {_, error in
+    func join(withModel model: Channel) {
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId ?? "") {_, error in
             if let error = AmityError(error: error) {
                 print(error)
             } else {
-                self.getChannelIds(self.dummyList)
+                self.search(withText: self.currentKeyword)
             }
         }
     }
     
-    private func sortArrayPositions(array1: [String], array2: [AmityChannelModel]) -> [AmityChannelModel] {
-        var sortedArray: [AmityChannelModel] = []
-        
-        for channelId in array1 {
-            if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
-                sortedArray.append(array2[index])
-            }
-        }
-        
-        return sortedArray
-    }
+    // อย่าลืมกลับมาแก้
+//    private func sortArrayPositions(array1: [String], array2: [AmityChannelModel]) -> [AmityChannelModel] {
+//        var sortedArray: [AmityChannelModel] = []
+//
+//        for channelId in array1 {
+//            if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
+//                sortedArray.append(array2[index])
+//            }
+//        }
+//
+//        return sortedArray
+//    }
 
     func clearData() {
         channelList.removeAll()

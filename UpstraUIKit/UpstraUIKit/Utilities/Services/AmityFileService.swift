@@ -137,6 +137,22 @@ class AmityFileService {
         
     }
     
+    func getImageURLByFileId(fileId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        if let fileRepository = fileRepository {
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: fileRepository.getFile(fileId:), parameters: fileId) { rawFile, error in
+                if let rawFile = rawFile, rawFile.type == .image, let imageData = rawFile.mapToImageData() {
+                    completion(.success(imageData.fileURL))
+                } else {
+                    let customError = NSError(domain: "Can't get raw file or isn't type image or can't get map image data", code: 500, userInfo: nil)
+                    completion(.failure(customError))
+                }
+            }
+        } else {
+            let customError = NSError(domain: "File repository not found", code: 500, userInfo: nil)
+            completion(.failure(customError))
+        }
+    }
+    
     func loadFile(fileURL: String, completion: ((Result<Data, Error>) -> Void)?) {
         
         guard let fileRepository = fileRepository else {

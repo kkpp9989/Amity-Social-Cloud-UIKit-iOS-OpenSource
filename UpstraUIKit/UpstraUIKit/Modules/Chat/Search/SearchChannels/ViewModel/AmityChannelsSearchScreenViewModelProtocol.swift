@@ -18,13 +18,13 @@ protocol AmityChannelsSearchScreenViewModelDelegate: AnyObject {
 
 protocol AmityChannelsSearchScreenViewModelDataSource {
     func numberOfKeyword() -> Int
-    func item(at indexPath: IndexPath) -> AmityChannelModel?
+    func item(at indexPath: IndexPath) -> Channel?
 }
 
 protocol AmityChannelsSearchScreenViewModelAction {
     func search(withText text: String?)
     func loadMore()
-    func join(withModel model: AmityChannelModel)
+    func join(withModel model: Channel)
     func clearData()
 }
 
