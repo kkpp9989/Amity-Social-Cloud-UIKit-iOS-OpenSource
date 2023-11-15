@@ -333,23 +333,53 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
-    func forward(withChannelIdList channelIdList: [String]) {
-        for channelId in channelIdList {
-            for forwardMessage in forwardMessageList {
-                dispatchGroup.enter()
-                let serviceRequest = RequestChat()
-                serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
-                    guard let strongSelf = self else { return }
-                    strongSelf.dispatchGroup.leave()
-                }
-            }
+//    func forward(withChannelIdList channelIdList: [String]) {
+//        for forwardMessage in forwardMessageList {
+//            for channelId in channelIdList {
+//                dispatchGroup.enter()
+//                let serviceRequest = RequestChat()
+//                serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
+//                    guard let strongSelf = self else { return }
+//                    strongSelf.dispatchGroup.leave()
+//                }
+//            }
+//        }
+//
+//        // Wait for all requests to complete
+//        dispatchGroup.notify(queue: .main) { [self] in
+//            // All channels have been created
+//            AmityEventHandler.shared.hideKTBLoading()
+//            forwardMessageList.removeAll()
+//        }
+//    }
+    
+    func forward(withChannelIdList channelIdList: [String], completion: @escaping () -> Void) {
+        guard let forwardMessage = forwardMessageList.first else {
+            // All messages forwarded, call completion
+            completion()
+            return
         }
         
-        // Wait for all requests to complete
-        dispatchGroup.notify(queue: .main) { [self] in
-            // All channels have been created
-            AmityEventHandler.shared.hideKTBLoading()
-            forwardMessageList.removeAll()
+        // Process the first message with each channel
+        var remainingChannels = channelIdList.count
+        for channelId in channelIdList {
+            dispatchGroup.enter()
+            let serviceRequest = RequestChat()
+            serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
+                guard let strongSelf = self else { return }
+                                
+                // Decrease the count of remaining channels
+                remainingChannels -= 1
+                
+                // Check if all channels have been processed for the current message
+                if remainingChannels == 0 {
+                    // Move to the next message recursively
+                    strongSelf.forwardMessageList.removeFirst()
+                    strongSelf.forward(withChannelIdList: channelIdList, completion: completion)
+                }
+                
+                strongSelf.dispatchGroup.leave()
+            }
         }
     }
     
@@ -385,7 +415,12 @@ extension AmityMessageListScreenViewModel {
         
         // Wait for all requests to complete
         dispatchGroup.notify(queue: .main) { [self] in
-            forward(withChannelIdList: channelIdList)
+//            forward(withChannelIdList: channelIdList)
+            forward(withChannelIdList: channelIdList) {
+                // All messages forwarded
+                AmityEventHandler.shared.hideKTBLoading()
+                self.forwardMessageList.removeAll()
+            }
         }
     }
     
