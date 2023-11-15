@@ -521,7 +521,9 @@ extension AmityUIKitManagerInternal {
 
 extension AmityUIKitManagerInternal: AmityClientDelegate {
     func didReceiveError(error: Error) {
-        AmityHUD.show(.error(message: error.localizedDescription))
+        if !error.isAmityErrorCode(.globalBan) {
+            AmityHUD.show(.error(message: error.localizedDescription))
+        }
     }
     
 }
