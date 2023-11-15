@@ -24,8 +24,7 @@ class AmityChannelsSearchViewModel: AmityChannelsSearchScreenViewModelType {
     private var isEndingResult: Bool = false
     private var isLoadingMore: Bool = false
     private let dispatchGroup = DispatchGroup()
-//    private var dummyList: [String] = [] // [Original]
-    private var dummyList: [Channel] = []
+    private var dummyList: [String] = []
     private var tokenArray: [AmityNotificationToken?] = []
     private var paginateToken: String = ""
 
@@ -65,6 +64,7 @@ extension AmityChannelsSearchViewModel {
             isEndingResult = false
         }
         
+        AmityEventHandler.shared.hideKTBLoading() // Hide old loading if need
         AmityEventHandler.shared.showKTBLoading()
         var serviceRequest = RequestSearchingChat()
         serviceRequest.keyword = currentKeyword
@@ -82,18 +82,22 @@ extension AmityChannelsSearchViewModel {
 
                 var channels: [Channel] = dataResponse.channels ?? []
                 let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
+                print("[Search][Channel][Group] Amount latest result search : \(channels.count)")
 
                 // Map data user permission to channels data : .membership
                 for (index, data) in channels.enumerated() {
+                    print("[Search][Channel][Group] ------> channelId: \(data.channelId) | displayName: \(data.displayName)")
                     if let indexOfChannelId = channelsPermission.firstIndex(where: { $0.channelId == data.channelId }) {
                         channels[index].membership = channelsPermission[indexOfChannelId].membership
                     }
                 }
                 
                 // Prepare data
-                prepareData(updatedChannelList: channels)
+                dummyList = channels.compactMap({ $0.channelId })
+                let sortedArray = sortArrayPositions(array1: dummyList, array2: channels)
+                prepareData(updatedChannelList: sortedArray)
             case .failure(let error):
-                print(error)
+                print("[Search][Channel][Group] Error from result search : \(error.localizedDescription)")
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async { [self] in
@@ -131,17 +135,20 @@ extension AmityChannelsSearchViewModel {
         isLoadingMore = true
         
         /* Get data next section */
-        AmityEventHandler.shared.showKTBLoading()
+//        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
             search(withText: currentKeyword)
         }
     }
     
     func join(withModel model: Channel) {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId ?? "") {_, error in
-            if let error = AmityError(error: error) {
-                print(error)
+        // Join chat
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelCustomId ?? "") {_, error in
+            if let error = error {
+                print("[Search][Channel][Group][Join Chat] Can't joined chat in search view with error: \(error.localizedDescription)")
             } else {
+                print("[Search][Channel][Group][Join Chat] Joined chat in search view success -> Start send custom message")
+                
                 // Send custom message with join chat scenario
                 let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
                 let customMessageController = AmityCustomMessageController(channelId: model.channelId ?? "")
@@ -160,18 +167,17 @@ extension AmityChannelsSearchViewModel {
         }
     }
     
-    // อย่าลืมกลับมาแก้
-//    private func sortArrayPositions(array1: [String], array2: [AmityChannelModel]) -> [AmityChannelModel] {
-//        var sortedArray: [AmityChannelModel] = []
-//
-//        for channelId in array1 {
-//            if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
-//                sortedArray.append(array2[index])
-//            }
-//        }
-//
-//        return sortedArray
-//    }
+    private func sortArrayPositions(array1: [String], array2: [Channel]) -> [Channel] {
+        var sortedArray: [Channel] = []
+
+        for channelId in array1 {
+            if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
+                sortedArray.append(array2[index])
+            }
+        }
+
+        return sortedArray
+    }
 
     func clearData() {
         channelList.removeAll()

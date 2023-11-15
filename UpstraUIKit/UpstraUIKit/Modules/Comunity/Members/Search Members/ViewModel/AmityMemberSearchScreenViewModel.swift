@@ -49,6 +49,7 @@ extension AmityMemberSearchScreenViewModel {
             return
         }
 
+        AmityEventHandler.shared.hideKTBLoading() // Hide old loading if need
         AmityEventHandler.shared.showKTBLoading()
         memberListRepositoryManager.search(withText: text, sortyBy: .displayName) { [weak self] (updatedMemberList) in
             /* Set is ending result static value to true if result is not more than 20 */
