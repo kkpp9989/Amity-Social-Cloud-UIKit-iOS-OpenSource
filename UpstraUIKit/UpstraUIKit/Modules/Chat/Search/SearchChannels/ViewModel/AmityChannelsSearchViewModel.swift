@@ -79,12 +79,7 @@ extension AmityChannelsSearchViewModel {
                 } else {
                     isEndingResult = true
                 }
-                // [Original]
-//                let channelIds = dataResponse.channels?.compactMap { $0.id } ?? []
-//                dummyList = channelIds
-//                getChannelIds(channelIds)
-                
-                // [New]
+
                 var channels: [Channel] = dataResponse.channels ?? []
                 let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
 
@@ -112,51 +107,6 @@ extension AmityChannelsSearchViewModel {
             }
         }
     }
-    
-//    private func getChannelIds(_ channelIds: [String]) {
-//        DispatchQueue.main.async { [weak self] in
-//            guard let strongSelf = self else { return }
-//            
-//            var channelIdsMapLeave: [String: Bool] = [:]
-//            for channelId in channelIds {
-//                strongSelf.dispatchGroup.enter()
-//                // Use a flag to track whether leave has been called for this task
-//                channelIdsMapLeave[channelId] = false
-//                
-//                let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
-//                    guard let strongSelf = self else { return }
-//                    guard let object = channel.snapshot else { return }
-//                    
-//                    if let _ = AmityError(error: error) {
-//                        // Check if leave has already been called
-//                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
-//                            channelIdsMapLeave[channelId] = true
-//                            strongSelf.dispatchGroup.leave()
-//                        }
-//                    } else {
-//                        let channelModel = AmityChannelModel(object: object)
-//                        strongSelf.channelList.append(channelModel)
-//                        
-//                        // Check if leave has already been called
-//                        if let leaveCalled = channelIdsMapLeave[channelId], !leaveCalled {
-//                            channelIdsMapLeave[channelId] = true
-//                            strongSelf.dispatchGroup.leave()
-//                        }
-//                    }
-//                }
-//                
-//                strongSelf.tokenArray.append(token)
-//            }
-//            
-//            // Wait for all iterations to complete
-//            strongSelf.dispatchGroup.notify(queue: .main) {
-//                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.channelList)
-//                strongSelf.prepareData(updatedChannelList: sortedArray)
-//                strongSelf.tokenArray.removeAll()
-//            }
-//        }
-//    }
-
     
     private func prepareData(updatedChannelList: [Channel]) {
         DispatchQueue.main.async { [self] in
@@ -192,6 +142,19 @@ extension AmityChannelsSearchViewModel {
             if let error = AmityError(error: error) {
                 print(error)
             } else {
+                // Send custom message with join chat scenario
+                let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+                let customMessageController = AmityCustomMessageController(channelId: model.channelId ?? "")
+                customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                    switch result {
+                    case .success(_):
+                        print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+                    case .failure(_):
+                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+                    }
+                }
+                
+                // Update result search again for update join info
                 self.search(withText: self.currentKeyword)
             }
         }

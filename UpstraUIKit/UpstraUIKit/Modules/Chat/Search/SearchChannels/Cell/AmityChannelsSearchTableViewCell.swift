@@ -51,17 +51,21 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with data: Channel, keyword: String) {
+        // Set displayName
         let highlightText = highlightKeyword(in: data.displayName ?? "", keyword: keyword, highlightColor: AmityColorSet.primary)
         titleLabel.attributedText = highlightText
         
+        // Set avatar
         if let imageFileId = data.avatarFileId {
             displayImage(fileId: imageFileId)
         } else {
             avatarView.setImage(withImageURL: nil, placeholder: AmityIconSet.defaultGroupChat)
         }
         
+        // Set join button
         joinButton.isHidden = (data.membership ?? "none") == "member" ? true : false
         
+        // Set badge by channel type
         var iconBadge = AmityIconSet.Chat.iconPublicBadge
         if data.channelType == "live" {
             iconBadge = AmityIconSet.Chat.iconPrivateBadge
@@ -76,7 +80,7 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
                 case .success(let imageURL):
                     self?.avatarView.setImage(withImageURL: imageURL, placeholder: AmityIconSet.defaultGroupChat)
                 case .failure(let error):
-                    print("[Avatar] Can't set avatar fileId \(fileId) with error: \(error.localizedDescription)")
+                    print("[Search][Channel][Group][Avatar] Can't set avatar fileId \(fileId) with error: \(error.localizedDescription)")
                 }
             }
         }

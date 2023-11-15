@@ -61,6 +61,9 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
         
         // Clear setting navigation bar (normal) from ONE Krungthai custom theme
         theme?.clearNavigationBarSetting()
+        
+        // Update result in current tab if need
+        updateResultCurrentTabIfneed()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -136,16 +139,6 @@ private extension AmityChatSearchParentViewController {
         }
     }
     
-//    func viewControllerWillMove() {
-//        if currentIndex == 1 {
-//            messageVC.search(withText: searchTextField.text)
-//        } else if currentIndex == 3 {
-//            groupVC.search(withText: searchTextField.text)
-//        } else {
-//            membersVC.search(with: searchTextField.text)
-//        }
-//    }
-    
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
@@ -156,6 +149,16 @@ private extension AmityChatSearchParentViewController {
             membersVC.search(with: searchTextField.text)
         case 2:
             print("[Search][Channel] Go to tab Groups with newIndex: \(newIndex)")
+            groupVC.search(withText: searchTextField.text)
+        default:
+            break
+        }
+    }
+    
+    func updateResultCurrentTabIfneed() {
+        switch currentIndex {
+        case 2: // Index 2 : Group | Update result in search group because it got data from API one time and may be user joined chat in chat detail after searching
+            print("[Search][Channel] Update result search in Groups with currentIndex: \(currentIndex)")
             groupVC.search(withText: searchTextField.text)
         default:
             break
