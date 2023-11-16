@@ -86,17 +86,19 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         let manager = PHImageManager.default()
         let option = PHImageRequestOptions()
         var thumbnail = UIImage()
-        
+
         // Request the original dimensions of the asset
         let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
-        
+
         option.isSynchronous = true
         option.deliveryMode = .opportunistic
-        
+
         manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
-            thumbnail = result!
+            if let result = result {
+                thumbnail = result
+            }
         })
-        
+
         return thumbnail
     }
 
