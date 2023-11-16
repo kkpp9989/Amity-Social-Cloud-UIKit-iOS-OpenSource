@@ -113,6 +113,11 @@ public final class AmityMessageListViewController: AmityViewController {
         setupFilePicker()
         setupReplyView()
         
+        // Set swipe back gesture if from notification
+        if isFromNotification {
+            setupCustomSwipeBackGesture()
+        }
+        
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
     }
@@ -130,6 +135,11 @@ public final class AmityMessageListViewController: AmityViewController {
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
+        
+        // Set default swipe back to disabled if from notification when view will Appear | For from notification case
+        if isFromNotification {
+            setDefaultSwipeBackGestureEnabled(isEnabled: false) // ** Set to disabled (Temp) **
+        }
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -146,6 +156,11 @@ public final class AmityMessageListViewController: AmityViewController {
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
         view.endEditing(true)
+        
+        // Set default swipe back to enabled when viewWillDisappear | For from notification case
+        if isFromNotification {
+            setDefaultSwipeBackGestureEnabled(isEnabled: true)
+        }
     }
     
     /// Create `AmityMessageListViewController` instance.
@@ -197,6 +212,38 @@ public final class AmityMessageListViewController: AmityViewController {
         replyDisplayNameLabel.font = AmityFontSet.body
         replyDescLabel.font = AmityFontSet.body
         replyDescLabel.textColor = AmityColorSet.base.blend(.shade3)
+    }
+    
+    private func setupCustomSwipeBackGesture() {
+        setDefaultSwipeBackGestureEnabled(isEnabled: false) // ** Set to disabled (Temp) **
+        
+        let swipeBack = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handleCustomSwipeBackAction(_:)))
+        swipeBack.edges = .left // Set the edge to recognize the swipe from the left
+        view.addGestureRecognizer(swipeBack)
+    }
+    
+    private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
+    }
+    
+    @objc func handleCustomSwipeBackAction(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
+        // Get width of screen
+        let screenWidth = UIScreen.main.bounds.width
+        // Get current x position of touch gesture
+        let translation = gestureRecognizer.translation(in: view)
+        // Set threshold for allow to back
+        let swipeThreshold: CGFloat = 0.8
+        
+        // Check if state == .end, translation.x is more than theshold, is from notification and have back handler
+        if gestureRecognizer.state == .ended,
+           translation.x >= swipeThreshold * screenWidth,
+           isFromNotification,
+           let completion = backHandler {
+            // Back handler working
+            completion()
+            // Set default swipe back to enabled
+            setDefaultSwipeBackGestureEnabled(isEnabled: true)
+        }
     }
 }
 
@@ -772,6 +819,13 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
         case .didSendAudio:
             break
+        case .didSendTextError(let error):
+            if error.isAmityErrorCode(.linkNotAllowed) {
+                let alertController = UIAlertController(title: "", message: "Unable to send link This link isn't allowed in this chat.", preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                present(alertController, animated: true, completion: nil)
+            }
         }
     }
     
