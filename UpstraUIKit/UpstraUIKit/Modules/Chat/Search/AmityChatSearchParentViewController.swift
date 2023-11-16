@@ -159,6 +159,7 @@ private extension AmityChatSearchParentViewController {
         switch currentIndex {
         case 2: // Index 2 : Group | Update result in search group because it got data from API one time and may be user joined chat in chat detail after searching
             print("[Search][Channel] Update result search in Groups with currentIndex: \(currentIndex)")
+            groupVC.clearData()
             groupVC.search(withText: searchTextField.text)
         default:
             break

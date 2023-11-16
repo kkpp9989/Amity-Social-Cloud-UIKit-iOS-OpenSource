@@ -86,13 +86,14 @@ extension AmityMemberSearchScreenViewModel {
         if isEndingResult || memberList.isEmpty { return }
         
         /* Get data next section */
+        AmityEventHandler.shared.hideKTBLoading() // Delete load loading if need
         AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
             let isEndPage = memberListRepositoryManager.loadMore()
             if isEndPage {
                 isEndingResult = true
-                AmityEventHandler.shared.hideKTBLoading()
             }
+            AmityEventHandler.shared.hideKTBLoading()
         }
     }
     

@@ -136,6 +136,7 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelD
 
 extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelAction {
     func clearData() {
+        self.keyword = ""
         screenViewModel.action.clearData()
     }
     
@@ -145,9 +146,13 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelA
     
     func search(withText text: String?) {
         guard let keyword = text else { return }
+        print("[Search][Channel][Message] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
         if keyword != self.keyword {
-            screenViewModel.action.clearData()
+            clearData()
+        } else {
+            return
         }
+        
         if !keyword.isEmpty {
             screenViewModel.action.search(withText: text)
             self.keyword = keyword

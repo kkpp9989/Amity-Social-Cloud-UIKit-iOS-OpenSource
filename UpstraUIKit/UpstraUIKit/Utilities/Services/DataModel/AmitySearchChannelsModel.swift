@@ -24,15 +24,13 @@ struct SearchChannelsModel: Codable {
 // MARK: - Channel
 struct Channel: Codable {
     let channelId: String?
-    let channelCustomId: String?
     let displayName: String?
     let channelType: String?
     let avatarFileId: String?
     var membership: String?
 
     enum CodingKeys: String, CodingKey {
-        case channelId = "channelInternalId"
-        case channelCustomId = "channelPublicId"
+        case channelId = "channelId"
         case displayName
         case channelType = "type"
         case avatarFileId

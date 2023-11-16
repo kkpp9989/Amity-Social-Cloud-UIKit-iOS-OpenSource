@@ -49,6 +49,10 @@ extension AmityChannelsSearchViewModel {
 // MARK: - Action
 extension AmityChannelsSearchViewModel {
     
+    func updateJoinStatusToMember(at indexPath: IndexPath) {
+        channelList[indexPath.row].membership = "member"
+    }
+    
     func search(withText text: String?) {
         /* Check text is nil or is searching for ignore searching */
         guard let newKeyword = text else { return }
@@ -82,7 +86,7 @@ extension AmityChannelsSearchViewModel {
 
                 var channels: [Channel] = dataResponse.channels ?? []
                 let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
-                print("[Search][Channel][Group] Amount latest result search : \(channels.count)")
+                print("[Search][Channel][Group] Amount latest result search : \(channels.count) | paginateToken: \(self.paginateToken)")
 
                 // Map data user permission to channels data : .membership
                 for (index, data) in channels.enumerated() {
@@ -101,6 +105,7 @@ extension AmityChannelsSearchViewModel {
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async { [self] in
+                    isLoadingMore = false
                     AmityEventHandler.shared.hideKTBLoading()
                     if channelList.isEmpty {
                         delegate?.screenViewModelDidSearchNotFound(self)
@@ -114,7 +119,13 @@ extension AmityChannelsSearchViewModel {
     
     private func prepareData(updatedChannelList: [Channel]) {
         DispatchQueue.main.async { [self] in
-            channelList = updatedChannelList
+            /* Check is loading result more from the current keyword or result from a new keyword */
+            if isLoadingMore {
+                channelList += updatedChannelList
+            } else {
+                channelList = updatedChannelList
+            }
+                
             /* Hide loading indicator */
             AmityEventHandler.shared.hideKTBLoading()
             isLoadingMore = false
@@ -129,7 +140,7 @@ extension AmityChannelsSearchViewModel {
     
     func loadMore() {
         /* Check is ending result or result not found for ignore load more */
-        if isEndingResult { return }
+        if isEndingResult || channelList.isEmpty { return }
         
         /* Set static value to true for prepare data in loading more case */
         isLoadingMore = true
@@ -137,13 +148,16 @@ extension AmityChannelsSearchViewModel {
         /* Get data next section */
 //        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
+            print("[Search][Channel][Group] ****** Load more ******")
             search(withText: currentKeyword)
         }
     }
     
-    func join(withModel model: Channel) {
+    func join(withModel model: Channel, indexPath: IndexPath) {
+        // Show loading
+        AmityEventHandler.shared.showKTBLoading()
         // Join chat
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelCustomId ?? "") {_, error in
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId ?? "") {_, error in
             if let error = error {
                 print("[Search][Channel][Group][Join Chat] Can't joined chat in search view with error: \(error.localizedDescription)")
             } else {
@@ -161,9 +175,12 @@ extension AmityChannelsSearchViewModel {
                     }
                 }
                 
-                // Update result search again for update join info
-                self.search(withText: self.currentKeyword)
+                // Update join status
+                self.delegate?.screenViewModelDidJoin(self, indexPath: indexPath)
             }
+            
+            // Hide loading
+            AmityEventHandler.shared.hideKTBLoading()
         }
     }
     
@@ -182,6 +199,8 @@ extension AmityChannelsSearchViewModel {
     func clearData() {
         channelList.removeAll()
         dummyList.removeAll()
+        paginateToken = ""
+        currentKeyword = ""
         
         delegate?.screenViewModelDidSearch(self)
     }

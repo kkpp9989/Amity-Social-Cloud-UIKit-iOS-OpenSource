@@ -18,6 +18,7 @@ class AmityChannelsSearchViewController: AmityViewController, IndicatorInfoProvi
     private var pageTitle: String?
     private var emptyView = AmitySearchEmptyView()
     private var keyword: String = ""
+    private let debouncer: Debouncer = Debouncer(delay: 0.5)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +82,9 @@ extension AmityChannelsSearchViewController: UITableViewDelegate {
         if maximumOffset - currentOffset <= 0 {
             // User has reached the bottom of the table view
             // You can load more data or perform any action you need
-            screenViewModel.action.loadMore()
+            debouncer.run { [weak self] in
+                self?.screenViewModel.action.loadMore()
+            }
         }
     }
 }
@@ -123,6 +126,11 @@ extension AmityChannelsSearchViewController: AmityChannelsSearchScreenViewModelD
         tableView.reloadData()
     }
     
+    func screenViewModelDidJoin(_ viewModel: AmityChannelsSearchScreenViewModelType, indexPath: IndexPath) {
+        screenViewModel.action.updateJoinStatusToMember(at: indexPath)
+        tableView.reloadData()
+    }
+    
     func screenViewModel(_ viewModel: AmityChannelsSearchScreenViewModelType, loadingState: AmityLoadingState) {
         switch loadingState {
         case .initial:
@@ -143,9 +151,13 @@ extension AmityChannelsSearchViewController: AmityHashtagSearchScreenViewModelAc
     
     func search(withText text: String?) {
         guard let keyword = text else { return }
+        print("[Search][Channel][Group] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
         if keyword != self.keyword {
-            screenViewModel.action.clearData()
+            clearData()
+        } else {
+            return
         }
+        
         if !keyword.isEmpty {
             screenViewModel.action.search(withText: text)
             self.keyword = keyword
@@ -153,6 +165,7 @@ extension AmityChannelsSearchViewController: AmityHashtagSearchScreenViewModelAc
     }
     
     func clearData() {
+        self.keyword = ""
         screenViewModel.action.clearData()
     }
 }
@@ -160,6 +173,6 @@ extension AmityChannelsSearchViewController: AmityHashtagSearchScreenViewModelAc
 extension AmityChannelsSearchViewController: AmityChannelsSearchTableViewCellDelegate {
     func didJoinPerformAction(_ indexPath: IndexPath) {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
-        screenViewModel.action.join(withModel: model)
+        screenViewModel.action.join(withModel: model, indexPath: indexPath)
     }
 }
