@@ -680,8 +680,7 @@ private extension AmityMessageListScreenViewModel {
     }
     
     private func queryMessages(queryOptions: AmityMessageQueryOptions, messageId: String) {
-        AmityEventHandler.shared.showKTBLoading()
-                        
+//        AmityEventHandler.shared.showKTBLoading() // Disable it because fix duplicate show loading in some case
         messagesCollection = messageRepository.getMessages(options: queryOptions)
         messagesNotificationToken = messagesCollection?.observe { (liveCollection, change, error) in
             if let error = error {
