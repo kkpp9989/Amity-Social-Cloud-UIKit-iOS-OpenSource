@@ -66,7 +66,7 @@ protocol AmityMessageListScreenViewModelAction {
     func sendAudio(tempAudioURL: URL)
     func resend(with message: AmityMessageModel, at indexPath: IndexPath)
     func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType)
-    func forward(withChannelIdList channelIdList: [String])
+    func forward(withChannelIdList channelIdList: [String], completion: @escaping () -> Void)
     func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel])
     
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
