@@ -441,9 +441,11 @@ extension AmityMessageListScreenViewModel {
                     self.customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
                         switch result {
                         case .success(_):
-                            print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+//                            print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+                            break
                         case .failure(_):
-                            print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+//                            print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+                            break
                         }
                     }
                 }

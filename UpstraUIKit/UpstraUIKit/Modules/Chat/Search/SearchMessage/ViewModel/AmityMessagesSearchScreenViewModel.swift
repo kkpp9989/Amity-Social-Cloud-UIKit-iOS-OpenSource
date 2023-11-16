@@ -97,12 +97,12 @@ extension AmityMessagesSearchScreenViewModel {
 
                 strongSelf.dummyList = updatedMessageList.messages.compactMap { $0.messageID }
                 
-                print("[Search][Channel][Message] Amount latest result search : \(strongSelf.dummyList.count) | paginateToken: \(strongSelf.paginateToken)")
+//                print("[Search][Channel][Message] Amount latest result search : \(strongSelf.dummyList.count) | paginateToken: \(strongSelf.paginateToken)")
 
                 let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: updatedMessageList.messages)
                 strongSelf.prepareData(updatedMessageList: sortedArray)
             case .failure(let error):
-                print("[Search][Channel][Message] Error from result search : \(error.localizedDescription)")
+//                print("[Search][Channel][Message] Error from result search : \(error.localizedDescription)")
 
                 DispatchQueue.main.async {
                     AmityEventHandler.shared.hideKTBLoading()
@@ -206,7 +206,7 @@ extension AmityMessagesSearchScreenViewModel {
 //        AmityEventHandler.shared.showKTBLoading()
 //        delegate?.screenViewModel(self, loadingState: .loading)
         debouncer.run { [self] in
-            print("[Search][Channel][Message] ****** Load more ******")
+//            print("[Search][Channel][Message] ****** Load more ******")
             search(withText: currentKeyword)
         }
     }

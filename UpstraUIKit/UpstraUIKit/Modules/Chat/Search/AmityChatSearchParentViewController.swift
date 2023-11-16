@@ -129,7 +129,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
 
 private extension AmityChatSearchParentViewController {
     func handleSearch(with key: String?) {
-        print(#"[Search][Channel] Handle search with keyword \#(key) of currentIndex: \#(currentIndex)"#)
+//        print(#"[Search][Channel] Handle search with keyword \#(key) of currentIndex: \#(currentIndex)"#)
         if viewControllers[currentIndex] == messageVC {
             messageVC.search(withText: key)
         } else if viewControllers[currentIndex] == groupVC {
@@ -142,13 +142,13 @@ private extension AmityChatSearchParentViewController {
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-            print("[Search][Channel] Go to tab Messages with newIndex: \(newIndex)")
+//            print("[Search][Channel] Go to tab Messages with newIndex: \(newIndex)")
             messageVC.search(withText: searchTextField.text)
         case 1:
-            print("[Search][Channel] Go to tab Accounts with newIndex: \(newIndex)")
+//            print("[Search][Channel] Go to tab Accounts with newIndex: \(newIndex)")
             membersVC.search(with: searchTextField.text)
         case 2:
-            print("[Search][Channel] Go to tab Groups with newIndex: \(newIndex)")
+//            print("[Search][Channel] Go to tab Groups with newIndex: \(newIndex)")
             groupVC.search(withText: searchTextField.text)
         default:
             break
@@ -158,7 +158,7 @@ private extension AmityChatSearchParentViewController {
     func updateResultCurrentTabIfneed() {
         switch currentIndex {
         case 2: // Index 2 : Group | Update result in search group because it got data from API one time and may be user joined chat in chat detail after searching
-            print("[Search][Channel] Update result search in Groups with currentIndex: \(currentIndex)")
+//            print("[Search][Channel] Update result search in Groups with currentIndex: \(currentIndex)")
             groupVC.clearData()
             groupVC.search(withText: searchTextField.text)
         default:

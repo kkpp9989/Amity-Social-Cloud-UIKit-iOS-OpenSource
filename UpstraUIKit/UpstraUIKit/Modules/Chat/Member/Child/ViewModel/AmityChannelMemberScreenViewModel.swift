@@ -174,9 +174,11 @@ extension AmityChannelMemberScreenViewModel {
                 customMessageController.send(event: .addMember, subjectUserName: currentUserName, objectUserName: user) { result in
                     switch result {
                     case .success(_):
-                        print(#"[Custom message] send message success : "\#(currentUserName) invited \#(user) to joined this chat"#)
+//                        print(#"[Custom message] send message success : "\#(currentUserName) invited \#(user) to joined this chat"#)
+                        break
                     case .failure(_):
-                        print(#"[Custom message] send message fail : "\#(currentUserName) invited \#(user) to joined this chat"#)
+//                        print(#"[Custom message] send message fail : "\#(currentUserName) invited \#(user) to joined this chat"#)
+                        break
                     }
                 }
             }
@@ -185,9 +187,11 @@ extension AmityChannelMemberScreenViewModel {
                 customMessageController.send(event: .removeMember, subjectUserName: currentUserName, objectUserName: user) { result in
                     switch result {
                     case .success(_):
-                        print(#"[Custom message] send message success : "\#(currentUserName) removed \#(user) from this chat"#)
+//                        print(#"[Custom message] send message success : "\#(currentUserName) removed \#(user) from this chat"#)
+                        break
                     case .failure(_):
-                        print(#"[Custom message] send message fail : "\#(currentUserName) removed \#(user) to joined this chat"#)
+//                        print(#"[Custom message] send message fail : "\#(currentUserName) removed \#(user) to joined this chat"#)
+                        break
                     }
                 }
             }
@@ -245,9 +249,11 @@ extension AmityChannelMemberScreenViewModel {
                 strongSelf.customMessageController.send(event: .removeMember, subjectUserName: subjectDisplayName, objectUserName: objectDisplayName) { result in
                     switch result {
                     case .success(_):
-                        print(#"[Custom message] send message success : "\#(subjectDisplayName) removed \#(objectDisplayName) from this chat"#)
+//                        print(#"[Custom message] send message success : "\#(subjectDisplayName) removed \#(objectDisplayName) from this chat"#)
+                        break
                     case .failure(_):
-                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) removed \#(objectDisplayName) to joined this chat"#)
+//                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) removed \#(objectDisplayName) to joined this chat"#)
+                        break
                     }
                 }
             }

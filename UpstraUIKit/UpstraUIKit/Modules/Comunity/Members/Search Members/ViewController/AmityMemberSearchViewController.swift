@@ -143,7 +143,7 @@ extension AmityMemberSearchViewController: AmityMemberSearchScreenViewModelDeleg
 extension AmityMemberSearchViewController: AmitySearchViewControllerAction {
     func search(with text: String?) {
         guard let keyword = text else { return }
-        print("[Search][Channel][Account] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
+//        print("[Search][Channel][Account] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
         if keyword != self.keyword {
             clearData()
         } else {

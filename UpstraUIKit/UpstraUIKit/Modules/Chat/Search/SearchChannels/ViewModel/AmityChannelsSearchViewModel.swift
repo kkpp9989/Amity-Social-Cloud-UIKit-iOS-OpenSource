@@ -86,11 +86,11 @@ extension AmityChannelsSearchViewModel {
 
                 var channels: [Channel] = dataResponse.channels ?? []
                 let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
-                print("[Search][Channel][Group] Amount latest result search : \(channels.count) | paginateToken: \(self.paginateToken)")
+//                print("[Search][Channel][Group] Amount latest result search : \(channels.count) | paginateToken: \(self.paginateToken)")
 
                 // Map data user permission to channels data : .membership
                 for (index, data) in channels.enumerated() {
-                    print("[Search][Channel][Group] ------> channelId: \(data.channelId) | displayName: \(data.displayName)")
+//                    print("[Search][Channel][Group] ------> channelId: \(data.channelId) | displayName: \(data.displayName)")
                     if let indexOfChannelId = channelsPermission.firstIndex(where: { $0.channelId == data.channelId }) {
                         channels[index].membership = channelsPermission[indexOfChannelId].membership
                     }
@@ -101,7 +101,7 @@ extension AmityChannelsSearchViewModel {
                 let sortedArray = sortArrayPositions(array1: dummyList, array2: channels)
                 prepareData(updatedChannelList: sortedArray)
             case .failure(let error):
-                print("[Search][Channel][Group] Error from result search : \(error.localizedDescription)")
+//                print("[Search][Channel][Group] Error from result search : \(error.localizedDescription)")
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async { [self] in
@@ -148,7 +148,7 @@ extension AmityChannelsSearchViewModel {
         /* Get data next section */
 //        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
-            print("[Search][Channel][Group] ****** Load more ******")
+//            print("[Search][Channel][Group] ****** Load more ******")
             search(withText: currentKeyword)
         }
     }
@@ -159,9 +159,9 @@ extension AmityChannelsSearchViewModel {
         // Join chat
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId ?? "") {_, error in
             if let error = error {
-                print("[Search][Channel][Group][Join Chat] Can't joined chat in search view with error: \(error.localizedDescription)")
+//                print("[Search][Channel][Group][Join Chat] Can't joined chat in search view with error: \(error.localizedDescription)")
             } else {
-                print("[Search][Channel][Group][Join Chat] Joined chat in search view success -> Start send custom message")
+//                print("[Search][Channel][Group][Join Chat] Joined chat in search view success -> Start send custom message")
                 
                 // Send custom message with join chat scenario
                 let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
@@ -169,9 +169,11 @@ extension AmityChannelsSearchViewModel {
                 customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
                     switch result {
                     case .success(_):
-                        print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+//                        print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+                        break
                     case .failure(_):
-                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+//                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+                        break
                     }
                 }
                 

@@ -146,7 +146,7 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelA
     
     func search(withText text: String?) {
         guard let keyword = text else { return }
-        print("[Search][Channel][Message] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
+//        print("[Search][Channel][Message] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
         if keyword != self.keyword {
             clearData()
         } else {
