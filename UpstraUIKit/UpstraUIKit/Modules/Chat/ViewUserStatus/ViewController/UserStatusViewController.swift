@@ -81,7 +81,8 @@ extension UserStatusViewController {
     func upStatusView() {
         UIView.animate(withDuration: 0.2) {
             self.bottomConstraint.constant = 0
-            self.view.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            self?.fadeInView()
         }
     }
     
@@ -91,6 +92,12 @@ extension UserStatusViewController {
             self.view.layoutIfNeeded()
         } completion: { [weak self] _ in
             self?.fadeOut()
+        }
+    }
+    
+    func fadeInView() {
+        UIView.animate(withDuration: 1.0) {
+            self.view.backgroundColor = .black.withAlphaComponent(0.5)
         }
     }
     

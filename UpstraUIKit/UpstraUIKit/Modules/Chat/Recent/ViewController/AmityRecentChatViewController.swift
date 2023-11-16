@@ -21,10 +21,10 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
-        
+    
     // MARK: - Properties
     private var screenViewModel: AmityRecentChatScreenViewModelType!
-                
+    
     private lazy var emptyView: AmityEmptyView = {
         let emptyView = AmityEmptyView(frame: tableView.frame)
         emptyView.update(title: AmityLocalizedStringSet.emptyChatList.localizedString,
@@ -45,7 +45,7 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-//        setupScreenViewModel()
+        //        setupScreenViewModel()
         setupView()
     }
     
@@ -108,7 +108,7 @@ private extension AmityRecentChatViewController {
             completionHandler: { [weak self] storeUsers in
                 guard let weakSelf = self else { return }
                 weakSelf.screenViewModel.action.createChannel(users: storeUsers)
-        })
+            })
     }
 }
 
@@ -121,14 +121,8 @@ extension AmityRecentChatViewController: UITableViewDelegate {
             let userStatusVC = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
             userStatusVC.delegate = self
             userStatusVC.view.tag = 1
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                // This code is executed on an iPad
-                userStatusVC.modalPresentationStyle = .overFullScreen // Set the modal presentation style to full screen
-                present(userStatusVC, animated: true, completion: nil)
-            } else {
-                window?.rootViewController?.addChild(userStatusVC)
-                window?.addSubview(userStatusVC.view)
-            }
+            userStatusVC.modalPresentationStyle = .overFullScreen // Set the modal presentation style to full screen
+            present(userStatusVC, animated: true, completion: nil)
         }
     }
     
@@ -148,7 +142,6 @@ extension AmityRecentChatViewController: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if let cell = cell as? AmityRecentChatTableViewCell {
-//            let channel = screenViewModel.dataSource.channel(at: indexPath)
             guard let channel = cell.channel else { return }
             if channel.channelType == .conversation {
                 screenViewModel.action.unsyncChannelPresence(channel.channelId)
@@ -218,7 +211,6 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
     }
     
     func screenViewModelDidGetChannel() {
-//        print("[Channel List] start reload table view of channel list")
         tableView.reloadData()
     }
     
@@ -247,26 +239,7 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
 
 extension AmityRecentChatViewController: UserStatusDelegate {
     func didClose() {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            self.dismiss(animated: true) { [self] in
-                screenViewModel?.action.update { [self] result in
-                    switch result {
-                    case .success:
-                        reloadData()
-                        
-                        switch AmityUIKitManagerInternal.shared.userStatus {
-                        case .DO_NOT_DISTURB, .OUT_SICK:
-                            AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
-                        default:
-                            AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
-                        }
-                    case .failure(let error):
-                        print("Update failed with error: \(error)")
-                    }
-                }
-            }
-        } else {
-            window?.subviews.filter({$0.tag == 1}).forEach({$0.removeFromSuperview()})
+        self.dismiss(animated: true) { [self] in
             screenViewModel?.action.update { [self] result in
                 switch result {
                 case .success:
