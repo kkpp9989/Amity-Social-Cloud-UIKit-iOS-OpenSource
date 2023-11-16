@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityMessageListViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="alertErrorLabel" destination="mXF-3m-tA9" id="kdl-dM-7Bx"/>
+                <outlet property="alertErrorView" destination="2Qi-tn-uG1" id="jkd-DJ-Uzg"/>
                 <outlet property="bottomConstraint" destination="w9D-Nr-d1l" id="nen-fw-Tgx"/>
                 <outlet property="composeBarContainerView" destination="JeI-s9-deV" id="905-oA-SxW"/>
                 <outlet property="connectionStatusBar" destination="ZEc-KD-Os7" id="Dyf-yA-Qi5"/>
@@ -202,13 +204,37 @@
                         <constraint firstItem="dbE-iq-AhR" firstAttribute="top" secondItem="xHg-OU-Y9M" secondAttribute="top" id="x9D-b6-rmw"/>
                     </constraints>
                 </view>
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Qi-tn-uG1">
+                    <rect key="frame" x="16" y="131" width="382" height="40"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mXF-3m-tA9">
+                            <rect key="frame" x="20" y="10" width="342" height="20.5"/>
+                            <constraints>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20.5" id="PrF-M3-qlN"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="mXF-3m-tA9" secondAttribute="bottom" constant="9.5" id="MuN-sQ-fpw"/>
+                        <constraint firstAttribute="trailing" secondItem="mXF-3m-tA9" secondAttribute="trailing" constant="20" symbolic="YES" id="PW2-aT-9Na"/>
+                        <constraint firstItem="mXF-3m-tA9" firstAttribute="top" secondItem="2Qi-tn-uG1" secondAttribute="top" constant="10" id="k3w-Bu-Wgu"/>
+                        <constraint firstItem="mXF-3m-tA9" firstAttribute="leading" secondItem="2Qi-tn-uG1" secondAttribute="leading" constant="20" symbolic="YES" id="wSR-WP-nU9"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="ZJ2-7Y-g8l"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="KFx-xS-ZtL" firstAttribute="leading" secondItem="ZJ2-7Y-g8l" secondAttribute="leading" id="GkL-n3-VtQ"/>
                 <constraint firstItem="ZJ2-7Y-g8l" firstAttribute="trailing" secondItem="KFx-xS-ZtL" secondAttribute="trailing" id="KaN-X2-lGi"/>
+                <constraint firstItem="JeI-s9-deV" firstAttribute="top" secondItem="2Qi-tn-uG1" secondAttribute="bottom" constant="16" id="LQT-2l-cwL"/>
+                <constraint firstItem="2Qi-tn-uG1" firstAttribute="leading" secondItem="ZJ2-7Y-g8l" secondAttribute="leading" constant="16" id="Pbg-za-NaJ"/>
                 <constraint firstItem="xHg-OU-Y9M" firstAttribute="leading" secondItem="ZJ2-7Y-g8l" secondAttribute="leading" id="Yah-rD-vSE"/>
+                <constraint firstItem="ZJ2-7Y-g8l" firstAttribute="trailing" secondItem="2Qi-tn-uG1" secondAttribute="trailing" constant="16" id="iuB-c3-kgC"/>
                 <constraint firstItem="KFx-xS-ZtL" firstAttribute="top" secondItem="ZJ2-7Y-g8l" secondAttribute="top" id="mpg-KL-tNN"/>
                 <constraint firstAttribute="bottom" secondItem="xHg-OU-Y9M" secondAttribute="bottom" id="s4H-iV-eOa"/>
                 <constraint firstItem="ZJ2-7Y-g8l" firstAttribute="trailing" secondItem="xHg-OU-Y9M" secondAttribute="trailing" id="spI-A3-0dQ"/>
