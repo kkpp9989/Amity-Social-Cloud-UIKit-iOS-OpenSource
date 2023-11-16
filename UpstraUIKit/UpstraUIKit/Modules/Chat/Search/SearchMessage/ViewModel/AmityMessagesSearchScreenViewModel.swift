@@ -76,6 +76,7 @@ extension AmityMessagesSearchScreenViewModel {
             isEndingResult = false
         }
 
+        AmityEventHandler.shared.hideKTBLoading() // Hide old loading if need
         AmityEventHandler.shared.showKTBLoading()
 //        delegate?.screenViewModel(self, loadingState: .loading)
         var serviceRequest = RequestSearchingChat()
@@ -95,11 +96,13 @@ extension AmityMessagesSearchScreenViewModel {
                 }
 
                 strongSelf.dummyList = updatedMessageList.messages.compactMap { $0.messageID }
+                
+//                print("[Search][Channel][Message] Amount latest result search : \(strongSelf.dummyList.count) | paginateToken: \(strongSelf.paginateToken)")
 
                 let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: updatedMessageList.messages)
                 strongSelf.prepareData(updatedMessageList: sortedArray)
             case .failure(let error):
-                print(error)
+//                print("[Search][Channel][Message] Error from result search : \(error.localizedDescription)")
 
                 DispatchQueue.main.async {
                     AmityEventHandler.shared.hideKTBLoading()
@@ -200,9 +203,10 @@ extension AmityMessagesSearchScreenViewModel {
         isLoadingMore = true
 
         /* Get data next section */
-        AmityEventHandler.shared.showKTBLoading()
+//        AmityEventHandler.shared.showKTBLoading()
 //        delegate?.screenViewModel(self, loadingState: .loading)
         debouncer.run { [self] in
+//            print("[Search][Channel][Message] ****** Load more ******")
             search(withText: currentKeyword)
         }
     }
@@ -273,6 +277,8 @@ extension AmityMessagesSearchScreenViewModel {
         messageList.removeAll()
         channelList.removeAll()
         dummyList.removeAll()
+        paginateToken = ""
+        currentKeyword = ""
 
         delegate?.screenViewModelDidSearch(self)
     }

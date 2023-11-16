@@ -11,6 +11,7 @@ import AmitySDK
 
 class AmityChannelsSearchViewModel: AmityChannelsSearchScreenViewModelType {
     
+    
     weak var delegate: AmityChannelsSearchScreenViewModelDelegate?
     
     // MARK: Repository
@@ -18,7 +19,7 @@ class AmityChannelsSearchViewModel: AmityChannelsSearchScreenViewModelType {
 
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
-    private var channelList: [AmityChannelModel] = []
+    private var channelList: [Channel] = []
     private var currentKeyword: String = ""
     private var isEndingResult: Bool = false
     private var isLoadingMore: Bool = false
@@ -38,7 +39,7 @@ extension AmityChannelsSearchViewModel {
         return channelList.count
     }
     
-    func item(at indexPath: IndexPath) -> AmityChannelModel? {
+    func item(at indexPath: IndexPath) -> Channel? {
         guard !channelList.isEmpty else { return nil }
         return channelList[indexPath.row]
     }
@@ -47,6 +48,10 @@ extension AmityChannelsSearchViewModel {
 
 // MARK: - Action
 extension AmityChannelsSearchViewModel {
+    
+    func updateJoinStatusToMember(at indexPath: IndexPath) {
+        channelList[indexPath.row].membership = "member"
+    }
     
     func search(withText text: String?) {
         /* Check text is nil or is searching for ignore searching */
@@ -63,6 +68,7 @@ extension AmityChannelsSearchViewModel {
             isEndingResult = false
         }
         
+        AmityEventHandler.shared.hideKTBLoading() // Hide old loading if need
         AmityEventHandler.shared.showKTBLoading()
         var serviceRequest = RequestSearchingChat()
         serviceRequest.keyword = currentKeyword
@@ -77,14 +83,29 @@ extension AmityChannelsSearchViewModel {
                 } else {
                     isEndingResult = true
                 }
-                let channelIds = dataResponse.channels?.compactMap { $0.id } ?? []
-                dummyList = channelIds
-                getChannelIds(channelIds)
+
+                var channels: [Channel] = dataResponse.channels ?? []
+                let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
+//                print("[Search][Channel][Group] Amount latest result search : \(channels.count) | paginateToken: \(self.paginateToken)")
+
+                // Map data user permission to channels data : .membership
+                for (index, data) in channels.enumerated() {
+//                    print("[Search][Channel][Group] ------> channelId: \(data.channelId) | displayName: \(data.displayName)")
+                    if let indexOfChannelId = channelsPermission.firstIndex(where: { $0.channelId == data.channelId }) {
+                        channels[index].membership = channelsPermission[indexOfChannelId].membership
+                    }
+                }
+                
+                // Prepare data
+                dummyList = channels.compactMap({ $0.channelId })
+                let sortedArray = sortArrayPositions(array1: dummyList, array2: channels)
+                prepareData(updatedChannelList: sortedArray)
             case .failure(let error):
-                print(error)
+//                print("[Search][Channel][Group] Error from result search : \(error.localizedDescription)")
                 
                 /* Hide loading indicator */
                 DispatchQueue.main.async { [self] in
+                    isLoadingMore = false
                     AmityEventHandler.shared.hideKTBLoading()
                     if channelList.isEmpty {
                         delegate?.screenViewModelDidSearchNotFound(self)
@@ -96,58 +117,19 @@ extension AmityChannelsSearchViewModel {
         }
     }
     
-    private func getChannelIds(_ channelIds: [String]) {
-        DispatchQueue.main.async { [weak self] in
-            guard let strongSelf = self else { return }
-            
-            for channelId in channelIds {
-                strongSelf.dispatchGroup.enter()
-                
-                // Use a flag to track whether leave has been called for this task
-                var leaveCalled = false
-                
-                let token = strongSelf.channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
-                    guard let strongSelf = self else { return }
-                    guard let object = channel.snapshot else { return }
-                    
-                    if let _ = AmityError(error: error) {
-                        // Check if leave has already been called
-                        if !leaveCalled {
-                            leaveCalled = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    } else {
-                        let channelModel = AmityChannelModel(object: object)
-                        strongSelf.channelList.append(channelModel)
-                        
-                        // Check if leave has already been called
-                        if !leaveCalled {
-                            leaveCalled = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    }
-                }
-                
-                strongSelf.tokenArray.append(token)
-            }
-            
-            // Wait for all iterations to complete
-            strongSelf.dispatchGroup.notify(queue: .main) {
-                let sortedArray = strongSelf.sortArrayPositions(array1: strongSelf.dummyList, array2: strongSelf.channelList)
-                strongSelf.prepareData(updatedChannelList: sortedArray)
-                strongSelf.tokenArray.removeAll()
-            }
-        }
-    }
-
-    
-    private func prepareData(updatedChannelList: [AmityChannelModel]) {
+    private func prepareData(updatedChannelList: [Channel]) {
         DispatchQueue.main.async { [self] in
-            channelList = updatedChannelList
+            /* Check is loading result more from the current keyword or result from a new keyword */
+            if isLoadingMore {
+                channelList += updatedChannelList
+            } else {
+                channelList = updatedChannelList
+            }
+                
             /* Hide loading indicator */
             AmityEventHandler.shared.hideKTBLoading()
             isLoadingMore = false
-            
+
             if channelList.isEmpty {
                 delegate?.screenViewModelDidSearchNotFound(self)
             } else {
@@ -158,43 +140,69 @@ extension AmityChannelsSearchViewModel {
     
     func loadMore() {
         /* Check is ending result or result not found for ignore load more */
-        if isEndingResult { return }
+        if isEndingResult || channelList.isEmpty { return }
         
         /* Set static value to true for prepare data in loading more case */
         isLoadingMore = true
         
         /* Get data next section */
-        AmityEventHandler.shared.showKTBLoading()
+//        AmityEventHandler.shared.showKTBLoading()
         debouncer.run { [self] in
+//            print("[Search][Channel][Group] ****** Load more ******")
             search(withText: currentKeyword)
         }
     }
     
-    func join(withModel model: AmityChannelModel) {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId) {_, error in
-            if let error = AmityError(error: error) {
-                print(error)
+    func join(withModel model: Channel, indexPath: IndexPath) {
+        // Show loading
+        AmityEventHandler.shared.showKTBLoading()
+        // Join chat
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: model.channelId ?? "") {_, error in
+            if let error = error {
+//                print("[Search][Channel][Group][Join Chat] Can't joined chat in search view with error: \(error.localizedDescription)")
             } else {
-                self.getChannelIds(self.dummyList)
+//                print("[Search][Channel][Group][Join Chat] Joined chat in search view success -> Start send custom message")
+                
+                // Send custom message with join chat scenario
+                let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+                let customMessageController = AmityCustomMessageController(channelId: model.channelId ?? "")
+                customMessageController.send(event: .joinedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                    switch result {
+                    case .success(_):
+//                        print(#"[Custom message] send message success : "\#(subjectDisplayName) joined this chat"#)
+                        break
+                    case .failure(_):
+//                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) joined this chat"#)
+                        break
+                    }
+                }
+                
+                // Update join status
+                self.delegate?.screenViewModelDidJoin(self, indexPath: indexPath)
             }
+            
+            // Hide loading
+            AmityEventHandler.shared.hideKTBLoading()
         }
     }
     
-    private func sortArrayPositions(array1: [String], array2: [AmityChannelModel]) -> [AmityChannelModel] {
-        var sortedArray: [AmityChannelModel] = []
-        
+    private func sortArrayPositions(array1: [String], array2: [Channel]) -> [Channel] {
+        var sortedArray: [Channel] = []
+
         for channelId in array1 {
             if let index = array2.firstIndex(where: { $0.channelId == channelId }) {
                 sortedArray.append(array2[index])
             }
         }
-        
+
         return sortedArray
     }
 
     func clearData() {
         channelList.removeAll()
         dummyList.removeAll()
+        paginateToken = ""
+        currentKeyword = ""
         
         delegate?.screenViewModelDidSearch(self)
     }

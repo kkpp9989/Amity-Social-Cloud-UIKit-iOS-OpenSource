@@ -61,6 +61,9 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
         
         // Clear setting navigation bar (normal) from ONE Krungthai custom theme
         theme?.clearNavigationBarSetting()
+        
+        // Update result in current tab if need
+        updateResultCurrentTabIfneed()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -80,7 +83,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     // MARK: - Setup views
@@ -126,6 +129,7 @@ public class AmityChatSearchParentViewController: AmityPageViewController {
 
 private extension AmityChatSearchParentViewController {
     func handleSearch(with key: String?) {
+//        print(#"[Search][Channel] Handle search with keyword \#(key) of currentIndex: \#(currentIndex)"#)
         if viewControllers[currentIndex] == messageVC {
             messageVC.search(withText: key)
         } else if viewControllers[currentIndex] == groupVC {
@@ -135,13 +139,30 @@ private extension AmityChatSearchParentViewController {
         }
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
+//            print("[Search][Channel] Go to tab Messages with newIndex: \(newIndex)")
             messageVC.search(withText: searchTextField.text)
-        } else if currentIndex == 3 {
-            groupVC.search(withText: searchTextField.text)
-        } else {
+        case 1:
+//            print("[Search][Channel] Go to tab Accounts with newIndex: \(newIndex)")
             membersVC.search(with: searchTextField.text)
+        case 2:
+//            print("[Search][Channel] Go to tab Groups with newIndex: \(newIndex)")
+            groupVC.search(withText: searchTextField.text)
+        default:
+            break
+        }
+    }
+    
+    func updateResultCurrentTabIfneed() {
+        switch currentIndex {
+        case 2: // Index 2 : Group | Update result in search group because it got data from API one time and may be user joined chat in chat detail after searching
+//            print("[Search][Channel] Update result search in Groups with currentIndex: \(currentIndex)")
+            groupVC.clearData()
+            groupVC.search(withText: searchTextField.text)
+        default:
+            break
         }
     }
 }

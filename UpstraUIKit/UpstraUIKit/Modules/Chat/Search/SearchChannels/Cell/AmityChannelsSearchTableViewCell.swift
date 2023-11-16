@@ -50,18 +50,40 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         
     }
     
-    func display(with data: AmityChannelModel, keyword: String) {
-        let highlightText = highlightKeyword(in: data.displayName, keyword: keyword, highlightColor: AmityColorSet.primary)
+    func display(with data: Channel, keyword: String) {
+        // Set displayName
+        let highlightText = highlightKeyword(in: data.displayName ?? "", keyword: keyword, highlightColor: AmityColorSet.primary)
         titleLabel.attributedText = highlightText
-        avatarView.setImage(withImageURL: data.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
         
-        joinButton.isHidden = data.object.currentUserMembership == .member ? true : false
+        // Set avatar
+        if let imageFileId = data.avatarFileId {
+            displayImage(fileId: imageFileId)
+        } else {
+            avatarView.setImage(withImageURL: nil, placeholder: AmityIconSet.defaultGroupChat)
+        }
         
+        // Set join button
+        joinButton.isHidden = (data.membership ?? "none") == "member" ? true : false
+        
+        // Set badge by channel type
         var iconBadge = AmityIconSet.Chat.iconPublicBadge
-        if data.channelType == .live {
+        if data.channelType == "live" {
             iconBadge = AmityIconSet.Chat.iconPrivateBadge
         }
         iconImageView.image = iconBadge
+    }
+    
+    private func displayImage(fileId: String) {
+        AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
+            DispatchQueue.main.async { [weak self] in
+                switch resultImageURL {
+                case .success(let imageURL):
+                    self?.avatarView.setImage(withImageURL: imageURL, placeholder: AmityIconSet.defaultGroupChat)
+                case .failure(let error):
+                    print("[Search][Channel][Group][Avatar] Can't set avatar fileId \(fileId) with error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
     // MARK: - Perform Action

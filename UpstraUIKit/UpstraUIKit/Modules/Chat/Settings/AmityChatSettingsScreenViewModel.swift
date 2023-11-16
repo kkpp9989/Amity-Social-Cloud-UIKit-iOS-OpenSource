@@ -226,9 +226,11 @@ extension AmityChatSettingsScreenViewModel {
                         self?.customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
                             switch result {
                             case .success(_):
-                                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+//                                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                                break
                             case .failure(_):
-                                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+//                                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                                break
                             }
                             if !isDispatchGroupLeave {
                                 isDispatchGroupLeave = true
@@ -254,9 +256,11 @@ extension AmityChatSettingsScreenViewModel {
             customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
                 switch result {
                 case .success(_):
-                    print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+//                    print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                    break
                 case .failure(_):
-                    print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+//                    print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                    break
                 }
                 if !isDispatchGroupLeave {
                     isDispatchGroupLeave = true

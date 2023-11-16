@@ -65,11 +65,11 @@ extension AmityMessagesSearchViewController: UITableViewDelegate {
         AmityChannelEventHandler.shared.channelWithJumpMessageDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId, messageId: model.messageObjc.messageID ?? "")
     }
     
-    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.isBottomReached {
-            screenViewModel.action.loadMore()
-        }
-    }
+//    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if tableView.isBottomReached {
+//            screenViewModel.action.loadMore()
+//        }
+//    }
     
     /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -136,6 +136,7 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelD
 
 extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelAction {
     func clearData() {
+        self.keyword = ""
         screenViewModel.action.clearData()
     }
     
@@ -145,9 +146,13 @@ extension AmityMessagesSearchViewController: AmityMessagesSearchScreenViewModelA
     
     func search(withText text: String?) {
         guard let keyword = text else { return }
+//        print("[Search][Channel][Message] newKeyword: \(keyword) | currentKeyword: \(self.keyword)")
         if keyword != self.keyword {
-            screenViewModel.action.clearData()
+            clearData()
+        } else {
+            return
         }
+        
         if !keyword.isEmpty {
             screenViewModel.action.search(withText: text)
             self.keyword = keyword
