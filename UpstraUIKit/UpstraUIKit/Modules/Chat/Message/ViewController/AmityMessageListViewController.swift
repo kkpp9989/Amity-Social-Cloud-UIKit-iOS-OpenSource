@@ -772,6 +772,13 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
         case .didSendAudio:
             break
+        case .didSendTextError(let error):
+            if error.isAmityErrorCode(.linkNotAllowed) {
+                let alertController = UIAlertController(title: "", message: "Unable to send link This link isn't allowed in this chat.", preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                present(alertController, animated: true, completion: nil)
+            }
         }
     }
     
