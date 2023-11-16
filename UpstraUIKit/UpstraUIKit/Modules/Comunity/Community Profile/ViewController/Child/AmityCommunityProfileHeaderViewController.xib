@@ -36,7 +36,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="HXi-Sa-ehB">
-                    <rect key="frame" x="0.0" y="48" width="414" height="610"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="618"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vzm-YV-HXL" userLabel="Avatar Container View">
                             <rect key="frame" x="0.0" y="0.0" width="414" height="276"/>
@@ -180,7 +180,7 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H5r-0D-0VA" userLabel="Container View">
-                            <rect key="frame" x="0.0" y="340" width="414" height="270"/>
+                            <rect key="frame" x="0.0" y="340" width="414" height="278"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="FAE-TS-apw">
                                     <rect key="frame" x="16" y="0.0" width="382" height="270"/>
@@ -271,7 +271,7 @@
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
-                                <constraint firstAttribute="bottom" secondItem="FAE-TS-apw" secondAttribute="bottom" id="1Ym-BI-hLH"/>
+                                <constraint firstAttribute="bottom" secondItem="FAE-TS-apw" secondAttribute="bottom" constant="8" id="1Ym-BI-hLH"/>
                                 <constraint firstItem="FAE-TS-apw" firstAttribute="top" secondItem="H5r-0D-0VA" secondAttribute="top" id="Ic9-Tx-UPm"/>
                                 <constraint firstItem="FAE-TS-apw" firstAttribute="leading" secondItem="H5r-0D-0VA" secondAttribute="leading" constant="16" id="wJW-BR-965"/>
                                 <constraint firstAttribute="trailing" secondItem="FAE-TS-apw" secondAttribute="trailing" constant="16" id="y3R-d4-Rdc"/>
@@ -281,12 +281,12 @@
                 </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="Sb3-v2-hvg"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="HXi-Sa-ehB" firstAttribute="leading" secondItem="nZ9-4D-T3C" secondAttribute="leading" id="2Ib-YC-z5f"/>
                 <constraint firstItem="HXi-Sa-ehB" firstAttribute="top" secondItem="Sb3-v2-hvg" secondAttribute="top" id="Wqt-vZ-haJ"/>
                 <constraint firstAttribute="trailing" secondItem="HXi-Sa-ehB" secondAttribute="trailing" id="t7D-UT-FfO"/>
-                <constraint firstItem="Sb3-v2-hvg" firstAttribute="bottom" secondItem="HXi-Sa-ehB" secondAttribute="bottom" constant="8" id="znR-AA-Nki"/>
+                <constraint firstItem="Sb3-v2-hvg" firstAttribute="bottom" secondItem="HXi-Sa-ehB" secondAttribute="bottom" id="znR-AA-Nki"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="963.76811594202911" y="30.803571428571427"/>
