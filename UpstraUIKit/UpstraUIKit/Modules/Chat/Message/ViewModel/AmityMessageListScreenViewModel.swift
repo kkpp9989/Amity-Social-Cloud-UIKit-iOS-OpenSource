@@ -26,6 +26,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case didSendImage
         case didUploadImage(indexPath: IndexPath)
         case didSendAudio
+        case didSendTextError(error: Error)
     }
     
     enum AudioRecordingEvents {
@@ -265,6 +266,9 @@ extension AmityMessageListScreenViewModel {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptioins) { [weak self] message ,error in
             
             guard error == nil, let message = message else {
+                if let error = error, error.isAmityErrorCode(.linkNotAllowed) {
+                    self?.delegate?.screenViewModelEvents(for: .didSendTextError(error: error))
+                }
                 Log.add(#"[UIKit] Create text message "\#(textMessage)" fail with error: \#(error?.localizedDescription)"#)
                 return
             }
