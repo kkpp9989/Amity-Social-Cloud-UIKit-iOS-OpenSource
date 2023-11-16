@@ -66,6 +66,9 @@ public final class AmityMessageListViewController: AmityViewController {
     @IBOutlet private var replySeparatorContainerView: UIView!
     @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var replyCloseViewButton: UIButton!
+    
+    @IBOutlet private var alertErrorView: UIView!
+    @IBOutlet private var alertErrorLabel: UILabel!
 
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
@@ -405,6 +408,7 @@ private extension AmityMessageListViewController {
         setupMessageContainer()
         setupComposeBarContainer()
         setupAudioRecordingView()
+        setupAlertView()
     }
     
     func setupCustomNavigationBar() {
@@ -459,6 +463,17 @@ private extension AmityMessageListViewController {
     
     private func unobserveConnectionStatus() {
         connectionStatatusObservation = nil
+    }
+    
+    private func setupAlertView() {
+        alertErrorView.alpha = 0
+        alertErrorView.backgroundColor = .black.withAlphaComponent(0.8)
+        alertErrorView.layer.cornerRadius = 4
+        alertErrorView.clipsToBounds = true
+        
+        alertErrorLabel.text = "Unable to send link This link isn't allowed in this chat."
+        alertErrorLabel.font = AmityFontSet.bodyBold
+        alertErrorLabel.textColor = AmityColorSet.baseInverse
     }
     
     private func updateConnectionStatusBar(animated: Bool) {
@@ -821,10 +836,25 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             break
         case .didSendTextError(let error):
             if error.isAmityErrorCode(.linkNotAllowed) {
-                let alertController = UIAlertController(title: "", message: "Unable to send link This link isn't allowed in this chat.", preferredStyle: .alert)
-                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
-                alertController.addAction(cancelAction)
-                present(alertController, animated: true, completion: nil)
+                alertViewFadeIn()
+            }
+        }
+    }
+    
+    func alertViewFadeIn() {
+        UIView.animate(withDuration: 0.2) {
+            self.alertErrorView.alpha = 1
+        } completion: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            strongSelf.alertViewFadeOut()
+        }
+    }
+    
+    func alertViewFadeOut() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            guard let strongSelf = self else { return }
+            UIView.animate(withDuration: 0.2) {
+                strongSelf.alertErrorView.alpha = 0
             }
         }
     }
