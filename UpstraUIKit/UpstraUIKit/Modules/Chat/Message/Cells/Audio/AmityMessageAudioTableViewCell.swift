@@ -86,6 +86,8 @@ final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
                     time = message.metadata?["duration"] as! Double
                 }
                 durationLabel.text = previewDuration(time)
+            } else {
+                durationLabel.text = "00:00"
             }
           
         }
@@ -167,6 +169,8 @@ extension AmityMessageAudioTableViewCell: AmityAudioPlayerDelegate {
                 time = message.metadata?["duration"] as! Double
             }
             durationLabel.text = previewDuration(time)
+        } else {
+            durationLabel.text = "00:00"
         }
     }
     
