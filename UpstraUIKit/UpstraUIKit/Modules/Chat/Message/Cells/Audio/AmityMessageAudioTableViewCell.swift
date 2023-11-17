@@ -79,6 +79,15 @@ final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
             } else {
                 actionImageView.image = AmityIconSet.Chat.iconPlay
             }
+            
+            if message.metadata != nil {
+                var time: Double = 0
+                if let _ = message.metadata?["duration"] {
+                    time = message.metadata?["duration"] as! Double
+                }
+                durationLabel.text = previewDuration(time)
+            }
+          
         }
         super.display(message: message)
     }
@@ -89,6 +98,19 @@ final class AmityMessageAudioTableViewCell: AmityMessageTableViewCell {
             return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
         }
         return 90 + displaynameHeight
+    }
+    
+}
+
+// Calculate Time Duration
+extension AmityMessageAudioTableViewCell {
+    
+    func previewDuration(_ itemDuration: Double?) -> String {
+        let time = Int((itemDuration ?? 0) / 1000)
+        let minutes = Int(time) / 60 % 60
+        let seconds = Int(time) % 60
+        let display = String(format:"%02i:%02i", minutes, seconds)
+        return display
     }
     
 }
@@ -139,7 +161,13 @@ extension AmityMessageAudioTableViewCell: AmityAudioPlayerDelegate {
     
     func finishPlaying() {
         actionImageView.image = AmityIconSet.Chat.iconPlay
-        durationLabel.text = "00:00"
+        if message.metadata != nil {
+            var time: Double = 0
+            if let _ = message.metadata?["duration"] {
+                time = message.metadata?["duration"] as! Double
+            }
+            durationLabel.text = previewDuration(time)
+        }
     }
     
     func displayDuration(_ duration: String) {
