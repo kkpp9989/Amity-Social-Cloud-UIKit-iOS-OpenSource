@@ -46,7 +46,7 @@ public final class AmityMemberPickerChatFirstViewController: AmityViewController
 
 	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerChatFirstViewController {
 		let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-		viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
+		viewModeel.setCurrentUsers(users: users)
 		let vc = AmityMemberPickerChatFirstViewController(nibName: AmityMemberPickerChatFirstViewController.identifier, bundle: AmityUIKitManager.bundle)
 		vc.screenViewModel = viewModeel
 		return vc
@@ -199,7 +199,8 @@ extension AmityMemberPickerChatFirstViewController: UITableViewDataSource {
 	private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
 		if let cell = cell as? AmitySelectMemberListTableViewCell {
 			guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-			cell.display(with: user)
+            let isCurrentUserInGroup = screenViewModel.dataSource.isCurrentUserInGroup(id: user.userId)
+            cell.display(with: user, isCurrentUserInGroup: isCurrentUserInGroup)
 			if tableView.isBottomReached {
 				screenViewModel.action.loadmore()
 			}
@@ -245,6 +246,14 @@ extension AmityMemberPickerChatFirstViewController: UICollectionViewDelegateFlow
 }
 
 extension AmityMemberPickerChatFirstViewController: AmityMemberPickerScreenViewModelDelegate {
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        // Not ready
+    }
+    
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool) {
+        // Not ready
+    }
+    
 	
 	func screenViewModelDidFetchUser() {
 		tableView.reloadData()

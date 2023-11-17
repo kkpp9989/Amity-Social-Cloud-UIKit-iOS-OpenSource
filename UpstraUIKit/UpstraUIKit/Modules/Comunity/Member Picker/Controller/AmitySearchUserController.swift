@@ -27,14 +27,14 @@ final class AmitySearchUserController {
         self.repository = repository
     }
     
-    func search(with text: String, storeUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
+    func search(with text: String, newSelectedUsers: [AmitySelectMemberModel], currentUsers: [AmitySelectMemberModel],  _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
         users = []
         searchTask?.cancel()
         if text == "" {
             completion(.failure(.textEmpty))
         } else {
             let request =  DispatchWorkItem { [weak self] in
-                self?.collection = self?.repository?.searchUser(text, sortBy: .displayName)
+                self?.collection = self?.repository?.searchUsers(text, sortBy: .displayName)
                 self?.token = self?.collection?.observe { (userCollection, change, error) in
                     guard let strongSelf = self else { return }
                     if let error = error {
@@ -43,7 +43,7 @@ final class AmitySearchUserController {
                         for index in 0..<userCollection.count() {
                             guard let object = userCollection.object(at: index) else { continue }
                             let model = AmitySelectMemberModel(object: object)
-                            model.isSelected = storeUsers.contains { $0.userId == object.userId }
+                            model.isSelected = newSelectedUsers.contains { $0.userId == object.userId } || currentUsers.contains { $0.userId == object.userId }
                             if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
                                 strongSelf.users.append(model)
                             }

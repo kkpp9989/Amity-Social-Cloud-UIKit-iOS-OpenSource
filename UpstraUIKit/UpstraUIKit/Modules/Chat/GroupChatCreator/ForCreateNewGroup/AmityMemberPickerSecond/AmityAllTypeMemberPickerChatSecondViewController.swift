@@ -130,7 +130,7 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
         switch newIndex {
         case 0:
 //            print("--------> [User] Go to tab acoount")
-            memberVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            memberVC?.setCurrentUsers(users: numberOfSelectedUseres)
         case 1:
 //            print("--------> [User] Go to tab following")
             followingVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)

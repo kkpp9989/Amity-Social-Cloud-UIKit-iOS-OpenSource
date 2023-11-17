@@ -57,15 +57,15 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = []) -> AmityForwardAccountMemberPickerViewController {
         let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-        viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
+        viewModeel.setCurrentUsers(users: users)
         let vc = AmityForwardAccountMemberPickerViewController(nibName: AmityForwardAccountMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
         vc.pageTitle = pageTitle
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setCurrentUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public func setCurrentUsers(users: [AmitySelectMemberModel]) {
+        screenViewModel.setCurrentUsers(users: users)
     }
 }
 
@@ -207,7 +207,8 @@ extension AmityForwardAccountMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            let isCurrentUserInGroup = screenViewModel.dataSource.isCurrentUserInGroup(id: user.userId)
+            cell.display(with: user, isCurrentUserInGroup: isCurrentUserInGroup)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -253,6 +254,14 @@ extension AmityForwardAccountMemberPickerViewController: UICollectionViewDelegat
 }
 
 extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreenViewModelDelegate {
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        // Not ready
+    }
+    
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool) {
+        // Not ready
+    }
+    
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()

@@ -92,7 +92,7 @@ extension AmityMemberPickerChatScreenViewModel {
 	}
 	
 	func getUsers() {
-		fetchUserController?.storeUsers = storeUsers
+		fetchUserController?.newSelectedUsers = storeUsers // กลับมาแก้
 		fetchUserController?.getUser { (result) in
 			switch result {
 			case .success(let users):
@@ -106,7 +106,7 @@ extension AmityMemberPickerChatScreenViewModel {
 	
 	func searchUser(with text: String) {
 		isSearch = true
-		searchUserController?.search(with: text, storeUsers: storeUsers, { [weak self] (result) in
+		searchUserController?.search(with: text, newSelectedUsers: storeUsers, currentUsers: [], { [weak self] (result) in // กลับมาแก้
 			switch result {
 			case .success(let users):
 				self?.searchUsers = users
@@ -124,7 +124,7 @@ extension AmityMemberPickerChatScreenViewModel {
 	}
 	
 	func selectUser(at indexPath: IndexPath) {
-		selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, storeUsers: &storeUsers, at: indexPath, isSearch: isSearch)
+		selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, newSelectedUsers: &storeUsers, at: indexPath, isSearch: isSearch) // กลับมาแก้
 		if storeUsers.count == 0 {
 			delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
 		} else {
@@ -133,7 +133,7 @@ extension AmityMemberPickerChatScreenViewModel {
 	}
 	
 	func deselectUser(at indexPath: IndexPath) {
-		selectUserContrller?.deselect(users: &users, storeUsers: &storeUsers, at: indexPath)
+        selectUserContrller?.deselect(searchUsers: &searchUsers, users: &users, newSelectedUsers: &storeUsers, at: indexPath) // กลับมาแก้
 		if storeUsers.count == 0 {
 			delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
 		} else {
@@ -148,7 +148,7 @@ extension AmityMemberPickerChatScreenViewModel {
 			success = controller.loadmore(isSearch: isSearch)
 		} else {
 			guard let controller = fetchUserController else { return }
-			fetchUserController?.storeUsers = storeUsers
+			fetchUserController?.newSelectedUsers = storeUsers // กลับมาแก้
 			success = controller.loadmore(isSearch: isSearch)
 		}
 		
