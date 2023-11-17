@@ -267,6 +267,16 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         sendMessageButton.isHidden = text.isEmpty
     }
     
+    func updateViewDidMuteChannelStatusChanged(isMuted: Bool) {
+        if isMuted {
+            view.isUserInteractionEnabled = false
+            textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholderMuted.localizedString
+        } else {
+            view.isUserInteractionEnabled = true
+            textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
+        }
+    }
+    
     func showForwardMenuButton(show: Bool) {
         if show {
             inputMenuView.isHidden = true

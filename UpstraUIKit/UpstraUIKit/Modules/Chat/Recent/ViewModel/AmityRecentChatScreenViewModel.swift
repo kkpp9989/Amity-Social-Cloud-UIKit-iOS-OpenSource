@@ -24,6 +24,8 @@ public struct AmityChannelModel {
     let object: AmityChannel
     let previewMessage: AmityMessagePreview?
     var isOnline: Bool
+    let isMuted: Bool
+    let isDeleted: Bool
     
     init(object: AmityChannel) {
         self.channelId = object.channelId
@@ -39,6 +41,8 @@ public struct AmityChannelModel {
         self.object = object
         self.previewMessage = object.messagePreview
         self.isOnline = false
+        self.isMuted = object.isMuted
+        self.isDeleted = object.isDeleted
     }
     
     var isConversationChannel: Bool {

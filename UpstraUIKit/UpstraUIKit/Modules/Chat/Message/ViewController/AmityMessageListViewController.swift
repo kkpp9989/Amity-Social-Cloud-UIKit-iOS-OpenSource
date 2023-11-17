@@ -771,6 +771,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 navigationItem.rightBarButtonItem = nil // Hide the right bar button item
             }
         }
+        
+        // Update interaction of compose bar view
+        composeBar.updateViewDidMuteChannelStatusChanged(isMuted: channel.isMuted)
+        
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
