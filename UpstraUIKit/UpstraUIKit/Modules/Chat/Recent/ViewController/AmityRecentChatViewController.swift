@@ -132,11 +132,12 @@ extension AmityRecentChatViewController: UITableViewDelegate {
         }
         
         if let cell = cell as? AmityRecentChatTableViewCell {
-            let channel = screenViewModel.dataSource.channel(at: indexPath)
-            if channel.channelType == .conversation {
-                screenViewModel.action.syncChannelPresence(channel.channelId)
+            if let channel = screenViewModel.dataSource.channel(at: indexPath) {
+                if channel.channelType == .conversation {
+                    screenViewModel.action.syncChannelPresence(channel.channelId)
+                }
+                cell.display(with: channel)
             }
-            cell.display(with: channel)
         }
     }
     
@@ -195,8 +196,9 @@ extension AmityRecentChatViewController: UITableViewDataSource {
     
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmityRecentChatTableViewCell {
-            let channel = screenViewModel.dataSource.channel(at: indexPath)
-            cell.display(with: channel)
+            if let channel = screenViewModel.dataSource.channel(at: indexPath) {
+                cell.display(with: channel)
+            }
         }
     }
 }

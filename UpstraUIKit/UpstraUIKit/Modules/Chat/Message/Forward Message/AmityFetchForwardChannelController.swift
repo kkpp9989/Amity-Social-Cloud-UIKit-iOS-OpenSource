@@ -39,21 +39,20 @@ final class AmityFetchForwardChannelController {
         if targetType == .recent {
             collection = repository?.getChannels(with: query)
         } else {
-            query.types = [AmityChannelQueryType.broadcast, AmityChannelQueryType.live, AmityChannelQueryType.community]
+            query.types = [AmityChannelQueryType.community]
             collection = repository?.getChannels(with: query)
         }
         
         token = collection?.observeOnce { [weak self] (userCollection, change, error) in
-//            print("--------> Receive channels data from observer)")
             guard let strongSelf = self else { return }
             if let error = error {
                 completion(.failure(error))
             } else {
                 let endIndex = strongSelf.targetType == .recent ? min(10, userCollection.count()) : userCollection.count()
-                var channelIdLeaveMap: [String: Bool] = [:] // Dictionary to keep track of whether leave has been called for a specific channelId
+                // Dictionary to keep track of whether leave has been called for a specific channelId
+                var channelIdLeaveMap: [String: Bool] = [:]
                 for index in 0..<endIndex {
                     strongSelf.dispatchGroup.enter()
-//                    print("--------> dispatchGroup.enter() | index: \(index)")
                     channelIdLeaveMap[String(index)] = false
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object)
@@ -73,7 +72,6 @@ final class AmityFetchForwardChannelController {
                                     if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                                         channelIdLeaveMap[String(index)] = true
                                         strongSelf.dispatchGroup.leave()
-//                                        print("--------> dispatchGroup.leave() | index: \(index) | case change channel to user")
                                     }
                                 })
                                 strongSelf.tokenArray.append(tempToken)
@@ -82,27 +80,23 @@ final class AmityFetchForwardChannelController {
                                 if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                                     channelIdLeaveMap[String(index)] = true
                                     strongSelf.dispatchGroup.leave()
-//                                    print("--------> dispatchGroup.leave() | index: \(index) | case didn't change channel to user")
                                 }
                             }
                         } else {
                             if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                                 channelIdLeaveMap[String(index)] = true
                                 strongSelf.dispatchGroup.leave()
-//                                print("--------> dispatchGroup.leave() | index: \(index) | case didn't append data")
                             }
                         }
                     } else {
                         if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                             channelIdLeaveMap[String(index)] = true
                             strongSelf.dispatchGroup.leave()
-//                            print("--------> dispatchGroup.leave() | index: \(index) | case didn't append data")
                         }
                     }
                 }
                 
                 strongSelf.dispatchGroup.notify(queue: .main) {
-//                    print("--------> dispatchGroup.notify() | all task complete")
                     strongSelf.tokenArray.removeAll()
                     let predicate: (AmitySelectMemberModel) -> (String) = { user in
                         guard let displayName = user.displayName else { return "#" }
