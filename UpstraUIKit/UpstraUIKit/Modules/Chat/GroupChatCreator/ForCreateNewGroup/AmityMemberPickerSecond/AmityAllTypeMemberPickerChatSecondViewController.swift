@@ -44,9 +44,9 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
     }
     
     public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
-                            liveChannelBuilder: AmityLiveChannelBuilder? = nil,
+                            liveChannelBuilder: AmityCommunityChannelBuilder? = nil,
                             displayName: String = "") -> AmityAllTypeMemberPickerChatSecondViewController {
-        let viewModel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityLiveChannelBuilder())
+        let viewModel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityCommunityChannelBuilder())
         viewModel.setCurrentUsers(users: users)
         let vc = AmityAllTypeMemberPickerChatSecondViewController(nibName: AmityAllTypeMemberPickerChatSecondViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
