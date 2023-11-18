@@ -217,7 +217,7 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 }
 
 extension GroupChatCreatorSecondViewController: GroupChatCreatorScreenViewModelDelegate {
-	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmitySDK.AmityLiveChannelBuilder) {
+	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmitySDK.AmityCommunityChannelBuilder) {
 		// Do nothing ..
 		// This func for Create New Group ONLY!
 	}
