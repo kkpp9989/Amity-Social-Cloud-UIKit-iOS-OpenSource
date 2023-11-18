@@ -104,9 +104,12 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
         return channels
     }
     
-    func channel(at indexPath: IndexPath) -> AmityChannelModel {
-//        print("[Channel List] get channel indexPath.row: \(indexPath.row)")
-        return channels[indexPath.row]
+    func channel(at indexPath: IndexPath) -> AmityChannelModel? {
+        if indexPath.row < channels.count {
+            return channels[indexPath.row]
+        }
+        
+        return nil
     }
     
     func numberOfRow(in section: Int) -> Int {
@@ -284,9 +287,10 @@ extension AmityRecentChatScreenViewModel {
     }
     
     func join(at indexPath: IndexPath) {
-        let channel = channel(at: indexPath).object
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel, parameters: channel.channelId)
-        delegate?.screenViewModelRoute(for: .messageView(channelId: channel.channelId, subChannelId: channel.defaultSubChannelId))
+        if let channel = channel(at: indexPath)?.object {
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel, parameters: channel.channelId)
+            delegate?.screenViewModelRoute(for: .messageView(channelId: channel.channelId, subChannelId: channel.defaultSubChannelId))
+        }
     }
 
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
@@ -318,30 +322,21 @@ extension AmityRecentChatScreenViewModel {
 private extension AmityRecentChatScreenViewModel {
     
     func getChannelList() {
-        switch channelType {
-        case .community:
-            let query = AmityChannelQuery()
-            query.filter = .userIsMember
-            query.includeDeleted = false
-            channelsCollection = channelRepository.getChannels(with: query)
-        case .conversation:
-            let query = AmityChannelQuery()
-            query.filter = .userIsMember
-            query.includeDeleted = false
-            channelsCollection = channelRepository.getChannels(with: query)
-        default:
-            break
-        }
+        let query = AmityChannelQuery()
+        query.filter = .userIsMember
+        query.includeDeleted = false
+        query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community]
+        channelsCollection = channelRepository.getChannels(with: query)
+        
+        AmityEventHandler.shared.showKTBLoading()
         channelsToken = channelsCollection?.observe { [weak self] (collection, change, error) in
             guard let strongSelf = self else { return }
-//            print("[Channel List] ---------------------------------------------------------------------")
-//            print("[Channel List] live collection datastatus: \(collection.dataStatus)")
-            self?.prepareDataSource()
+            strongSelf.prepareDataSource()
         }
     }
     
     private func prepareDataSource() {
-        AmityHUD.hide()
+        AmityEventHandler.shared.hideKTBLoading()
         guard let collection = channelsCollection else {
             return
         }
@@ -349,11 +344,9 @@ private extension AmityRecentChatScreenViewModel {
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
-//            print("[Channel List] channel model: \(model.object.channelId) | previewId: \(model.previewMessage?.messagePreviewId) | isDeleted: \(model.object.isDeleted)")
             _channels.append(model)
         }
         channels = _channels
-//        print("[Channel List] channels.count before reload table view: \(channels.count)")
         delegate?.screenViewModelLoadingState(for: .loaded)
         delegate?.screenViewModelDidGetChannel()
         delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)

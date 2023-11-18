@@ -21,7 +21,7 @@ protocol AmityRecentChatScreenViewModelDelegate: AnyObject {
 protocol AmityRecentChatScreenViewModelDataSource {
     
     func getChannelArray() -> [AmityChannelModel]
-    func channel(at indexPath: IndexPath) -> AmityChannelModel
+    func channel(at indexPath: IndexPath) -> AmityChannelModel?
     func numberOfRow(in section: Int) -> Int
     func isAddMemberBarButtonEnabled() -> Bool
 }
