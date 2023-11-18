@@ -78,7 +78,7 @@ private extension AmityMessageListHeaderView {
 
 extension AmityMessageListHeaderView {
     
-    func updateViews(channel: AmityChannelModel) {
+    func updateViews(channel: AmityChannelModel, isOnline: Bool) {
         displayNameLabel.text = channel.displayName
         switch channel.channelType {
         case .standard:
@@ -97,7 +97,7 @@ extension AmityMessageListHeaderView {
                         // Set displayName
                         displayNameLabel.text = otherMember.displayName
                         // Set user status and show its | [Temp] Mock to Available
-                        updateUserStatus(user: otherMember)
+                        updateUserStatus(user: otherMember, isOnline: isOnline)
                         // Hide member count because it's 1:1 Chat
                         memberCount.isHidden = true
                     }
@@ -115,14 +115,19 @@ extension AmityMessageListHeaderView {
         }
     }
     
-    func updateUserStatus(user: AmityUser) {
+    func updateUserStatus(user: AmityUser, isOnline: Bool) {
         // Show status view
         statusView.isHidden = false
         let status = user.metadata?["user_presence"] as? String ?? ""
         switch status {
         case "available":
-            statusImageView.image = AmityIconSet.Chat.iconStatusAvailable
-            statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
+            if isOnline {
+                statusImageView.image = AmityIconSet.Chat.iconStatusAvailable
+                statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.available.localizedString
+            } else {
+                statusImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.offline.localizedString
+            }
         case "do_not_disturb":
             statusImageView.image = AmityIconSet.Chat.iconStatusDoNotDisTurb
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.doNotDisturb.localizedString

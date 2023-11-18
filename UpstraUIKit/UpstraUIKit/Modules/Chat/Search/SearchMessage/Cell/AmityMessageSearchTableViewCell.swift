@@ -21,6 +21,12 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var previewMessageLabel: UILabel!
     @IBOutlet private var dateTimeLabel: UILabel!
     @IBOutlet private var statusBadgeImageView: UIImageView!
+    @IBOutlet private var badgeStatusView: UIView!
+
+    private var token: AmityNotificationToken?
+    private var repository: AmityUserRepository?
+    
+    public var searchData: MessageSearchModelData?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,6 +34,8 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
     }
     
     private func setupView() {
+        repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+
         containerDisplayNameView.backgroundColor = AmityColorSet.backgroundColor
         containerMessageView.backgroundColor = AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
@@ -35,6 +43,14 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         
         iconImageView.isHidden = true
         statusImageView.isHidden = true
+        badgeStatusView.isHidden = true
+
+        badgeStatusView.backgroundColor = .white
+        badgeStatusView.layer.cornerRadius = badgeStatusView.frame.height / 2
+        badgeStatusView.layer.borderColor = UIColor.white.cgColor
+        badgeStatusView.layer.borderWidth = 2.0
+        badgeStatusView.contentMode = .scaleAspectFit
+        badgeStatusView.clipsToBounds = true
         
         titleLabel.font = AmityFontSet.body
         titleLabel.textColor = AmityColorSet.base
@@ -51,12 +67,15 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
     }
     
-    func display(with data: MessageSearchModelData, keyword: String) {
+    func display(with data: MessageSearchModelData, keyword: String, isOnline: Bool) {
+        searchData = data
         statusImageView.isHidden = false
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(from: data.messageObjc.createdAt ?? "")
         titleLabel.text = data.channelObjc.displayName
-
+        badgeStatusView.isHidden = true
+        badgeStatusView.backgroundColor = .clear
+        
         let text = data.messageObjc.data?.text ?? "No message"
         let highlightText = highlightKeyword(in: text, keyword: keyword, highlightColor: AmityColorSet.primary)
         previewMessageLabel.attributedText = highlightText
@@ -73,7 +92,10 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             memberLabel.text = nil
             statusImageView.isHidden = false
             iconImageView.isHidden = true
-            AmityMemberChatUtilities.Conversation.getOtherUserByMemberShip(channelId: data.channelObjc.channelId) { user in
+            badgeStatusView.isHidden = false
+            badgeStatusView.backgroundColor = .white
+            
+            getOtherUser(channel: data.channelObjc) { user in
                 DispatchQueue.main.async { [self] in
                     if let otherMember = user {
                         // Set avatar
@@ -83,7 +105,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
                         if status != "available" {
                             statusBadgeImageView.image = setImageFromStatus(status)
                         } else {
-                            if data.channelObjc.isOnline {
+                            if isOnline {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
                             } else {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
@@ -97,6 +119,10 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             avatarView.setImage(withImageURL: data.channelObjc.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             memberLabel.text = "(\(data.channelObjc.memberCount))"
             statusImageView.isHidden = true
+            statusBadgeImageView.isHidden = true
+            badgeStatusView.isHidden = true
+            badgeStatusView.backgroundColor = .clear
+            
             iconImageView.isHidden = false
             var iconBadge = AmityIconSet.Chat.iconPublicBadge
             if data.channelObjc.channelType == .live {
@@ -125,6 +151,9 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         case "out_sick":
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
+            statusBadgeImageView.isHidden = true
+            badgeStatusView.isHidden = true
+            badgeStatusView.backgroundColor = .clear
             return UIImage()
         }
     }
@@ -147,5 +176,17 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         }
         
         return attributedText
+    }
+    
+    func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {
+        token?.invalidate()
+        if !channel.getOtherUserId().isEmpty {
+            token = repository?.getUser(channel.getOtherUserId()).observeOnce({ [weak self] user, error in
+                guard let weakSelf = self else { return }
+                let userObject = user.snapshot
+                weakSelf.token?.invalidate()
+                completion(userObject)
+            })
+        }
     }
 }
