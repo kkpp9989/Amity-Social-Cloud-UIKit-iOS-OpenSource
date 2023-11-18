@@ -45,7 +45,6 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        //        setupScreenViewModel()
         setupView()
     }
     
@@ -53,13 +52,14 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         super.viewWillAppear(animated)
         setupScreenViewModel()
         AmityUIKitManager.getUnreadCount()
+        AmityUIKitManager.getSyncAllChannelPresence()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         //  Stop syncing presence for all users as user
-        screenViewModel.action.unsyncAllChannelPresence()
+        AmityUIKitManager.unsyncAllChannelPresence()
         screenViewModel.action.viewWillDisappear()
     }
     
@@ -134,9 +134,13 @@ extension AmityRecentChatViewController: UITableViewDelegate {
         if let cell = cell as? AmityRecentChatTableViewCell {
             if let channel = screenViewModel.dataSource.channel(at: indexPath) {
                 if channel.channelType == .conversation {
-                    screenViewModel.action.syncChannelPresence(channel.channelId)
+                    AmityUIKitManager.syncChannelPresence(channel.channelId)
                 }
-                cell.display(with: channel)
+
+                let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
+                
+                cell.display(with: channel, isOnline: isOnline)
             }
         }
     }
@@ -145,7 +149,7 @@ extension AmityRecentChatViewController: UITableViewDelegate {
         if let cell = cell as? AmityRecentChatTableViewCell {
             guard let channel = cell.channel else { return }
             if channel.channelType == .conversation {
-                screenViewModel.action.unsyncChannelPresence(channel.channelId)
+                AmityUIKitManager.unsyncChannelPresence(channel.channelId)
             }
         }
     }
@@ -197,7 +201,9 @@ extension AmityRecentChatViewController: UITableViewDataSource {
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmityRecentChatTableViewCell {
             if let channel = screenViewModel.dataSource.channel(at: indexPath) {
-                cell.display(with: channel)
+                let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
+                cell.display(with: channel, isOnline: isOnline)
             }
         }
     }

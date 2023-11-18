@@ -758,7 +758,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
-        navigationHeaderViewController?.updateViews(channel: channel)
+        let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+        let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
+        navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
         
         if channel.object.currentUserMembership != .member {
             composeBar.showJoinMenuButton(show: true)

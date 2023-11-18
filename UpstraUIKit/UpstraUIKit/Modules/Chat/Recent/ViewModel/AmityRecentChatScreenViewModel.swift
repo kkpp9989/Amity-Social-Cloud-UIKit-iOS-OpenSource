@@ -23,7 +23,6 @@ public struct AmityChannelModel {
     let metadata: [String:Any]
     let object: AmityChannel
     let previewMessage: AmityMessagePreview?
-    var isOnline: Bool
     
     init(object: AmityChannel) {
         self.channelId = object.channelId
@@ -38,7 +37,6 @@ public struct AmityChannelModel {
         self.metadata = object.metadata ?? [:]
         self.object = object
         self.previewMessage = object.messagePreview
-        self.isOnline = false
     }
     
     var isConversationChannel: Bool {
@@ -78,19 +76,16 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     private var channelsToken: AmityNotificationToken?
     private var existingChannelToken: AmityNotificationToken?
     private var channelType: AmityChannelType = .conversation
-    private var channelPresenceRepo: AmityChannelPresenceRepository
     
     // MARK: - Utilities
     private let debouncer = Debouncer(delay: 0.5)
     
     // MARK: - AnyCancellable
     private var disposeBag: Set<AnyCancellable> = []
-    private var disposeBagPresece: Set<AnyCancellable> = []
 
     init(channelType: AmityChannelType) {
         self.channelType = channelType
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
-        channelPresenceRepo = AmityChannelPresenceRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
     required init?(coder: NSCoder) {
@@ -99,7 +94,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     
     // MARK: - DataSource
     public var channels: [AmityChannelModel] = []
-    
+
     func getChannelArray() -> [AmityChannelModel] {
         return channels
     }
@@ -201,44 +196,6 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
         }
     }
     
-    func syncChannelPresence(_ channelId: String) {
-        channelPresenceRepo.syncChannelPresence(id: channelId)
-    }
-    
-    func unsyncChannelPresence(_ channelId: String) {
-        channelPresenceRepo.unsyncChannelPresence(id: channelId)
-    }
-    
-    func unsyncAllChannelPresence() {
-        channelPresenceRepo.unsyncAllChannelPresence()
-    }
-    
-    func getSyncAllChannelPresence() {
-        cancellables = channelPresenceRepo.getSyncingChannelPresence().sink { completion in
-            // Handle completion
-            switch completion {
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            default:
-                break
-            }
-        } receiveValue: { presences in
-            
-            /// Channel presences where any other member is online
-            let onlinePresences = presences.filter { $0.isAnyMemberOnline }
-            
-            // You can use this onlinePresences & map it with your channel list to determine
-            // list of online channels to show or sort it in asc | desc order
-            let onlineChannels = self.channels.filter { channel in
-                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
-                return isOnline
-            }
-            
-            self.channels = onlineChannels
-            
-        }
-    }
-    
     func getTotalUnreadCount() {
         AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
             AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
@@ -253,8 +210,6 @@ extension AmityRecentChatScreenViewModel {
     func viewDidLoad() {
         getChannelList()
         getTotalUnreadCount()
-        getSyncAllChannelPresence()
-        AmityUIKitManager.checkPresenceStatus()
     }
     
     func viewWillDisappear() {
