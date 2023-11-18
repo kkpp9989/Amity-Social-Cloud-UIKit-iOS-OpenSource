@@ -838,6 +838,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             if error.isAmityErrorCode(.linkNotAllowed) {
                 alertViewFadeIn()
             }
+        case .didPopupReSendTextError:
+            alertErrorLabel.text = "Unable to send message"
+            alertViewFadeIn()
         }
     }
     
