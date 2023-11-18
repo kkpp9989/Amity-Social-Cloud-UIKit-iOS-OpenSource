@@ -806,7 +806,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .updateMessages(let isScrollUp):
             let offset = messageViewController.tableView.contentOffset.y
             let contentHeight = messageViewController.tableView.contentSize.height
-
+            
             messageViewController.tableView.reloadData()
             messageViewController.tableView.layoutIfNeeded()
             
@@ -836,11 +836,12 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             break
         case .didSendTextError(let error):
             if error.isAmityErrorCode(.linkNotAllowed) {
+                alertErrorLabel.text = "Unable to send link This link isn't allowed in this chat."
+                alertViewFadeIn()
+            } else {
+                alertErrorLabel.text = "Unable to send message"
                 alertViewFadeIn()
             }
-        case .didPopupReSendTextError:
-            alertErrorLabel.text = "Unable to send message"
-            alertViewFadeIn()
         }
     }
     
