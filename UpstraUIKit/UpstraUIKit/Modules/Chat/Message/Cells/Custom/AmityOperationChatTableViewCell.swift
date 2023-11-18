@@ -30,7 +30,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     override func prepareForReuse() {
         textMessageView.text = ""
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 14
         containerView.layer.masksToBounds = true
     }
     
@@ -39,7 +39,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         contentView.backgroundColor = .clear
         
         containerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 14
         containerView.layer.masksToBounds = true
         isUserInteractionEnabled = false
         
@@ -52,11 +52,10 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     }
     
     func display(message: AmityMessageModel) {
-        guard let text = message.text else { return }
         self.message = message
+        guard let text = message.text else { return }
         textMessageView.text = text
-        
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 14
         containerView.layer.masksToBounds = true
     }
     
@@ -65,8 +64,11 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     }
     
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
-        guard let text = message.text else { return UITableView.automaticDimension }
-        let textHeight = text.height(withConstrainedWidth: boundingWidth, font: AmityFontSet.caption)
-        return textHeight + 16 // Adjust as needed for additional spacing
+//        guard let text = message.text else { return UITableView.automaticDimension }
+////        let textHeight = text.height(withConstrainedWidth: boundingWidth, font: AmityFontSet.caption)
+////        return textHeight + 16 // Adjust as needed for additional spacing
+////        return 200
+
+        return UITableView.automaticDimension
     }
 }

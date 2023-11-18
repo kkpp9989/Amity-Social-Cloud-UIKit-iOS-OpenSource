@@ -132,6 +132,7 @@ extension AmityMessageListTableViewController {
 
 // MARK: - Delegate
 extension AmityMessageListTableViewController {
+    
     override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         screenViewModel.action.loadMoreScrollUp(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
     }
