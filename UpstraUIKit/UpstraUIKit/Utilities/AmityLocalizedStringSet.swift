@@ -130,6 +130,7 @@ public struct AmityLocalizedStringSet {
     static let followersTitle = "followers_title"
 
     static let textMessagePlaceholder = "text_message_placeholder"
+    static let textMessagePlaceholderMuted = "text_message_placeholder_muted"
     static let messageReadmore = "message_readmore"
     static let noUserFound = "no_user_found"
     static let searchResults = "search_results"
