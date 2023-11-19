@@ -247,7 +247,6 @@ extension AmityChannelMemberScreenViewModel {
                 
                 // Send custom message with remove user scenario
                 let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
-                print("[Custom message] subjectDisplayName: \(subjectDisplayName) | objectDisplayName: \(objectDisplayName)")
                 strongSelf.customMessageController.send(event: .removeMember, subjectUserName: subjectDisplayName, objectUserName: objectDisplayName) { result in
                     switch result {
                     case .success(_):
