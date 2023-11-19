@@ -101,13 +101,13 @@ extension AmityMemberPickerScreenViewModel {
         }
     }
     
-    func setNewSelectedUsers(users: [AmitySelectMemberModel]) {
+    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
         newSelectedUsers = users
         
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSetNewSelectedUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
         } else {
-            delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab)
         }
     }
     

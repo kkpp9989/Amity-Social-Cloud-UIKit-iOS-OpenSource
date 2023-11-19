@@ -20,7 +20,8 @@ final class AmityFetchForwardUserController {
     private var targetType: AmityFollowerViewType
     
     private var users: [AmitySelectMemberModel] = []
-    var storeUsers: [AmitySelectMemberModel] = []
+    var newSelectedUsers: [AmitySelectMemberModel] = []
+    var currentUsers: [AmitySelectMemberModel] = []
     
     init(repository: AmityUserFollowManager?, type: AmityFollowerViewType) {
         self.repository = repository
@@ -44,7 +45,7 @@ final class AmityFetchForwardUserController {
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
                     if strongSelf.targetType == .followers {
-                        model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
+                        model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.sourceUserId } || strongSelf.currentUsers.contains { $0.userId == object.sourceUserId }
                         if !(object.sourceUser?.isDeleted ?? false) {
                             if !(object.sourceUser?.isGlobalBanned ?? false) {
                                 let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
@@ -54,7 +55,7 @@ final class AmityFetchForwardUserController {
                             }
                         }
                     } else {
-                        model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.targetUserId }
+                        model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.targetUserId } || strongSelf.currentUsers.contains { $0.userId == object.targetUserId }
                         if !(object.sourceUser?.isDeleted ?? false) {
                             if !(object.sourceUser?.isGlobalBanned ?? false) {
                                 let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")

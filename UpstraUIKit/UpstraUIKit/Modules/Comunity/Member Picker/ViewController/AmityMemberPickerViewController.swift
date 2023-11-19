@@ -259,7 +259,7 @@ extension AmityMemberPickerViewController: AmityMemberPickerScreenViewModelDeleg
         collectionView.reloadData()
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
         self.title = title
         collectionView.isHidden = isEmpty
         tableView.reloadData()

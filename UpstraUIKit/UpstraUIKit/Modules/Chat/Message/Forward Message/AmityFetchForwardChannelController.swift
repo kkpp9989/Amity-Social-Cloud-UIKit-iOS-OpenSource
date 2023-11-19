@@ -20,7 +20,8 @@ final class AmityFetchForwardChannelController {
     private var targetType: AmityChannelViewType
     
     private var channel: [AmitySelectMemberModel] = []
-    var storeUsers: [AmitySelectMemberModel] = []
+    var newSelectedUsers: [AmitySelectMemberModel] = []
+    var currentUsers: [AmitySelectMemberModel] = []
     
     private let dispatchGroup = DispatchGroup()
     private var tokenArray: [AmityNotificationToken] = []
@@ -57,7 +58,7 @@ final class AmityFetchForwardChannelController {
                     channelIdLeaveMap[String(index)] = false
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.channelId }
+                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.channelId } || strongSelf.currentUsers.contains { $0.userId == object.channelId }
                     if !strongSelf.channel.contains(where: { $0.userId == object.channelId }) {
                         if !object.isDeleted {
                             if object.channelType == .conversation && isMustToChangeSomeChannelToUser {

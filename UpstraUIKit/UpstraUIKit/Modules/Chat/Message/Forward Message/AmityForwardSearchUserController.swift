@@ -21,14 +21,12 @@ final class AmityForwardSearchUserController {
     
     private var targetType: AmityFollowerViewType
 
-    var storeUsers: [AmitySelectMemberModel] = []
-
     init(repository: AmityUserFollowManager?, type: AmityFollowerViewType) {
         self.repository = repository
         self.targetType = type
     }
     
-    func search(with text: String, storeUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
+    func search(with text: String, newSelectedUsers: [AmitySelectMemberModel], currentUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
         users = []
         searchTask?.cancel()
         if text == "" {
@@ -51,7 +49,7 @@ final class AmityForwardSearchUserController {
                             guard let object = userCollection.object(at: index) else { continue }
                             let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
                             if strongSelf.targetType == .followers {
-                                model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.sourceUserId }
+                                model.isSelected = newSelectedUsers.contains { $0.userId == object.sourceUserId } || currentUsers.contains { $0.userId == object.sourceUserId }
                                 if !(object.sourceUser?.isDeleted ?? false) {
                                     if !(object.sourceUser?.isGlobalBanned ?? false) {
                                         let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
@@ -61,7 +59,7 @@ final class AmityForwardSearchUserController {
                                     }
                                 }
                             } else {
-                                model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.targetUserId }
+                                model.isSelected = newSelectedUsers.contains { $0.userId == object.targetUserId } || currentUsers.contains { $0.userId == object.targetUserId }
                                 if !(object.sourceUser?.isDeleted ?? false) {
                                     if !(object.sourceUser?.isGlobalBanned ?? false) {
                                         let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")

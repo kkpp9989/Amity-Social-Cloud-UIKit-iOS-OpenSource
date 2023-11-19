@@ -19,9 +19,12 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     private var followerVC: AmityForwardMemberPickerViewController?
     private var groupChatVC: AmityForwatdChannelPickerViewController?
     
+    // MARK: - Component
     private var doneButton: UIBarButtonItem?
     
-    private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
+    // MARK: - Properties
+    private var numberOfSelectedUsers: [AmitySelectMemberModel] = []
+    private var numberOfStoreUsers: [AmitySelectMemberModel] = []
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -52,33 +55,37 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
         groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Group", users: [], type: .group)
         
-        recentVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        recentVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
         }
-        followingVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
         }
-        followerVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
         }
-        groupChatVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        groupChatVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
         }
         return [recentVC!, followingVC!, followerVC!, groupChatVC!]
     }
@@ -117,7 +124,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     @objc func doneTap() {
         dismiss(animated: true) { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.selectUsersHandler?(strongSelf.numberOfSelectedUseres)
+            strongSelf.selectUsersHandler?(strongSelf.numberOfStoreUsers)
         }
     }
     
@@ -129,16 +136,20 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         switch newIndex {
         case 0:
 //            print("--------> [User] Go to tab recent")
-            recentVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            recentVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            break
         case 1:
 //            print("--------> [User] Go to tab following")
-            followingVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            break
         case 2:
 //            print("--------> [User] Go to tab follower")
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            break
         case 3:
 //            print("--------> [User] Go to tab group")
-            groupChatVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            groupChatVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            break
         default:
             break
         }

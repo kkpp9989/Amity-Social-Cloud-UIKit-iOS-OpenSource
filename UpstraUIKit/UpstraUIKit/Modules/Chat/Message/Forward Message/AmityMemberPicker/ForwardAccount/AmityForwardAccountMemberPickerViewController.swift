@@ -18,7 +18,7 @@ extension AmityForwardAccountMemberPickerViewController: IndicatorInfoProvider {
 class AmityForwardAccountMemberPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: (([AmitySelectMemberModel], String) -> Void)?
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -64,8 +64,8 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel]) {
-        screenViewModel.setCurrentUsers(users: users)
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
 }
 
@@ -254,18 +254,10 @@ extension AmityForwardAccountMemberPickerViewController: UICollectionViewDelegat
 }
 
 extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreenViewModelDelegate {
-    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
-        // Not ready
-    }
-    
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool) {
-        // Not ready
-    }
-    
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers() ,screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
     }
     
     func screenViewModelDidSearchUser() {
@@ -281,21 +273,29 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers() ,screenViewModel.dataSource.getStoreUsers(), title)
     }
     
-    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        tableView.reloadData()
+    }
+    
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        // Set title if need
         self.title = title
+        
+        // Update collection view
         collectionView.isHidden = isEmpty
         collectionView.reloadData()
         
+        // Update table view
         if isFromAnotherTab {
             screenViewModel.action.updateSelectedUserInfo()
         }
-            
         tableView.reloadData()
-        
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+
+        // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
