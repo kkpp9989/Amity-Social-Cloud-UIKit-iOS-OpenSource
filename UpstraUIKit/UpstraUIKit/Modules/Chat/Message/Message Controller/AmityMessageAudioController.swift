@@ -8,6 +8,8 @@
 
 import UIKit
 import AmitySDK
+import Foundation
+import AVFAudio
 
 // Manage audio message
 final class AmityMessageAudioController {
@@ -43,7 +45,20 @@ final class AmityMessageAudioController {
         guard let repository = repository else {
             return
         }
-        let createOptions = AmityAudioMessageCreateOptions(subChannelId: subChannelId, attachment: .localURL(url: audioURL))
+        
+        var metaData:[String: Any] = [:]
+        do
+        {
+            let avAudioPlayer = try AVAudioPlayer (contentsOf:audioURL)
+            let duration = avAudioPlayer.duration
+            let ms = Double(duration * 1000)
+            metaData = ["duration": ms]
+        }
+        catch{
+            metaData = ["duration": 0]
+        }
+
+        let createOptions = AmityAudioMessageCreateOptions(subChannelId: subChannelId, attachment: .localURL(url: audioURL), metadata: metaData)
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createAudioMessage(options:), parameters: createOptions) { message, error in
             guard error == nil, let message = message else {

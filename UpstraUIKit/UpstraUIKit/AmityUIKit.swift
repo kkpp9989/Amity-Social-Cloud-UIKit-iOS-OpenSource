@@ -268,6 +268,26 @@ public final class AmityUIKitManager {
     public static func setUnreadCount(unreadCount: Int) {
         AmityUIKitManagerInternal.shared.totalUnreadCount = unreadCount
     }
+    
+    public static func getSyncAllChannelPresence() {
+        AmityUIKitManagerInternal.shared.getSyncAllChannelPresence()
+    }
+    
+    public static func syncChannelPresence(_ channelId: String) {
+        AmityUIKitManagerInternal.shared.syncChannelPresence(channelId)
+    }
+    
+    public static func unsyncChannelPresence(_ channelId: String) {
+        AmityUIKitManagerInternal.shared.unsyncChannelPresence(channelId)
+    }
+    
+    public static func unsyncAllChannelPresence() {
+        AmityUIKitManagerInternal.shared.unsyncAllChannelPresence()
+    }
+    
+    public static func getOnlinePresencesList() -> [AmityChannelPresence] {
+        AmityUIKitManagerInternal.shared.onlinePresences
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -283,7 +303,8 @@ final class AmityUIKitManagerInternal: NSObject {
     private(set) var messageMediaService = AmityMessageMediaService()
     private(set) var userRepository: AmityUserRepository?
     private(set) var channelRepository: AmityChannelRepository?
-    
+    private(set) var channelPresenceRepo: AmityChannelPresenceRepository?
+
     var currentUserId: String { return client.currentUserId ?? "" }
     var displayName: String { return client.user?.snapshot?.displayName ?? "" }
     var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
@@ -299,7 +320,8 @@ final class AmityUIKitManagerInternal: NSObject {
     private var postIdCannotGetSnapshotList: [String] = []
     
     var totalUnreadCount: Int = 0
-    
+    var onlinePresences: [AmityChannelPresence] = []
+
     var client: AmityClient {
         guard let client = _client else {
             fatalError("Something went wrong. Please ensure `AmityUIKitManager.setup(:_)` get called before accessing client.")
@@ -496,6 +518,38 @@ final class AmityUIKitManagerInternal: NSObject {
         messageMediaService.fileRepository = AmityFileRepository(client: client)
         userRepository = AmityUserRepository(client: client)
         channelRepository = AmityChannelRepository(client: client)
+        channelPresenceRepo = AmityChannelPresenceRepository(client: client)
+    }
+    
+    func getSyncAllChannelPresence() {
+        channelPresenceRepo?.getSyncingChannelPresence().sink { completion in
+            // Handle completion
+            switch completion {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            default:
+                print("[Amity SDK] getSyncingChannelPresence finish")
+            }
+        } receiveValue: { presences in
+            print("[Amity SDK] getSyncingChannelPresence \(presences)")
+            
+            /// Channel presences where any other member is online
+            let onlinePresences = presences.filter { $0.isAnyMemberOnline }
+            
+            self.onlinePresences = onlinePresences
+        }.store(in: &disposeBag)
+    }
+    
+    func syncChannelPresence(_ channelId: String) {
+        channelPresenceRepo?.syncChannelPresence(id: channelId)
+    }
+    
+    func unsyncChannelPresence(_ channelId: String) {
+        channelPresenceRepo?.unsyncChannelPresence(id: channelId)
+    }
+    
+    func unsyncAllChannelPresence() {
+        channelPresenceRepo?.unsyncAllChannelPresence()
     }
 }
 

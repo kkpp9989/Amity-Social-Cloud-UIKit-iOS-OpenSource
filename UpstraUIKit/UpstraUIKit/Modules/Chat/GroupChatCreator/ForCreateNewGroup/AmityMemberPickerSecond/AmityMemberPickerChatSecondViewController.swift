@@ -47,9 +47,9 @@ public final class AmityMemberPickerChatSecondViewController: AmityViewControlle
     }
 
 	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
-							liveChannelBuilder: AmityLiveChannelBuilder? = nil,
+							liveChannelBuilder: AmityCommunityChannelBuilder? = nil,
 							displayName: String = "") -> AmityMemberPickerChatSecondViewController {
-		let viewModeel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityLiveChannelBuilder())
+		let viewModeel: AmityMemberPickerChatScreenViewModelType = AmityMemberPickerChatScreenViewModel(amityUserUpdateBuilder: liveChannelBuilder ?? AmityCommunityChannelBuilder())
         viewModeel.setCurrentUsers(users: users)
         let vc = AmityMemberPickerChatSecondViewController(nibName: AmityMemberPickerChatSecondViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
@@ -198,7 +198,7 @@ extension AmityMemberPickerChatSecondViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            cell.display(with: user, isCurrentUserInGroup: false)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }

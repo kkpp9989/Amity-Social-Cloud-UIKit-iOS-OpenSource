@@ -12,7 +12,7 @@ import AmitySDK
 class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
     
     private let dispatchGroup = DispatchGroupWraper()
-    private let amityUserUpdateBuilder = AmityLiveChannelBuilder()
+    private let amityUserUpdateBuilder = AmityCommunityChannelBuilder()
     private let fileRepository = AmityFileRepository(client: AmityUIKitManagerInternal.shared.client)
     private var existingChannelToken: AmityNotificationToken?
     private let channelRepository: AmityChannelRepository
@@ -61,7 +61,7 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
 
 // MARK: - Private
 extension GroupChatCreatorScreenViewModel {
-	private func createNewCommiunityChannel(builder: AmityLiveChannelBuilder, userIds: [String]) {
+	private func createNewCommiunityChannel(builder: AmityCommunityChannelBuilder, userIds: [String]) {
 		AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, error in
 			guard let weakSelf = self else { return }
 			if let error = error {
@@ -105,6 +105,7 @@ extension GroupChatCreatorScreenViewModel {
 		amityUserUpdateBuilder.setMetadata(metaData)
 		amityUserUpdateBuilder.setDisplayName(channelDisplayName)
 		amityUserUpdateBuilder.setTags(["ch-comm","ios-sdk"])
+        amityUserUpdateBuilder.setIsChannelPublic(false)
 		existingChannelToken?.invalidate()
 		existingChannelToken = channelRepository.getChannel(channelId).observe({ [weak self] (channel, error) in
 			guard let weakSelf = self else { return }

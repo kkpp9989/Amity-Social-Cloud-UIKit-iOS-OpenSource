@@ -18,7 +18,7 @@ extension AmityForwardAccountMemberPickerViewController: IndicatorInfoProvider {
 class AmityForwardAccountMemberPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: (([AmitySelectMemberModel], String) -> Void)?
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -57,15 +57,15 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = []) -> AmityForwardAccountMemberPickerViewController {
         let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-        viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
+        viewModeel.setCurrentUsers(users: users)
         let vc = AmityForwardAccountMemberPickerViewController(nibName: AmityForwardAccountMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
         vc.pageTitle = pageTitle
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setCurrentUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
 }
 
@@ -207,7 +207,8 @@ extension AmityForwardAccountMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            let isCurrentUserInGroup = screenViewModel.dataSource.isCurrentUserInGroup(id: user.userId)
+            cell.display(with: user, isCurrentUserInGroup: isCurrentUserInGroup)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -256,7 +257,7 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers() ,screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
     }
     
     func screenViewModelDidSearchUser() {
@@ -272,21 +273,29 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers() ,screenViewModel.dataSource.getStoreUsers(), title)
     }
     
-    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        tableView.reloadData()
+    }
+    
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        // Set title if need
         self.title = title
+        
+        // Update collection view
         collectionView.isHidden = isEmpty
         collectionView.reloadData()
         
+        // Update table view
         if isFromAnotherTab {
             screenViewModel.action.updateSelectedUserInfo()
         }
-            
         tableView.reloadData()
-        
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+
+        // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {

@@ -133,8 +133,8 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             AmityEventHandler.shared.userDidTap(from: viewController!, userId: userId)
         case .tapOnHashtagWithKeyword(keyword: let keyword, count: let count):
 			/// Don't repeat to click same hashtag
-			let titleLabel = self.viewController?.navigationItem.titleView as? UILabel
-			guard let text = titleLabel?.text, !text.contains(keyword) else { return }
+//			let titleLabel = self.viewController?.navigationItem.titleView as? UILabel
+//			guard let text = titleLabel?.text, !text.contains(keyword) else { return }
 			
             AmityEventHandler.shared.hashtagDidTap(from: viewController!, keyword: keyword, count: count)
         case .tapPollAnswers(postId: let postId, pollAnswers: let pollAnswers):

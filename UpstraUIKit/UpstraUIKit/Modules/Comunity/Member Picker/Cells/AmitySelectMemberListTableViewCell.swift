@@ -41,11 +41,13 @@ final class AmitySelectMemberListTableViewCell: UITableViewCell {
         radioImageView.image = AmityIconSet.iconRadioOff
     }
     
-    func display(with user: AmitySelectMemberModel) {
+    func display(with user: AmitySelectMemberModel, isCurrentUserInGroup: Bool) {
         displayNameLabel.text = user.displayName ?? user.defaultDisplayName
         avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
         
-        radioImageView.image = user.isSelected ? AmityIconSet.iconRadioCheck : AmityIconSet.iconRadioCheckOff
+        radioImageView.image = user.isSelected || isCurrentUserInGroup ? AmityIconSet.iconRadioCheck : AmityIconSet.iconRadioCheckOff
         radioImageView.isHidden = user.isCurrnetUser
+        
+        isUserInteractionEnabled = !isCurrentUserInGroup
     }
 }

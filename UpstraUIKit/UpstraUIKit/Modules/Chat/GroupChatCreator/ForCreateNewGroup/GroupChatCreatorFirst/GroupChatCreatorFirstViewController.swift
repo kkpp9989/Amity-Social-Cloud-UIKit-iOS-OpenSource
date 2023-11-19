@@ -220,7 +220,7 @@ extension GroupChatCreatorFirstViewController: GroupChatCreatorScreenViewModelDe
 		// This func for Invite people from 1:1 ONLY!
 	}
     
-	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityLiveChannelBuilder) {
+	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityCommunityChannelBuilder) {
 		let vc = AmityAllTypeMemberPickerChatSecondViewController.make(liveChannelBuilder: builder, displayName: displayNameTextField.text ?? "")
 		vc.tapCreateButton = { [weak self] channelId, subChannelId in
 			guard let strongSelf = self else { return }

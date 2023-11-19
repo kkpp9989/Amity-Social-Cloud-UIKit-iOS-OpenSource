@@ -32,22 +32,32 @@
                                             <constraint firstAttribute="height" constant="40" id="i1s-xX-49P"/>
                                         </constraints>
                                     </view>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="k5j-zi-MQa">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ahC-NT-VQ6">
                                         <rect key="frame" x="25" y="25" width="15" height="15"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pIp-Lw-dQE">
+                                                <rect key="frame" x="1.6666666666666643" y="1.6666666666666643" width="12" height="12"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="15" id="s9o-LY-qu2"/>
-                                            <constraint firstAttribute="height" constant="15" id="wE3-L3-efL"/>
+                                            <constraint firstAttribute="width" constant="15" id="6Ie-uD-yei"/>
+                                            <constraint firstAttribute="trailing" secondItem="pIp-Lw-dQE" secondAttribute="trailing" constant="1.5" id="CZS-4R-etH"/>
+                                            <constraint firstAttribute="bottom" secondItem="pIp-Lw-dQE" secondAttribute="bottom" constant="1.5" id="FwF-Mc-V8w"/>
+                                            <constraint firstItem="pIp-Lw-dQE" firstAttribute="leading" secondItem="ahC-NT-VQ6" secondAttribute="leading" constant="1.5" id="JdS-bA-eAG"/>
+                                            <constraint firstItem="pIp-Lw-dQE" firstAttribute="top" secondItem="ahC-NT-VQ6" secondAttribute="top" constant="1.5" id="bhv-Mi-Lf3"/>
+                                            <constraint firstAttribute="height" constant="15" id="tDz-LT-p2P"/>
                                         </constraints>
-                                    </imageView>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="E5F-C3-aMW" firstAttribute="top" secondItem="WwP-MC-oXA" secondAttribute="top" id="7Rz-ck-fXi"/>
-                                    <constraint firstItem="k5j-zi-MQa" firstAttribute="bottom" secondItem="E5F-C3-aMW" secondAttribute="bottom" id="CrK-bH-5c3"/>
-                                    <constraint firstItem="k5j-zi-MQa" firstAttribute="trailing" secondItem="E5F-C3-aMW" secondAttribute="trailing" id="MwJ-r9-N2c"/>
+                                    <constraint firstItem="ahC-NT-VQ6" firstAttribute="bottom" secondItem="E5F-C3-aMW" secondAttribute="bottom" id="LXv-qO-0rG"/>
                                     <constraint firstAttribute="trailing" secondItem="E5F-C3-aMW" secondAttribute="trailing" id="PvY-N2-KFH"/>
                                     <constraint firstItem="E5F-C3-aMW" firstAttribute="leading" secondItem="WwP-MC-oXA" secondAttribute="leading" id="YpO-Xz-3rH"/>
                                     <constraint firstAttribute="height" constant="40" id="cgG-xK-K3x"/>
+                                    <constraint firstItem="ahC-NT-VQ6" firstAttribute="trailing" secondItem="E5F-C3-aMW" secondAttribute="trailing" id="mAc-hj-vVm"/>
                                     <constraint firstAttribute="bottom" secondItem="E5F-C3-aMW" secondAttribute="bottom" id="wLe-Qa-h5v"/>
                                     <constraint firstAttribute="width" constant="40" id="ydg-GB-Fg2"/>
                                 </constraints>
@@ -149,13 +159,14 @@
             <viewLayoutGuide key="safeArea" id="2df-pm-S1v"/>
             <connections>
                 <outlet property="avatarView" destination="E5F-C3-aMW" id="USu-xT-XTu"/>
+                <outlet property="badgeStatusView" destination="ahC-NT-VQ6" id="RYy-g9-kRS"/>
                 <outlet property="containerDisplayNameView" destination="4Rc-65-FjT" id="XOe-Xx-uod"/>
                 <outlet property="containerMessageView" destination="Wui-c3-QDG" id="Pnf-kq-LUJ"/>
                 <outlet property="dateTimeLabel" destination="127-wv-yBk" id="g19-pI-qKi"/>
                 <outlet property="iconImageView" destination="eVO-lC-Prb" id="yi0-cJ-cBa"/>
                 <outlet property="memberLabel" destination="DvP-3V-RQ4" id="JsK-uE-xWn"/>
                 <outlet property="previewMessageLabel" destination="p0N-Zj-bGX" id="M1k-Ez-Vyi"/>
-                <outlet property="statusBadgeImageView" destination="k5j-zi-MQa" id="uBj-hY-oJx"/>
+                <outlet property="statusBadgeImageView" destination="pIp-Lw-dQE" id="bPq-BB-3bI"/>
                 <outlet property="statusImageView" destination="kNX-83-vRi" id="na8-yr-tBG"/>
                 <outlet property="titleLabel" destination="lEQ-36-Y3Y" id="SXh-Se-Sq2"/>
             </connections>

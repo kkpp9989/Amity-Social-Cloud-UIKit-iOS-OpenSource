@@ -85,7 +85,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         mentionBadgeImageView.isHidden = true
     }
     
-    func display(with channel: AmityChannelModel) {
+    func display(with channel: AmityChannelModel, isOnline: Bool) {
         self.channel = channel
         
         statusImageView.isHidden = true
@@ -123,11 +123,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                         if status != "available" {
                             statusBadgeImageView.image = setImageFromStatus(status)
                         } else if status == "available" {
-//                            if channel.isOnline {
+                            if isOnline {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
-//                            } else {
-//                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
-//                            }
+                            } else {
+                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                            }
                         } else {
                             statusBadgeImageView.isHidden = true
                             badgeStatusView.isHidden = true
