@@ -686,126 +686,125 @@ extension AmityExpandableLabel {
 //        self.attributedText = attributedString
 //    }
     
-//    func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
-//        let attributedString = NSMutableAttributedString(string: text)
-//        attributedString.addAttributes([.font: AmityFontSet.body], range: NSMakeRange(0, text.utf16.count))
-//
-//        // Detect URLs
-//        let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-//        let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-//        var hyperLinkTextRange: [Hyperlink] = []
-//
-//        for match in urlMatches {
-//            guard let textRange = Range(match.range, in: text) else { continue }
-//            let urlString = String(text[textRange])
-//            let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-//            guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-//                  let url = URL(string: formattedString) else { continue }
-//            attributedString.addAttributes([
-//                .foregroundColor: hyperLinkColor,
-//                .attachment: url], range: match.range)
-////            attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: match.range) // [Custom for ONE Krungthai] Delete underline of URL
-//            hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
-//        }
-//
-//        // Detect and process hashtags using regular expression
-//        let hashtagPattern = "#\\w+"
-//        let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [])
-//        let hashtagMatches = hashtagRegex.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-//
-//        for match in hashtagMatches {
-//            let hashtagRange = match.range
-//            let hashtag = (text as NSString).substring(with: hashtagRange)
-//            let formattedString = "#\(hashtag)"
-//
-//            attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
-//            hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag, count: 0)))
-//        }
-//
-//        // Apply other attributes
-//        for attribute in attributes {
-//            attributedString.addAttributes(attribute.attributes, range: attribute.range)
-//            hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
-//        }
-//
-//        hyperLinks = hyperLinkTextRange
-//        self.attributedText = attributedString
-//    }
-    
     func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
         let attributedString = NSMutableAttributedString(string: text)
-        attributedString.addAttributes([.font: AmityFontSet.body], range: NSRange(location: 0, length: attributedString.length))
-        
+        attributedString.addAttributes([.font: AmityFontSet.body], range: NSMakeRange(0, text.utf16.count))
+
         // Detect URLs
         let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
         let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
         var hyperLinkTextRange: [Hyperlink] = []
-        
+
         for match in urlMatches {
             guard let textRange = Range(match.range, in: text) else { continue }
             let urlString = String(text[textRange])
             let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
-
-            if AmityURLCustomManager.Utilities.isURLEncoded(validUrlString) {
-                guard let url = URL(string: validUrlString) else { continue }
-                
-                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
-                attributedString.addAttributes([
-                    .foregroundColor: hyperLinkColor,
-                    .attachment: url,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue,
-                    .underlineColor: hyperLinkColor],range: clampedRange)
-                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
-                
-//                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
-            } else {
-                guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                      let url = URL(string: formattedString) else { continue }
-                
-                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
-                attributedString.addAttributes([
-                    .foregroundColor: hyperLinkColor,
-                    .attachment: url,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue,
-                    .underlineColor: hyperLinkColor],range: clampedRange)
-                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
-                
-//                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
-            }
+            guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                  let url = URL(string: formattedString) else { continue }
+            attributedString.addAttributes([
+                .foregroundColor: hyperLinkColor,
+                .attachment: url], range: match.range)
+            hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
         }
-        
+
         // Detect and process hashtags using regular expression
         let hashtagPattern = "#\\w+"
         let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [])
         let hashtagMatches = hashtagRegex.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-        
+
         for match in hashtagMatches {
             let hashtagRange = match.range
-            let clampedRange = NSRange(location: 0, length: min(hashtagRange.length, attributedString.length - hashtagRange.location))
-            let hashtag = (text as NSString).substring(with: clampedRange)
+            let hashtag = (text as NSString).substring(with: hashtagRange)
             let formattedString = "#\(hashtag)"
-            
-            attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: clampedRange)
-            hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .hashtag(keyword: hashtag, count: 0)))
+
+            attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: hashtagRange)
+            hyperLinkTextRange.append(Hyperlink(range: hashtagRange, type: .hashtag(keyword: hashtag, count: 0)))
         }
-        
+
         // Apply other attributes
-		for attribute in attributes {
-			let mentionLocation = attribute.range.location
-			let mentionLength = attribute.range.length
-			let clampedLocation = max(0, mentionLocation)
-			let clampedLength = min(mentionLength, attributedString.length - clampedLocation)
-			let clampedRange = NSRange(location: clampedLocation, length: clampedLength)
-			
-			if clampedRange.length > 0 {
-				attributedString.addAttributes(attribute.attributes, range: clampedRange)
-				hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .mention(userId: attribute.userId)))
-			}
-		}
-													   
+        for attribute in attributes {
+            attributedString.addAttributes(attribute.attributes, range: attribute.range)
+            hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
+        }
+
         hyperLinks = hyperLinkTextRange
         self.attributedText = attributedString
     }
+    
+//    func setText(_ text: String, withAttributes attributes: [MentionAttribute]) {
+//        let attributedString = NSMutableAttributedString(string: text)
+//        attributedString.addAttributes([.font: AmityFontSet.body], range: NSRange(location: 0, length: attributedString.length))
+//        
+//        // Detect URLs
+//        let urlDetector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+//        let urlMatches = urlDetector.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+//        var hyperLinkTextRange: [Hyperlink] = []
+//        
+//        for match in urlMatches {
+//            guard let textRange = Range(match.range, in: text) else { continue }
+//            let urlString = String(text[textRange])
+//            let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
+//
+//            if AmityURLCustomManager.Utilities.isURLEncoded(validUrlString) {
+//                guard let url = URL(string: validUrlString) else { continue }
+//                
+//                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
+//                attributedString.addAttributes([
+//                    .foregroundColor: hyperLinkColor,
+//                    .attachment: url,
+//                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+//                    .underlineColor: hyperLinkColor],range: clampedRange)
+//                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
+//                
+////                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | url.absoluteString: \(url.absoluteString) ")
+//            } else {
+//                guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+//                      let url = URL(string: formattedString) else { continue }
+//                
+//                let clampedRange = NSRange(location: 0, length: min(match.range.length, attributedString.length - match.range.location))
+//                attributedString.addAttributes([
+//                    .foregroundColor: hyperLinkColor,
+//                    .attachment: url,
+//                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+//                    .underlineColor: hyperLinkColor],range: clampedRange)
+//                hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .url(url: url)))
+//                
+////                print("[URL] add hyperlink | url string: \(urlString) | valid url string: \(validUrlString) | formattedString:\(formattedString) | url.absoluteString: \(url.absoluteString) ")
+//            }
+//        }
+//        
+//        // Detect and process hashtags using regular expression
+//        let hashtagPattern = "#\\w+"
+//        let hashtagRegex = try! NSRegularExpression(pattern: hashtagPattern, options: [])
+//        let hashtagMatches = hashtagRegex.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+//        
+//        for match in hashtagMatches {
+//            let hashtagRange = match.range
+//            let clampedRange = NSRange(location: 0, length: min(hashtagRange.length, attributedString.length - hashtagRange.location))
+//            let hashtag = (text as NSString).substring(with: clampedRange)
+//            let formattedString = "#\(hashtag)"
+//            
+//            attributedString.addAttributes([.foregroundColor: hyperLinkColor, .font: AmityFontSet.bodyBold, .attachment: formattedString], range: clampedRange)
+//            hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .hashtag(keyword: hashtag, count: 0)))
+//        }
+//        
+//        // Apply other attributes
+//		for attribute in attributes {
+//			let mentionLocation = attribute.range.location
+//			let mentionLength = attribute.range.length
+//			let clampedLocation = max(0, mentionLocation)
+//			let clampedLength = min(mentionLength, attributedString.length - clampedLocation)
+//			let clampedRange = NSRange(location: clampedLocation, length: clampedLength)
+//			
+//			if clampedRange.length > 0 {
+//				attributedString.addAttributes(attribute.attributes, range: clampedRange)
+//				hyperLinkTextRange.append(Hyperlink(range: clampedRange, type: .mention(userId: attribute.userId)))
+//			}
+//		}
+//													   
+//        hyperLinks = hyperLinkTextRange
+//        self.attributedText = attributedString
+//    }
 
 
 }

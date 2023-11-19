@@ -21,7 +21,7 @@ protocol AmityRecentChatScreenViewModelDelegate: AnyObject {
 protocol AmityRecentChatScreenViewModelDataSource {
     
     func getChannelArray() -> [AmityChannelModel]
-    func channel(at indexPath: IndexPath) -> AmityChannelModel
+    func channel(at indexPath: IndexPath) -> AmityChannelModel?
     func numberOfRow(in section: Int) -> Int
     func isAddMemberBarButtonEnabled() -> Bool
 }
@@ -33,10 +33,6 @@ protocol AmityRecentChatScreenViewModelAction {
     func createChannel(users: [AmitySelectMemberModel])
     func loadMore()
     func update(completion: @escaping (Result<Void, Error>) -> Void)
-    func syncChannelPresence(_ channelId: String)
-    func unsyncChannelPresence(_ channelId: String)
-    func unsyncAllChannelPresence()
-    func getSyncAllChannelPresence()
 }
 
 protocol AmityRecentChatScreenViewModelType: AmityRecentChatScreenViewModelAction, AmityRecentChatScreenViewModelDataSource {

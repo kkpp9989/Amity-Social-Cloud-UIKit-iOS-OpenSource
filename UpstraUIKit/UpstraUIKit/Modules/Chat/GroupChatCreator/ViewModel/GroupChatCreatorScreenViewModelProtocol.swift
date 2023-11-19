@@ -20,7 +20,7 @@ protocol GroupChatCreatorScreenViewModelDataSource {
 }
 
 protocol GroupChatCreatorScreenViewModelDelegate: AnyObject {
-	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityLiveChannelBuilder)
+	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, builder: AmityCommunityChannelBuilder)
 	func screenViewModelDidCreateCommunity(_ viewModel: GroupChatCreatorScreenViewModelType, channelId: String, subChannelId: String)
 }
 

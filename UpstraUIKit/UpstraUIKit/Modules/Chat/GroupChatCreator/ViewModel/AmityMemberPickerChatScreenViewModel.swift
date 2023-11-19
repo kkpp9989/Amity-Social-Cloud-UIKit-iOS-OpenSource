@@ -29,11 +29,11 @@ final class AmityMemberPickerChatScreenViewModel: AmityMemberPickerChatScreenVie
 			delegate?.screenViewModelCanDone(enable: !storeUsers.isEmpty)
 		}
 	}
-	private var amityUserUpdateBuilder: AmityLiveChannelBuilder
+	private var amityUserUpdateBuilder: AmityCommunityChannelBuilder
 	
 	private var isSearch: Bool = false
 	
-	init(amityUserUpdateBuilder: AmityLiveChannelBuilder) {
+	init(amityUserUpdateBuilder: AmityCommunityChannelBuilder) {
 		userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
 		fetchUserController = AmityFetchUserController(repository: userRepository)
 		searchUserController = AmitySearchUserController(repository: userRepository)
@@ -164,7 +164,7 @@ extension AmityMemberPickerChatScreenViewModel {
 		createCommunityChannel(users: users, displayName: displayName)
 	}
 	
-	private func createNewCommiunityChannel(builder: AmityLiveChannelBuilder, userIds: [String]) {
+	private func createNewCommiunityChannel(builder: AmityCommunityChannelBuilder, userIds: [String]) {
 		AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, error in
 			guard let weakSelf = self else { return }
 			if let error = error {
@@ -208,6 +208,7 @@ extension AmityMemberPickerChatScreenViewModel {
 		amityUserUpdateBuilder.setMetadata(metaData)
 		amityUserUpdateBuilder.setDisplayName(channelDisplayName)
 		amityUserUpdateBuilder.setTags(["ch-comm","ios-sdk"])
+        amityUserUpdateBuilder.setIsChannelPublic(false)
 		existingChannelToken?.invalidate()
 		existingChannelToken = channelRepository.getChannel(channelId).observe({ [weak self] (channel, error) in
 			guard let weakSelf = self else { return }

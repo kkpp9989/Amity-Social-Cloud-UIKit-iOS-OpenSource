@@ -60,7 +60,7 @@ struct RequestSearchingChat {
     func requestSearchChannels(_ completion: @escaping(Result<SearchChannelsModel,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co"
         
-        var urlReuest = "\(domainURL)/api/v3/channels?keyword=\(keyword)&isDeleted=false&types[]=live&types[]=community&options[limit]=\(size)"
+        var urlReuest = "\(domainURL)/api/v2/search/channels?query=\(keyword)&types[]=community&options[limit]=\(size)"
 
         if !paginateToken.isEmpty {
             urlReuest += "&options[token]=\(paginateToken)"

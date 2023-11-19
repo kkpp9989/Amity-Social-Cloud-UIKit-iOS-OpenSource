@@ -65,13 +65,6 @@ extension AmityMessagesSearchViewController: UITableViewDelegate {
         AmityChannelEventHandler.shared.channelWithJumpMessageDidTap(from: self, channelId: model.channelObjc.channelId, subChannelId: model.channelObjc.object.defaultSubChannelId, messageId: model.messageObjc.messageID ?? "")
     }
     
-//    func tableView(_ tablbeView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if tableView.isBottomReached {
-//            screenViewModel.action.loadMore()
-//        }
-//    }
-    
-    /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // Calculate the current scroll position and content height
         let currentOffset = scrollView.contentOffset.y
@@ -79,9 +72,35 @@ extension AmityMessagesSearchViewController: UITableViewDelegate {
         
         // Check if the user has scrolled to the bottom
         if maximumOffset - currentOffset <= 0 {
-            // User has reached the bottom of the table view
-            // You can load more data or perform any action you need
             screenViewModel.action.loadMore()
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if tableView.isBottomReached {
+            screenViewModel.action.loadMore()
+        }
+        
+        if let cell = cell as? AmityMessageSearchTableViewCell {
+            if let message = screenViewModel.dataSource.item(at: indexPath) {
+                if message.channelObjc.channelType == .conversation {
+                    AmityUIKitManager.syncChannelPresence(message.channelObjc.channelId)
+                }
+
+                let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+                let isOnline = onlinePresences.contains { $0.channelId == message.channelObjc.channelId }
+                
+                cell.display(with: message, keyword: keyword, isOnline: isOnline)
+            }
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let cell = cell as? AmityMessageSearchTableViewCell {
+            guard let search = cell.searchData else { return }
+            if search.channelObjc.channelType == .conversation {
+                AmityUIKitManager.unsyncChannelPresence(search.channelObjc.channelId)
+            }
         }
     }
 }
@@ -100,7 +119,9 @@ extension AmityMessagesSearchViewController: UITableViewDataSource {
     
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmityMessageSearchTableViewCell, let message = screenViewModel.dataSource.item(at: indexPath) {
-            cell.display(with: message, keyword: keyword)
+            let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+            let isOnline = onlinePresences.contains { $0.channelId == message.channelObjc.channelId }
+            cell.display(with: message, keyword: keyword, isOnline: isOnline)
         }
     }
 }
