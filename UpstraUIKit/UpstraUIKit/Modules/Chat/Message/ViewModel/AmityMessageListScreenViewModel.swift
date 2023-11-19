@@ -79,7 +79,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var messagesNotificationToken: AmityNotificationToken?
     private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
-    
+    private var getMessagesNotificationToken: AmityNotificationToken?
+
     private var messageAudio: AmityMessageAudioController?
     
     // MARK: - Properties
@@ -334,13 +335,49 @@ extension AmityMessageListScreenViewModel {
     }
     
     func forward(withChannelIdList channelIdList: [String]) {
-        for channelId in channelIdList {
-            for forwardMessage in forwardMessageList {
+        for forwardMessage in forwardMessageList {
+            for channelId in channelIdList {
                 dispatchGroup.enter()
-                let serviceRequest = RequestChat()
-                serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
-                    guard let strongSelf = self else { return }
-                    strongSelf.dispatchGroup.leave()
+                switch forwardMessage.messageType {
+                case .image:
+                    let createOptions = AmityImageMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""), fullImage: true)
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .text:
+                    let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: forwardMessage.text ?? "")
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .file:
+                    let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""))
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .audio:
+                    let createOptions = AmityAudioMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""))
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createAudioMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .video:
+                    var operations: [AsyncOperation] = []
+                    
+                    let dummyMedia: AmityMedia = AmityMedia(state: .image(UIImage()), type: .video)
+                    operations.append( UploadVideoMessageOperation(subChannelId: channelId, media: dummyMedia, repository: messageRepository, fileId: forwardMessage.object.fileId ?? ""))
+                    
+                    // Define serial dependency A <- B <- C <- ... <- Z
+                    for (left, right) in zip(operations, operations.dropFirst()) {
+                        right.addDependency(left)
+                    }
+                    
+                    queue.addOperations(operations, waitUntilFinished: false)
+                    dispatchGroup.leave()
+                default:
+                    dispatchGroup.leave()
                 }
             }
         }
@@ -768,7 +805,7 @@ extension AmityMessageListScreenViewModel {
         case .image:
             operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
         case .video:
-            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
         }
         
         // Define serial dependency A <- B <- C <- ... <- Z

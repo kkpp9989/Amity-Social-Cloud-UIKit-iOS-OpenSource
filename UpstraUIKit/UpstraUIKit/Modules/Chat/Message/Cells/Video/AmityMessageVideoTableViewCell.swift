@@ -49,6 +49,7 @@ class AmityMessageVideoTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         if !message.isDeleted {
             let indexPath = self.indexPath
+            print("[AmityUIKit Log] indexPath: \(String(describing: indexPath?.row)) thumbnailInfo: \(String(describing: message.object.getVideoThumbnailInfo())), videoInfo: \(String(describing: message.object.getVideoInfo()))")
             if let thumbnailInfo = message.object.getVideoThumbnailInfo(), let videoInfo = message.object.getVideoInfo() {
                 if indexPath == self.indexPath {
                     // Set video thumbnail
