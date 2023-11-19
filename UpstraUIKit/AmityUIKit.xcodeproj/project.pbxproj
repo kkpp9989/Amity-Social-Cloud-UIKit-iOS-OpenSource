@@ -2982,7 +2982,6 @@
 		72A3519E24EA821900DA9D46 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				DFD64A3B2AB1C0CC006FDC33 /* AmityURLCustomManager.swift */,
 				78D9443C25F93A8A003C32A5 /* AmityAlertController.swift */,
 				6895D9252975359000E377F1 /* AmityAsyncAwaitTransformer.swift */,
 				72A351A124EA821900DA9D46 /* AmityAttributedString.swift */,
@@ -2995,7 +2994,10 @@
 				72A3519F24EA821900DA9D46 /* AmityIconSet.swift */,
 				72A351A324EA821900DA9D46 /* AmityLocalizedStringSet.swift */,
 				AA8CC6CD2A683949003F8B8E /* AmityMediaConverter.swift */,
+				DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */,
+				DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */,
 				DF9818E82A6D18B300F62A34 /* AmityPullDownMenuFromButtonView.swift */,
+				DFD64A3B2AB1C0CC006FDC33 /* AmityURLCustomManager.swift */,
 				72A351A424EA821900DA9D46 /* AmityUserDefaults.swift */,
 				B76C7B702508DD3C001E1718 /* AmityUtilities.swift */,
 				72D58B0925D551C5000F3BB2 /* Debouncer.swift */,
@@ -3005,9 +3007,7 @@
 				DFB1998F2A4C091F00587CE1 /* ONEKrungthaiCustomTheme.swift */,
 				7290C385260DCC07002FFDC8 /* Reachability.swift */,
 				72AFAC0B24F9008B00269019 /* Services */,
-				DF816E9F2A6FBC7E00EC57BC /* AmityMemberCommunityUtilities.swift */,
 				DFB334FC2ABDD0AD003724D5 /* AmityURLCustomManager.swift */,
-				DFF8DF3B2AC581B200D33D80 /* AmityMemberChatUtilities.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";

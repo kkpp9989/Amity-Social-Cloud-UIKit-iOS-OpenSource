@@ -80,7 +80,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var messagesNotificationToken: AmityNotificationToken?
     private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
-    
+    private var getMessagesNotificationToken: AmityNotificationToken?
+
     private var messageAudio: AmityMessageAudioController?
     
     // MARK: - Properties
@@ -334,53 +335,60 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
-//    func forward(withChannelIdList channelIdList: [String]) {
-//        for forwardMessage in forwardMessageList {
-//            for channelId in channelIdList {
-//                dispatchGroup.enter()
-//                let serviceRequest = RequestChat()
-//                serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
-//                    guard let strongSelf = self else { return }
-//                    strongSelf.dispatchGroup.leave()
-//                }
-//            }
-//        }
-//
-//        // Wait for all requests to complete
-//        dispatchGroup.notify(queue: .main) { [self] in
-//            // All channels have been created
-//            AmityEventHandler.shared.hideKTBLoading()
-//            forwardMessageList.removeAll()
-//        }
-//    }
-    
-    func forward(withChannelIdList channelIdList: [String], completion: @escaping () -> Void) {
-        guard let forwardMessage = forwardMessageList.first else {
-            // All messages forwarded, call completion
-            completion()
-            return
+    func forward(withChannelIdList channelIdList: [String]) {
+        for forwardMessage in forwardMessageList {
+            for channelId in channelIdList {
+                dispatchGroup.enter()
+                switch forwardMessage.messageType {
+                case .image:
+                    let createOptions = AmityImageMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""), fullImage: true)
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .text:
+                    let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: forwardMessage.text ?? "")
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .file:
+                    let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""))
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .audio:
+                    let createOptions = AmityAudioMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: forwardMessage.object.fileId ?? ""), metadata: forwardMessage.metadata)
+                    AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createAudioMessage(options:), parameters: createOptions) { [weak self] message, error in
+                        guard let stringSelf = self else { return }
+                        stringSelf.dispatchGroup.leave()
+                    }
+                case .video:
+                    var operations: [AsyncOperation] = []
+                    
+                    let dummyMedia: AmityMedia = AmityMedia(state: .image(UIImage()), type: .video)
+                    operations.append( UploadVideoMessageOperation(subChannelId: channelId, media: dummyMedia, repository: messageRepository, fileId: forwardMessage.object.fileId ?? ""))
+                    
+                    // Define serial dependency A <- B <- C <- ... <- Z
+                    for (left, right) in zip(operations, operations.dropFirst()) {
+                        right.addDependency(left)
+                    }
+                    
+                    queue.addOperations(operations, waitUntilFinished: false)
+                    dispatchGroup.leave()
+                default:
+                    dispatchGroup.leave()
+                }
+            }
         }
         
-        // Process the first message with each channel
-        var remainingChannels = channelIdList.count
-        for channelId in channelIdList {
-            dispatchGroup.enter()
-            let serviceRequest = RequestChat()
-            serviceRequest.requestSendMessage(channelId: channelId, message: forwardMessage) { [weak self] result in
-                guard let strongSelf = self else { return }
-                                
-                // Decrease the count of remaining channels
-                remainingChannels -= 1
-                
-                // Check if all channels have been processed for the current message
-                if remainingChannels == 0 {
-                    // Move to the next message recursively
-                    strongSelf.forwardMessageList.removeFirst()
-                    strongSelf.forward(withChannelIdList: channelIdList, completion: completion)
-                }
-                
-                strongSelf.dispatchGroup.leave()
-            }
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            stringSelf.forwardMessageList.removeAll()
         }
     }
     
@@ -415,13 +423,9 @@ extension AmityMessageListScreenViewModel {
         }
         
         // Wait for all requests to complete
-        dispatchGroup.notify(queue: .main) { [self] in
-//            forward(withChannelIdList: channelIdList)
-            forward(withChannelIdList: channelIdList) {
-                // All messages forwarded
-                AmityEventHandler.shared.hideKTBLoading()
-                self.forwardMessageList.removeAll()
-            }
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.forward(withChannelIdList: channelIdList)
         }
     }
     
@@ -805,7 +809,7 @@ extension AmityMessageListScreenViewModel {
         case .image:
             operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
         case .video:
-            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
         }
         
         // Define serial dependency A <- B <- C <- ... <- Z
