@@ -71,7 +71,6 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
 		} else {
 			textMessageView.text = message.text
 		}
-		
         textMessageView.isExpanded = message.appearance.isExpanding
     }
     

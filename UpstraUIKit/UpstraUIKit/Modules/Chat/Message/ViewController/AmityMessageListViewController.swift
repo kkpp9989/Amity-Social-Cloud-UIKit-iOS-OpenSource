@@ -806,10 +806,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .updateMessages(let isScrollUp):
             let offset = messageViewController.tableView.contentOffset.y
             let contentHeight = messageViewController.tableView.contentSize.height
-
+            
             messageViewController.tableView.reloadData()
             messageViewController.tableView.layoutIfNeeded()
-            
+
             let newcontentHeight = self.messageViewController.tableView.contentSize.height
             let newOffset = (newcontentHeight - contentHeight) + offset
             if isScrollUp {
