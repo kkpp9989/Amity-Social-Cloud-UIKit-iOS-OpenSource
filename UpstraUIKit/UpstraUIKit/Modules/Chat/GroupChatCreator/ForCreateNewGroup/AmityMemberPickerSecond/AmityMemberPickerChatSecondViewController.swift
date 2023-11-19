@@ -198,7 +198,7 @@ extension AmityMemberPickerChatSecondViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            cell.display(with: user, isCurrentUserInGroup: false)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }

@@ -47,7 +47,7 @@ public final class AmityMemberPickerViewController: AmityViewController {
 
     public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerViewController {
         let viewModeel: AmityMemberPickerScreenViewModelType = AmityMemberPickerScreenViewModel()
-        viewModeel.setCurrentUsers(users: users, isFromAnotherTab: false)
+        viewModeel.setCurrentUsers(users: users)
         let vc = AmityMemberPickerViewController(nibName: AmityMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
         return vc
@@ -192,7 +192,8 @@ extension AmityMemberPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            let isCurrentUserInGroup = screenViewModel.dataSource.isCurrentUserInGroup(id: user.userId)
+            cell.display(with: user, isCurrentUserInGroup: isCurrentUserInGroup)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -258,8 +259,16 @@ extension AmityMemberPickerViewController: AmityMemberPickerScreenViewModelDeleg
         collectionView.reloadData()
     }
     
-    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
-        // Not use because viewcontroller isn't child of tabpage view controller
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        self.title = title
+        collectionView.isHidden = isEmpty
+        tableView.reloadData()
+        collectionView.reloadData()
+    }
+    
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {

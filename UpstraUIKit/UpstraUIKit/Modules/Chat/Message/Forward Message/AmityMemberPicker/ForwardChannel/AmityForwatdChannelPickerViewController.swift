@@ -22,7 +22,7 @@ extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
 class AmityForwatdChannelPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: (([AmitySelectMemberModel], String) -> Void)?
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
@@ -51,15 +51,15 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
 
     public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType) -> AmityForwatdChannelPickerViewController {
         let viewModel: AmityForwardChannelPickerScreenViewModelType = AmityForwardChannelPickerScreenViewModel(type: type)
-        viewModel.setCurrentUsers(users: users, isFromAnotherTab: false)
+        viewModel.setCurrentUsers(users: users)
         let vc = AmityForwatdChannelPickerViewController(nibName: AmityForwatdChannelPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.pageTitle = pageTitle
         return vc
     }
     
-    public func setCurrentUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setCurrentUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
 }
 
@@ -200,7 +200,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDataSource {
     private func configure(_ tableView: UITableView, for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmitySelectMemberListTableViewCell {
             guard let user = screenViewModel.dataSource.user(at: indexPath) else { return }
-            cell.display(with: user)
+            cell.display(with: user, isCurrentUserInGroup: false)
             if tableView.isBottomReached {
                 screenViewModel.action.loadmore()
             }
@@ -264,21 +264,29 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
     }
     
-    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
+        tableView.reloadData()
+    }
+    
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+        // Set title if need
         self.title = title
+        
+        // Update collection view
         collectionView.isHidden = isEmpty
         collectionView.reloadData()
         
+        // Update table view
         if isFromAnotherTab {
             screenViewModel.action.updateSelectedUserInfo()
         }
-            
         tableView.reloadData()
-        
-        selectUsersHandler?(screenViewModel.dataSource.getStoreUsers(), title)
+
+        // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {

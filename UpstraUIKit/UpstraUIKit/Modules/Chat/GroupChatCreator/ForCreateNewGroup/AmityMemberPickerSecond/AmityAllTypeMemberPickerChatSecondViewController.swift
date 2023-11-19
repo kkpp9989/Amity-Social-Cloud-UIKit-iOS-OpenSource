@@ -16,10 +16,13 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
     private var followerVC: AmityForwardMemberPickerViewController?
     private var memberVC: AmityForwardAccountMemberPickerViewController?
     
+    // MARK: - Component
     private var doneButton: UIBarButtonItem?
     
-    private var numberOfSelectedUseres: [AmitySelectMemberModel] = []
-        
+    // MARK: - Properties
+    private var numberOfSelectedUsers: [AmitySelectMemberModel] = []
+    private var numberOfStoreUsers: [AmitySelectMemberModel] = []
+    private(set) var currentUsersInChat: [AmitySelectMemberModel] = []
     private var screenViewModel: AmityMemberPickerChatScreenViewModelType!
     private var displayName: String = ""
 
@@ -51,37 +54,41 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
         let vc = AmityAllTypeMemberPickerChatSecondViewController(nibName: AmityAllTypeMemberPickerChatSecondViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.displayName = displayName
+        vc.currentUsersInChat = users
         return vc
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: numberOfSelectedUseres, type: .following)
-        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: numberOfSelectedUseres, type: .followers)
-        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: numberOfSelectedUseres)
+        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: currentUsersInChat, type: .following)
+        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: currentUsersInChat, type: .followers)
+        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: currentUsersInChat)
         
-        followingVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
-            strongSelf.title = newTitle
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.title = title
         }
-        followerVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
-            strongSelf.title = newTitle
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.title = title
         }
-        memberVC?.selectUsersHandler = { [weak self] selectedUsers, newTitle in
+        memberVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
-            strongSelf.numberOfSelectedUseres = selectedUsers
-            strongSelf.doneButton?.isEnabled = !selectedUsers.isEmpty
-            strongSelf.title = newTitle
+            strongSelf.numberOfSelectedUsers = newSelectedUsers
+            strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
+            strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.title = title
         }
         return [memberVC!, followingVC!, followerVC!]
     }
@@ -98,7 +105,7 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
 
         doneButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
-        doneButton?.isEnabled = !numberOfSelectedUseres.isEmpty
+        doneButton?.isEnabled = !numberOfSelectedUsers.isEmpty
         // [Improvement] Add set font style to label of done button
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
@@ -119,7 +126,7 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
     }
     
     @objc func doneTap() {
-        screenViewModel.action.createChannel(users: numberOfSelectedUseres, displayName: displayName)
+        screenViewModel.action.createChannel(users: numberOfStoreUsers, displayName: displayName)
     }
     
     @objc func cancelTap() {
@@ -130,13 +137,13 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
         switch newIndex {
         case 0:
 //            print("--------> [User] Go to tab acoount")
-            memberVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
         case 1:
 //            print("--------> [User] Go to tab following")
-            followingVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
         case 2:
 //            print("--------> [User] Go to tab follower")
-            followerVC?.setCurrentUsers(users: numberOfSelectedUseres, isFromAnotherTab: true)
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
         default:
             break
         }

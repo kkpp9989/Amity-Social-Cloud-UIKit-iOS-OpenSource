@@ -18,7 +18,8 @@ final class AmityFetchUserController {
     private var token: AmityNotificationToken?
     
     private var users: [AmitySelectMemberModel] = []
-    var storeUsers: [AmitySelectMemberModel] = []
+    var newSelectedUsers: [AmitySelectMemberModel] = []
+    var currentUsers: [AmitySelectMemberModel] = []
     
     init(repository: AmityUserRepository?) {
         self.repository = repository
@@ -35,7 +36,7 @@ final class AmityFetchUserController {
                 for index in 0..<userCollection.count() {
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.userId }
+                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.userId } || strongSelf.currentUsers.contains { $0.userId == object.userId }
                     if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
                         if !object.isDeleted {
                             if !object.isGlobalBanned {
