@@ -234,6 +234,8 @@ extension AmityChannelMemberScreenViewModel {
 /// Remove user
 extension AmityChannelMemberScreenViewModel {
     func removeUser(at indexPath: IndexPath) {
+        // Get removed user display name before delete
+        let objectDisplayName = member(at: indexPath).displayName
         // remove user role and remove user from channel
         removeRole(at: indexPath)
         removeMemberController.remove(users: members, at: indexPath) { [weak self] (error) in
@@ -245,7 +247,7 @@ extension AmityChannelMemberScreenViewModel {
                 
                 // Send custom message with remove user scenario
                 let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
-                let objectDisplayName = strongSelf.member(at: indexPath).displayName
+                print("[Custom message] subjectDisplayName: \(subjectDisplayName) | objectDisplayName: \(objectDisplayName)")
                 strongSelf.customMessageController.send(event: .removeMember, subjectUserName: subjectDisplayName, objectUserName: objectDisplayName) { result in
                     switch result {
                     case .success(_):
