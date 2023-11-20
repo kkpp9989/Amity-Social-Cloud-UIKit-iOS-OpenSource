@@ -67,7 +67,7 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         
         // Set badge by channel type
         var iconBadge = AmityIconSet.Chat.iconPublicBadge
-        if data.channelType == "live" {
+        if !(data.isPublic ?? true) {
             iconBadge = AmityIconSet.Chat.iconPrivateBadge
         }
         iconImageView.image = iconBadge
