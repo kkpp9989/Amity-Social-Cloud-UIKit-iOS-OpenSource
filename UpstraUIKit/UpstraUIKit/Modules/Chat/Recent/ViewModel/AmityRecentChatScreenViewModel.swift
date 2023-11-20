@@ -265,10 +265,10 @@ extension AmityRecentChatScreenViewModel {
         let meta: [String: Any] = ["user_presence": amityStatusString]
         let amityUserUpdateBuilder = AmityUserUpdateBuilder()
         amityUserUpdateBuilder.setUserMetadata(meta)
-        
+                
         Task {
             do {
-                let editUser = try await AmityUIKitManagerInternal.shared.client.editUser(amityUserUpdateBuilder)
+                try await AmityUIKitManagerInternal.shared.client.editUser(amityUserUpdateBuilder)
                 // The update was successful
                 completion(.success(()))
             } catch {

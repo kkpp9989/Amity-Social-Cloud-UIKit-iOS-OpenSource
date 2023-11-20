@@ -79,10 +79,11 @@ private extension AmityMessageListHeaderView {
 extension AmityMessageListHeaderView {
     
     func updateViews(channel: AmityChannelModel, isOnline: Bool) {
-        displayNameLabel.text = channel.displayName
         switch channel.channelType {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
+            
+            displayNameLabel.text = channel.displayName
             
             /* [Custom for ONE Krungthai] Show member count and hide status view for group chat */
             memberCount.text = "\(channel.memberCount) \(channel.memberCount > 1 ? "members" : "member")"
@@ -104,6 +105,8 @@ extension AmityMessageListHeaderView {
                 }
             }
         case .community, .live:
+            displayNameLabel.text = channel.displayName
+
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
             /* [Custom for ONE Krungthai] Show member count and hide status view for group chat */
@@ -116,8 +119,6 @@ extension AmityMessageListHeaderView {
     }
     
     func updateUserStatus(user: AmityUser, isOnline: Bool) {
-        // Show status view
-        statusView.isHidden = false
         let status = user.metadata?["user_presence"] as? String ?? ""
         switch status {
         case "available":
@@ -150,6 +151,8 @@ extension AmityMessageListHeaderView {
             statusImageView.image = AmityIconSet.Chat.iconOfflineIndicator
             statusNameLabel.text = AmityLocalizedStringSet.ChatStatus.offline.localizedString
         }
+        // Show status view
+        statusView.isHidden = false
     }
     
     func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {

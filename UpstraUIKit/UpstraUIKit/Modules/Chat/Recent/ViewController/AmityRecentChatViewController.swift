@@ -50,6 +50,7 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        startObserver()
         setupScreenViewModel()
         AmityUIKitManager.getUnreadCount()
         AmityUIKitManager.getSyncAllChannelPresence()
@@ -61,11 +62,29 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         //  Stop syncing presence for all users as user
         AmityUIKitManager.unsyncAllChannelPresence()
         screenViewModel.action.viewWillDisappear()
+        stopObserver()
     }
     
     public static func make(channelType: AmityChannelType = .conversation) -> AmityRecentChatViewController {
         let viewModel: AmityRecentChatScreenViewModelType = AmityRecentChatScreenViewModel(channelType: channelType)
         return AmityRecentChatViewController(viewModel: viewModel)
+    }
+    
+    private func startObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(refreshPresence(notification:)),
+                                               name: Notification.Name("RefreshChannelPresence"),
+                                               object: nil)
+    }
+    
+    private func stopObserver() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+    }
+    
+    @objc func refreshPresence(notification: Notification) {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
 
