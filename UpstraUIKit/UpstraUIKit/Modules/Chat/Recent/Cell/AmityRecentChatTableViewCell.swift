@@ -149,7 +149,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             badgeStatusView.backgroundColor = .clear
             iconImageView.isHidden = false
             var iconBadge = AmityIconSet.Chat.iconPublicBadge
-            if channel.channelType == .live {
+            if channel.object.isPublic {
                 iconBadge = AmityIconSet.Chat.iconPrivateBadge
             }
             iconImageView.image = iconBadge
