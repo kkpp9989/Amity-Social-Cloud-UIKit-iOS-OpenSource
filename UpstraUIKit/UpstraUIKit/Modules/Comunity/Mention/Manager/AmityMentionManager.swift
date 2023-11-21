@@ -392,6 +392,7 @@ public extension AmityMentionManager {
     }
     
     func resetState() {
+        users = []
         mentions = []
         searchingKey = nil
         isSearchingStarted = false
@@ -402,6 +403,8 @@ public extension AmityMentionManager {
         collectionToken = nil
         privateCommunityMembersCollection = nil
         usersCollection = nil
+        
+        delegate?.didGetUsers(users: users)
     }
 }
 
