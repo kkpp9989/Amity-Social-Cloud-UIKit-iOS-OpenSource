@@ -18,3 +18,12 @@ struct ViewerStatisticsModel: Codable {
         case message = "message"
     }
 }
+
+struct ViewersModel: Codable {
+    let viewerCount: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case viewerCount = "viewerCount"
+    }
+}
+

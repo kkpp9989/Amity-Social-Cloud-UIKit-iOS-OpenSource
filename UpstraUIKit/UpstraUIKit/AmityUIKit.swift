@@ -143,6 +143,10 @@ public final class AmityUIKitManager {
         return AmityUIKitManagerInternal.shared.displayName
     }
     
+    public static var currentUserId: String {
+        return AmityUIKitManagerInternal.shared.currentUserId
+    }
+    
     public static var avatarURL: String {
         return AmityUIKitManagerInternal.shared.avatarURL
     }

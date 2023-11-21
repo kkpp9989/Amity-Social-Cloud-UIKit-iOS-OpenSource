@@ -104,6 +104,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var isFirstTime: Bool = true
     private var isPostSubscribe: Bool = false
     private var isCommentSubscribe: Bool = false
+    private var isDisconnectLivestreamSuccess: Bool = false
     
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
@@ -137,8 +138,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         self.subscriptionManager = AmityTopicSubscription(client: AmityUIKitManager.client)
         self.player = AmityVideoPlayer(client: AmityUIKitManager.client)
         self.postID = postID
-        self.viewerUserID = AmityUIKitManager.client.user?.object?.userId ?? ""
-        self.viewerDisplayName = AmityUIKitManager.client.user?.object?.displayName ?? ""
+        self.viewerUserID = AmityUIKitManager.client.user?.snapshot?.userId ?? AmityUIKitManager.currentUserId
+        self.viewerDisplayName = AmityUIKitManager.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
         self.amityPost = postModel
         
         let bundle = Bundle(for: type(of: self))
@@ -173,10 +174,12 @@ public class LiveStreamPlayerViewController: UIViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         startRealTimeEventSubscribe()
+        requestConnectLiveStream()
+        isDisconnectLivestreamSuccess = false
         
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
-            requestSendViewerStatisticsAPI()
+            requestCreateLiveStreamLog()
             
             viewerCountLabel.text = String(viewerCount)
         })
@@ -196,6 +199,9 @@ public class LiveStreamPlayerViewController: UIViewController {
         // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
         timer?.invalidate()
         timer = nil
+        if !isDisconnectLivestreamSuccess { // Check disconnected success for prevent disconnected success duplicate (livestream end)
+            requestDisconnectLiveStream()
+        }
         
         guard let currentPost = amityPost else { return }
         currentPost.unsubscribeEvent(.comments) { _, _ in }
@@ -530,6 +536,7 @@ public class LiveStreamPlayerViewController: UIViewController {
                 // [Custom for ONE Krungthai] Stop and delete interval timer for request stat API
                 self?.timer?.invalidate()
                 self?.timer = nil
+                self?.requestDisconnectLiveStream()
                 
                 return
             }
@@ -856,7 +863,7 @@ extension LiveStreamPlayerViewController {
         }
     }
     
-    // [Custom for ONE Krungthai] Request send viewer statistic to custom API for dashboard
+    // [Deprecated][Custom for ONE Krungthai] Request send viewer statistic to custom API for dashboard
     private func requestSendViewerStatisticsAPI() {
         let serviceRequest = RequestViewerStatistics()
         serviceRequest.sendViewerStatistics(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", isTrack: true, streamId: streamIdToWatch) { result in
@@ -867,6 +874,73 @@ extension LiveStreamPlayerViewController {
             case .failure(_):
                 break
             }
+        }
+    }
+    
+    // [Current use][Custom for ONE Krungthai] Request get viewer count from custom API
+    private func requestGetViewerCount() {
+        DispatchQueue.main.async { [self] in
+            let serviceRequest = RequestViewerStatistics()
+            serviceRequest.getViewerCount(postId: postID ?? "") { result in
+                switch result {
+                case .success(let dataResponse):
+                    self.viewerCount = dataResponse.viewerCount ?? 0
+//                    print("[Livestream][Viewer][getViewerCount] Get viewer count success | viewerCount: \(dataResponse.viewerCount ?? 0) | postId: \(self.postID)")
+                    break
+                case .failure(let error):
+//                    print("[Livestream][Viewer][getViewerCount] Get viewer count fail with error: \(error.localizedDescription) | postId: \(self.postID)")
+                    break
+                }
+            }
+        }
+    }
+    
+    // [Current use][Custom for ONE Krungthai] Request connect livestream to backend by custom API
+    private func requestConnectLiveStream() {
+        let serviceRequest = RequestViewerStatistics()
+        serviceRequest.connectLivestream(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", streamId: streamIdToWatch) { result in
+            switch result {
+            case .success(_):
+//                print("[Livestream][Viewer][connectLiveStream] Request connect live stream success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            case .failure(let error):
+//                print("[Livestream][Viewer][connectLiveStream] Request connect live stream fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            }
+        }
+    }
+    
+    // [Current use][Custom for ONE Krungthai] Request disconnect livestream to backend by custom API
+    private func requestDisconnectLiveStream() {
+        let serviceRequest = RequestViewerStatistics()
+        serviceRequest.disconnectLivestream(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", streamId: streamIdToWatch) { result in
+            switch result {
+            case .success(let isSuccess):
+                self.isDisconnectLivestreamSuccess = isSuccess
+//                print("[Livestream][Viewer][disconnectLiveStream] Request disconnect live stream success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            case .failure(let error):
+//                print("[Livestream][Viewer][disconnectLiveStream] Request disconnect live stream fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            }
+        }
+    }
+    
+    // [Current use][Custom for ONE Krungthai] Request create livestream log to backend by custom API
+    private func requestCreateLiveStreamLog() {
+        let serviceRequest = RequestViewerStatistics()
+        serviceRequest.createLiveStreamLog(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", streamId: streamIdToWatch) { result in
+            switch result {
+            case .success(_):
+//                print("[Livestream][Viewer][createLivestreamLog] Request create live stream log success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            case .failure(let error):
+//                print("[Livestream][Viewer][createLivestreamLog] Request create live stream log fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
+                break
+            }
+            
+            // Update viewer count after create live stream log process complete
+            self.requestGetViewerCount()
         }
     }
 }
