@@ -28,12 +28,14 @@ struct Channel: Codable {
     let channelType: String?
     let avatarFileId: String?
     var membership: String?
+    var isPublic: Bool?
 
     enum CodingKeys: String, CodingKey {
         case channelId = "channelId"
         case displayName
         case channelType = "type"
         case avatarFileId
+        case isPublic
     }
 }
 

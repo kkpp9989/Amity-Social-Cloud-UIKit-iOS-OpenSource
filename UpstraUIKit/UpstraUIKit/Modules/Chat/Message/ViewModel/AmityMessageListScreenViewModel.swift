@@ -709,20 +709,22 @@ private extension AmityMessageListScreenViewModel {
         delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: isScrollUp))
         delegate?.screenViewModelIsRefreshing(false)
         
-        if isFirstTimeLoaded {
-            // If this screen is opened for first time, we want to scroll to bottom.
-            shouldScrollToBottom(force: true)
-            isFirstTimeLoaded = false
-        } else if let lastMessage = messages.last?.last,
-                  lastMessageHash != lastMessage.hashValue {
-            // Compare message hash
-            // - if it's equal, the last message remains the same -> do nothing
-            // - if it's not equal, there is new message -> scroll to bottom
-            
-            if lastMessageHash != -1 {
-                shouldScrollToBottom(force: false)
+        if !isJumpMessage {
+            if isFirstTimeLoaded {
+                // If this screen is opened for first time, we want to scroll to bottom.
+                shouldScrollToBottom(force: true)
+                isFirstTimeLoaded = false
+            } else if let lastMessage = messages.last?.last,
+                      lastMessageHash != lastMessage.hashValue {
+                // Compare message hash
+                // - if it's equal, the last message remains the same -> do nothing
+                // - if it's not equal, there is new message -> scroll to bottom
+                
+                if lastMessageHash != -1 {
+                    shouldScrollToBottom(force: false)
+                }
+                lastMessageHash = lastMessage.hashValue
             }
-            lastMessageHash = lastMessage.hashValue
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

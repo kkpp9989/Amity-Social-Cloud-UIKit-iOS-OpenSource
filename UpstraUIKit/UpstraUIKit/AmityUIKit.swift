@@ -292,6 +292,13 @@ public final class AmityUIKitManager {
     public static func getOnlinePresencesList() -> [AmityChannelPresence] {
         AmityUIKitManagerInternal.shared.onlinePresences
     }
+    
+    public static func checkOnlinePresence(channelId: String) -> Bool {
+        let onlinePresences = AmityUIKitManagerInternal.shared.onlinePresences
+        let isOnline = onlinePresences.contains { $0.channelId == channelId }
+        
+        return isOnline
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -535,12 +542,11 @@ final class AmityUIKitManagerInternal: NSObject {
                 print("[Amity SDK] getSyncingChannelPresence finish")
             }
         } receiveValue: { presences in
-            print("[Amity SDK] getSyncingChannelPresence \(presences)")
-            
             /// Channel presences where any other member is online
             let onlinePresences = presences.filter { $0.isAnyMemberOnline }
             
             self.onlinePresences = onlinePresences
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
         }.store(in: &disposeBag)
     }
     

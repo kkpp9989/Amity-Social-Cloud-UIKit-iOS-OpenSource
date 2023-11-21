@@ -21,8 +21,6 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
     @IBOutlet private var statusLabel: UILabel!
     @IBOutlet private var chevonIcon: UIImageView!
     @IBOutlet private var avatarButton: UIButton!
-
-    private var repository: AmityUserRepository?
     
     var delegate: AmityOwnerChatTableViewCellDelegate?
     
@@ -33,7 +31,6 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
     
     
     private func setupView() {
-        repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         avatarView.placeholder = AmityIconSet.defaultAvatar
         statusLabel.font = AmityFontSet.body
         
@@ -82,7 +79,8 @@ class AmityOwnerChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     private func setTextFromStatus() -> String {
-        let currentStatus = AmityUIKitManagerInternal.shared.userStatus
+        let amityUserStatus = AmityUserStatus()
+        let currentStatus = amityUserStatus.mapAmitySDKToType(AmityUIKitManagerInternal.shared.currentStatus)
         switch currentStatus {
         case .AVAILABLE:
             return "Available"
