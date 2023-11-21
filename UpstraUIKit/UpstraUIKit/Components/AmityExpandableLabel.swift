@@ -150,7 +150,6 @@ open class AmityExpandableLabel: UILabel {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        recomputeAttributedText()
     }
 
     open override var text: String? {
