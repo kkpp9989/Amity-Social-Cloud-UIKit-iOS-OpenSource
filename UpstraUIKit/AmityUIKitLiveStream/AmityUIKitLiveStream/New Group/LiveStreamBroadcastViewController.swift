@@ -239,7 +239,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
-            requestSendViewerStatisticsAPI()
+            requestGetViewerCount()
             
             viewerCountLabel.text = String(viewerCount)
         })
@@ -520,6 +520,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         let title = "Do yo want to end the live stream?"
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         let end = UIAlertAction(title: "End", style: .default) { [weak self] action in
+            self?.timer.invalidate() // stop process interval every 5 second
             self?.finishLive()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -837,6 +838,7 @@ extension LiveStreamBroadcastViewController {
         }
     }
     
+    // [Deprecated]
     private func requestSendViewerStatisticsAPI() {
         DispatchQueue.main.async { [self] in
             guard let currentPost = createdPost else { return }
@@ -847,6 +849,25 @@ extension LiveStreamBroadcastViewController {
                     self.viewerCount = dataResponse.viewerCount ?? 0
                     break
                 case .failure(_):
+                    break
+                }
+            }
+        }
+    }
+    
+    // [Current use][Custom for ONE Krungthai] Request get viewer count from custom API
+    private func requestGetViewerCount() {
+        DispatchQueue.main.async { [self] in
+            guard let currentPost = createdPost else { return }
+            let serviceRequest = RequestViewerStatistics()
+            serviceRequest.getViewerCount(postId: currentPost.postId) { result in
+                switch result {
+                case .success(let dataResponse):
+                    self.viewerCount = dataResponse.viewerCount ?? 0
+//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count success | viewerCount: \(dataResponse.viewerCount ?? 0) | postId: \(currentPost.postId)")
+                    break
+                case .failure(let error):
+//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count fail with error: \(error.localizedDescription) | postId: \(currentPost.postId)")
                     break
                 }
             }
