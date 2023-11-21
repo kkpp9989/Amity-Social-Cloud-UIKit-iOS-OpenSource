@@ -43,12 +43,51 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
             contentView.backgroundColor = UIColor(hex: "F0FBFF")
         }
         
+        var action: String = ""
+        
+        if model.verb == "posted" {
+            action = "posted in"
+        } else if model.verb == "comment" {
+            action = shouldRenderTarget(targetName: model.targetName) ? "commented on your post in" : "commented on your post"
+        } else {
+            action = shouldRenderTarget(targetName: model.targetName) ? "reacted on your post in" : "reacted on your post"
+        }
+        
         let targetNames: [String] = model.actors.map { $0.name } + [model.targetName]
-        let attributedString = NSMutableAttributedString(string: model.description)
+        let attributedString = getDescription(targetName: model.targetName, actors: model.actors, action: action)
         attributedString.setFont(AmityFontSet.bodyBold, forStrings: targetNames)
         
         descLabel.attributedText = attributedString
     }
+    
+    func getDescription(targetName: String?, actors: [Actor], action: String) -> NSMutableAttributedString {
+        let builder = NSMutableAttributedString()
+        let actorCount = actors.count
+        
+        if actorCount == 1 {
+            builder.append(NSAttributedString(string: actors[0].name))
+        } else if actorCount == 2 {
+            builder.append(NSAttributedString(string: actors[0].name))
+            builder.append(NSAttributedString(string: " and "))
+            builder.append(NSAttributedString(string: actors[1].name))
+        } else if actorCount > 2 {
+            builder.append(NSAttributedString(string: actors[0].name))
+            builder.append(NSAttributedString(string: " and "))
+            builder.append(NSAttributedString(string: "\(actorCount - 1) others", attributes: [.font: AmityFontSet.bodyBold]))
+        }
+        
+        builder.append(NSAttributedString(string: " \(action) "))
+        if shouldRenderTarget(targetName: targetName ?? "") {
+            builder.append(NSAttributedString(string: targetName ?? ""))
+        }
+        
+        return builder
+    }
+
+    func shouldRenderTarget(targetName: String) -> Bool {
+        return !targetName.isEmpty
+    }
+
     
     func relativeTime(from timestamp: Int) -> String {
         let currentTimestamp = Int(Date().timeIntervalSince1970)
