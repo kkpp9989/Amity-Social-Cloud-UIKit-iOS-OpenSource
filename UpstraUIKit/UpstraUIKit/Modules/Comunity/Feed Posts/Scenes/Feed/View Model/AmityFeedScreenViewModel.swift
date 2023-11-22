@@ -157,35 +157,31 @@ extension AmityFeedScreenViewModel {
     }
     
     private func getPostId(withpostIds postIds: [String]) {
-        print("-------> Latest PinPostIds \(postIds)")
         dummyList += postIds
         DispatchQueue.main.async { [self] in
             var postIdLeaveMap: [String: Bool] = [:] // Dictionary to keep track of whether leave has been called for a specific postId
             for postId in postIds {
-                print("-------> dispatchGroup.enter() \(postId)")
                 dispatchGroup.enter()
                 postIdLeaveMap[postId] = false
                 let postCollection = postRepository.getPost(withId: postId)
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
                     if let error = AmityError(error: error) {
-                        print("-------> Get post data \(postId) fail with error \(error.localizedDescription)")
+                        print("[Amity Log] Get post data \(postId) fail with error \(error.localizedDescription)")
                         strongSelf.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
-                            print("-------> Get post data \(postId) success")
                             if !model.isDelete {
                                 strongSelf.appendData(post: model)
                             }
                         } else {
                             AmityUIKitManagerInternal.shared.addPostIdCannotGetSnapshot(postId: postId)
-                            print("-------> Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
+                            print("[Amity Log] Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
                             strongSelf.nextData()
                         }
                     }
                     // Check if leave has already been called for this postId
                     if let leaveCalled = postIdLeaveMap[postId], !leaveCalled {
-                        print("-------> dispatchGroup.leave() \(postId)")
                         postIdLeaveMap[postId] = true
                         strongSelf.dispatchGroup.leave()
                     }
@@ -195,7 +191,6 @@ extension AmityFeedScreenViewModel {
             
             // Move the dispatchGroup.notify block here, outside of the loop
             dispatchGroup.notify(queue: .main) {
-                print("-------> dispatchGroup.notify()")
                 let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
                 self.pinPostData = sortedArray
                 self.tokenArray.removeAll()
