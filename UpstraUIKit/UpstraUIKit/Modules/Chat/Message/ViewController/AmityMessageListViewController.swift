@@ -762,7 +762,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 //        let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
-            print("[Amity Log] isOnline: \(isOnline)")
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
         }
         
