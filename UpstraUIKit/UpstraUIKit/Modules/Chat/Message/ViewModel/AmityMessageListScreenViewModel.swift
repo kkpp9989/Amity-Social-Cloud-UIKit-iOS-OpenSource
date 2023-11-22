@@ -137,8 +137,11 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private(set) var allCellClasses: [String: AmityMessageCellProtocol.Type] = [:]
     
     func message(at indexPath: IndexPath) -> AmityMessageModel? {
-        guard !messages.isEmpty else { return nil }
-        return messages[indexPath.section][indexPath.row]
+        guard indexPath.section < messages.count else { return nil }
+        let sectionMessages = messages[indexPath.section]
+        
+        guard indexPath.row < sectionMessages.count else { return nil }
+        return sectionMessages[indexPath.row]
     }
     
     func isKeyboardVisible() -> Bool {

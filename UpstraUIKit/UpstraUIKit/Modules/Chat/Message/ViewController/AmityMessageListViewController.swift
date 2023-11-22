@@ -1016,10 +1016,16 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
 
     func screenViewModelDidJumpToTarget(with messageId: String) {
-        DispatchQueue.main.async { [self] in
-            if let indexPath = screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
-                messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                shakeCell(at: indexPath)
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            if let indexPath = strongSelf.screenViewModel.dataSource.findIndexPath(forMessageId: messageId) {
+                let numberOfSections = strongSelf.messageViewController.tableView.numberOfSections
+                let numberOfRows = strongSelf.messageViewController.tableView.numberOfRows(inSection: indexPath.section)
+                
+                if indexPath.section < numberOfSections && indexPath.row < numberOfRows {
+                    strongSelf.messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    strongSelf.shakeCell(at: indexPath)
+                }
             }
         }
     }
