@@ -530,6 +530,7 @@ public struct AmityLocalizedStringSet {
         static let title = "pending_posts_title"
         static let statusTitle = "pending_posts_status_title"
         static let statusAdminDesc = "pending_posts_status_admin_desc"
+        static let statusAdminDescOnePost = "pending_one_post_status_admin_desc"
         static let statusMemberDesc = "pending_posts_status_member_desc"
         static let headerTitle = "pending_posts_header_title"
         static let emptyTitle = "pending_posts_empty_title"

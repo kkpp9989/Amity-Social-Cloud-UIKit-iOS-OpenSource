@@ -560,6 +560,7 @@
 "pending_posts_title" = "Pending posts";
 "pending_posts_status_title" = "Pending posts";
 "pending_posts_status_admin_desc" = "%d Posts need to approval";
+"pending_one_post_status_admin_desc" = "%d Post need to approval";
 "pending_posts_status_member_desc" = "Your posts are pending for review";
 /* [Custom for ONE Krungthai] Change wording pending_posts_header_title" */
 //"pending_posts_header_title" =  "Decline pending post will permanently delete the selected post from community."; // [Original]
