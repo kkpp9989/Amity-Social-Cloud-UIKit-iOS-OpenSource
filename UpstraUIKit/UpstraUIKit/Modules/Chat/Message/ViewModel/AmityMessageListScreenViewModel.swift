@@ -118,6 +118,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var unsortedMessages: [AmityMessageModel] = []
     private var keyboardEvents: KeyboardInputEvents = .default
     private var keyboardVisible: Bool = false
+    private var isLoadMore: Bool = false
     private var text: String = "" {
         didSet {
             delegate?.screenViewModelDidTextChange(text: text)
@@ -136,8 +137,11 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private(set) var allCellClasses: [String: AmityMessageCellProtocol.Type] = [:]
     
     func message(at indexPath: IndexPath) -> AmityMessageModel? {
-        guard !messages.isEmpty else { return nil }
-        return messages[indexPath.section][indexPath.row]
+        guard indexPath.section < messages.count else { return nil }
+        let sectionMessages = messages[indexPath.section]
+        
+        guard indexPath.row < sectionMessages.count else { return nil }
+        return sectionMessages[indexPath.row]
     }
     
     func isKeyboardVisible() -> Bool {
@@ -496,6 +500,9 @@ extension AmityMessageListScreenViewModel {
     }
     
     func loadMoreScrollUp(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        if isLoadMore {
+            return
+        }
         // Check if scrolling reached the bottom
         let scrollViewHeight = scrollView.frame.size.height
         let contentOffsetY = targetContentOffset.pointee.y
@@ -507,6 +514,7 @@ extension AmityMessageListScreenViewModel {
             switch collection.loadingStatus {
             case .loaded:
                 if collection.hasNext {
+                    isLoadMore = true
                     collection.nextPage()
                     delegate?.screenViewModelLoadingState(for: .loading)
                     isScrollUp = true
@@ -519,6 +527,7 @@ extension AmityMessageListScreenViewModel {
             switch collection.loadingStatus {
             case .loaded:
                 if collection.hasPrevious {
+                    isLoadMore = true
                     collection.previousPage()
                     delegate?.screenViewModelLoadingState(for: .loading)
                     isScrollUp = false
@@ -709,25 +718,23 @@ private extension AmityMessageListScreenViewModel {
         delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: isScrollUp))
         delegate?.screenViewModelIsRefreshing(false)
         
-        if !isJumpMessage {
-            if isFirstTimeLoaded {
-                // If this screen is opened for first time, we want to scroll to bottom.
-                shouldScrollToBottom(force: true)
-                isFirstTimeLoaded = false
-            } else if let lastMessage = messages.last?.last,
-                      lastMessageHash != lastMessage.hashValue {
-                // Compare message hash
-                // - if it's equal, the last message remains the same -> do nothing
-                // - if it's not equal, there is new message -> scroll to bottom
-                
-                if lastMessageHash != -1 {
-                    shouldScrollToBottom(force: false)
-                }
-                lastMessageHash = lastMessage.hashValue
+        if isFirstTimeLoaded {
+            // If this screen is opened for first time, we want to scroll to bottom.
+            shouldScrollToBottom(force: true)
+            isFirstTimeLoaded = false
+        } else if let lastMessage = messages.last?.last, lastMessageHash != lastMessage.hashValue {
+            // Compare message hash
+            // - if it's equal, the last message remains the same -> do nothing
+            // - if it's not equal, there is new message -> scroll to bottom
+            
+            if lastMessageHash != -1 {
+                shouldScrollToBottom(force: false)
             }
+            lastMessageHash = lastMessage.hashValue
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.isLoadMore = false
             AmityEventHandler.shared.hideKTBLoading()
         }
     }

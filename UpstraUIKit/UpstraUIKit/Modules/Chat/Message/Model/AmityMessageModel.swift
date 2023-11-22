@@ -121,17 +121,39 @@ extension AmityMessageModel: Hashable {
 
 extension AmityMessageModel {
     private func getParentMessage(completion: @escaping (AmityMessage?) -> Void) {
-        guard let parentId = parentId else {
-            completion(nil)
-            return
-        }
-        messageToken = messageRepository.getMessage(parentId).observe { (message, error) in
-            if let message = message.snapshot {
-                //  Handle message result
-                completion(message)
-            } else {
+        if let cachedMessage = MessageCacheManager.shared.getMessageFromCache(parentId ?? "") {
+            // If the message is cached, use it directly
+            completion(cachedMessage)
+        } else {
+            // If not cached, fetch it from the repository
+            guard let parentId = parentId else {
                 completion(nil)
+                return
+            }
+            messageToken = messageRepository.getMessage(parentId).observeOnce { (message, error) in
+                if let message = message.snapshot {
+                    // Cache the fetched message
+                    MessageCacheManager.shared.cacheMessage(parentId, message: message)
+                    completion(message)
+                } else {
+                    completion(nil)
+                }
             }
         }
+    }
+}
+
+// Create a simple cache manager
+class MessageCacheManager {
+    static let shared = MessageCacheManager()
+    
+    private var messageCache: [String: AmityMessage] = [:]
+    
+    func cacheMessage(_ messageId: String, message: AmityMessage) {
+        messageCache[messageId] = message
+    }
+    
+    func getMessageFromCache(_ messageId: String) -> AmityMessage? {
+        return messageCache[messageId]
     }
 }
