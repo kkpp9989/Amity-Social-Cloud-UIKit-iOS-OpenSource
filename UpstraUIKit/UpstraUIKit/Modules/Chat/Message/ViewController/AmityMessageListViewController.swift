@@ -758,8 +758,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
-//        let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
-//        let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
@@ -779,7 +777,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         
         // Update interaction of compose bar view
         composeBar.updateViewDidMuteChannelStatusChanged(isMuted: channel.isMuted)
-        
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
