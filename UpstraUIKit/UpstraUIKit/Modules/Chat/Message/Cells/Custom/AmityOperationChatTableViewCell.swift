@@ -18,6 +18,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     // MARK: - Component
     @IBOutlet var textMessageView: UILabel!
     @IBOutlet var containerView: UIView!
+    @IBOutlet var stackView: UIStackView!
     
     // MARK: - Properties
     var message: AmityMessageModel?
@@ -30,7 +31,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     override func prepareForReuse() {
         textMessageView.text = ""
-        containerView.layer.cornerRadius = 14
+        containerView.layer.cornerRadius = contentView.frame.height / 3
         containerView.layer.masksToBounds = true
     }
     
@@ -39,7 +40,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         contentView.backgroundColor = .clear
         
         containerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        containerView.layer.cornerRadius = 14
+        containerView.layer.cornerRadius = contentView.frame.height / 3
         containerView.layer.masksToBounds = true
         isUserInteractionEnabled = false
         
@@ -49,13 +50,14 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         textMessageView.lineBreakMode = .byWordWrapping
         textMessageView.textAlignment = .center
         textMessageView.backgroundColor = .clear
+        containerView.sizeToFit()
     }
     
     func display(message: AmityMessageModel) {
         self.message = message
         guard let text = message.text else { return }
         textMessageView.text = text
-        containerView.layer.cornerRadius = 14
+        containerView.layer.cornerRadius = contentView.frame.height / 3
         containerView.layer.masksToBounds = true
     }
     
@@ -64,11 +66,15 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     }
     
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
-//        guard let text = message.text else { return UITableView.automaticDimension }
-////        let textHeight = text.height(withConstrainedWidth: boundingWidth, font: AmityFontSet.caption)
-////        return textHeight + 16 // Adjust as needed for additional spacing
-////        return 200
+        guard let text = message.text else { return UITableView.automaticDimension }
+        let boundingWidthWithMargin = boundingWidth - 16 - 16 // Delete left & right margin
+        let numberOfLines = text.numberOfLines(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
 
-        return UITableView.automaticDimension
+        if numberOfLines > 1 {
+            return UITableView.automaticDimension
+        } else {
+            let textHeight = text.height(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
+            return textHeight + 8 // Adjust as needed for additional spacing
+        }
     }
 }
