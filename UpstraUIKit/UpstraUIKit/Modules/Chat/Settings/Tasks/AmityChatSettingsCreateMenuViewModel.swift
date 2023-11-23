@@ -10,14 +10,14 @@ import UIKit
 import AmitySDK
 
 protocol AmityChatSettingsCreateMenuViewModelProtocol {
-    func createSettingsItems(isNotificationEnabled: Bool, isReportedUserByMe: Bool?, isCanEditGroupChannel: Bool?, _ completion: (([AmitySettingsItem]) -> Void)?)
+    func createSettingsItems(isNotificationEnabled: Bool?, isReportedUserByMe: Bool?, isCanEditGroupChannel: Bool?, _ completion: (([AmitySettingsItem]) -> Void)?)
 }
 
 final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuViewModelProtocol {
 
     // MARK: - Properties
     private let channel: AmityChannelModel
-    private var isNotificationEnabled: Bool = false
+    private var isNotificationEnabled: Bool?
     
     // For 1:1 chat only
     private var isReportedUserByMe: Bool?
@@ -34,7 +34,7 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
         userController = AmityChatUserController(channelId: channel.channelId)
     }
     
-    func createSettingsItems(isNotificationEnabled: Bool, isReportedUserByMe: Bool?, isCanEditGroupChannel: Bool?, _ completion: (([AmitySettingsItem]) -> Void)?) {
+    func createSettingsItems(isNotificationEnabled: Bool?, isReportedUserByMe: Bool?, isCanEditGroupChannel: Bool?, _ completion: (([AmitySettingsItem]) -> Void)?) {
         self.isNotificationEnabled = isNotificationEnabled
         self.isReportedUserByMe = isReportedUserByMe
         self.isCanEditGroupChannel = isCanEditGroupChannel
@@ -48,11 +48,13 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
         switch channel.channelType {
         case .conversation: // 1:1 Chat
             // MARK: Muted or unmuted notification
-            let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
-                                                                        icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
-                                                                        title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
-                                                                        description: nil)
-            settingsItems.append(.textContent(content: itemNotificationContent))
+            if let isNotificationEnabled = self.isNotificationEnabled {
+                let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
+                                                                            icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
+                                                                            title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
+                                                                            description: nil)
+                settingsItems.append(.textContent(content: itemNotificationContent))
+            }
             
             // MARK: Invite user (1:1 Chat)
             let itemInviteUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteUser.identifier,
@@ -98,11 +100,13 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 settingsItems.append(.navigationContent(content: itemMembersContent))
                 
                 // MARK: Muted or unmuted notification
-                let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
-                                                                            icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
-                                                                            title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
-                                                                            description: nil)
-                settingsItems.append(.textContent(content: itemNotificationContent))
+                if let isNotificationEnabled = self.isNotificationEnabled {
+                    let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
+                                                                                icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
+                                                                                title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
+                                                                                description: nil)
+                    settingsItems.append(.textContent(content: itemNotificationContent))
+                }
                 
                 // MARK: Separator
                 settingsItems.append(.separator)
@@ -137,11 +141,13 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 settingsItems.append(.navigationContent(content: itemMembersContent))
                 
                 // MARK: Muted or unmuted notification
-                let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
-                                                                            icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
-                                                                            title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
-                                                                            description: nil)
-                settingsItems.append(.textContent(content: itemNotificationContent))
+                if let isNotificationEnabled = self.isNotificationEnabled {
+                    let itemNotificationContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.notification(isNotificationEnabled).identifier,
+                                                                                icon: AmityChatSettingsItem.notification(isNotificationEnabled).icon,
+                                                                                title: AmityChatSettingsItem.notification(isNotificationEnabled).title,
+                                                                                description: nil)
+                    settingsItems.append(.textContent(content: itemNotificationContent))
+                }
                 
                 // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
                 let itemInviteViaQRAndLink = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
