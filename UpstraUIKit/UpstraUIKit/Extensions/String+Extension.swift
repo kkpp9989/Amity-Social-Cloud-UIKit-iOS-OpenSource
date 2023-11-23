@@ -44,4 +44,23 @@ extension String {
         return ceil(boundingBox.width)
     }
     
+    public func numberOfLines(withConstrainedWidth width: CGFloat, font: UIFont) -> Int {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        
+        let textStorage = NSTextStorage(string: self, attributes: [NSAttributedString.Key.font: font])
+        let layoutManager = NSLayoutManager()
+        textStorage.addLayoutManager(layoutManager)
+        
+        let textContainer = NSTextContainer(size: constraintRect)
+        layoutManager.addTextContainer(textContainer)
+        
+        var numberOfLines = 0
+        
+        layoutManager.enumerateLineFragments(forGlyphRange: NSMakeRange(0, layoutManager.numberOfGlyphs)) { (rect, usedRect, textContainer, glyphRange, stop) in
+            numberOfLines += 1
+        }
+        
+        return numberOfLines
+    }
+    
 }

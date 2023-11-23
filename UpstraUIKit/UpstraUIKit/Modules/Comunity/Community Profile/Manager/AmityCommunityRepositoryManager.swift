@@ -69,9 +69,9 @@ final class AmityCommunityRepositoryManager: AmityCommunityRepositoryManagerProt
         communitySubscriptionTopic = topic
         subscriptionManager.subscribeTopic(topic) { success, error in
             if let error = error {
-                print("[Community] Start community data subscription id \(self.communityId) fail with error: \(error.localizedDescription)")
+//                print("[Community] Start community data subscription id \(self.communityId) fail with error: \(error.localizedDescription)")
             } else {
-                print("[Community] Start community data subscription id \(self.communityId) success")
+//                print("[Community] Start community data subscription id \(self.communityId) success")
             }
         }
     }
@@ -80,9 +80,9 @@ final class AmityCommunityRepositoryManager: AmityCommunityRepositoryManagerProt
         guard let topic = communitySubscriptionTopic else { return }
         subscriptionManager.unsubscribeTopic(topic) { success, error in
             if let error = error {
-                print("[Community] End community data subscription id \(self.communityId) fail with error: \(error.localizedDescription)")
+//                print("[Community] End community data subscription id \(self.communityId) fail with error: \(error.localizedDescription)")
             } else {
-                print("[Community] End community data subscription id \(self.communityId) success")
+//                print("[Community] End community data subscription id \(self.communityId) success")
             }
         }
     }
