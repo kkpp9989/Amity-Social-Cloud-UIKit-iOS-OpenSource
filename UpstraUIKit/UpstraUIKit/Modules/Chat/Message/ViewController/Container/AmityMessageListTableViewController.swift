@@ -114,7 +114,9 @@ extension AmityMessageListTableViewController {
             //
             // User is at the bottom-most page. So we just scroll to the bottom when new message appears.
             Log.add("Scrolling tableview to show latest message")
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            if indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section) {
+                tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            }
         } else {
             // State 3:
             //
