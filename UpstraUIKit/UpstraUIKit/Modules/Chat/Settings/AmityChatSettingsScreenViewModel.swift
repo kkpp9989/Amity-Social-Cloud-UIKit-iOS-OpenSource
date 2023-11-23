@@ -28,7 +28,7 @@ final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelTy
     private(set) var channel: AmityChannelModel?
     var title: String?
     let channelId: String
-    private var isNotificationEnabled: Bool = false
+    private var isNotificationEnabled: Bool?
     private let dispatchGroup = DispatchGroup()
     
     // For 1:1 chat only
@@ -138,7 +138,7 @@ extension AmityChatSettingsScreenViewModel {
     
     // MARK: Update Action - Notification
     func changeNotificationSettings() {
-        if !isNotificationEnabled { // Case : Will enable notification
+        if let isNotificationEnabled = self.isNotificationEnabled, !isNotificationEnabled { // Case : Will enable notification
             chatNotificationController.enableNotificationSettings { [weak self] success, error in
                 guard let strongSelf = self else { return }
                 if success {
