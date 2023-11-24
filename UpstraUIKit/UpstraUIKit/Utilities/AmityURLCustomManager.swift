@@ -23,7 +23,7 @@ public struct AmityURLMetadata {
 private enum AmityShareExternalDomainURL: String {
     case DEV = "https://social-one-ktb-dev.com"
     case UAT = "https://social-uat.krungthai.com"
-    case PRODUCTION = "https://social-one-ktb.com"
+    case PRODUCTION = "https://social.krungthai.com"
 }
 
 // MARK: - AmityURLCustomManager
