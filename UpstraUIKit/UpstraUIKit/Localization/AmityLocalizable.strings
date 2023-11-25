@@ -134,6 +134,7 @@
 "message_unsent" = "Message unsent • %@";
 "message_edit" = "Edited • %@";
 "message_readmore" = "...Read more";
+"message_list_cannot_download_image_in_chat" = "Can't download image";
 
 "something_went_wrong_with_try_again"= "Something went wrong. Please try again later.";
 "no_internet_connection" = "No internet connection";

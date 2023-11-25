@@ -158,6 +158,7 @@ public struct AmityLocalizedStringSet {
         static let deleteMessage = "message_delete"
         static let unsentMessage = "message_unsent"
         static let editMessage = "message_edit"
+        static let cannotDownloadImageInChat = "message_list_cannot_download_image_in_chat"
     }
     
     // MARK: - Empty Community in category
