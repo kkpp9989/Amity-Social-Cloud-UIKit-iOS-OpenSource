@@ -40,6 +40,13 @@ extension AmityPhotoViewerController {
     
     @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
         AmityEventHandler.shared.hideKTBLoading()
+        
+        if let error = error {
+            AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+//            print("[Chat] Can't download image from chat with error: \(error.localizedDescription)")
+        } else {
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
+        }
     }
     
     func hideInfoOverlayView(_ animated: Bool) {
