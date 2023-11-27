@@ -857,7 +857,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 alertErrorLabel.text = "Unable to send link This link isn't allowed in this chat."
                 alertViewFadeIn()
             } else {
-                alertErrorLabel.text = "Unable to send message"
+                alertErrorLabel.text = "Can't send the message"
                 alertViewFadeIn()
             }
         }
