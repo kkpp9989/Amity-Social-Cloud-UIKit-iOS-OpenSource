@@ -106,7 +106,14 @@ private extension AmityMessageListComposeBarViewController {
     
     // MARK: - Audio Recording
     @IBAction func touchDown(sender: AmityRecordingButton) {
-        screenViewModel.action.performAudioRecordingEvents(for: .show)
+        AmityAudioRecorder.shared.checkPermission { [weak self] isAllowed, error in
+            guard let isAllowed = isAllowed else { return }
+            if isAllowed {
+                self?.screenViewModel.action.performAudioRecordingEvents(for: .show)
+            } else {
+                self?.screenViewModel.action.performAudioRecordingEvents(for: .permissionDenied)
+            }
+        }
     }
 }
 

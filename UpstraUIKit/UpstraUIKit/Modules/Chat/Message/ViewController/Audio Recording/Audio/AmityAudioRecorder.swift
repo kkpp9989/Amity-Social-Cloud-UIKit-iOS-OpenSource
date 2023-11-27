@@ -68,6 +68,27 @@ final class AmityAudioRecorder: NSObject {
         }
     }
     
+    func checkPermission(completion: @escaping (_ isAllowed: Bool?, _ error: Error?) -> Void) {
+        if session == nil {
+            session = AVAudioSession.sharedInstance()
+        }
+        switch session.recordPermission {
+        case .granted:
+            completion(true, nil)
+        default:
+            do {
+                try session.setCategory(.record)
+                try session.setActive(true)
+                session.requestRecordPermission() { allowed in
+                    completion(allowed, nil)
+                }
+            } catch {
+                completion(nil, error)
+                Log.add("Error while preparing audio session \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func startRecording() {
         isRecording = true
         switch session.recordPermission {
