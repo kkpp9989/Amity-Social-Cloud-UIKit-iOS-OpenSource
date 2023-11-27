@@ -721,6 +721,18 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let window = keyWindow else { return }
             AmityAudioPlayer.shared.stopAudio()
             circular.show(for: window)
+        case .permissionDenied:
+            let alertTitle = AmityLocalizedStringSet.MessageList.alertMicrophoneDisabledTitle.localizedString
+            let description = AmityLocalizedStringSet.MessageList.alertMicrophoneDisabledDesc.localizedString
+            
+            AmityAlertController.present(
+                title: alertTitle,
+                message: description,
+                actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.openSettings.localizedString, style: .default, handler: {
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(settingsUrl) else { return }
+                    UIApplication.shared.open(settingsUrl)
+                })],
+                from: self)
         case .hide:
             circular.hide()
             audioRecordingViewController?.stopRecording()

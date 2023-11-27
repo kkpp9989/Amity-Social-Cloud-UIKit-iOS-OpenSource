@@ -92,6 +92,7 @@ public struct AmityLocalizedStringSet {
         static let copy = "general_copy"
         static let selectedImages = "general_selected_images"
         static let selectedVideos = "general_selected_videos"
+        static let openSettings = "general_open_settings"
         
     }
     
@@ -159,6 +160,9 @@ public struct AmityLocalizedStringSet {
         static let unsentMessage = "message_unsent"
         static let editMessage = "message_edit"
         static let cannotDownloadImageInChat = "message_list_cannot_download_image_in_chat"
+        static let alertMicrophoneDisabledTitle = "message_list_alert_microphone_disabled_title"
+        static let alertMicrophoneDisabledDesc = "message_list_alert_microphone_disabled_desc"
+        
     }
     
     // MARK: - Empty Community in category

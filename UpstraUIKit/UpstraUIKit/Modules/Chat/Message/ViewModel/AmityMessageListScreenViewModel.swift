@@ -37,6 +37,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case delete
         case record
         case timeoutRecord
+        case permissionDenied
     }
 
     enum CellEvents {

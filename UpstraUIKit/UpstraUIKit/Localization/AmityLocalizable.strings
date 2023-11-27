@@ -80,6 +80,7 @@
 "general_copy" = "Copy";
 "general_selected_images" = "Selected images";
 "general_selected_videos" = "Selected videos";
+"general_open_settings" = "Open settings";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";
@@ -119,7 +120,7 @@
 "search_results" = "Search results";
 "search_result_not_found" = "No results found";
 "search_account_not_found" = "No account found";
-"communities" = "Communities";
+"communities" = "Socials";
 "accounts" = "Accounts";
 "hashtags" = "Hashtags";
 "messages" = "Messages";
@@ -135,6 +136,8 @@
 "message_edit" = "Edited • %@";
 "message_readmore" = "...Read more";
 "message_list_cannot_download_image_in_chat" = "Can't download image";
+"message_list_alert_microphone_disabled_title" = "Microphone disabled";
+"message_list_alert_microphone_disabled_desc" = "To record, let ONE Krungthai access your microphone in Settings App.\n(Open Settings > Go to ONE Krungthai > Enable Microphone)";
 
 "something_went_wrong_with_try_again"= "Something went wrong. Please try again later.";
 "no_internet_connection" = "No internet connection";

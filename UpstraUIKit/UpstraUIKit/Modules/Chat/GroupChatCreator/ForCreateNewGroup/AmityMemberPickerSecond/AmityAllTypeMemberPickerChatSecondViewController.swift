@@ -118,7 +118,7 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
         cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
         
-        navigationItem.leftBarButtonItem = cancelButton
+//        navigationItem.leftBarButtonItem = cancelButton // Disable set cancel button because this viewcontroller was pushed from first viewcontroller
         navigationItem.rightBarButtonItem = doneButton
         
         // Initial ONE Krungthai Custom theme
