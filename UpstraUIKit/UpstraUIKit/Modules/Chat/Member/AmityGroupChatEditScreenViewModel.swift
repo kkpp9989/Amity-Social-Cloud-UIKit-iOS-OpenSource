@@ -11,7 +11,7 @@ import AmitySDK
 
 protocol AmityGroupChatEditorScreenViewModelAction {
     func update(displayName: String)
-    func update(avatar: UIImage, completion: @escaping (Bool) -> ())
+    func update(avatar: UIImage, completion: @escaping (Bool) -> ()) async
 }
 
 protocol AmityGroupChatEditorViewModelDataSource {
@@ -23,7 +23,7 @@ protocol AmityGroupChatEditorScreenViewModelDelegate: AnyObject {
     func screenViewModelDidUpdate(_ viewModel: AmityGroupChatEditorScreenViewModelType)
     func screenViewModelDidUpdateFailed(_ viewModel: AmityGroupChatEditorScreenViewModelType, withError error: String)
     func screenViewModelDidUpdateSuccess(_ viewModel: AmityGroupChatEditorScreenViewModelType)
-    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityGroupChatEditorScreenViewModelType, progressing: Double)
 }
 
 protocol AmityGroupChatEditorScreenViewModelType: AmityGroupChatEditorScreenViewModelAction, AmityGroupChatEditorViewModelDataSource {
@@ -64,8 +64,7 @@ class AmityGroupChatEditScreenViewModel: AmityGroupChatEditorScreenViewModelType
     func update(displayName: String) {
         // Update
         channelUpdateBuilder.setDisplayName(displayName)
-                
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.updateChannel, parameters: channelUpdateBuilder) { [weak self] channel, error in
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.editChannel(with:), parameters: channelUpdateBuilder) { [weak self] channel, error in
             guard let weakSelf = self else { return }
             
             if let error = error {
@@ -76,17 +75,40 @@ class AmityGroupChatEditScreenViewModel: AmityGroupChatEditorScreenViewModelType
         }
     }
     
-    func update(avatar: UIImage, completion: @escaping (Bool) -> ()) {
-        // Update user avatar
-        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
-            guard let weakSelf = self else { return }
-            weakSelf.channelUpdateBuilder.setAvatar(imageData)
-            
-            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: weakSelf.channelRepository.updateChannel, parameters: weakSelf.channelUpdateBuilder) { [weak self] channel, error in
-                guard let weakSelf = self else { return }
-                completion(error == nil)
+    func update(avatar: UIImage, completion: @escaping (Bool) -> ()) async {
+        do {
+            // Upload avatar image
+            let imageData = try await fileRepository.uploadImage(avatar) { progress in
+//                print("[Avatar] Upload progressing result: \(progress)")
+                DispatchQueue.main.async {
+                    self.delegate?.screenViewModelDidUpdateAvatarUploadingProgress(self, progressing: progress)
+                }
+            }
+            // Set avatar to update builder
+            channelUpdateBuilder.setAvatar(imageData)
+            // Update user profile
+            let _ = try await channelRepository.editChannel(with: channelUpdateBuilder)
+            // Start completion
+            DispatchQueue.main.async {
+                completion(true)
+            }
+        } catch {
+//            print("[Avatar] Can't update avatar group chat with error: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                completion(false)
             }
         }
+        
+        // Update user avatar [Deprecated][Backup]
+//        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
+//            guard let weakSelf = self else { return }
+//            weakSelf.channelUpdateBuilder.setAvatar(imageData)
+//
+//            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: weakSelf.channelRepository.updateChannel, parameters: weakSelf.channelUpdateBuilder) { [weak self] channel, error in
+//                guard let weakSelf = self else { return }
+//                completion(error == nil)
+//            }
+//        }
     }
     
     func getChannelEditUserPermission(_ completion: ((Bool) -> Void)?) {

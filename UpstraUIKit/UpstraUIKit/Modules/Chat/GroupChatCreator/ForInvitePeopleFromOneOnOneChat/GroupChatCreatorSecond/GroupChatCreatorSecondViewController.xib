@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GroupChatCreatorViewController" customModule="AmityUIKit" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GroupChatCreatorSecondViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
                 <outlet property="avatarButton" destination="MK4-MA-YWh" id="pFz-Jp-uDG"/>
+                <outlet property="avatarUploadingProgressBar" destination="1Kf-Uk-NKt" id="oi6-Iw-2S2"/>
                 <outlet property="cameraImageView" destination="aNY-we-ZBd" id="3n7-c5-pFI"/>
                 <outlet property="displayNameCounterLabel" destination="96E-hd-5U4" id="1Dn-6q-g0A"/>
                 <outlet property="displayNameLabel" destination="uoW-z7-tWM" id="Qmf-1R-p4B"/>
                 <outlet property="displayNameTextField" destination="Cbp-PK-yRs" id="MLG-a0-BXe"/>
                 <outlet property="displaynameSeparatorView" destination="dxh-vq-o57" id="hgK-Sx-NlB"/>
+                <outlet property="overlayView" destination="5JF-gK-sbe" id="0Hn-R3-AUU"/>
                 <outlet property="userAvatarView" destination="YQG-y1-uAW" id="ZQ0-Sp-Gge"/>
                 <outlet property="view" destination="Ovk-fb-gzB" id="5XL-3t-xOQ"/>
             </connections>
@@ -34,9 +36,32 @@
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YQG-y1-uAW" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
                                     <rect key="frame" x="175" y="3" width="64" height="64"/>
+                                    <subviews>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5JF-gK-sbe">
+                                            <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
+                                            <subviews>
+                                                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1Kf-Uk-NKt">
+                                                    <rect key="frame" x="8" y="30" width="48" height="4"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="4" id="AJu-D6-AwN"/>
+                                                    </constraints>
+                                                </progressView>
+                                            </subviews>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="1Kf-Uk-NKt" secondAttribute="trailing" constant="8" id="9ha-HJ-YfH"/>
+                                                <constraint firstItem="1Kf-Uk-NKt" firstAttribute="centerY" secondItem="5JF-gK-sbe" secondAttribute="centerY" id="RbQ-ig-l8X"/>
+                                                <constraint firstItem="1Kf-Uk-NKt" firstAttribute="leading" secondItem="5JF-gK-sbe" secondAttribute="leading" constant="8" id="usy-Tx-EBv"/>
+                                            </constraints>
+                                        </view>
+                                    </subviews>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="64" id="0Tb-TV-X6I"/>
+                                        <constraint firstAttribute="bottom" secondItem="5JF-gK-sbe" secondAttribute="bottom" id="79J-aH-29d"/>
+                                        <constraint firstAttribute="trailing" secondItem="5JF-gK-sbe" secondAttribute="trailing" id="Ceq-df-Wnl"/>
+                                        <constraint firstItem="5JF-gK-sbe" firstAttribute="leading" secondItem="YQG-y1-uAW" secondAttribute="leading" id="Kke-4s-DVc"/>
                                         <constraint firstAttribute="width" constant="64" id="gOL-eS-Ap7"/>
+                                        <constraint firstItem="5JF-gK-sbe" firstAttribute="top" secondItem="YQG-y1-uAW" secondAttribute="top" id="uzo-Wx-jL5"/>
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aNY-we-ZBd">
