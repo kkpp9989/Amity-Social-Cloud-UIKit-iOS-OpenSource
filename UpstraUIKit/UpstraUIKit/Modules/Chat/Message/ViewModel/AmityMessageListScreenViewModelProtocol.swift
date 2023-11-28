@@ -50,6 +50,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func isKeyboardVisible() -> Bool
     func findIndexPath(forMessageId messageId: String) -> IndexPath?
     func getChannelType() -> AmityChannelType
+    func isMessageInForwardMessageList(messageId: String) -> Bool
 }
 
 protocol AmityMessageListScreenViewModelAction {

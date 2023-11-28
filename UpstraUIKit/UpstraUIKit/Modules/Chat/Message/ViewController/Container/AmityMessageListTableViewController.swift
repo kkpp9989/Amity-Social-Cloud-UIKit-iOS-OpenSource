@@ -126,10 +126,18 @@ extension AmityMessageListTableViewController {
     }
     
     func updateEditMode(isEdit: Bool) {
-        // Enable edit mode for the table view
+        if !isEdit { // Clear current selected row before set editing to false
+            clearSelectedRow()
+        }
+        
+        // Enable | Disable edit mode for the table view
         tableView.setEditing(isEdit, animated: true)
     }
     
+    private func clearSelectedRow() {
+        guard let selectedRows = tableView.indexPathsForSelectedRows else { return }
+        for indexPath in selectedRows { tableView.deselectRow(at: indexPath, animated: true) }
+    }
 }
 
 // MARK: - Delegate
@@ -215,6 +223,14 @@ extension AmityMessageListTableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
             configure(for: cell, at: indexPath)
             return cell
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+        let isForwardMessageSelected = screenViewModel.dataSource.isMessageInForwardMessageList(messageId: message.messageId)
+        if !cell.isSelected && isForwardMessageSelected { // Select row again if tableview cell selected status is false but is forward message selected in list
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
     }
 }

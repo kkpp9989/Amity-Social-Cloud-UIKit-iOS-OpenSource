@@ -106,6 +106,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        doneButton?.isEnabled = !numberOfSelectedUsers.isEmpty
         
         let cancelButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .plain, target: self, action: #selector(cancelTap))
         cancelButton.tintColor = AmityColorSet.base

@@ -181,6 +181,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         }
         return nil  // Message not found
     }
+    
+    func isMessageInForwardMessageList(messageId: String) -> Bool {
+        return forwardMessageList.contains(where: { $0.messageId == messageId })
+    }
 }
 
 // MARK: - Action
