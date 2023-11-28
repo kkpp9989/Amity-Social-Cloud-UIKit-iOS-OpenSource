@@ -190,6 +190,7 @@ private extension AmityMessageListComposeBarViewController {
             .foregroundColor: AmityColorSet.baseInverse,
             .font: AmityFontSet.bodyBold
         ]), for: .selected)
+        forwardButton.isEnabled = false
     }
     
     func setupSendMessageButton() {

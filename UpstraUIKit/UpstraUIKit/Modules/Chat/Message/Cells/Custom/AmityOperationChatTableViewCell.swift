@@ -61,6 +61,10 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         containerView.layer.masksToBounds = true
     }
     
+    func displaySelected(isSelected: Bool) {
+        // Not use in custom message
+    }
+    
     func setChannelType(channelType: AmitySDK.AmityChannelType) {
         self.channelType = channelType
     }

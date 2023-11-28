@@ -153,6 +153,10 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         setMetadata(message: message)
     }
     
+    func displaySelected(isSelected: Bool) {
+        self.isSelected = isSelected
+    }
+    
     func setMetadata(message: AmityMessageModel) {
         let fullString = NSMutableAttributedString()
         let style: [NSAttributedString.Key : Any]? = [.foregroundColor: AmityColorSet.base.blend(.shade2),
@@ -211,6 +215,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         contentView.backgroundColor = AmityColorSet.backgroundColor
         
         reportIconImageView?.image = AmityIconSet.Chat.iconReport
+        isSelected = false
     }
     
     private func setDisplayName(for message: AmityMessageModel) {
