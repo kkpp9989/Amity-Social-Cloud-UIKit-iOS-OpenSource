@@ -212,7 +212,7 @@ public final class AmityMessageListViewController: AmityViewController {
         replyContentImageView.layer.cornerRadius = 4
 
         replyAvatarView.placeholder = AmityIconSet.defaultAvatar
-        replyDisplayNameLabel.font = AmityFontSet.body
+        replyDisplayNameLabel.font = AmityFontSet.bodyBold
         replyDescLabel.font = AmityFontSet.body
         replyDescLabel.textColor = AmityColorSet.base.blend(.shade3)
     }
@@ -1192,7 +1192,7 @@ extension AmityMessageListViewController {
         if message.isOwner {
             displayName = "Reply to Yourself"
         } else {
-            displayName = message.object.user?.displayName ?? "Anonymous"
+            displayName = "Reply to " + (message.object.user?.displayName ?? "Anonymous")
         }
         replyDisplayNameLabel.text = displayName
         
