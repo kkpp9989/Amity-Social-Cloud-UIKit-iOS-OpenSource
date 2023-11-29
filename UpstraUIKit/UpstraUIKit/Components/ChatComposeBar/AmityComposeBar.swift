@@ -26,7 +26,7 @@ protocol AmityComposeBar: AnyObject {
     func showRecordButton(show: Bool)
     func showForwardMenuButton(show: Bool)
     func updateViewDidSelectForwardMessage(amount: Int)
-    func updateViewDidMuteChannelStatusChanged(isMuted: Bool)
+    func updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: Bool)
     func showJoinMenuButton(show: Bool)
     func prepareTypingText()
 

@@ -788,7 +788,11 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
         
         // Update interaction of compose bar view
-        composeBar.updateViewDidMuteChannelStatusChanged(isMuted: channel.isMuted)
+        if channel.isMuted || channel.isDeleted {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
+        } else {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
+        }
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {

@@ -104,7 +104,7 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
-    func updateViewDidMuteChannelStatusChanged(isMuted: Bool) {
+    func updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: Bool) {
         // Intentionally left empty
         // This class doesn't support showJoinMenuButton.
     }
