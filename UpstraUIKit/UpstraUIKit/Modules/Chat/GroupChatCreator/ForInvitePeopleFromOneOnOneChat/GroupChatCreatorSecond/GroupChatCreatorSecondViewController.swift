@@ -21,7 +21,7 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 	@IBOutlet private weak var cameraImageView: UIView!
 	@IBOutlet private weak var displayNameLabel: UILabel!
 	@IBOutlet private weak var displayNameCounterLabel: UILabel!
-	@IBOutlet private weak var displayNameTextField: AmityTextField!
+	@IBOutlet private weak var displayNameTextField: AmityTextView!
 	@IBOutlet private weak var displaynameSeparatorView: UIView!
 	private var saveBarButtonItem: UIBarButtonItem!
     @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
@@ -125,14 +125,18 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 		displayNameCounterLabel.font = AmityFontSet.caption
 		displayNameCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
 		
-		displayNameTextField.delegate = self
 		displayNameTextField.font = AmityFontSet.body
-		displayNameTextField.borderStyle = .none
-		displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
 		displayNameTextField.maxLength = Constant.maxCharacterOfDisplayname
 		displayNameTextField.autocorrectionType = .no
 		displayNameTextField.spellCheckingType = .no
 		displayNameTextField.inputAccessoryView = UIView()
+        displayNameTextField.customTextViewDelegate = self
+        displayNameTextField.layer.borderWidth = 0
+        displayNameTextField.isScrollEnabled = false
+        displayNameTextField.textContainer.lineBreakMode = .byWordWrapping
+        displayNameTextField.padding = .zero
+        displayNameTextField.maxCharacters = Constant.maxCharacterOfDisplayname
+        displayNameTextField.maxLength = Constant.maxCharacterOfDisplayname
 				
 		// separator
 		displaynameSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
@@ -273,24 +277,16 @@ extension GroupChatCreatorSecondViewController: GroupChatCreatorScreenViewModelD
 	
 }
 
-extension GroupChatCreatorSecondViewController: UITextFieldDelegate {
-	
-	public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-		return displayNameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: string)
-	}
-	
-	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-		textField.resignFirstResponder()
-		return true
-	}
-}
-
 extension GroupChatCreatorSecondViewController: AmityTextViewDelegate {
-	
-	public func textViewDidChange(_ textView: AmityTextView) {
-		updateViewState()
-	}
-	
+    
+    func textView(_ textView: AmityTextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return displayNameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: text)
+    }
+    
+    public func textViewDidChange(_ textView: AmityTextView) {
+        updateViewState()
+    }
+    
 }
 
 extension GroupChatCreatorSecondViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
