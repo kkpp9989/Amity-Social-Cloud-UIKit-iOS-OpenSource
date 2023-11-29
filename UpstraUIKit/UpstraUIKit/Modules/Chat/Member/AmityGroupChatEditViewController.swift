@@ -21,6 +21,8 @@ class AmityGroupChatEditViewController: AmityViewController {
     @IBOutlet private weak var countLabel: UILabel!
     @IBOutlet private weak var avatarView: AmityAvatarView!
     @IBOutlet private weak var groupNameSeparatorView: UIView!
+    @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
+    @IBOutlet private weak var overlayView: UIView!
     
     private var screenViewModel: AmityGroupChatEditorScreenViewModelType?
     private var channelId = String()
@@ -38,6 +40,8 @@ class AmityGroupChatEditViewController: AmityViewController {
         let isValueExisted = !nameTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         return (isValueChanged && isValueExisted)
     }
+    
+    private var mockUploadProgressingTimer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,6 +85,11 @@ class AmityGroupChatEditViewController: AmityViewController {
         screenViewModel = AmityGroupChatEditScreenViewModel(channelId: channelId)
         screenViewModel?.delegate = self
         avatarView.placeholder = AmityIconSet.defaultGroupChat
+        avatarView.bringSubviewToFront(overlayView)
+        avatarUploadingProgressBar.tintColor = AmityColorSet.primary
+        avatarUploadingProgressBar.setProgress(0.0, animated: true)
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        overlayView.isHidden = true
         cameraImageView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         cameraImageView.layer.borderColor = AmityColorSet.backgroundColor.cgColor
         cameraImageView.layer.borderWidth = 1.0
@@ -169,22 +178,50 @@ class AmityGroupChatEditViewController: AmityViewController {
         AmityHUD.show(.loading)
         // Update user avatar
         if let avatar = uploadingAvatarImage {
-            avatarView.state = .loading
-            screenViewModel?.action.update(avatar: avatar, completion: {[weak self] result in
-                guard let weakSelf = self else { return }
-                weakSelf.avatarView.state = .idle
-                if result {
-                    weakSelf.uploadingAvatarImage = nil
-                    if weakSelf.isValueChanged {
-                        weakSelf.screenViewModel?.action.update(displayName: weakSelf.nameTextField.text ?? "")
-                    } else {
-                        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                        AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: weakSelf)
-                    }
-                } else {
-                    AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+//            avatarView.state = .loading // [Backup]
+            // [Workaround] Mock upload avatar progressing
+            // Set start progressing
+            var currentProgressing: Float = 0.1
+            avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
+            overlayView.isHidden = false // Custom overlay for this view controller only
+//            print("[Avatar] Upload progressing number: \(currentProgressing) | Start")
+            // Mock progressing with random data every 1 second
+            mockUploadProgressingTimer = Timer(timeInterval: 1.0, repeats: true) { timer in
+                DispatchQueue.main.async {
+                    let mockIncreaseProgressing: [Float] = [0.1, 0.2, 0.3]
+                    currentProgressing += mockIncreaseProgressing.randomElement() ?? 0.1
+                    self.avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
+//                    print("[Avatar] Upload progressing number: \(currentProgressing) | Progressing")
                 }
-            })
+            }
+            // Start add mock progressing
+            RunLoop.current.add(mockUploadProgressingTimer!, forMode: .common)
+            mockUploadProgressingTimer?.fire()
+            Task {
+                await screenViewModel?.action.update(avatar: avatar, completion: { [weak self] result in
+                    guard let weakSelf = self else { return }
+                    // Stop add mock progressing
+                    weakSelf.mockUploadProgressingTimer?.invalidate()
+                    weakSelf.mockUploadProgressingTimer = nil
+                    weakSelf.avatarUploadingProgressBar.setProgress(1.0, animated: true)
+//                    print("[Avatar] Upload progressing number: 1.0 | End")
+                    weakSelf.overlayView.isHidden = true // Custom overlay for this view controller only
+                    weakSelf.avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+    //                weakSelf.avatarView.state = .idle // [Backup]
+                    
+                    if result {
+                        weakSelf.uploadingAvatarImage = nil
+                        if weakSelf.isValueChanged {
+                            weakSelf.screenViewModel?.action.update(displayName: weakSelf.nameTextField.text ?? "")
+                        } else {
+                            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                            AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: weakSelf)
+                        }
+                    } else {
+                        AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                    }
+                })
+            }
         } else if isValueChanged {
             screenViewModel?.action.update(displayName: nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
         }
@@ -237,5 +274,10 @@ extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelD
                                 placeholder: AmityIconSet.defaultGroupChat)
         }
         updateViewState()
+    }
+    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityGroupChatEditorScreenViewModelType, progressing: Double) {
+        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+        avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
 }

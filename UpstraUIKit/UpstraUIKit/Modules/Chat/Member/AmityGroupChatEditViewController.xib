@@ -11,12 +11,14 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityGroupChatEditViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="avatarUploadingProgressBar" destination="sSL-Ip-QfT" id="aTJ-sF-7gC"/>
                 <outlet property="avatarView" destination="Yiv-GP-2W2" id="Twf-Vg-9Z4"/>
                 <outlet property="cameraImageView" destination="3ea-pA-nR6" id="hi1-mm-2Km"/>
                 <outlet property="countLabel" destination="ESU-xR-4pE" id="Z5l-8K-Thg"/>
                 <outlet property="groupNameSeparatorView" destination="1id-zK-Kx0" id="D2O-u4-JEF"/>
                 <outlet property="groupNameTitleLabel" destination="wMr-Pg-fel" id="hk0-Xw-yTa"/>
                 <outlet property="nameTextField" destination="Hed-Lw-LJK" id="cvU-7g-iIR"/>
+                <outlet property="overlayView" destination="ygI-MU-lEe" id="5kX-7k-Tno"/>
                 <outlet property="uploadButton" destination="yV5-tW-tEO" id="9bk-2s-JKc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -28,10 +30,33 @@
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yiv-GP-2W2" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
                     <rect key="frame" x="175" y="68" width="64" height="64"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygI-MU-lEe">
+                            <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
+                            <subviews>
+                                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sSL-Ip-QfT">
+                                    <rect key="frame" x="8" y="30" width="48" height="4"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="4" id="sKY-vu-wUD"/>
+                                    </constraints>
+                                </progressView>
+                            </subviews>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="sSL-Ip-QfT" secondAttribute="trailing" constant="8" id="Tcu-8u-Gda"/>
+                                <constraint firstItem="sSL-Ip-QfT" firstAttribute="leading" secondItem="ygI-MU-lEe" secondAttribute="leading" constant="8" id="jBg-bS-rH7"/>
+                                <constraint firstItem="sSL-Ip-QfT" firstAttribute="centerY" secondItem="ygI-MU-lEe" secondAttribute="centerY" id="rcw-mL-V9q"/>
+                            </constraints>
+                        </view>
+                    </subviews>
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstItem="ygI-MU-lEe" firstAttribute="top" secondItem="Yiv-GP-2W2" secondAttribute="top" id="c0f-nh-dyg"/>
+                        <constraint firstAttribute="trailing" secondItem="ygI-MU-lEe" secondAttribute="trailing" id="d8x-MJ-nH4"/>
                         <constraint firstAttribute="width" constant="64" id="e4V-4M-51C"/>
                         <constraint firstAttribute="height" constant="64" id="itJ-VF-kZ2"/>
+                        <constraint firstAttribute="bottom" secondItem="ygI-MU-lEe" secondAttribute="bottom" id="luE-3h-e1J"/>
+                        <constraint firstItem="ygI-MU-lEe" firstAttribute="leading" secondItem="Yiv-GP-2W2" secondAttribute="leading" id="mWF-6a-YMm"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3ea-pA-nR6">
@@ -50,7 +75,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMr-Pg-fel">
-                    <rect key="frame" x="16" y="156" width="266" height="21"/>
+                    <rect key="frame" x="16" y="156" width="266" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -65,7 +90,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Hed-Lw-LJK" customClass="AmityTextField" customModule="AmityUIKit" customModuleProvider="target">
-                    <rect key="frame" x="16" y="193" width="382" height="40"/>
+                    <rect key="frame" x="16" y="192.5" width="382" height="40"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="243-zD-240"/>
                     </constraints>
@@ -73,7 +98,7 @@
                     <textInputTraits key="textInputTraits"/>
                 </textField>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1id-zK-Kx0" userLabel="Separator View">
-                    <rect key="frame" x="16" y="237" width="382" height="1"/>
+                    <rect key="frame" x="16" y="236.5" width="382" height="1"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="fXP-5x-duF"/>

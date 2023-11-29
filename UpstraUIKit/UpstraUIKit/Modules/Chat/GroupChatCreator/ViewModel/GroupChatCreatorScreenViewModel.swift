@@ -27,21 +27,41 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
         self.selectUsersData = selectUsersData
     }
     
-    func update(avatar: UIImage, completion: ((Bool) -> Void)?) {
-        // Update user avatar
-        dispatchGroup.enter()
-        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
-            guard let self = self else { return }
-            if let error = error {
-                self.dispatchGroup.leaveWithError(error)
-                completion?(false)
+    func update(avatar: UIImage, completion: ((Bool) -> Void)?) async {
+        do {
+            // Upload avatar image
+            let imageData = try await fileRepository.uploadImage(avatar) { progress in
+//                print("[Avatar] Upload progressing result: \(progress)")
+                DispatchQueue.main.async {
+                    self.delegate?.screenViewModelDidUpdateAvatarUploadingProgress(self, progressing: progress)
+                }
             }
-            if let imageData = imageData {
-                self.amityUserUpdateBuilder.setAvatar(imageData)
-                self.dispatchGroup.leave()
+            // Set avatar to update builder
+            amityUserUpdateBuilder.setAvatar(imageData)
+            DispatchQueue.main.async {
                 completion?(true)
             }
+        } catch {
+//            print("[Avatar] Can't update avatar group chat with error: \(error.localizedDescription)")
+            DispatchQueue.main.async {
+                completion?(false)
+            }
         }
+        
+        // Update user avatar // [Back up]
+//        dispatchGroup.enter()
+//        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
+//            guard let self = self else { return }
+//            if let error = error {
+//                self.dispatchGroup.leaveWithError(error)
+//                completion?(false)
+//            }
+//            if let imageData = imageData {
+//                self.amityUserUpdateBuilder.setAvatar(imageData)
+//                self.dispatchGroup.leave()
+//                completion?(true)
+//            }
+//        }
     }
     
 	// MARK: - For Create New Group
