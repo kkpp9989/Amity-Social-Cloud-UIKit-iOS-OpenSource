@@ -978,8 +978,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             } else {
                 print("unable to find file for message: \(message.messageId)")
             }
-        case .forward(_):
-            messageViewController.updateEditMode(isEdit: true)
+        case .forward(indexPath: let indexPath):
+            messageViewController.updateEditMode(isEdit: true, indexPath: indexPath)
             composeBar.showForwardMenuButton(show: true)
         case .copy(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
