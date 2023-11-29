@@ -17,7 +17,7 @@ class AmityGroupChatEditViewController: AmityViewController {
     @IBOutlet private weak var uploadButton: UIButton!
     @IBOutlet private weak var cameraImageView: UIView!
     @IBOutlet private weak var groupNameTitleLabel: UILabel!
-    @IBOutlet private weak var nameTextField: AmityTextField!
+    @IBOutlet private var nameTextField: AmityTextView!
     @IBOutlet private weak var countLabel: UILabel!
     @IBOutlet private weak var avatarView: AmityAvatarView!
     @IBOutlet private weak var groupNameSeparatorView: UIView!
@@ -59,7 +59,7 @@ class AmityGroupChatEditViewController: AmityViewController {
     private func updateView() {
         screenViewModel?.dataSource.getChannelEditUserPermission({ [weak self] hasPermission in
             guard let weakSelf = self else { return }
-            weakSelf.nameTextField.isEnabled = hasPermission
+            weakSelf.nameTextField.isEditable = hasPermission
             weakSelf.uploadButton.isEnabled = hasPermission
             
             if hasPermission {
@@ -103,9 +103,12 @@ class AmityGroupChatEditViewController: AmityViewController {
         groupNameTitleLabel.textColor = AmityColorSet.base
         countLabel.font = AmityFontSet.caption
         countLabel.textColor = AmityColorSet.base.blend(.shade1)
-        nameTextField.delegate = self
-        nameTextField.borderStyle = .none
-        nameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
+        nameTextField.customTextViewDelegate = self
+        nameTextField.layer.borderWidth = 0
+        nameTextField.isScrollEnabled = false
+        nameTextField.textContainer.lineBreakMode = .byWordWrapping
+        nameTextField.padding = .zero
+        nameTextField.maxCharacters = Constant.maxCharactor
         nameTextField.maxLength = Constant.maxCharactor
         nameTextField.font = AmityFontSet.body // [Improvement] Set font style of text field
         
@@ -239,13 +242,15 @@ extension AmityGroupChatEditViewController: UIImagePickerControllerDelegate & UI
     
 }
 
-extension AmityGroupChatEditViewController: UITextFieldDelegate {
+extension AmityGroupChatEditViewController: AmityTextViewDelegate {
     
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return nameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: string)
-        
+    func textView(_ textView: AmityTextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return nameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: text)
     }
     
+    func textViewDidChange(_ textView: AmityTextView) {
+        updateViewState()
+    }
 }
 
 extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelDelegate {
