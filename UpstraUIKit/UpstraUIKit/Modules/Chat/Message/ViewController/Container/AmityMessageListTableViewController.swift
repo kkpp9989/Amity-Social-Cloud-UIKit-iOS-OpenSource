@@ -125,13 +125,22 @@ extension AmityMessageListTableViewController {
         
     }
     
-    func updateEditMode(isEdit: Bool) {
-        if !isEdit { // Clear current selected row before set editing to false
+    func updateEditMode(isEdit: Bool, indexPath: IndexPath? = nil) {
+        if !isEdit { // Clear current selected row if set editing to false before
             clearSelectedRow()
         }
         
         // Enable | Disable edit mode for the table view
         tableView.setEditing(isEdit, animated: true)
+        
+        if let selectedIndexPath = indexPath, isEdit { // Add this message to forward list at first if set editing to true after
+            // Get message
+            guard let message = screenViewModel.dataSource.message(at: selectedIndexPath) else { return }
+            // Add message to forward message in list
+            screenViewModel.action.updateForwardMessageInList(with: message)
+            // Select this message row at first
+            tableView.selectRow(at: selectedIndexPath, animated: true, scrollPosition: .none)
+        }
     }
     
     private func clearSelectedRow() {
