@@ -397,6 +397,7 @@ extension AmityMessageListScreenViewModel {
             guard let stringSelf = self else { return }
             // All channels have been created
             AmityEventHandler.shared.hideKTBLoading()
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.MessageList.alertSharedMessageSuccessfully.localizedString))
             stringSelf.forwardMessageList.removeAll()
         }
     }
