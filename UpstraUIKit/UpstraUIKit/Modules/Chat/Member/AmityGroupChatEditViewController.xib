@@ -17,7 +17,7 @@
                 <outlet property="countLabel" destination="ESU-xR-4pE" id="Z5l-8K-Thg"/>
                 <outlet property="groupNameSeparatorView" destination="1id-zK-Kx0" id="D2O-u4-JEF"/>
                 <outlet property="groupNameTitleLabel" destination="wMr-Pg-fel" id="hk0-Xw-yTa"/>
-                <outlet property="nameTextField" destination="Hed-Lw-LJK" id="cvU-7g-iIR"/>
+                <outlet property="nameTextField" destination="7KT-x7-aaQ" id="JED-co-9vU"/>
                 <outlet property="overlayView" destination="ygI-MU-lEe" id="5kX-7k-Tno"/>
                 <outlet property="uploadButton" destination="yV5-tW-tEO" id="9bk-2s-JKc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -81,7 +81,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ESU-xR-4pE">
-                    <rect key="frame" x="298" y="156" width="100" height="21"/>
+                    <rect key="frame" x="298" y="156" width="100" height="20.5"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="100" id="CNZ-Dd-kG9"/>
                     </constraints>
@@ -89,21 +89,28 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Hed-Lw-LJK" customClass="AmityTextField" customModule="AmityUIKit" customModuleProvider="target">
-                    <rect key="frame" x="16" y="192.5" width="382" height="40"/>
+                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="FW0-xe-0uu">
+                    <rect key="frame" x="16" y="192.5" width="382" height="669.5"/>
+                    <subviews>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="7KT-x7-aaQ" customClass="AmityTextView" customModule="AmityUIKit" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="382" height="668.5"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <color key="textColor" systemColor="labelColor"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
+                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1id-zK-Kx0" userLabel="Separator View">
+                            <rect key="frame" x="0.0" y="668.5" width="382" height="1"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="fXP-5x-duF"/>
+                            </constraints>
+                        </view>
+                    </subviews>
                     <constraints>
-                        <constraint firstAttribute="height" constant="40" id="243-zD-240"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="10" id="hMo-YG-aZd"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits"/>
-                </textField>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1id-zK-Kx0" userLabel="Separator View">
-                    <rect key="frame" x="16" y="236.5" width="382" height="1"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="fXP-5x-duF"/>
-                    </constraints>
-                </view>
+                </stackView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yV5-tW-tEO">
                     <rect key="frame" x="175" y="68" width="64" height="64"/>
                     <constraints>
@@ -119,22 +126,20 @@
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="wMr-Pg-fel" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="49o-mf-J9E"/>
-                <constraint firstItem="1id-zK-Kx0" firstAttribute="top" secondItem="Hed-Lw-LJK" secondAttribute="bottom" constant="4" id="5Df-2q-ZIS"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ESU-xR-4pE" secondAttribute="trailing" constant="16" id="6l8-BG-JSN"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="FW0-xe-0uu" secondAttribute="trailing" constant="16" id="7iX-cl-4Zm"/>
                 <constraint firstItem="Yiv-GP-2W2" firstAttribute="centerX" secondItem="fnl-2z-Ty3" secondAttribute="centerX" id="9dg-GS-3Bv"/>
                 <constraint firstItem="yV5-tW-tEO" firstAttribute="trailing" secondItem="Yiv-GP-2W2" secondAttribute="trailing" id="BSt-er-nKS"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="FW0-xe-0uu" secondAttribute="bottom" id="Bnw-rM-BTF"/>
                 <constraint firstItem="3ea-pA-nR6" firstAttribute="bottom" secondItem="Yiv-GP-2W2" secondAttribute="bottom" id="GBk-2M-zvk"/>
+                <constraint firstItem="FW0-xe-0uu" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="MJQ-ed-BLY"/>
                 <constraint firstItem="yV5-tW-tEO" firstAttribute="bottom" secondItem="Yiv-GP-2W2" secondAttribute="bottom" id="MLH-cC-Jvp"/>
-                <constraint firstItem="Hed-Lw-LJK" firstAttribute="top" secondItem="wMr-Pg-fel" secondAttribute="bottom" constant="16" id="O5e-9X-LaJ"/>
                 <constraint firstItem="3ea-pA-nR6" firstAttribute="trailing" secondItem="Yiv-GP-2W2" secondAttribute="trailing" id="R2v-jg-tEy"/>
-                <constraint firstItem="1id-zK-Kx0" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="16" id="V02-Ak-75w"/>
-                <constraint firstItem="Hed-Lw-LJK" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="ZOz-s9-oG8"/>
-                <constraint firstAttribute="trailing" secondItem="1id-zK-Kx0" secondAttribute="trailing" constant="16" id="ahS-kp-TlQ"/>
+                <constraint firstItem="FW0-xe-0uu" firstAttribute="top" secondItem="wMr-Pg-fel" secondAttribute="bottom" constant="16" id="TRr-m7-Heu"/>
                 <constraint firstItem="ESU-xR-4pE" firstAttribute="leading" secondItem="wMr-Pg-fel" secondAttribute="trailing" constant="16" id="d4x-37-bHj"/>
                 <constraint firstItem="Yiv-GP-2W2" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="20" id="daZ-mK-2oJ"/>
                 <constraint firstItem="yV5-tW-tEO" firstAttribute="top" secondItem="Yiv-GP-2W2" secondAttribute="top" id="ePe-cK-u6D"/>
                 <constraint firstItem="wMr-Pg-fel" firstAttribute="top" secondItem="Yiv-GP-2W2" secondAttribute="bottom" constant="24" id="i77-D8-TU1"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Hed-Lw-LJK" secondAttribute="trailing" constant="16" id="lZv-7R-dBx"/>
                 <constraint firstItem="ESU-xR-4pE" firstAttribute="centerY" secondItem="wMr-Pg-fel" secondAttribute="centerY" id="s2k-Lz-MzE"/>
                 <constraint firstItem="yV5-tW-tEO" firstAttribute="leading" secondItem="Yiv-GP-2W2" secondAttribute="leading" id="ulW-Wd-g4N"/>
             </constraints>
@@ -143,6 +148,9 @@
     </objects>
     <resources>
         <image name="icon_camera" width="16" height="17"/>
+        <systemColor name="labelColor">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
