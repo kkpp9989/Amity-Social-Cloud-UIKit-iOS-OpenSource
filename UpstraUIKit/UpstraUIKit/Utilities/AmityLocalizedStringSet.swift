@@ -162,7 +162,7 @@ public struct AmityLocalizedStringSet {
         static let cannotDownloadImageInChat = "message_list_cannot_download_image_in_chat"
         static let alertMicrophoneDisabledTitle = "message_list_alert_microphone_disabled_title"
         static let alertMicrophoneDisabledDesc = "message_list_alert_microphone_disabled_desc"
-        
+        static let alertSharedMessageSuccessfully = "message_list_alert_shared_message_successfully"
     }
     
     // MARK: - Empty Community in category
