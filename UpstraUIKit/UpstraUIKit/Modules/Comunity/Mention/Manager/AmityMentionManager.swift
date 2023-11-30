@@ -379,7 +379,6 @@ public extension AmityMentionManager {
         
         return newMentionees
     }
-        
     
     func setColor(_ foregroundColor: UIColor, highlightColor: UIColor) {
         self.foregroundColor = foregroundColor
@@ -471,7 +470,7 @@ private extension AmityMentionManager {
                     guard let memberObject = object as? AmityCommunityMember, let user = memberObject.user else { continue }
                     users.append(AmityMentionUserModel(user: user))
                 } else if T.self == AmityChannelMember.self {
-                    guard let memberObject = object as? AmityChannelMember, let user = memberObject.user else { continue }
+                    guard let memberObject = object as? AmityChannelMember, let user = memberObject.user, !mentions.contains(where: { $0.userId == user.userId }), !user.isDeleted else { continue }
 					if index == 0 {
 						users.append(AmityMentionUserModel(userId: nil, displayName: "All", avatarURL: "All", isGlobalBan: false))
 					}
