@@ -71,12 +71,10 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
                 textMessageView.readMoreColor = AmityColorSet.baseInverse
                 textMessageView.hyperLinkColor = .white
             }
-            highlightColor = .white
         } else {
             textMessageView.textColor = AmityColorSet.base
             textMessageView.readMoreColor = AmityColorSet.highlight
             textMessageView.hyperLinkColor = AmityColorSet.highlight
-            highlightColor = AmityColorSet.primary
         }
         
         if let metadata = message.metadata,
