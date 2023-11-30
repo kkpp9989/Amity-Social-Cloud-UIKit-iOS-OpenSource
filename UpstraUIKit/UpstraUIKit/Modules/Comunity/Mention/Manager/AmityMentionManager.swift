@@ -431,7 +431,7 @@ private extension AmityMentionManager {
             if !(channel?.isConversationChannel ?? false) {
                 let builder = AmityChannelMembershipFilterBuilder()
                 builder.add(filter: .member)
-                channelCollectionToken = channel?.participation.searchMembers(displayName: "", filterBuilder: builder, roles: []).observe({ [weak self] collection, _, _  in
+                channelCollectionToken = channel?.participation.searchMembers(displayName: text, filterBuilder: builder, roles: []).observe({ [weak self] collection, _, _  in
                     self?.handleSearchResponse(with: collection)
                 })
             }
@@ -464,21 +464,27 @@ private extension AmityMentionManager {
         switch collection.dataStatus {
         case .fresh:
             users = []
+            let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
             for index in 0..<collection.count() {
                 guard let object = collection.object(at: index) else { continue }
                 if T.self == AmityCommunityMember.self {
                     guard let memberObject = object as? AmityCommunityMember, let user = memberObject.user else { continue }
-                    users.append(AmityMentionUserModel(user: user))
+                    if !user.isDeleted && !user.isGlobalBanned && (user.userId.rangeOfCharacter(from: specialCharacterSet) == nil) {
+                        users.append(AmityMentionUserModel(user: user))
+                    }
                 } else if T.self == AmityChannelMember.self {
                     guard let memberObject = object as? AmityChannelMember, let user = memberObject.user, !mentions.contains(where: { $0.userId == user.userId }), !user.isDeleted else { continue }
 					if index == 0 {
 						users.append(AmityMentionUserModel(userId: nil, displayName: "All", avatarURL: "All", isGlobalBan: false))
 					}
-                    users.append(AmityMentionUserModel(user: user))
-
+                    if !user.isDeleted && !user.isGlobalBanned && (user.userId.rangeOfCharacter(from: specialCharacterSet) == nil) {
+                        users.append(AmityMentionUserModel(user: user))
+                    }
                 } else {
                     guard let userObject = object as? AmityUser else { continue }
-                    users.append(AmityMentionUserModel(user: userObject))
+                    if !userObject.isDeleted && !userObject.isGlobalBanned && (userObject.userId.rangeOfCharacter(from: specialCharacterSet) == nil) {
+                        users.append(AmityMentionUserModel(user: userObject))
+                    }
                 }
             }
             if isSearchingStarted {
