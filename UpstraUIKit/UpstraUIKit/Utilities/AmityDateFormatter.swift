@@ -118,6 +118,7 @@ struct AmityDateFormatter {
             dateFormatter.timeStyle = .short
             
             if is24HourFormat {
+                dateFormatter.locale = Locale(identifier: "en_US_POSIX") // Set a specific locale using the 24-hour clock format
                 dateFormatter.dateFormat = "HH:mm"
             } else {
                 dateFormatter.dateFormat = "h:mm a"
@@ -126,6 +127,4 @@ struct AmityDateFormatter {
             return dateFormatter.string(from: date)
         }
     }
-
-
 }
