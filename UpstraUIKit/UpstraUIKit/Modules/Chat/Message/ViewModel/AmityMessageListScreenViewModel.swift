@@ -22,7 +22,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case didSendText
         case didEditText
         case didDelete(indexPath: IndexPath)
-        case didDeeleteErrorMessage(indexPath: IndexPath)
+        case didDeleteErrorMessage(indexPath: IndexPath)
         case didSendImage
         case didUploadImage(indexPath: IndexPath)
         case didSendAudio
@@ -53,6 +53,9 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case reply(indexPath: IndexPath)
         case jumpReply(indexPath: IndexPath)
         case avatar(indexPath: IndexPath)
+        case openEditMenu(indexPath: IndexPath, sourceView: UIView, sourceTableViewCell: UITableViewCell, options: [AmityEditMenuItem])
+        case resend(indexPath: IndexPath)
+        case openResendMenu(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
@@ -318,7 +321,7 @@ extension AmityMessageListScreenViewModel {
         messageRepository.deleteFailedMessage(messageId) { [weak self] (isSuccess, error) in
             if isSuccess {
                 if !isFromResend {
-                    self?.delegate?.screenViewModelEvents(for: .didDeeleteErrorMessage(indexPath: indexPath))
+                    self?.delegate?.screenViewModelEvents(for: .didDeleteErrorMessage(indexPath: indexPath))
                 }
                 self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             }

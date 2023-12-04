@@ -19,4 +19,8 @@ extension Notification.Name {
     struct NotificationTray {
         static let didUpdate = Notification.Name("unreadCountDidUpdate")
     }
+    
+    struct View {
+        static let didDismiss = Notification.Name("dismissView")
+    }
 }

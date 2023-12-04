@@ -234,4 +234,16 @@ public struct AmityIconSet {
         public static var iconPost = UIImage(named: "icon_post", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconPoll = UIImage(named: "icon_poll", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
+    
+    enum EditMessesgeMenu {
+        public static var iconReply = UIImage(named: "icon_reply_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconEdit = UIImage(named: "icon_edit_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconCopy = UIImage(named: "icon_copy_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconForward = UIImage(named: "icon_forward_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconUnsend = UIImage(named: "icon_unsend_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconReport = UIImage(named: "icon_report_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconResend = UIImage(named: "icon_resend_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconDelete = UIImage(named: "icon_delete_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconCancel = UIImage(named: "icon_cancel", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    }
 }

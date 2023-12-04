@@ -8,11 +8,17 @@
 
 import UIKit
 
+protocol AmityResponsiveViewDelegate {
+    func didLongtapPressed(sourceView: UIView)
+}
+
 final class AmityResponsiveView: UIView {
     
     // MAKR: - Properties
     var duration: TimeInterval = 0.3
-    var menuItems: [UIMenuItem] = []
+//    var menuItems: [UIMenuItem] = []
+    var menuItems: [AmityEditMenuItem] = []
+    var delegate: AmityResponsiveViewDelegate?
     
     lazy var overlayView: UIView = {
         let view = UIView()
@@ -54,7 +60,10 @@ final class AmityResponsiveView: UIView {
         longPress.minimumPressDuration = duration
         addGestureRecognizer(longPress)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(observeWillHide), name: UIMenuController.willHideMenuNotification, object: nil)
+        // [Backup]
+//        NotificationCenter.default.addObserver(self, selector: #selector(observeWillHide), name: UIMenuController.willHideMenuNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(observeWillHide), name: Notification.Name.View.didDismiss, object: nil)
     }
     
     @objc
@@ -75,7 +84,10 @@ final class AmityResponsiveView: UIView {
         // Make responsiveView the window's first responder
         senderView.becomeFirstResponder()
 
-        UIMenuController.shared.menuItems = menuItems
-        UIMenuController.shared.showMenu(from: superView, rect: senderView.frame)
+        // [Backup]
+//        UIMenuController.shared.menuItems = menuItems
+//        UIMenuController.shared.showMenu(from: superView, rect: senderView.frame)
+        
+        delegate?.didLongtapPressed(sourceView: self)
     }
 }

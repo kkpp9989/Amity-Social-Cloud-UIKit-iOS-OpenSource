@@ -453,7 +453,7 @@
 "hud_unmuted" = "Unmuted"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "hud_report_sent" = "Report sent";
 "hud_unreport_sent" = "Unreport sent";
-"hud_delete" = "Delete";
+"hud_deleted" = "Deleted";
 
 
 // MARK: - Popover Text Message

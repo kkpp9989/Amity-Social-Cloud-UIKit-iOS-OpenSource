@@ -423,7 +423,7 @@ public struct AmityLocalizedStringSet {
         static let unreportSent = "hud_unreport_sent"
         static let muted = "hud_muted"
         static let unmuted = "hud_unmuted"
-        static let delete = "hud_delete"
+        static let deleted = "hud_deleted"
     }
     
     enum PopoverText {
