@@ -58,7 +58,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
         
         previewMessageLabel.text = "No message"
-        previewMessageLabel.numberOfLines = 2
+        previewMessageLabel.numberOfLines = 1
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
         previewMessageLabel.alpha = 1
