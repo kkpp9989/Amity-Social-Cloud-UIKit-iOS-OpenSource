@@ -30,6 +30,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     // MARK: Container
     @IBOutlet var containerMessageView: UIView!
     @IBOutlet var containerMetadataView: UIView!
+    var editMessageMenuView: AmityEditMenuView = AmityEditMenuView()
     
     // MARK: - Properties
     var screenViewModel: AmityMessageListScreenViewModelType!
@@ -150,6 +151,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             readCountLabel?.isHidden = true
         }
         
+        containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: false)
+        
         setMetadata(message: message)
     }
     
@@ -178,6 +181,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                     errorButton.isHidden = false
                     readCountLabel?.isHidden = true
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
+                    containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: true)
                 case .syncing:
                     fullString.append(NSAttributedString(string: AmityLocalizedStringSet.MessageList.sending.localizedString, attributes: style))
                     readCountLabel?.isHidden = true
@@ -206,7 +210,9 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)
         containerView?.layer.cornerRadius = 4
-        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem, reportMenuItem]
+//        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem, reportMenuItem]
+        editMessageMenuView.editMessageListActionDelegate = self
+        containerView.delegate = self
         errorButton?.isHidden = true
         
         readCountLabel.font =  AmityFontSet.caption
@@ -248,7 +254,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     }
 }
 
-// MARK: - Action
+// MARK: - Action (Deprecated because use AmityEditMenuView instead)
 private extension AmityMessageTableViewCell {
     @objc
     func editTap() {
@@ -277,7 +283,7 @@ private extension AmityMessageTableViewCell {
     }
     
     @IBAction func errorTap() {
-        screenViewModel.action.performCellEvent(for: .deleteErrorMessage(indexPath: indexPath))
+        screenViewModel.action.performCellEvent(for: .openResendMenu(indexPath: indexPath))
     }
     
     @objc
@@ -292,5 +298,19 @@ private extension AmityMessageTableViewCell {
             
     @objc func avatarTap() {
         screenViewModel.action.performCellEvent(for: .avatar(indexPath: indexPath))
+    }
+}
+
+extension AmityMessageTableViewCell: AmityResponsiveViewDelegate {
+    
+    func didLongtapPressed(sourceView: UIView) {
+        screenViewModel.action.performCellEvent(for: .openEditMenu(indexPath: indexPath, sourceView: sourceView, sourceTableViewCell: self, options: containerView.menuItems))
+    }
+    
+}
+
+extension AmityMessageTableViewCell: AmityEditMessageListMenuViewDelegate {
+    func didTapEditMenu(event: AmityMessageListScreenViewModel.CellEvents, indexPath: IndexPath) {
+        screenViewModel.action.performCellEvent(for: event)
     }
 }

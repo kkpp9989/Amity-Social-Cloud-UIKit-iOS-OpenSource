@@ -852,8 +852,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             break
         case .didUploadImage:
             break
-        case .didDeeleteErrorMessage:
-            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.delete.localizedString))
+        case .didDeleteErrorMessage:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: { // Delay to show HUD for press delete from edit menu view
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.deleted.localizedString))
+            })
         case .didSendAudio:
             break
         case .didSendTextError(let error):
@@ -920,19 +922,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             present(alertViewController, animated: true)
         case .deleteErrorMessage(let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
-            let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertErrorMessageTitle.localizedString,
-                                                        message: nil, preferredStyle: .actionSheet)
-            let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
-                self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: false)
-            })
-            let resend = UIAlertAction(title: AmityLocalizedStringSet.General.resend.localizedString, style: .default, handler: { [weak self] _ in
-                self?.screenViewModel.action.resend(with: message, at: indexPath)
-            })
-            alertViewController.addAction(cancel)
-            alertViewController.addAction(resend)
-            alertViewController.addAction(delete)
-            present(alertViewController, animated: true)
+            screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: false)
         case .report(let indexPath):
             screenViewModel.action.reportMessage(at: indexPath)
         case .imageViewer(let indexPath, let imageView):
@@ -946,7 +936,6 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                     break
                 }
             }
-            
         case .videoViewer(let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             if let videoInfo = message.object.getVideoInfo() {
@@ -995,6 +984,30 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .avatar(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             AmityEventHandler.shared.userDidTap(from: self, userId: message.userId)
+        case .openEditMenu(indexPath: let indexPath, sourceView: let sourceView, sourceTableViewCell: let sourceTableViewCell, options: let itemsMenu):
+            var text: String?
+            if let message = screenViewModel.dataSource.message(at: indexPath) {
+                text = message.text
+            }
+            AmityEditMenuView.present(options: itemsMenu, sourceViewController: self, sourceMessageView: sourceView, sourceTableViewCell: sourceTableViewCell, selectedText: text, indexPath: indexPath)
+        case .openResendMenu(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertErrorMessageTitle.localizedString,
+                                                        message: nil, preferredStyle: .actionSheet)
+            let cancel = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
+            let delete = UIAlertAction(title: AmityLocalizedStringSet.General.delete.localizedString, style: .destructive, handler: { [weak self] _ in
+                self?.screenViewModel.action.deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: false)
+            })
+            let resend = UIAlertAction(title: AmityLocalizedStringSet.General.resend.localizedString, style: .default, handler: { [weak self] _ in
+                self?.screenViewModel.action.resend(with: message, at: indexPath)
+            })
+            alertViewController.addAction(cancel)
+            alertViewController.addAction(resend)
+            alertViewController.addAction(delete)
+            present(alertViewController, animated: true)
+        case .resend(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.resend(with: message, at: indexPath)
         }
     }
     
@@ -1278,4 +1291,17 @@ extension AmityMessageListViewController {
         // Apply the animation to the cell's layer
         cell.layer.add(shake, forKey: "cellShakeAnimation")
     }
+}
+
+// MARK: - For popover view of AmityEditMenuView
+extension AmityMessageListViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        // Post notification to Notification.Name.View.didDismiss observer in AmityResponsiveView
+        NotificationCenter.default.post(name: Notification.Name.View.didDismiss, object: nil)
+    }
+
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityEditMenuViewController" customModule="AmityUIKit" customModuleProvider="target">
+            <connections>
+                <outlet property="menuListView" destination="wep-re-ygI" id="cn9-O2-EEB"/>
+                <outlet property="view" destination="Yf0-pn-tJO" id="NML-xh-0Br"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Yf0-pn-tJO">
+            <rect key="frame" x="0.0" y="0.0" width="487" height="97"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="wep-re-ygI">
+                    <rect key="frame" x="0.0" y="59" width="487" height="4"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="hkL-RS-wZf">
+                        <size key="itemSize" width="0.0" height="0.0"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Glc-5u-9gt"/>
+            <constraints>
+                <constraint firstItem="wep-re-ygI" firstAttribute="top" secondItem="Glc-5u-9gt" secondAttribute="top" id="m9U-dy-KKC"/>
+                <constraint firstItem="Glc-5u-9gt" firstAttribute="bottom" secondItem="wep-re-ygI" secondAttribute="bottom" id="mZD-G7-KDQ"/>
+                <constraint firstItem="wep-re-ygI" firstAttribute="leading" secondItem="Glc-5u-9gt" secondAttribute="leading" id="nJP-h6-SQJ"/>
+                <constraint firstItem="Glc-5u-9gt" firstAttribute="trailing" secondItem="wep-re-ygI" secondAttribute="trailing" id="pV1-oZ-TUV"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="193.12977099236642" y="389.78873239436621"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
