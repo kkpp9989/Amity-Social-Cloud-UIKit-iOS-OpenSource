@@ -853,7 +853,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .didUploadImage:
             break
         case .didDeleteErrorMessage:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: { // Delay to show HUD for press delete from edit menu view
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: { // Delay to show HUD from press button from custom edit menu view
                 AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.deleted.localizedString))
             })
         case .didSendAudio:
@@ -1024,8 +1024,11 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         view.endEditing(true)
     }
     
-    func screenViewModelDidReportMessage(at indexPath: IndexPath) {
-        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.reportSent.localizedString))
+    func screenViewModelDidReportMessage(at indexPath: IndexPath, isFlag: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: { [weak self] in // Delay to show HUD from press button from custom edit menu view
+            self?.messageViewController.tableView.reloadRows(at: [indexPath], with: .none)
+            AmityHUD.show(.success(message: isFlag ? AmityLocalizedStringSet.HUD.reportSent.localizedString : AmityLocalizedStringSet.HUD.unreportSent.localizedString))
+        })
     }
     
     func screenViewModelDidFailToReportMessage(at indexPath: IndexPath, with error: Error?) {

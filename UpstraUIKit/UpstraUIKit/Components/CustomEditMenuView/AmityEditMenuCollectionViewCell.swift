@@ -29,7 +29,7 @@ class AmityEditMenuCollectionViewCell: UICollectionViewCell, Nibbable {
         containerView.layer.cornerRadius = 12
         
         // Setup title
-        title.font = UIFont(name: AmityFontSet.caption.fontName, size: 11)
+        title.font = UIFont(name: AmityFontSet.caption.fontName, size: 10)
         title.textColor = .white
         title.numberOfLines = 1
         
