@@ -71,7 +71,7 @@ public class AmityEditMenuView {
         vc.preferredContentSize = CGSize(width: width ?? vc.currentDynamicTableViewWidth, height: height ?? vc.currentDynamicTableViewHeight)
     }
     
-    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool) -> [AmityEditMenuItem] {
+    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool) -> [AmityEditMenuItem] {
         var items: [AmityEditMenuItem] = []
         
         /** Case : Error message **/
@@ -146,7 +146,7 @@ public class AmityEditMenuView {
                 }
             }))
         } else {
-            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: "Report", completion: { [weak self] in
+            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: isReported ? "Unreport" : "Report", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
                 // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)

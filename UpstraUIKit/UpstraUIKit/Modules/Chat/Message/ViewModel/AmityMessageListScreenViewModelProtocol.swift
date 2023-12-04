@@ -25,7 +25,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelShouldUpdateScrollPosition(to indexPath: IndexPath)
     
-    func screenViewModelDidReportMessage(at indexPath: IndexPath)
+    func screenViewModelDidReportMessage(at indexPath: IndexPath, isFlag: Bool)
     func screenViewModelDidFailToReportMessage(at indexPath: IndexPath, with error: Error?)
     
     func screenViewModelIsRefreshing(_ isRefreshing: Bool)

@@ -566,11 +566,11 @@ extension AmityMessageListScreenViewModel {
             self?.messageFlagger = AmityMessageFlagger(client: AmityUIKitManagerInternal.shared.client, messageId: message.messageId)
             if isFlaggedByMe {
                 self?.messageFlagger?.unflag { [weak self] success, error in
-                    self?.handleReportResponse(at: indexPath, isSuccess: success, error: error)
+                    self?.handleReportResponse(at: indexPath, isFlag: false, isSuccess: success, error: error)
                 }
             } else {
                 self?.messageFlagger?.flag { [weak self] success, error in
-                    self?.handleReportResponse(at: indexPath, isSuccess: success, error: error)
+                    self?.handleReportResponse(at: indexPath, isFlag: true, isSuccess: success, error: error)
                 }
             }
         }
@@ -669,9 +669,9 @@ private extension AmityMessageListScreenViewModel {
         }
     }
     
-    func handleReportResponse(at indexPath: IndexPath, isSuccess: Bool, error: Error?) {
+    func handleReportResponse(at indexPath: IndexPath, isFlag: Bool, isSuccess: Bool, error: Error?) {
         if isSuccess {
-            delegate?.screenViewModelDidReportMessage(at: indexPath)
+            delegate?.screenViewModelDidReportMessage(at: indexPath, isFlag: isFlag)
         } else {
             delegate?.screenViewModelDidFailToReportMessage(at: indexPath, with: error)
         }
