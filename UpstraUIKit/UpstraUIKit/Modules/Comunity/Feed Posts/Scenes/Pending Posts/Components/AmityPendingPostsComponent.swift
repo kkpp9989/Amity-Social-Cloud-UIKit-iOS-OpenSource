@@ -78,6 +78,10 @@ struct AmityPendingPostsComponent: AmityPostComposable {
         }
     }
     
+    func disableTopPadding(cell: AmityPostHeaderProtocol) {
+        cell.disableTopPadding()
+    }
+    
     func getComponentHeight(indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }

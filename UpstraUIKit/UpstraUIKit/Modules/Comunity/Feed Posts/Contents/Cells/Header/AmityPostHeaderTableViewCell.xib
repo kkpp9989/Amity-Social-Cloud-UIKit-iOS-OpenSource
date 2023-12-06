@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -113,6 +113,7 @@
                 <outlet property="displayNameLabel" destination="hJ4-GE-kKa" id="TIn-vj-V4i"/>
                 <outlet property="optionButton" destination="Ufv-WN-XV4" id="Fnp-ox-ZLz"/>
                 <outlet property="pinPostIconImageView" destination="cuX-vO-9cD" id="qWQ-2V-jIR"/>
+                <outlet property="topPaddingConstraint" destination="7Jo-Th-Tvm" id="gD8-tk-whN"/>
             </connections>
             <point key="canvasLocation" x="241.30434782608697" y="123.88392857142857"/>
         </tableViewCell>

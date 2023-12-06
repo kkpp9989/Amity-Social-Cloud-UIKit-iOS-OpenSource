@@ -355,14 +355,39 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             return cell
         }
         
+        var isDisableTopPadding: Bool = false
+        if indexPath.section == 1 && indexPath.row == 0 {
+            let feedType = screenViewModel.dataSource.getFeedType()
+            switch feedType {
+            case .userFeed(_), .communityFeed(_), .myFeed:
+                isDisableTopPadding = true
+            default:
+                isDisableTopPadding = false
+            }
+        }
+        
+//        print("[Cell] Display cell indexpath: \(indexPath) | isDisableTopPadding: \(isDisableTopPadding)")
+        
         let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
         
         if let clientComponent = tableView.feedDataSource?.getUIComponentForPost(post: singleComponent._composable.post, at: indexPath.section) {
-            return clientComponent.getComponentCell(tableView, at: indexPath)
+            let cell = clientComponent.getComponentCell(tableView, at: indexPath)
+            if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
+                headerCell.disableTopPadding()
+                return headerCell
+            } else {
+                return cell
+            }
         } else {
             // HACK: inject commentExpandedIds before configuring cell
             singleComponent._composable.post.commentExpandedIds = expandedIds
-            return singleComponent.getComponentCell(tableView, at: indexPath)
+            let cell = singleComponent.getComponentCell(tableView, at: indexPath)
+            if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
+                headerCell.disableTopPadding()
+                return headerCell
+            } else {
+                return cell
+            }
         }
     }
 }

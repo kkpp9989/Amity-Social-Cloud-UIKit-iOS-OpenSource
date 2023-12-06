@@ -96,6 +96,10 @@ public struct AmityPostLiveStreamComponent: AmityPostComposable {
         }
     }
     
+    public func disableTopPadding(cell: AmityPostHeaderProtocol) {
+        cell.disableTopPadding()
+    }
+    
     public func getComponentHeight(indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }

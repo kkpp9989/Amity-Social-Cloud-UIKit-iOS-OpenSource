@@ -22,7 +22,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var datetimeLabel: UILabel!
     @IBOutlet private var optionButton: UIButton!
     @IBOutlet private var pinPostIconImageView: UIImageView!
-
+    @IBOutlet private var topPaddingConstraint: NSLayoutConstraint!
+    
     private(set) public var post: AmityPostModel?
     
     // [Custom for ONE Krungthai] Add these properties for check condition of moderator user in official community for outputing
@@ -37,6 +38,11 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     public override func prepareForReuse() {
         super.prepareForReuse()
         avatarView.placeholder = AmityIconSet.defaultAvatar
+        topPaddingConstraint.constant = 8
+    }
+    
+    public func disableTopPadding() {
+        topPaddingConstraint.constant = 0
     }
     
     public func display(post: AmityPostModel) {
@@ -103,6 +109,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         containerView.backgroundColor = AmityColorSet.backgroundColor
+        
+        topPaddingConstraint.constant = 8
         
         // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
         displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUserInOfficialCommunity: false)
