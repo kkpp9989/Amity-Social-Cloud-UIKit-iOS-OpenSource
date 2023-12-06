@@ -111,8 +111,15 @@ final class AmityFetchForwardChannelController {
                         }
                     }
                     
-                    let groupUsers = Dictionary(grouping: strongSelf.channel, by: predicate).sorted { $0.0 < $1.0 }
+                    var groupUsers: AmityFetchForwardChannelController.GroupUser
+                    if strongSelf.targetType == .group {
+                        groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: predicate).sorted { $0.0 < $1.0 }
+                    } else {
+                        groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: { _ in "" }).sorted { $0.0 < $1.0 }
+                    }
+
                     completion(.success(groupUsers))
+
                 }
             }
         }
@@ -120,6 +127,10 @@ final class AmityFetchForwardChannelController {
     
     func loadmore(isSearch: Bool) -> Bool {
         if !isSearch {
+            if targetType == .recent {
+                return false
+            }
+
             guard let collection = collection else { return false }
             switch collection.loadingStatus {
             case .loaded:
