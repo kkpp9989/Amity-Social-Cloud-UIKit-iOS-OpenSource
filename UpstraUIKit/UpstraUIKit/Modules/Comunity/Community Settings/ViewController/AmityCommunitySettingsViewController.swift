@@ -34,7 +34,6 @@ final class AmityCommunitySettingsViewController: AmityViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         screenViewModel.action.retrieveCommunity()
-        screenViewModel.action.retrieveNotifcationSettings()
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
