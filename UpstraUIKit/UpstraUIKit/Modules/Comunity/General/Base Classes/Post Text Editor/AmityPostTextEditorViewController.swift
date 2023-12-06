@@ -776,6 +776,12 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
     }
     
     func screenViewModelDidCreatePost(_ viewModel: AmityPostTextEditorScreenViewModel, post: AmityPost?, error: Error?) {
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first , let error = error {
+            ToastView.shared.showToast(message: error.localizedDescription, in: window)
+            postButton.isEnabled = true
+            return
+        }
+        
         if let post = post {
             switch post.getFeedType() {
             case .reviewing:
@@ -797,8 +803,13 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
     }
     
     func screenViewModelDidUpdatePost(_ viewModel: AmityPostTextEditorScreenViewModel, error: Error?) {
-        postButton.isEnabled = true
-        dismiss(animated: true, completion: nil)
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first , let error = error {
+            ToastView.shared.showToast(message: error.localizedDescription, in: window)
+            postButton.isEnabled = true
+        } else {
+            postButton.isEnabled = true
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     private func closeViewController() {

@@ -30,7 +30,7 @@ class ToastView: UIView {
     }
     
     private func setupToastView() {
-        self.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        self.backgroundColor = UIColor.black.withAlphaComponent(1.0)
         self.layer.cornerRadius = 10
         self.clipsToBounds = true
         
