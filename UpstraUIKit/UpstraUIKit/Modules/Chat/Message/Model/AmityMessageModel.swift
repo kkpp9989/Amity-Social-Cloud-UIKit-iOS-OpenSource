@@ -53,8 +53,8 @@ public final class AmityMessageModel {
         self.isEdited = object.isEdited
         self.messageType = object.messageType
         self.createdAtDate = object.createdAt
-        self.date = AmityDateFormatter.Message.getDate(date: self.isEdited ? object.editedAt : object.createdAt)
-        self.time = AmityDateFormatter.Message.getTime(date: self.isEdited ? object.editedAt : object.createdAt)
+        self.date = AmityDateFormatter.Message.getDate(date: object.createdAt)
+        self.time = AmityDateFormatter.Message.getTime(date: object.createdAt)
         self.flagCount = UInt(object.flagCount)
         self.data = object.data
         self.tags = object.tags
