@@ -25,7 +25,7 @@ struct RequestSearchingChat {
     
     func requestSearchMessages(_ completion: @escaping(Result<AmitySearchMessagesModel,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co/api/v1"
-        var urlReuest = "\(domainURL)/search/messages?query=\(keyword)&options[sortBy]=relevance&options[orderBy]=desc&options[limit]=\(size)"
+        var urlReuest = "\(domainURL)/search/messages?query=\(keyword)&options[limit]=\(size)"
         
         if !paginateToken.isEmpty {
             urlReuest += "&options[token]=\(paginateToken)"
