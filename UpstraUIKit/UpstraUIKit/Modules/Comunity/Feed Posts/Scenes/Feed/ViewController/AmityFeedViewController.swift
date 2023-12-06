@@ -416,6 +416,24 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
             //  Remove alert for case spam button
 //            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
             break
+        case .bannedWord:
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString)) // [Back up]
+            debouncer.run {
+                DispatchQueue.main.async {
+                    if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                        ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString, in: window)
+                    }
+                }
+            }
+        case .linkNotAllowed:
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString)) // [Back up]
+            debouncer.run {
+                DispatchQueue.main.async {
+                    if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                        ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString, in: window)
+                    }
+                }
+            }
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()

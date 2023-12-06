@@ -478,19 +478,13 @@ extension AmityPostDetailScreenViewModel {
             // found an issue where the callback is invoked in the realm write transaction.
             // so just make a workaround by dispatching it out of the transaction scope.
             DispatchQueue.main.async {
-                if AmityError(error: error) == .bannedWord {
-                    // check if the recent comment is contains banned word
-                    // if containts, delete the particular comment
-                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: .bannedWord)
-                } else if let comment = comment {
+                if let comment = comment {
                     strongSelf.delegate?.screenViewModelDidCreateComment(strongSelf, comment: AmityCommentModel(comment: comment))
                 } else {
-                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: .unknown)
+                    strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
                 }
             }
-            
         }
-        
     }
     
     func deleteComment(with comment: AmityCommentModel) {

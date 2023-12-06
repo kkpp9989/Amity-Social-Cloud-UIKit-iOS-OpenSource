@@ -288,6 +288,7 @@ public struct AmityLocalizedStringSet {
         static let deletePostMessage = "post_detail_delete_post_message"
         static let postDetailCommentEdit = "post_detail_comment_edited"
         static let banndedCommentErrorMessage = "post_detail_banned_comment_error_message"
+        static let linkNotAllowedErrorMessage = "post_detail_link_not_allowed_error_message"
     }
     
     // MARK: - Post to

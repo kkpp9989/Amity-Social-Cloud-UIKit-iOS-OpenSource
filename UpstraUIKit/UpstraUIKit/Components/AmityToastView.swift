@@ -30,7 +30,7 @@ class ToastView: UIView {
     }
     
     private func setupToastView() {
-        self.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        self.backgroundColor = UIColor.black.withAlphaComponent(1.0)
         self.layer.cornerRadius = 10
         self.clipsToBounds = true
         
@@ -51,6 +51,8 @@ class ToastView: UIView {
             self.translatesAutoresizingMaskIntoConstraints = false
             self.centerXAnchor.constraint(equalTo: window.centerXAnchor).isActive = true
             self.bottomAnchor.constraint(equalTo: window.bottomAnchor, constant: -40).isActive = true
+            self.leadingAnchor.constraint(greaterThanOrEqualTo: window.leadingAnchor, constant: 16).isActive = true
+            self.trailingAnchor.constraint(lessThanOrEqualTo: window.trailingAnchor, constant: -16).isActive = true
             
             UIView.animate(withDuration: 0.3, delay: duration, options: .curveEaseOut, animations: {
                 self.alpha = 0

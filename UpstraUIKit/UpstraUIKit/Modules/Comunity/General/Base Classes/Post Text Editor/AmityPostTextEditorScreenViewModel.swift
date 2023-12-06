@@ -29,6 +29,8 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     
     // MARK: - Action
     func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+        AmityEventHandler.shared.showKTBLoading()
+        
         // [Custom for ONE Krgunthai][URL Preview] Add get URL metadata for cache in post metadata to show URL preview
         var updatedMetadata = metadata ?? [:]
         if let urlInString = AmityURLCustomManager.Utilities.getURLInText(text: text) {
@@ -105,14 +107,17 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         
         if let mentionees = mentionees {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
         } else if let metadata = metadata {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
         } else {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
         }
@@ -127,6 +132,8 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
      */
     
     func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
+        AmityEventHandler.shared.showKTBLoading()
+        
         // [Custom for ONE Krgunthai][URL Preview] Add get URL metadata for cache in post metadata to show URL preview
         var updatedMetadata = metadata ?? [:]
         if let urlInString = AmityURLCustomManager.Utilities.getURLInText(text: text) {
@@ -204,16 +211,19 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         if let mentionees = mentionees {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         } else if let metadata = metadata {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         } else {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         }
@@ -265,12 +275,16 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     private func createPostResponseHandler(forPost post: AmityPost?, error: Error?) {
         Log.add("File Post Created: \(post != nil) Error: \(String(describing: error))")
         delegate?.screenViewModelDidCreatePost(self, post: post, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: post?.postId)
+        if error == nil {
+            NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: post?.postId)
+        }
     }
     
     private func updatePostResponseHandler(forPost post: AmityPost?, error: Error?) {
         Log.add("File Post updated: \(post != nil) Error: \(String(describing: error))")
         delegate?.screenViewModelDidUpdatePost(self, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didUpdate, object: nil)
+        if error == nil {
+            NotificationCenter.default.post(name: NSNotification.Name.Post.didUpdate, object: nil)
+        }
     }
 }
