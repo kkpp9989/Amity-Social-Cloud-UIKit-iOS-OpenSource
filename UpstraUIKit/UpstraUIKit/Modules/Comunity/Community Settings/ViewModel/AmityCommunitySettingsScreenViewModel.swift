@@ -29,6 +29,7 @@ final class AmityCommunitySettingsScreenViewModel: AmityCommunitySettingsScreenV
     private var isNotificationEnabled: Bool = false
     private var isSocialNetworkEnabled: Bool = false
     private var isSocialUserEnabled: Bool = false
+    private let dispatchGroup = DispatchGroup()
     
     init(communityId: String,
          userNotificationController: AmityUserNotificationSettingsControllerProtocol,
@@ -57,12 +58,13 @@ extension AmityCommunitySettingsScreenViewModel {
 // MARK: - Action
 extension AmityCommunitySettingsScreenViewModel {
     func retrieveCommunity() {
+        if community == nil { AmityEventHandler.shared.showKTBLoading() }
         communityInfoController.getCommunity { [weak self] (result) in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let community):
                 strongSelf.community = community
-                strongSelf.retrieveSettingsMenu()
+                strongSelf.retrieveNotifcationSettings()
                 strongSelf.delegate?.screenViewModel(strongSelf, didGetCommunitySuccess: community)
             case .failure:
                 break
@@ -71,30 +73,46 @@ extension AmityCommunitySettingsScreenViewModel {
     }
     
     func retrieveNotifcationSettings() {
+        var isGetUserNotificationProcessLeaved = false
+        dispatchGroup.enter()
         userNotificationController.retrieveNotificationSettings { [weak self] (result) in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let notification):
                 if let socialModule = notification.modules.first(where: { $0.moduleType == .social }) {
                     strongSelf.isSocialUserEnabled = socialModule.isEnabled
-                    strongSelf.retrieveSettingsMenu()
                 }
                 break
             case .failure:
                 break
             }
+            if !isGetUserNotificationProcessLeaved {
+                isGetUserNotificationProcessLeaved = true
+                strongSelf.dispatchGroup.leave()
+            }
         }
+        
+        var isGetCommunityNotificationProcessLeaved = false
+        dispatchGroup.enter()
         communityNotificationController.retrieveNotificationSettings { [weak self] (result) in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let notification):
                 strongSelf.isNotificationEnabled = notification.isEnabled
                 strongSelf.isSocialNetworkEnabled = notification.isSocialNetworkEnabled
-                strongSelf.retrieveSettingsMenu()
             break
             case .failure:
                 break
             }
+            if !isGetCommunityNotificationProcessLeaved {
+                isGetCommunityNotificationProcessLeaved = true
+                strongSelf.dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.retrieveSettingsMenu()
         }
     }
     
@@ -104,7 +122,10 @@ extension AmityCommunitySettingsScreenViewModel {
         menuViewModel = AmityCommunitySettingsCreateMenuViewModel(community: community, userRolesController: userRolesController)
         menuViewModel?.createSettingsItems(shouldNotificationItemShow: isSocialUserEnabled && isSocialNetworkEnabled, isNotificationEnabled: isNotificationEnabled) { [weak self] (items) in
             guard let strongSelf = self else { return }
-            strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
+            DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
+                strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
+            }
         }
     }
     

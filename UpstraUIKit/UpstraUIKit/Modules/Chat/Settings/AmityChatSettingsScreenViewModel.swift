@@ -115,7 +115,6 @@ extension AmityChatSettingsScreenViewModel {
             case .failure(_):
                 break
             }
-            AmityEventHandler.shared.hideKTBLoading()
             strongSelf.retrieveSettingsMenu()
         }
     }
@@ -132,6 +131,7 @@ extension AmityChatSettingsScreenViewModel {
                                            isCanEditGroupChannel: isCanEditGroupChannel) { [weak self] (items) in
             guard let strongSelf = self else { return }
             DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
             }
         }
