@@ -63,6 +63,7 @@ struct AmityDateFormatter {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
             dateFormatter.timeZone = TimeZone(identifier: "UTC")
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             
             guard let date = dateFormatter.date(from: dateString) else {
                 return ""
@@ -70,19 +71,10 @@ struct AmityDateFormatter {
             
             // Set the desired time zone (Thailand)
             dateFormatter.timeZone = TimeZone(identifier: "Asia/Bangkok")
-            
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short
-
-            if is24HourFormat {
-                dateFormatter.dateFormat = "M/dd/yy, HH:mm"
-            } else {
-                dateFormatter.dateFormat = "M/dd/yy, hh:mm a"
-            }
-            
-            let formattedDate = dateFormatter.string(from: date)
-            
             dateFormatter.dateFormat = date.isToday ? (is24HourFormat ? "HH:mm" : "h:mm a") : "dd/MM/yy"
+            
             return dateFormatter.string(from: date)
         }
     }
