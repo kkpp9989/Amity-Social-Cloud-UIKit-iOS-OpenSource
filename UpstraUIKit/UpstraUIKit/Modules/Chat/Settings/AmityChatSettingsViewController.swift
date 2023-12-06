@@ -53,7 +53,6 @@ final class AmityChatSettingsViewController: AmityViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         screenViewModel.action.retrieveChannel()
-        screenViewModel.action.retrieveNotificationSettings()
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
