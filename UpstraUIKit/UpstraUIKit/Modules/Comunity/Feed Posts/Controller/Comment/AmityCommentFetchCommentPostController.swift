@@ -59,7 +59,12 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
         for i in 0..<collection.count() {
             guard let comment = collection.object(at: i) else { continue }
             let model = AmityCommentModel(comment: comment)
-            models.append(model)
+            switch comment.syncState {
+            case .error, .syncing:
+                break
+            default:
+                models.append(model)
+            }
         }
         return models
     }

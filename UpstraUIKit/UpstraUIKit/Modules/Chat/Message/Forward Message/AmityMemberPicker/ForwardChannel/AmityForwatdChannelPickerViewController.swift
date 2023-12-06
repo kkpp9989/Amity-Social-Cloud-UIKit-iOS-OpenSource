@@ -180,6 +180,15 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
         }
         return headerView
     }
+    
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Return a custom height for sections with empty string values
+        if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
+            return 0
+        } else {
+            return UITableView.automaticDimension
+        }
+    }
 }
 
 extension AmityForwatdChannelPickerViewController: UITableViewDataSource {
