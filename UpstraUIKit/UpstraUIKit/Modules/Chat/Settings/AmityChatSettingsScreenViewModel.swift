@@ -61,6 +61,7 @@ extension AmityChatSettingsScreenViewModel {
     // MARK: - Get Action - Channel, other user info and status report user of him (For 1:1 Chat only)
     func retrieveChannel() {
         // Get channel
+        if channel == nil { AmityEventHandler.shared.showKTBLoading() }
         channelController.getChannel { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
@@ -77,12 +78,13 @@ extension AmityChatSettingsScreenViewModel {
                             strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
                                 if let statusReportUser = result {
                                     strongSelf.isReportedOtherUser = statusReportUser
-                                    strongSelf.retrieveSettingsMenu()
+                                    strongSelf.retrieveNotificationSettings()
                                 }
                             }
                         } else {
                             strongSelf.title = channel.displayName
                             strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+                            strongSelf.retrieveNotificationSettings()
                         }
                     }
                 } else { // Case: Other type (Group Chat) -> Get displayname from channel object for set title
@@ -92,12 +94,10 @@ extension AmityChatSettingsScreenViewModel {
                     DispatchQueue.main.async {
                         strongSelf.userController.getEditGroupChannelPermission { result in
                             strongSelf.isCanEditGroupChannel = result
-                            strongSelf.retrieveSettingsMenu()
+                            strongSelf.retrieveNotificationSettings()
                         }
                     }
                 }
-                
-                strongSelf.retrieveSettingsMenu()
             case .failure(_):
                 break
             }
@@ -112,10 +112,11 @@ extension AmityChatSettingsScreenViewModel {
             switch result {
             case .success(let notification):
                 strongSelf.isNotificationEnabled = notification.isEnabled
-                strongSelf.retrieveSettingsMenu()
             case .failure(_):
                 break
             }
+            AmityEventHandler.shared.hideKTBLoading()
+            strongSelf.retrieveSettingsMenu()
         }
     }
     
