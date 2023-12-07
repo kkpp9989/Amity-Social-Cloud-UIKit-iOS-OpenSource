@@ -125,6 +125,7 @@
 "hashtags" = "Hashtags";
 "messages" = "Messages";
 "groups" = "Groups";
+"recent" = "Recent";
 
 /* [Custom for ONE Krungthai] Change wording "text_message_placeholder" */
 //"text_message_placeholder" = "Type message"; // [Original]
@@ -206,7 +207,7 @@
 "create_community_alert_desc" = "Your progress won't be saved and your group won't be created.";
 
 // MARK: - Select Member List
-"select_member_list_title" = "Select member";
+"select_member_list_title" = "Select members";
 "select_member_list_selected_title" = "%@ Selected";
 
 // MARK: - Category selection

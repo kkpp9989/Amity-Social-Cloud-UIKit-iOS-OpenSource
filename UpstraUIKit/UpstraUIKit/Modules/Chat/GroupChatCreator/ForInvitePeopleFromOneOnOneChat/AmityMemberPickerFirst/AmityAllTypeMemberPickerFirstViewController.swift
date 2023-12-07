@@ -49,9 +49,9 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: currentUsersInChat, type: .following)
-        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: currentUsersInChat, type: .followers)
-        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: "Account", users: currentUsersInChat)
+        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followingTitle.localizedString, users: currentUsersInChat, type: .following)
+        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followersTitle.localizedString, users: currentUsersInChat, type: .followers)
+        memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.accounts.localizedString, users: currentUsersInChat)
         
         followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
