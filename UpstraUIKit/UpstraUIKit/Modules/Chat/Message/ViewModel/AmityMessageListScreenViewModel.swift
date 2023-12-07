@@ -55,7 +55,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case avatar(indexPath: IndexPath)
         case openEditMenu(indexPath: IndexPath, sourceView: UIView, sourceTableViewCell: UITableViewCell, options: [AmityEditMenuItem])
         case resend(indexPath: IndexPath)
-        case openResendMenu(indexPath: IndexPath)
+        case openResendMenu(indexPath: IndexPath) // [Deprecated] User .openEditMenu instead
     }
     
     enum KeyboardInputEvents {

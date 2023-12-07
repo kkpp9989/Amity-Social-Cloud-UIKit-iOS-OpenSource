@@ -283,7 +283,8 @@ private extension AmityMessageTableViewCell {
     }
     
     @IBAction func errorTap() {
-        screenViewModel.action.performCellEvent(for: .openResendMenu(indexPath: indexPath))
+        containerView.showOverlayView()
+        screenViewModel.action.performCellEvent(for: .openEditMenu(indexPath: indexPath, sourceView: containerView, sourceTableViewCell: self, options: containerView.menuItems))
     }
     
     @objc
