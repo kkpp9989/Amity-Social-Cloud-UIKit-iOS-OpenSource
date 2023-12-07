@@ -50,10 +50,10 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        recentVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Recent", users: [], type: .recent)
-        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: "Following", users: [], type: .following)
-        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: "Follower", users: [], type: .followers)
-        groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: "Group", users: [], type: .group)
+        recentVC = AmityForwatdChannelPickerViewController.make(pageTitle: AmityLocalizedStringSet.recent.localizedString, users: [], type: .recent)
+        followingVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followingTitle.localizedString, users: [], type: .following)
+        followerVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followersTitle.localizedString, users: [], type: .followers)
+        groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: AmityLocalizedStringSet.groups.localizedString, users: [], type: .group)
         
         recentVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
             guard let strongSelf = self else { return }
