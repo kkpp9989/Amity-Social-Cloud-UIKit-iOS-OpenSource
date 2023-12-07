@@ -990,7 +990,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 text = message.text
             }
             AmityEditMenuView.present(options: itemsMenu, sourceViewController: self, sourceMessageView: sourceView, sourceTableViewCell: sourceTableViewCell, selectedText: text, indexPath: indexPath)
-        case .openResendMenu(indexPath: let indexPath):
+        case .openResendMenu(indexPath: let indexPath): // [Deprecated] Use .openEditMenu instead
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             let alertViewController = UIAlertController(title: AmityLocalizedStringSet.MessageList.alertErrorMessageTitle.localizedString,
                                                         message: nil, preferredStyle: .actionSheet)
