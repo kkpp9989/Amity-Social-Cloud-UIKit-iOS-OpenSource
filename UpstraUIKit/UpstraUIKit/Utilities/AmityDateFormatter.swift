@@ -45,6 +45,7 @@ struct AmityDateFormatter {
         static func getDate(date: Date, is24HourFormat: Bool = true) -> String {
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             
             if is24HourFormat {
                 dateFormatter.dateFormat = "M/dd/yy, HH:mm"
