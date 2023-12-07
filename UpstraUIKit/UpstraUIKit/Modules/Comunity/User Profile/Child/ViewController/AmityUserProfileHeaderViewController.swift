@@ -159,31 +159,39 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     private func setupFollowingButton() {
         let attribute = AmityAttributedString()
         attribute.setBoldFont(for: AmityFontSet.title)
+        attribute.setBoldColor(for: AmityColorSet.secondary)
         attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
+        attribute.setNormalColor(for: UIColor(hex: "#898E9E"))
         followingButton.attributedString = attribute
         followingButton.isHidden = false
         followingButton.isUserInteractionEnabled = true /* [Custom for ONE Krungthai] Force following/followers button can interaction all scenarioes | Set isUserInteractionEnabled to true */
         followingButton.addTarget(self, action: #selector(followingAction(_:)), for: .touchUpInside)
         followingButton.titleLabel?.numberOfLines = 0
         followingButton.titleLabel?.textAlignment = .center
-
-        followingButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowingCount.localizedString, "0"))
+        
+        let title = String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowingCount.localizedString, "0")
+        followingButton.attributedString.setTitle(title)
+//        followingButton.attributedString.setBoldText(for: ["0"])
+//        followingButton.setAttributedTitle()
     }
     
     private func setupFollowersButton() {
         let attribute = AmityAttributedString()
         attribute.setBoldFont(for: AmityFontSet.title)
+        attribute.setBoldColor(for: AmityColorSet.secondary)
         attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
+        attribute.setNormalColor(for: UIColor(hex: "#898E9E"))
         followersButton.attributedString = attribute
         followersButton.isHidden = false
         followersButton.isUserInteractionEnabled = true /* [Custom for ONE Krungthai] Force following/followers button can interaction all scenarioes | Set isUserInteractionEnabled to true */
         followersButton.addTarget(self, action: #selector(followersAction(_:)), for: .touchUpInside)
         followersButton.titleLabel?.numberOfLines = 0
         followersButton.titleLabel?.textAlignment = .center
-
-        followersButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowersCount.localizedString, "0"))
+        
+        let title = String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowersCount.localizedString, "0")
+        followingButton.attributedString.setTitle(title)
+//        followingButton.attributedString.setBoldText(for: ["0"])
+//        followingButton.setAttributedTitle()
     }
     
     private func setupFollowButton() {
