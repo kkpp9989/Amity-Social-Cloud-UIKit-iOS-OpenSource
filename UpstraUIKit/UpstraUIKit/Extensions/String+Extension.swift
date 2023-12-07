@@ -16,18 +16,19 @@ extension String {
     ///   - font: normal font and bold font
     /// - Returns: NSAttributedString
     func applyBold(with listString: [String],
-                       color: UIColor,
-                       font: (normal: UIFont, bold: UIFont)) -> NSAttributedString {
-        let boldString = NSMutableAttributedString(string: self, attributes: [.foregroundColor: color,
+                   boldColor: UIColor,
+                   normalColor: UIColor,
+                   font: (normal: UIFont, bold: UIFont)) -> NSAttributedString {
+        let boldString = NSMutableAttributedString(string: self, attributes: [.foregroundColor: normalColor,
                                                                               .font: font.normal])
         for index in 0..<listString.count {
-            boldString.addAttributes([.font: font.bold], range: (self as NSString).range(of: listString[index]))
+            boldString.addAttributes([.foregroundColor: boldColor , .font: font.bold], range: (self as NSString).range(of: listString[index]))
         }
         return boldString
     }
     
     public var localizedString: String {
-            return NSLocalizedString(self, tableName: "AmityLocalizable", bundle: AmityUIKitManager.bundle, value: "", comment: "")
+        return NSLocalizedString(self, tableName: "AmityLocalizable", bundle: AmityUIKitManager.bundle, value: "", comment: "")
     }
     
     public func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
