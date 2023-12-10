@@ -43,6 +43,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     private var screenViewModel: AmityMessageListScreenViewModelType!
     let composeBarView = AmityKeyboardComposeBarViewController.make()
     var amountForwardMessage: Int = 0
+    var isReplying: Bool = false
     
     // MARK: - Settings
     private var setting = AmityMessageListViewController.Settings()
@@ -269,9 +270,21 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
 		}
 	}
     
+    func updateViewDidReplyProcess(isReplying: Bool) {
+        self.isReplying = isReplying
+        
+        if isReplying {
+            showAudioButton.isHidden = true
+            showKeyboardComposeBarButton.isHidden = true
+        } else {
+            showAudioButton.isHidden = false
+            showKeyboardComposeBarButton.isHidden = sendMessageButton.isHidden ? false : true
+        }
+    }
+    
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
-        showKeyboardComposeBarButton.isHidden = !text.isEmpty
+        showKeyboardComposeBarButton.isHidden = !text.isEmpty || isReplying
         sendMessageButton.isHidden = text.isEmpty
     }
     
