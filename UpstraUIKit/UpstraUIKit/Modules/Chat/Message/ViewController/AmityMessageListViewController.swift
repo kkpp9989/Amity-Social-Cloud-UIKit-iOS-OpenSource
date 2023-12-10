@@ -1268,6 +1268,8 @@ extension AmityMessageListViewController {
             self.replyContainerViewHeightConstraint.constant = 55
             self.replyContainerView.isHidden = false
         }
+        
+        composeBar.updateViewDidReplyProcess(isReplying: true)
     }
     
     private func hideReplyContainerView() {
@@ -1276,6 +1278,8 @@ extension AmityMessageListViewController {
             self.replyContainerView.isHidden = true
             self.message = nil
         }
+        
+        composeBar.updateViewDidReplyProcess(isReplying: false)
     }
     
     func shakeCell(at indexPath: IndexPath) {

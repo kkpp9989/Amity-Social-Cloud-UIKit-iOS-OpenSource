@@ -104,6 +104,11 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+    func updateViewDidReplyProcess(isReplying: Bool) {
+        // Intentionally left empty
+        // This class doesn't support reply message.
+    }
+    
     func updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: Bool) {
         // Intentionally left empty
         // This class doesn't support showJoinMenuButton.
