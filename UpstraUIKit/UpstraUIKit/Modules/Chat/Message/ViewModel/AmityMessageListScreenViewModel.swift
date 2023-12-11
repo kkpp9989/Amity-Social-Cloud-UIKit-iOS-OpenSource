@@ -612,6 +612,7 @@ extension AmityMessageListScreenViewModel {
         queryOptions = AmityMessageQueryOptions(subChannelId: subChannelId, aroundMessageId: messageId, sortOption: .lastCreated)
         
         // Call the queryMessages function with the updated query options to jump to the desired message.
+        AmityEventHandler.shared.hideKTBLoading()
         queryMessages(queryOptions: queryOptions, messageId: messageId)
     }
     
@@ -705,11 +706,12 @@ private extension AmityMessageListScreenViewModel {
     }
     
     private func queryMessages(queryOptions: AmityMessageQueryOptions, messageId: String) {
-//        AmityEventHandler.shared.showKTBLoading() // Disable it because fix duplicate show loading in some case
+        AmityEventHandler.shared.showKTBLoading() // Disable it because fix duplicate show loading in some case
         messagesCollection = messageRepository.getMessages(options: queryOptions)
         messagesNotificationToken = messagesCollection?.observe { (liveCollection, change, error) in
             if let error = error {
                 print("Error: \(error).")
+                AmityEventHandler.shared.hideKTBLoading()
                 return
             }
                                     
