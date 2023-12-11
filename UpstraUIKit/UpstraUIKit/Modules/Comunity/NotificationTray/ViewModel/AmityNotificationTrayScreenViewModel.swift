@@ -18,17 +18,26 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
     private var page: Int = 0
     private var totalPages: Int = 1
     private var pageCount: Int = 0
+    private var isLoadMore: Bool = false
 
     init() {}
     
     func fetchData() {
-        if pageCount >= totalPages { return }
+        if !isLoadMore {
+            page = 0
+            pageCount = 0
+            totalPages = 0
+        }
         AmityEventHandler.shared.showKTBLoading()
         let serviceRequest = RequestGetNotification()
         serviceRequest.requestNotificationHistory(page) { [self] result in
             switch result {
             case .success(let dataResponse):
-                collectionData += dataResponse.data
+                if isLoadMore {
+                    collectionData += dataResponse.data
+                } else {
+                    collectionData = dataResponse.data
+                }
                 page = dataResponse.nextPage ?? 0
                 totalPages = dataResponse.totalPages
                 delegate?.screenViewModelDidUpdateData(self)
@@ -37,6 +46,7 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
                 delegate?.screenViewModelDidUpdateData(self)
             }
             pageCount += 1
+            isLoadMore = false
         }
     }
 
@@ -64,21 +74,37 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
     
     func loadMore() {
         if pageCount < totalPages {
+            isLoadMore = true
             fetchData()
         }
     }
     
     func updateReadItem(model: NotificationTray) {
         let serviceRequest = RequestGetNotification()
-        serviceRequest.requestNotificationRead(model.verb, targetId: model.targetID) { [self] result in
+        serviceRequest.requestNotificationRead(model.verb, targetId: model.targetID) { [weak self] result in
+            guard let strongSelf = self else {return }
+            
+            if let index = strongSelf.findIndexByTargetID(targetID: model.targetID, in: strongSelf.collectionData) {
+                print("Index found: \(index)")
+                strongSelf.collectionData[index].hasRead = true
+            }
+            
             switch result {
             case .success(_):
-                delegate?.screenViewModelDidUpdateData(self)
+                strongSelf.delegate?.screenViewModelDidUpdateData(strongSelf)
             case .failure(let error):
                 print(error)
-                delegate?.screenViewModelDidUpdateData(self)
+                strongSelf.delegate?.screenViewModelDidUpdateData(strongSelf)
             }
         }
     }
     
+    func findIndexByTargetID(targetID: String, in array: [NotificationTray]) -> Int? {
+        for (index, notification) in array.enumerated() {
+            if notification.targetID == targetID {
+                return index
+            }
+        }
+        return nil // Return nil if targetID is not found in the array
+    }
 }
