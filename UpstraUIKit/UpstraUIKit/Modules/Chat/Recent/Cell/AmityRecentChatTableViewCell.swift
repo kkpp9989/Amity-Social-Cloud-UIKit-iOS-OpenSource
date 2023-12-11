@@ -122,21 +122,19 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                         let status = otherMember.metadata?["user_presence"] as? String ?? ""
                         if status != "available" {
                             statusBadgeImageView.image = setImageFromStatus(status)
-                        } else if status == "available" {
+                        } else {
                             if isOnline {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
                             } else {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
                             }
-                        } else {
-                            statusBadgeImageView.isHidden = true
-                            badgeStatusView.isHidden = true
-                            badgeStatusView.backgroundColor = .clear
                         }
                     } else {
-                        statusBadgeImageView.isHidden = true
-                        badgeStatusView.isHidden = true
-                        badgeStatusView.backgroundColor = .clear
+                        if isOnline {
+                            statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                        } else {
+                            statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                        }
                     }
                 }
             }
@@ -205,10 +203,10 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         case "out_sick":
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
         default:
-            statusBadgeImageView.isHidden = true
-            badgeStatusView.isHidden = true
-            badgeStatusView.backgroundColor = .clear
-            return UIImage()
+//            statusBadgeImageView.isHidden = true
+//            badgeStatusView.isHidden = true
+//            badgeStatusView.backgroundColor = .clear
+            return AmityIconSet.Chat.iconOfflineIndicator ?? UIImage()
         }
     }
     
