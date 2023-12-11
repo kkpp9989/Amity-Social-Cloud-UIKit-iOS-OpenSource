@@ -242,7 +242,6 @@ public final class AmityMessageListViewController: AmityViewController {
     }
     
     @objc func refreshPresence(notification: Notification) {
-        print("[Amity Log] RefreshChannelPresence")
         DispatchQueue.main.async() { [self] in
             screenViewModel.action.getChannel()
         }
