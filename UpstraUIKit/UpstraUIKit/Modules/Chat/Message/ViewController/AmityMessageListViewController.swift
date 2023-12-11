@@ -1008,6 +1008,11 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .resend(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             screenViewModel.action.resend(with: message, at: indexPath)
+        case .openReadViewer(indexPath: let indexPath):
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            let vc = AmityReadingListViewController.make(message: message)
+            vc.modalPresentationStyle = .pageSheet
+            present(vc, animated: true, completion: nil)
         }
     }
     
