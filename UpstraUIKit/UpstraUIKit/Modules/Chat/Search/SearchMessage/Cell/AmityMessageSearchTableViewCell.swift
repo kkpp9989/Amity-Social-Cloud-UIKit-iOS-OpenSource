@@ -131,8 +131,10 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             badgeStatusView.backgroundColor = .clear
             
             iconImageView.isHidden = false
-            var iconBadge = AmityIconSet.Chat.iconPublicBadge
-            if !data.channelObjc.object.isPublic {
+            var iconBadge: UIImage?
+            if data.channelObjc.object.isPublic {
+                iconBadge = AmityIconSet.Chat.iconPublicBadge
+            } else {
                 iconBadge = AmityIconSet.Chat.iconPrivateBadge
             }
             iconImageView.image = iconBadge
