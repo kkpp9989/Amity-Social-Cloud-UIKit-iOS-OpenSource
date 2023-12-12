@@ -16,6 +16,8 @@ enum AmityCommunityRole: String {
     /// Community moderator.
     @available(*, deprecated, message: "Use communityModerator instead.")
     case moderator
+    
+    case userWithInvitePermission = "user_with_invite_permission"
 }
 
 extension AmityCommunityMember {
