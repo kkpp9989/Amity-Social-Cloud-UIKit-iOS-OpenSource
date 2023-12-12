@@ -113,29 +113,17 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             iconImageView.isHidden = true
             avatarView.placeholder = AmityIconSet.defaultAvatar
 
-            getOtherUser(channel: channel) { user in
-                DispatchQueue.main.async { [self] in
-                    if let otherMember = user {
-                        // Set avatar
-                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL)
-                        titleLabel.text = otherMember.displayName
-                        let status = otherMember.metadata?["user_presence"] as? String ?? ""
-                        if status != "available" {
-                            statusBadgeImageView.image = setImageFromStatus(status)
-                        } else {
-                            if isOnline {
-                                statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
-                            } else {
-                                statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
-                            }
-                        }
-                    } else {
-                        if isOnline {
-                            statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
-                        } else {
-                            statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
-                        }
-                    }
+            // Set avatar
+            avatarView.setImage(withImageURL: channel.userInfo?.getAvatarInfo()?.fileURL)
+            titleLabel.text = channel.userInfo?.displayName
+            let status = channel.userInfo?.metadata?["user_presence"] as? String ?? ""
+            if status != "available" {
+                statusBadgeImageView.image = setImageFromStatus(status)
+            } else {
+                if isOnline {
+                    statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                } else {
+                    statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
                 }
             }
         case .community, .live:
