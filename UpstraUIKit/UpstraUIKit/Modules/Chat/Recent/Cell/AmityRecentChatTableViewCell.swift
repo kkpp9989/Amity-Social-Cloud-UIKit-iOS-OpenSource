@@ -116,7 +116,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             // Set avatar
             avatarView.setImage(withImageURL: channel.userInfo?.getAvatarInfo()?.fileURL)
             titleLabel.text = channel.userInfo?.displayName
-            let status = channel.userInfo?.metadata?["user_presence"] as? String ?? ""
+            let status = channel.userInfo?.metadata?["user_presence"] as? String ?? "available"
             if status != "available" {
                 statusBadgeImageView.image = setImageFromStatus(status)
             } else {
