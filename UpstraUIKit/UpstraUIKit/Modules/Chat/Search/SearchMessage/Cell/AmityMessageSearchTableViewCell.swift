@@ -76,7 +76,8 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         badgeStatusView.isHidden = true
         badgeStatusView.backgroundColor = .clear
         
-        let text = data.messageObjc.data?.text ?? "No message"
+        var text = data.messageObjc.data?.text ?? "No message"
+        text = text.replacingOccurrences(of: "\n", with: " ") // Replace line break with space character
         let highlightText = highlightKeyword(in: text, keyword: keyword, highlightColor: AmityColorSet.primary)
         previewMessageLabel.attributedText = highlightText
         
