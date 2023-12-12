@@ -48,23 +48,25 @@ final class AmityForwardSearchUserController {
                         for index in 0..<userCollection.count() {
                             guard let object = userCollection.object(at: index) else { continue }
                             let model = AmitySelectMemberModel(object: object, type: strongSelf.targetType)
-                            if strongSelf.targetType == .followers {
-                                model.isSelected = newSelectedUsers.contains { $0.userId == object.sourceUserId } || currentUsers.contains { $0.userId == object.sourceUserId }
-                                if !(object.sourceUser?.isDeleted ?? false) {
-                                    if !(object.sourceUser?.isGlobalBanned ?? false) {
-                                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
-                                        if object.sourceUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
-                                            strongSelf.users.append(model)
+                            if !currentUsers.contains(where: {$0.userId == model.userId}) && !model.isCurrnetUser {
+                                if strongSelf.targetType == .followers {
+                                    model.isSelected = newSelectedUsers.contains { $0.userId == object.sourceUserId }
+                                    if !(object.sourceUser?.isDeleted ?? false) {
+                                        if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                            let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                            if object.sourceUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                                strongSelf.users.append(model)
+                                            }
                                         }
                                     }
-                                }
-                            } else {
-                                model.isSelected = newSelectedUsers.contains { $0.userId == object.targetUserId } || currentUsers.contains { $0.userId == object.targetUserId }
-                                if !(object.sourceUser?.isDeleted ?? false) {
-                                    if !(object.sourceUser?.isGlobalBanned ?? false) {
-                                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
-                                        if object.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
-                                            strongSelf.users.append(model)
+                                } else {
+                                    model.isSelected = newSelectedUsers.contains { $0.userId == object.targetUserId }
+                                    if !(object.sourceUser?.isDeleted ?? false) {
+                                        if !(object.sourceUser?.isGlobalBanned ?? false) {
+                                            let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                            if object.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                                strongSelf.users.append(model)
+                                            }
                                         }
                                     }
                                 }

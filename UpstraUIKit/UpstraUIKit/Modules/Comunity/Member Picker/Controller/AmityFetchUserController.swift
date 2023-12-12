@@ -36,8 +36,8 @@ final class AmityFetchUserController {
                 for index in 0..<userCollection.count() {
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.userId } || strongSelf.currentUsers.contains { $0.userId == object.userId }
-                    if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
+                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.userId }
+                    if !strongSelf.users.contains(where: { $0.userId == object.userId }) && !strongSelf.currentUsers.contains(where: { $0.userId == object.userId }) && !model.isCurrnetUser {
                         if !object.isDeleted {
                             if !object.isGlobalBanned {
                                 let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
