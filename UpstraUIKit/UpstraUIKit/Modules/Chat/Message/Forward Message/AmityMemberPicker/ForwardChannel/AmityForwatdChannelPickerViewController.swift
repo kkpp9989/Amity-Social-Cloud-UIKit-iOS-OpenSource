@@ -35,6 +35,7 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     private var doneButton: UIBarButtonItem?
     
     var pageTitle: String?
+    private let debouncer = Debouncer(delay: 0.3)
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -159,7 +160,9 @@ private extension AmityForwatdChannelPickerViewController {
 
 extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        screenViewModel.action.searchUser(with: searchText)
+        debouncer.run { [weak self] in
+            self?.screenViewModel.action.searchUser(with: searchText)
+        }
     }
 }
 
