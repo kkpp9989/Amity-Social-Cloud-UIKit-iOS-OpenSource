@@ -13,12 +13,11 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     weak var delegate: AmityForwardChannelPickerScreenViewModelDelegate?
     
     // MARK: - Repository
-    private var userRepository: AmityUserFollowManager?
     private var channelRepository: AmityChannelRepository?
 
     // MARK: - Controller
     private var fetchChannelController: AmityFetchForwardChannelController?
-    private var searchUserController: AmityForwardSearchUserController?
+    private var searchUserController: AmityForwardSearchChannelController?
     private var selectUserContrller: AmityForwardSelectUserController?
     
     private var users: AmityFetchForwardChannelController.GroupUser = []
@@ -29,13 +28,16 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
         }
     }
     private var currentUsers: [AmitySelectMemberModel] = []
+    private var currentKeyword: String = ""
     private var isSearch: Bool = false
+    private var targetType: AmityChannelViewType
+    
     init(type: AmityChannelViewType) {
-        userRepository = AmityUserFollowManager(client: AmityUIKitManagerInternal.shared.client)
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         fetchChannelController = AmityFetchForwardChannelController(repository: channelRepository, type: type)
-        searchUserController = AmityForwardSearchUserController(repository: userRepository, type: .followers)
+        searchUserController = AmityForwardSearchChannelController(repository: channelRepository, type: type)
         selectUserContrller = AmityForwardSelectUserController()
+        targetType = type
     }
 }
 
@@ -125,23 +127,68 @@ extension AmityForwardChannelPickerScreenViewModel {
         }
     }
     
+//    func searchUser(with text: String) {
+//        isSearch = true
+//        searchUserController?.search(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] (result) in
+//            switch result {
+//            case .success(let users):
+//                self?.searchUsers = users
+//                self?.delegate?.screenViewModelDidSearchUser()
+//            case .failure(let error):
+//                switch error {
+//                case .textEmpty:
+//                    self?.isSearch = false
+//                    self?.delegate?.screenViewModelDidSearchUser()
+//                case .unknown:
+//                    break
+//                }
+//            }
+//        })
+//    }
+    
     func searchUser(with text: String) {
+        searchUserController?.delegate = self
         isSearch = true
-        searchUserController?.search(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] (result) in
-            switch result {
-            case .success(let users):
-                self?.searchUsers = users
-                self?.delegate?.screenViewModelDidSearchUser()
-            case .failure(let error):
-                switch error {
-                case .textEmpty:
-                    self?.isSearch = false
-                    self?.delegate?.screenViewModelDidSearchUser()
-                case .unknown:
-                    break
+        currentKeyword = text
+        if targetType == .group {
+            searchUserController?.searchGroupType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let users):
+                        self?.searchUsers = users
+                        self?.delegate?.screenViewModelDidSearchUser()
+                    case .failure(let error):
+                        switch error {
+                        case .textEmpty:
+                            self?.isSearch = false
+                            self?.updateSelectedUserInfo()
+                            self?.delegate?.screenViewModelDidSearchUser()
+                        case .unknown:
+                            break
+                        }
+                    }
                 }
-            }
-        })
+            })
+        } else {
+            searchUserController?.searchRecentType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, users: users, { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let users):
+                        self?.searchUsers = users
+                        self?.delegate?.screenViewModelDidSearchUser()
+                    case .failure(let error):
+                        switch error {
+                        case .textEmpty:
+                            self?.isSearch = false
+                            self?.updateSelectedUserInfo()
+                            self?.delegate?.screenViewModelDidSearchUser()
+                        case .unknown:
+                            break
+                        }
+                    }
+                }
+            })
+        }
     }
     
     func selectUser(at indexPath: IndexPath) {
@@ -186,22 +233,48 @@ extension AmityForwardChannelPickerScreenViewModel {
         }
     }
     
+    // [Back up]
+//    func loadmore() {
+//        var success: Bool = false
+//        if isSearch {
+//            guard let controller = searchUserController else { return }
+//            success = controller.loadmore(isSearch: isSearch)
+//        } else {
+//            guard let controller = fetchChannelController else { return }
+//            fetchChannelController?.newSelectedUsers = newSelectedUsers
+//            fetchChannelController?.currentUsers = currentUsers
+//            success = controller.loadmore(isSearch: isSearch)
+//        }
+//
+//        if success {
+//            delegate?.screenViewModelLoadingState(for: .loading)
+//        } else {
+//            delegate?.screenViewModelLoadingState(for: .loaded)
+//        }
+//    }
+    
     func loadmore() {
-        var success: Bool = false
-        if isSearch {
-            guard let controller = searchUserController else { return }
-            success = controller.loadmore(isSearch: isSearch)
+        if isSearch && targetType == .group {
+            searchUserController?.loadMore(isSearch: isSearch)
         } else {
             guard let controller = fetchChannelController else { return }
             fetchChannelController?.newSelectedUsers = newSelectedUsers
             fetchChannelController?.currentUsers = currentUsers
-            success = controller.loadmore(isSearch: isSearch)
+            let success = controller.loadmore(isSearch: isSearch)
+            
+            if success {
+                delegate?.screenViewModelLoadingState(for: .loading)
+            } else {
+                delegate?.screenViewModelLoadingState(for: .loaded)
+            }
         }
-        
-        if success {
-            delegate?.screenViewModelLoadingState(for: .loading)
-        } else {
-            delegate?.screenViewModelLoadingState(for: .loaded)
+    }
+}
+
+extension AmityForwardChannelPickerScreenViewModel: AmityForwardSearchChannelControllerDelegate {
+    func willLoadMore(isLoadingMore: Bool) {
+        if isLoadingMore && targetType == .group {
+            searchUser(with: currentKeyword)
         }
     }
 }
