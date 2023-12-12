@@ -39,7 +39,7 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         durationView.clipsToBounds = true
         durationView.layer.cornerRadius = 4
         durationLabel.font = AmityFontSet.caption
-        durationLabel.textColor = AmityThemeManager.currentTheme.baseInverse
+        durationLabel.textColor = .white
         
         alertView.isHidden = true
         alertView.backgroundColor = .black.withAlphaComponent(0.4)

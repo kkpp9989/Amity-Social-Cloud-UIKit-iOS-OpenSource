@@ -700,20 +700,25 @@ extension AmityExpandableLabel {
             let validUrlString = urlString.hasPrefixIgnoringCase("http") ? urlString : "http://\(urlString)"
             guard let formattedString = validUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                   let url = URL(string: formattedString) else { continue }
+            attributedString.addAttributes([
+                .foregroundColor: self.hyperLinkColor,
+                .link: url.absoluteString], range: match.range)
+            hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+            self.attributedText = attributedString
             
-            let task = URLSession.shared.dataTask(with: url) { (_, response, error) in
-                if error == nil, (response as? HTTPURLResponse)?.statusCode == 200 {
-                    // If the URL is valid and can be opened, add it as a hyperlink
-                    DispatchQueue.main.async {
-                        attributedString.addAttributes([
-                            .foregroundColor: self.hyperLinkColor,
-                            .link: url.absoluteString], range: match.range)
-                        hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
-                        self.attributedText = attributedString
-                    }
-                }
-            }
-            task.resume()
+//            let task = URLSession.shared.dataTask(with: url) { (_, response, error) in
+//                if error == nil, (response as? HTTPURLResponse)?.statusCode == 200 {
+//                    // If the URL is valid and can be opened, add it as a hyperlink
+//                    DispatchQueue.main.async {
+//                        attributedString.addAttributes([
+//                            .foregroundColor: self.hyperLinkColor,
+//                            .link: url.absoluteString], range: match.range)
+//                        hyperLinkTextRange.append(Hyperlink(range: match.range, type: .url(url: url)))
+//                        self.attributedText = attributedString
+//                    }
+//                }
+//            }
+//            task.resume()
         }
 
         // Detect and process hashtags using regular expression
