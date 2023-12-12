@@ -127,6 +127,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        startObserver()
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -227,6 +228,23 @@ public final class AmityMessageListViewController: AmityViewController {
     
     private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
+    }
+    
+    private func startObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(refreshPresence(notification:)),
+                                               name: Notification.Name("RefreshChannelPresence"),
+                                               object: nil)
+    }
+    
+    private func stopObserver() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+    }
+    
+    @objc func refreshPresence(notification: Notification) {
+        DispatchQueue.main.async() { [self] in
+            screenViewModel.action.getChannel()
+        }
     }
     
     @objc func handleCustomSwipeBackAction(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {

@@ -111,6 +111,12 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
                                 statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
                             }
                         }
+                    } else {
+                        if isOnline {
+                            statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                        } else {
+                            statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                        }
                     }
                 }
             }
@@ -125,7 +131,7 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
             
             iconImageView.isHidden = false
             var iconBadge = AmityIconSet.Chat.iconPublicBadge
-            if data.channelObjc.object.isPublic {
+            if !data.channelObjc.object.isPublic {
                 iconBadge = AmityIconSet.Chat.iconPrivateBadge
             }
             iconImageView.image = iconBadge

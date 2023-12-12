@@ -17,7 +17,7 @@ public struct AmityNotificationTrayModel: Codable {
 
 // MARK: - Datum
 public struct NotificationTray: Codable {
-    let hasRead: Bool
+    var hasRead: Bool
     let lastUpdate: Int
     let parentTargetID, lastActionID: String
     let lastActionSegmentNo: Int?

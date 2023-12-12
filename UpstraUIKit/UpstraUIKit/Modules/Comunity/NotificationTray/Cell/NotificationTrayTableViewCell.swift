@@ -45,7 +45,7 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
         
         var action: String = ""
         
-        if model.verb == "posted" {
+        if model.verb == "post" {
             action = "posted in"
         } else if model.verb == "comment" {
             action = shouldRenderTarget(targetName: model.targetName) ? "commented on your post in" : "commented on your post"
