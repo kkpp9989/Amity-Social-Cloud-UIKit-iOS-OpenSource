@@ -295,7 +295,12 @@ extension AmityMessageListScreenViewModel {
         
         editor = AmityMessageEditor(client: AmityUIKitManagerInternal.shared.client, messageId: messageId)
         editor?.editText(textMessage, metadata: metadata, mentionees: mentionees, completion: { [weak self] (isSuccess, error) in
-            guard isSuccess else { return }
+            guard error == nil, isSuccess else {
+                if let error = error {
+                    self?.delegate?.screenViewModelEvents(for: .didSendTextError(error: error))
+                }
+                return
+            }
             
             self?.delegate?.screenViewModelEvents(for: .didEditText)
             self?.editor = nil
