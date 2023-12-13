@@ -10,7 +10,7 @@ import UIKit
 import AmitySDK
 import Combine
 
-public struct AmityChannelModel {
+public class AmityChannelModel {
     let channelId: String
     let displayName: String
     let memberCount: Int
@@ -26,6 +26,7 @@ public struct AmityChannelModel {
     var isOnline: Bool
     let isMuted: Bool
     let isDeleted: Bool
+    var userInfo: AmityUser?
     
     init(object: AmityChannel) {
         self.channelId = object.channelId
@@ -43,8 +44,18 @@ public struct AmityChannelModel {
         self.isOnline = false
         self.isMuted = object.isMuted
         self.isDeleted = object.isDeleted
+        if channelType == .conversation {
+            getOtherUser { user in
+                self.userInfo = user
+            }
+        } else {
+            self.userInfo = nil
+        }
     }
     
+    private var token: AmityNotificationToken?
+    private var repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+
     var isConversationChannel: Bool {
         return channelType == .conversation
     }
@@ -58,6 +69,18 @@ public struct AmityChannelModel {
             }
         }
         return ""
+    }
+    
+    func getOtherUser(completion: @escaping (_ user: AmityUser?) -> Void) {
+        token?.invalidate()
+        if !getOtherUserId().isEmpty {
+            token = repository.getUser(getOtherUserId()).observeOnce({ [weak self] user, error in
+                guard let weakSelf = self else { return }
+                let userObject = user.snapshot
+                weakSelf.token?.invalidate()
+                completion(userObject)
+            })
+        }
     }
 }
 
