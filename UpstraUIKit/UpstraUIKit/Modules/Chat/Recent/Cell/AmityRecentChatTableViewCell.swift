@@ -190,10 +190,9 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             return AmityIconSet.Chat.iconStatusOnLeave ?? UIImage()
         case "out_sick":
             return AmityIconSet.Chat.iconStatusOutSick ?? UIImage()
+        case "in_the_office":
+            return AmityIconSet.Chat.iconStatusInTheOffice ?? UIImage()
         default:
-//            statusBadgeImageView.isHidden = true
-//            badgeStatusView.isHidden = true
-//            badgeStatusView.backgroundColor = .clear
             return AmityIconSet.Chat.iconOfflineIndicator ?? UIImage()
         }
     }
