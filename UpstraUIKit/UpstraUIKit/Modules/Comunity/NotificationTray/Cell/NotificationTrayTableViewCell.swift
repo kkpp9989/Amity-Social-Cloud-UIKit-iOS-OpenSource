@@ -85,7 +85,7 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
     }
 
     func shouldRenderTarget(targetName: String) -> Bool {
-        return !targetName.isEmpty
+        return !targetName.isEmpty && targetName != "undefined"
     }
 
     
