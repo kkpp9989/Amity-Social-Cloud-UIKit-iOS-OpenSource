@@ -12,7 +12,7 @@ import AmitySDK
 final class AmityPendingMembersScreenViewModel: AmityPendingMembersScreenViewModelType {
     
     // MARK: - Delegate
-    weak var delegate: AmityPendingPostsScreenViewModelDelegate?
+    weak var delegate: AmityPendingMembersScreenViewModelDelegate?
     
     // MARK: - Repository
     private let communityRepository: AmityCommunityRepository
@@ -20,9 +20,9 @@ final class AmityPendingMembersScreenViewModel: AmityPendingMembersScreenViewMod
     private let postRepository: AmityPostRepository
     
     // MARK: - Tasks
-    private let communityViewModel: AmityPendingPostsCommunityViewModelProtocol
-    private let pendingPostsFeedViewModel: AmityPendingPostsFeedViewModelProtocol
-    private let postViewModel: AmityPendingPostsDetailGetPostViewModelProtocol
+    private let communityViewModel: AmityPendingMembersCommunityViewModelProtocol
+    private let pendingMembersFeedViewModel: AmityPendingMembersFeedViewModelProtocol
+    //private let postViewModel: AmityPendingPostsDetailGetPostViewModelProtocol
     
     // MARK: - Properties
     private var postComponents = [AmityPostComponent]()
@@ -35,14 +35,14 @@ final class AmityPendingMembersScreenViewModel: AmityPendingMembersScreenViewMod
         self.communityRepository = AmityCommunityRepository(client: AmityUIKitManagerInternal.shared.client)
         self.feedRepositoryManager = AmityFeedRepositoryManager()
         self.postRepository = AmityPostRepository(client: AmityUIKitManagerInternal.shared.client)
-        self.communityViewModel = AmityPendingPostsCommunityViewModel(communityId: communityId, communityRepository: communityRepository)
-        self.pendingPostsFeedViewModel = AmityPendingPostsFeedViewModel(communityId: communityId, feedRepositoryManager: feedRepositoryManager)
-        self.postViewModel = AmityPendingPostsDetailGetPostViewModel()
+        self.communityViewModel = AmityPendingMembersCommunityViewModel(communityId: communityId, communityRepository: communityRepository)
+        self.pendingMembersFeedViewModel = AmityPendingMembersFeedViewModel(communityId: communityId, feedRepositoryManager: feedRepositoryManager)
+        //self.postViewModel = AmityPendingMembersDetailGetPostViewModel()
     }
 }
 
 // MARK: - Data Source
-extension AmityPendingPostsScreenViewModel {
+extension AmityPendingMembersScreenViewModel {
     
     func postComponents(in section: Int) -> AmityPostComponent {
         return postComponents[section]
@@ -64,7 +64,7 @@ extension AmityPendingPostsScreenViewModel {
 }
 
 // MARK: - Action
-extension AmityPendingPostsScreenViewModel {
+extension AmityPendingMembersScreenViewModel {
     
     func getMemberStatus() {
         communityViewModel.getMemberStatus { [weak self] (community, status) in
@@ -75,11 +75,11 @@ extension AmityPendingPostsScreenViewModel {
         }
     }
     
-    func getPendingPosts() {
-        pendingPostsFeedViewModel.getReviewingFeed(hasEditCommunityPermission: memberStatusCommunity == .admin) { [weak self] (postComponents) in
+    func getPendingMembers() {
+        pendingMembersFeedViewModel.getReviewingFeed(hasEditCommunityPermission: memberStatusCommunity == .admin) { [weak self] (postComponents) in
             guard let strongSelf = self else { return }
             strongSelf.postComponents = postComponents
-            strongSelf.delegate?.screenViewModelDidGetPendingPosts(strongSelf)
+            strongSelf.delegate?.screenViewModelDidGetPendingMemberRequests(strongSelf)
         }
     }
    
@@ -92,23 +92,26 @@ extension AmityPendingPostsScreenViewModel {
     }
     
     func deletePost(withPostId postId: String) {
+        /*
         postViewModel.getPostForPostId(withPostId: postId) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let post):
                 switch post.feedType {
                 case .published, .declined:
-                    strongSelf.delegate?.screenViewModelDidDeletePostFail(title: AmityLocalizedStringSet.PendingPosts.postNotAvailable.localizedString,
-                                                                          message: AmityLocalizedStringSet.PendingPosts.alertDeleteFailApproveOrDecline.localizedString)
+                    strongSelf.delegate?.screenViewModelDidDeleteMemberRequestFail(title: "Something went wrong",
+                                                                          message: AmityLocalizedStringSet.PendingMembers.alertDeleteFailApproveOrDecline.localizedString)
+                        //AmityLocalizedStringSet.PendingMembers.postNotAvailable.localizedString
                 case .reviewing:
                     self?.postRepository.deletePost(withId: postId, parentId: nil, hardDelete: false, completion: nil)
                 @unknown default:
                     break
                 }
             case .failure:
-                strongSelf.delegate?.screenViewModelDidDeletePostFail(title: AmityLocalizedStringSet.PendingPosts.alertDeleteFailTitle.localizedString,
+                strongSelf.delegate?.screenViewModelDidDeleteMemberRequestFail(title: "Something went wrong",
                                                                       message: AmityLocalizedStringSet.somethingWentWrongWithTryAgain.localizedString)
+                    //AmityLocalizedStringSet.PendingMembers.alertDeleteFailTitle.localizedString
             }
-        }
+        }*/
     }
 }

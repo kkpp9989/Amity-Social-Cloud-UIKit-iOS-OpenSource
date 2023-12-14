@@ -18,7 +18,7 @@ final class AmityPendingMembersHeaderView: AmityView {
     }
     
     private func setupTitleLabel() {
-        titleLabel.text = AmityLocalizedStringSet.PendingMembers.headerTitle.localizedString
+        titleLabel.text = "AmityPendingMembersHeaderView" //AmityLocalizedStringSet.PendingMembers.headerTitle.localizedString
         titleLabel.font = AmityFontSet.caption
         titleLabel.textColor = AmityColorSet.base.blend(.shade1)
         titleLabel.numberOfLines = 0

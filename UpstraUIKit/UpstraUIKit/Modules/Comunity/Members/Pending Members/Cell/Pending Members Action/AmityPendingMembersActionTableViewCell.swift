@@ -14,7 +14,7 @@ protocol AmityPendingMembersActionCellDelegate: AnyObject {
 
 enum AmityPendingMembersAction {
     case tapAccept
-    case tapDecline
+    case tapDelete
 }
 
 protocol AmityPendingMembersActionCellProtocol: UITableViewCell {
@@ -32,13 +32,13 @@ final class AmityPendingMembersActionTableViewCell: UITableViewCell, Nibbable, A
     // MARK: - IBOutlet Properties
     @IBOutlet private var separatorView: UIView!
     @IBOutlet private var acceptButton: UIButton!
-    @IBOutlet private var declineButton: UIButton!
+    @IBOutlet private var deleteButton: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
         setupAcceptButton()
-        setupDeclineButton()
+        setupDeleteButton()
     }
     
     func updatePost(withPost post: AmityPostModel) {
@@ -54,20 +54,22 @@ final class AmityPendingMembersActionTableViewCell: UITableViewCell, Nibbable, A
     }
     
     private func setupAcceptButton()  {
-        acceptButton.setTitle(AmityLocalizedStringSet.General.accept.localizedString, for: .normal)
+        acceptButton.setTitle("อนุมัติ", for: .normal)
+        //AmityLocalizedStringSet.General.accept.localizedString
         acceptButton.setTitleColor(AmityColorSet.baseInverse, for: .normal)
         acceptButton.titleLabel?.font = AmityFontSet.bodyBold
         acceptButton.layer.cornerRadius = 4
         acceptButton.backgroundColor = AmityColorSet.primary
     }
     
-    private func setupDeclineButton() {
-        declineButton.setTitle(AmityLocalizedStringSet.General.decline.localizedString, for: .normal)
-        declineButton.setTitleColor(AmityColorSet.base, for: .normal)
-        declineButton.titleLabel?.font = AmityFontSet.bodyBold
-        declineButton.layer.cornerRadius = 4
-        declineButton.layer.borderWidth = 1
-        declineButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
+    private func setupDeleteButton() {
+        deleteButton.setTitle("ลบ", for: .normal)
+        //AmityLocalizedStringSet.General.Delete.localizedString
+        deleteButton.setTitleColor(AmityColorSet.base, for: .normal)
+        deleteButton.titleLabel?.font = AmityFontSet.bodyBold
+        deleteButton.layer.cornerRadius = 4
+        deleteButton.layer.borderWidth = 1
+        deleteButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
     }
 
 }
@@ -85,14 +87,14 @@ private extension AmityPendingMembersActionTableViewCell {
         delegate?.performAction(self, action: .tapAccept)
     }
     
-    @IBAction func declineTap() {
-        declineButton.isEnabled = false
+    @IBAction func DeleteTap() {
+        deleteButton.isEnabled = false
         
         // Dispatch a task to re-enable the button after 2 seconds (2000 milliseconds)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.declineButton.isEnabled = true
+            self.deleteButton.isEnabled = true
         }
-        delegate?.performAction(self, action: .tapDecline)
+        delegate?.performAction(self, action: .tapDelete)
     }
     
 }

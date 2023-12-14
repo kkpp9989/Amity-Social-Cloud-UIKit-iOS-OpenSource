@@ -2125,18 +2125,18 @@
 		4E78F0CF2B2967FD0003A945 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				4E78F0D02B2967FD0003A945 /* Pending Posts Action */,
+				4E78F0D02B2967FD0003A945 /* Pending Members Action */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
 		};
-		4E78F0D02B2967FD0003A945 /* Pending Posts Action */ = {
+		4E78F0D02B2967FD0003A945 /* Pending Members Action */ = {
 			isa = PBXGroup;
 			children = (
 				4E78F0D12B2967FD0003A945 /* AmityPendingMembersActionTableViewCell.xib */,
 				4E78F0D22B2967FD0003A945 /* AmityPendingMembersActionTableViewCell.swift */,
 			);
-			path = "Pending Posts Action";
+			path = "Pending Members Action";
 			sourceTree = "<group>";
 		};
 		4E78F0D32B2967FD0003A945 /* Components */ = {

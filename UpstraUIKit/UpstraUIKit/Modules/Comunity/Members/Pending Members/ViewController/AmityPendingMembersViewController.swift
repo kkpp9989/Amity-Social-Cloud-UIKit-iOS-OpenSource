@@ -46,7 +46,7 @@ public class AmityPendingMembersViewController: AmityViewController {
     
     // MARK: - Setup views
     private func setupView() {
-        title = AmityLocalizedStringSet.PendingMembers.title.localizedString
+        title = "Pending Members"//AmityLocalizedStringSet.PendingMembers.title.localizedString
     }
     
     private func setupTableView()  {
@@ -65,17 +65,17 @@ public class AmityPendingMembersViewController: AmityViewController {
 
 extension AmityPendingMembersViewController: AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, didSelectRowAt indexPath: IndexPath) {
-        let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
-        let postId = singleComponent._composable.post.postId
-        let vc = AmityPendingMembersDetailViewController.make(communityId: screenViewModel.dataSource.communityId, postId: postId)
-        navigationController?.pushViewController(vc, animated: true)
+//        let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
+//        let postId = singleComponent._composable.post.postId
+//        let vc = AmityPendingMembersDetailViewController.make(communityId: screenViewModel.dataSource.communityId, postId: postId)
+//        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 extension AmityPendingMembersViewController: AmityPostTableViewDataSource {
     
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
-        let numberOfPostComponents = screenViewModel.dataSource.numberOfPostComponents()
+        let numberOfPostComponents = screenViewModel.dataSource.numberOfMemberComponents()
         if numberOfPostComponents > 0 {
             switch screenViewModel.dataSource.memberStatusCommunity {
             case .admin:
@@ -130,7 +130,7 @@ extension AmityPendingMembersViewController: AmityPendingMembersScreenViewModelD
         
     }
     
-    func screenViewModelDidDeletePostFail(title: String, message: String) {
+    func screenViewModelDidDeleteMemberRequestFail(title: String, message: String) {
         AmityAlertController.present(title: title,
                                      message: message,
                                      actions: [.ok(style: .default, handler: nil)],

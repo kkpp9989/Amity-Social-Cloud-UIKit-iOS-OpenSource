@@ -10,9 +10,9 @@ import UIKit
 
 protocol AmityPendingMembersScreenViewModelDelegate: AnyObject {
     func screenViewModel(_ viewModel: AmityPendingMembersScreenViewModelType, didGetMemberStatusCommunity status: AmityMemberStatusCommunity)
-    func screenViewModelDidGetPendingMembers(_ viewModel: AmityPendingMembersScreenViewModelType)
+    func screenViewModelDidGetPendingMemberRequests(_ viewModel: AmityPendingMembersScreenViewModelType)
     func screenViewModel(_ viewModel: AmityPendingMembersScreenViewModelType, didFail error: AmityError)
-    func screenViewModelDidDeletePostFail(title: String, message: String)
+    func screenViewModelDidDeleteMemberRequestFail(title: String, message: String)
 }
 
 protocol AmityPendingMembersScreenViewModelDataSource {
@@ -20,7 +20,7 @@ protocol AmityPendingMembersScreenViewModelDataSource {
     var memberStatusCommunity: AmityMemberStatusCommunity { get }
     
     func postComponents(in section: Int) -> AmityPostComponent
-    func numberOfPostComponents() -> Int
+    func numberOfMemberComponents() -> Int
     func numberOfItemComponents(_ tableView: AmityPostTableView, in section: Int) -> Int
     
 }
