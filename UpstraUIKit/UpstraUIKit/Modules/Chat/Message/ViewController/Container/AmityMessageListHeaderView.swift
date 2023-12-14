@@ -57,6 +57,7 @@ private extension AmityMessageListHeaderView {
         displayNameLabel.text = nil
         
         avatarView.image = nil
+        avatarView.isHidden = true
         avatarView.placeholder = AmityIconSet.defaultAvatar
         
         /* [Custom for ONE Krungthai] Setup custom properties */
@@ -79,6 +80,8 @@ private extension AmityMessageListHeaderView {
 extension AmityMessageListHeaderView {
     
     func updateViews(channel: AmityChannelModel, isOnline: Bool) {
+        avatarView.isHidden = false
+        
         switch channel.channelType {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
