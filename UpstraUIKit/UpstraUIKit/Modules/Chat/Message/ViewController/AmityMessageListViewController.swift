@@ -633,7 +633,6 @@ private extension AmityMessageListViewController {
         screenViewModel.delegate = self
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
-        screenViewModel.startReading()
         screenViewModel.action.getTotalUnreadCount()
     }
 }

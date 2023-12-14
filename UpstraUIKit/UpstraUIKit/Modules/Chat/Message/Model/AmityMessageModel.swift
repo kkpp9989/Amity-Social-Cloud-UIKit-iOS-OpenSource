@@ -30,6 +30,7 @@ public final class AmityMessageModel {
 	public let mentionees: [AmityMentionees]?
     public let parentId: String?
     public var parentMessageObjc: AmityMessage?
+    public var readCount: Int?
 	
     /**
      * The post appearance settings
@@ -63,6 +64,7 @@ public final class AmityMessageModel {
 		self.metadata = object.metadata
 		self.mentionees = object.mentionees
         self.parentId = object.parentId
+        self.readCount = object.readCount
         self.getParentMessage { result in
             self.parentMessageObjc = result
             self.messageToken?.invalidate()
@@ -112,6 +114,7 @@ extension AmityMessageModel: Hashable {
         hasher.combine(text)
         hasher.combine(tags)
         hasher.combine(channelSegment)
+        hasher.combine(readCount)
         if let dataDesc = data?.description {
             hasher.combine(dataDesc)
         }
