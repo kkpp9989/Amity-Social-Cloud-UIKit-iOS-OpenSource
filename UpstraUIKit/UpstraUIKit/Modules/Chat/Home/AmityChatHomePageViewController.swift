@@ -30,6 +30,11 @@ public class AmityChatHomePageViewController: AmityPageViewController {
         return AmityChatHomePageViewController()
     }
     
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        AmityEventHandler.shared.hideKTBLoading() // Hide KTB Loading from main app if back from open chat detail by notification
+    }
+    
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
         recentsChatViewController.pageTitle = AmityLocalizedStringSet.recentTitle.localizedString
         followingChatViewController.pageTitle = AmityLocalizedStringSet.followingTitle.localizedString

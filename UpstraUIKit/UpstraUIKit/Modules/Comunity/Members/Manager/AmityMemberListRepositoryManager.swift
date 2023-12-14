@@ -33,7 +33,9 @@ final class AmityMemberListRepositoryManager: AmityMemberListRepositoryManagerPr
                 for index in 0..<collection.count() {
                     guard let object = collection.object(at: index) else { continue }
                     let model = AmityUserModel(user: object)
-                    membersList.append(model)
+                    if !model.isCurrentUser {
+                        membersList.append(model)
+                    }
                 }
                 completion?(membersList)
                 /* [Fix-defect] Disable invalidate result search observer for load more ability */

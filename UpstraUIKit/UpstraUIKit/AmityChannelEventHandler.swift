@@ -71,7 +71,15 @@ open class AmityChannelEventHandler {
                               channelId: String,
                               selectedUsers: [AmitySelectMemberModel],
                               completionHandler: @escaping ([AmitySelectMemberModel]) -> ()) {
-        let vc = AmityMemberPickerViewController.make(withCurrentUsers: selectedUsers)
+        // [Back up]
+//        let vc = AmityMemberPickerViewController.make(withCurrentUsers: selectedUsers)
+//        vc.selectUsersHandler = { storeUsers in
+//            completionHandler(storeUsers)
+//        }
+//        let navVc = UINavigationController(rootViewController: vc)
+//        navVc.modalPresentationStyle = .fullScreen
+//        source.present(navVc, animated: true, completion: nil)
+        let vc = AmityAllTypeMemberPickerChatViewController.make(withCurrentUsers: selectedUsers)
         vc.selectUsersHandler = { storeUsers in
             completionHandler(storeUsers)
         }

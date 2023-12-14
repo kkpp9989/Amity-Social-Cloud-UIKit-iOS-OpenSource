@@ -320,7 +320,7 @@ final class AmityUIKitManagerInternal: NSObject {
     var displayName: String { return client.user?.snapshot?.displayName ?? "" }
     var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
     var userStatus: AmityUserStatus.StatusType = .AVAILABLE
-    var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "" }
+    var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "available" }
 
     private var userToken: String = ""
     public var currentUserToken: String { return self.userToken }

@@ -32,7 +32,7 @@ extension AmityChannelMemberSettingsScreenViewModel {
 // MARK: - Action
 extension AmityChannelMemberSettingsScreenViewModel {
     func getUserRoles() {
-        AmityUIKitManagerInternal.shared.client.hasPermission(.editChannel, forChannel: channel.channelId, completion: { [weak self] hasPermission in
+        AmityUIKitManagerInternal.shared.client.hasPermission(.addChannelUser, forChannel: channel.channelId, completion: { [weak self] hasPermission in
             guard let weakSelf = self else { return }
             weakSelf.isModerator = hasPermission
             weakSelf.delegate?.screenViewModelShouldShowAddButtonBarItem(status: hasPermission)

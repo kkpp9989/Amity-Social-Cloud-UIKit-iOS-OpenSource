@@ -256,11 +256,6 @@ extension AmityMessageListScreenViewModel {
         didEnterBackgroundObservation = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] notification in
             self?.lastEnterBackground = Date()
         }
-        
-//        connectionObservation = AmityUIKitManagerInternal.shared.client.observe(\.connectionStatus) { [weak self] client, changes in
-//            self?.connectionStateDidChanged()
-//        }
-        
     }
     
     func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
@@ -295,7 +290,12 @@ extension AmityMessageListScreenViewModel {
         
         editor = AmityMessageEditor(client: AmityUIKitManagerInternal.shared.client, messageId: messageId)
         editor?.editText(textMessage, metadata: metadata, mentionees: mentionees, completion: { [weak self] (isSuccess, error) in
-            guard isSuccess else { return }
+            guard error == nil, isSuccess else {
+                if let error = error {
+                    self?.delegate?.screenViewModelEvents(for: .didSendTextError(error: error))
+                }
+                return
+            }
             
             self?.delegate?.screenViewModelEvents(for: .didEditText)
             self?.editor = nil
@@ -822,24 +822,116 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
     
+//    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
+//        var operations: [AsyncOperation] = []
+//
+//        switch type {
+//        case .image:
+//            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+//        case .video:
+//            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
+//        }
+//
+//        // Define serial dependency A <- B <- C <- ... <- Z
+//        for (left, right) in zip(operations, operations.dropFirst()) {
+//            right.addDependency(left)
+//        }
+//
+//        queue.addOperations(operations, waitUntilFinished: false)
+//    }
+    
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
-        var operations: [AsyncOperation] = []
-        
-        switch type {
-        case .image:
-            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
-        case .video:
-            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
+        for media in medias {
+            // Separate process from state of media
+            if type == .image {
+                switch media.state {
+                case .localAsset(_): // From send image message
+                    media.getImageForUploading { result in
+                        switch result {
+                        case .success(let image):
+                            let imageURL = self.createTempImage(image: image)
+                            self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+                        case .failure:
+                            print("failure")
+                        }
+                    }
+                case .image(let image): // From resend image message
+                    let imageURL = self.createTempImage(image: image)
+                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+                default:
+                    print("failure")
+                }
+            } else {
+                // get local video url for uploading
+                media.getLocalURLForUploading { [weak self] url in
+                    guard let url = url else {
+                        media.state = .error
+                        return
+                    }
+                    
+                    self?.createVideoMessage(videoURL: url)
+                }
+            }
         }
-        
-        // Define serial dependency A <- B <- C <- ... <- Z
-        for (left, right) in zip(operations, operations.dropFirst()) {
-            right.addDependency(left)
-        }
+    }
 
-        queue.addOperations(operations, waitUntilFinished: false)
+    private func cacheImageFile(imageData: Data, fileName: String) {
+        AmityFileCache.shared.cacheData(for: .imageDirectory, data: imageData, fileName: fileName, completion: {_ in})
     }
     
+    private func deleteCacheImageFile(fileName: String) {
+        AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
+    }
+    
+    private func createTempImage(image: UIImage) -> URL {
+        // save image to temp directory and send local url path for uploading
+        let imageName = "\(UUID().uuidString).jpg"
+        
+        // Write image file to temp folder for send message
+        let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
+        let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
+        try? data?.write(to: imageUrl)
+        
+        // Cached image file for resend message
+        if let imageData = data {
+            cacheImageFile(imageData: imageData, fileName: imageName)
+        }
+        
+        return imageUrl
+    }
+    
+    private func createImageMessage(imageURL: URL, fileURLString: String) {
+        let channelId = self.subChannelId
+        let createOptions = AmityImageMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: imageURL), fullImage: true)
+        
+        guard let repository = messageRepository else {
+            return
+        }
+                
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
+            guard error == nil, let message = message else {
+                return
+            }
+            
+            // Delete cache if exists
+            self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
+        }
+    }
+    
+    private func createVideoMessage(videoURL: URL) {
+        let channelId = self.subChannelId
+        let createOptions = AmityVideoMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: videoURL))
+        
+        guard let repository = messageRepository else {
+            return
+        }
+        
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createVideoMessage(options:), parameters: createOptions) { [weak self] message, error in
+            guard error == nil, let message = message else {
+                return
+            }
+        }
+    }
 }
 
 // MARK: - Send Audio
