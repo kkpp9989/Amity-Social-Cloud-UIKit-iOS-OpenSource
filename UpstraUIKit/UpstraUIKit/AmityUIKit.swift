@@ -299,6 +299,10 @@ public final class AmityUIKitManager {
         
         return isOnline
     }
+    
+    public static func setASMRemoteConfig(_ isEnableMenu: Bool) {
+        AmityUIKitManagerInternal.shared.isEnableMenu = isEnableMenu
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -341,6 +345,8 @@ final class AmityUIKitManagerInternal: NSObject {
     }
     
     var env: [String: Any] = [:]
+    
+    var isEnableMenu: Bool = true
     
     // MARK: - Initializer
     

@@ -241,6 +241,8 @@ extension AmityMessageListScreenViewModel {
             if self?.channelType == .conversation {
                 self?.startRealtimeSubscription()
             }
+            self?.startReading()
+            self?.subChannelNotificationToken?.invalidate()
         }
     }
     
@@ -642,7 +644,7 @@ private extension AmityMessageListScreenViewModel {
     func groupMessages(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?) {
         
         // First we get message from the collection
-        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
