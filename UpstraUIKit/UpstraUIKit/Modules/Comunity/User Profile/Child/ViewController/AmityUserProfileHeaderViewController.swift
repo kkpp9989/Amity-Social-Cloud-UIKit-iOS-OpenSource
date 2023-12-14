@@ -225,6 +225,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     private func setupMessageButton() {
+        messageFriendButton.isHidden = !AmityUIKitManagerInternal.shared.isEnableMenu
         messageFriendButton.setImage(AmityIconSet.iconMessageProfile, position: .left)
         messageFriendButton.setTitle("Message", for: .normal)
         messageFriendButton.tintColor = AmityColorSet.base

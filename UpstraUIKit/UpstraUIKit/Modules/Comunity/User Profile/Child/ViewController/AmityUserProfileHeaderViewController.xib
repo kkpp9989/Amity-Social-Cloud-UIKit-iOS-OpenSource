@@ -44,17 +44,17 @@
                         <constraint firstAttribute="height" constant="96" id="YIh-lz-eVM"/>
                     </constraints>
                 </view>
-                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="zWx-sv-DPR">
-                    <rect key="frame" x="16" y="152" width="511" height="88.5"/>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="zWx-sv-DPR">
+                    <rect key="frame" x="16" y="152" width="511" height="68"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LyI-Rf-txb" userLabel="Title Label">
-                            <rect key="frame" x="0.0" y="0.0" width="511" height="20.5"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LyI-Rf-txb" userLabel="Title Label">
+                            <rect key="frame" x="0.0" y="0.0" width="511" height="0.0"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tjI-VM-KRy">
-                            <rect key="frame" x="0.0" y="28.5" width="511" height="60"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tjI-VM-KRy">
+                            <rect key="frame" x="0.0" y="8" width="511" height="60"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X6F-Xv-l2M" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
                                     <rect key="frame" x="200.5" y="15" width="30" height="30"/>
@@ -80,20 +80,20 @@
                         <constraint firstItem="LyI-Rf-txb" firstAttribute="leading" secondItem="zWx-sv-DPR" secondAttribute="leading" id="ePz-20-ZAF"/>
                     </constraints>
                 </stackView>
-                <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="FAD-J6-Siy">
-                    <rect key="frame" x="16" y="236" width="511" height="250.5"/>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="FAD-J6-Siy">
+                    <rect key="frame" x="16" y="236" width="511" height="219"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jyx-dK-963" userLabel="Description Label">
-                            <rect key="frame" x="0.0" y="0.0" width="511" height="20.5"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jyx-dK-963" userLabel="Description Label">
+                            <rect key="frame" x="0.0" y="0.0" width="511" height="0.0"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Nbu-nK-O1g">
-                            <rect key="frame" x="0.0" y="32.5" width="511" height="40"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Nbu-nK-O1g">
+                            <rect key="frame" x="0.0" y="12" width="511" height="29"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8G1-Jd-TQ9" userLabel="Edit Profile Button" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="255.5" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="255.5" height="29"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="40" id="w1L-bD-CJM"/>
                                     </constraints>
@@ -103,7 +103,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wAT-Pc-h9S" userLabel="Message Button" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="255.5" y="0.0" width="255.5" height="40"/>
+                                    <rect key="frame" x="255.5" y="0.0" width="255.5" height="29"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="40" id="BSL-k4-EOO"/>
                                     </constraints>
@@ -114,8 +114,8 @@
                                 </button>
                             </subviews>
                         </stackView>
-                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OXY-Se-igs" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="84.5" width="511" height="40"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OXY-Se-igs" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="53" width="511" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="CsF-qs-4Na"/>
                             </constraints>
@@ -124,43 +124,50 @@
                                 <action selector="followAction:" destination="-1" eventType="touchUpInside" id="pvM-EA-aBe"/>
                             </connections>
                         </button>
-                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GNR-VN-X08">
-                            <rect key="frame" x="0.0" y="136.5" width="511" height="40"/>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GNR-VN-X08">
+                            <rect key="frame" x="0.0" y="105" width="511" height="40"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cWb-qu-Rn0" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="251.5" height="40"/>
-                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                    <state key="normal" title="Button"/>
-                                    <connections>
-                                        <action selector="contachFriendAction:" destination="-1" eventType="touchUpInside" id="UlX-1L-kwp"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kna-XH-D3d" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
-                                    <rect key="frame" x="259.5" y="0.0" width="251.5" height="40"/>
-                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                    <state key="normal" title="Button"/>
-                                    <connections>
-                                        <action selector="messageFriendAction:" destination="-1" eventType="touchUpInside" id="sim-RY-cJr"/>
-                                    </connections>
-                                </button>
+                                <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="BlF-sw-gn4">
+                                    <rect key="frame" x="0.0" y="0.0" width="511" height="40"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cWb-qu-Rn0" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
+                                            <rect key="frame" x="0.0" y="0.0" width="251.5" height="40"/>
+                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                            <state key="normal" title="Button"/>
+                                            <connections>
+                                                <action selector="contachFriendAction:" destination="-1" eventType="touchUpInside" id="UlX-1L-kwp"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kna-XH-D3d" customClass="AmityButton" customModule="AmityUIKit" customModuleProvider="target">
+                                            <rect key="frame" x="259.5" y="0.0" width="251.5" height="40"/>
+                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                            <state key="normal" title="Button"/>
+                                            <connections>
+                                                <action selector="messageFriendAction:" destination="-1" eventType="touchUpInside" id="sim-RY-cJr"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Kna-XH-D3d" firstAttribute="width" secondItem="cWb-qu-Rn0" secondAttribute="width" id="SiH-bF-YXx"/>
+                                        <constraint firstItem="Kna-XH-D3d" firstAttribute="leading" secondItem="cWb-qu-Rn0" secondAttribute="trailing" constant="8" symbolic="YES" id="hoF-Mn-b7Q"/>
+                                        <constraint firstAttribute="trailing" secondItem="Kna-XH-D3d" secondAttribute="trailing" id="qjR-WC-m21"/>
+                                        <constraint firstItem="cWb-qu-Rn0" firstAttribute="leading" secondItem="BlF-sw-gn4" secondAttribute="leading" id="qrO-Qe-Rg5"/>
+                                    </constraints>
+                                </stackView>
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="Kna-XH-D3d" secondAttribute="trailing" id="6vr-Ny-se9"/>
-                                <constraint firstItem="cWb-qu-Rn0" firstAttribute="width" secondItem="Kna-XH-D3d" secondAttribute="width" id="8AG-f6-gi1"/>
-                                <constraint firstAttribute="bottom" secondItem="cWb-qu-Rn0" secondAttribute="bottom" id="DEq-VF-raL"/>
-                                <constraint firstItem="Kna-XH-D3d" firstAttribute="top" secondItem="GNR-VN-X08" secondAttribute="top" id="IhG-xm-5n2"/>
+                                <constraint firstItem="BlF-sw-gn4" firstAttribute="leading" secondItem="GNR-VN-X08" secondAttribute="leading" id="9hF-eu-ffN"/>
+                                <constraint firstAttribute="trailing" secondItem="BlF-sw-gn4" secondAttribute="trailing" id="J7D-20-aIq"/>
                                 <constraint firstAttribute="height" constant="40" id="JUP-Sz-GGa"/>
-                                <constraint firstAttribute="bottom" secondItem="Kna-XH-D3d" secondAttribute="bottom" id="R1n-M3-fwC"/>
-                                <constraint firstItem="cWb-qu-Rn0" firstAttribute="leading" secondItem="GNR-VN-X08" secondAttribute="leading" id="bm8-Bc-ab6"/>
-                                <constraint firstItem="Kna-XH-D3d" firstAttribute="leading" secondItem="cWb-qu-Rn0" secondAttribute="trailing" constant="8" symbolic="YES" id="cpQ-VH-ZSx"/>
-                                <constraint firstItem="cWb-qu-Rn0" firstAttribute="top" secondItem="GNR-VN-X08" secondAttribute="top" id="pB2-xj-cpu"/>
+                                <constraint firstItem="BlF-sw-gn4" firstAttribute="top" secondItem="GNR-VN-X08" secondAttribute="top" id="N9X-li-gx2"/>
+                                <constraint firstAttribute="bottom" secondItem="BlF-sw-gn4" secondAttribute="bottom" id="fzF-Hx-aS0"/>
                             </constraints>
                         </view>
-                        <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iyn-7Y-jZ9">
-                            <rect key="frame" x="0.0" y="188.5" width="511" height="62"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iyn-7Y-jZ9">
+                            <rect key="frame" x="0.0" y="157" width="511" height="62"/>
                             <subviews>
-                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JpU-9g-L1I">
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JpU-9g-L1I">
                                     <rect key="frame" x="0.0" y="0.0" width="511" height="62"/>
                                     <subviews>
                                         <stackView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" alignment="center" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="hvY-9S-3ox">
@@ -188,7 +195,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v7F-UG-Waa">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v7F-UG-Waa">
                                             <rect key="frame" x="0.0" y="0.0" width="511" height="62"/>
                                             <connections>
                                                 <action selector="followRequestsAction:" destination="-1" eventType="touchUpInside" id="DAg-VM-vhL"/>
@@ -219,7 +226,7 @@
                     </constraints>
                 </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o4b-7w-6Yq">
-                    <rect key="frame" x="60" y="486.5" width="467" height="20.5"/>
+                    <rect key="frame" x="60" y="434.5" width="467" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
