@@ -225,6 +225,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     private func setupMessageButton() {
+        messageFriendButton.isHidden = !AmityUIKitManagerInternal.shared.isEnableMenu
         messageFriendButton.setImage(AmityIconSet.iconMessageProfile, position: .left)
         messageFriendButton.setTitle("Message", for: .normal)
         messageFriendButton.tintColor = AmityColorSet.base
@@ -387,6 +388,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     @IBAction func messageFriendAction(_ sender: UIButton) {
+        AmityEventHandler.shared.showKTBLoading()
         screenViewModel.action.createChannel()
     }
     
@@ -435,6 +437,7 @@ extension AmityUserProfileHeaderViewController : AmityUserProfileHeaderScreenVie
     }
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didCreateChannel channel: AmityChannel) {
+        AmityEventHandler.shared.hideKTBLoading()
         AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
     }
     

@@ -29,6 +29,8 @@ struct Channel: Codable {
     let avatarFileId: String?
     var membership: String?
     var isPublic: Bool?
+    var isMuted: Bool?
+    var isDeleted: Bool?
 
     enum CodingKeys: String, CodingKey {
         case channelId = "channelId"
@@ -36,6 +38,8 @@ struct Channel: Codable {
         case channelType = "type"
         case avatarFileId
         case isPublic
+        case isMuted
+        case isDeleted
     }
 }
 

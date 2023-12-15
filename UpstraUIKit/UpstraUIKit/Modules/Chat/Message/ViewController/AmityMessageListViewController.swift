@@ -127,6 +127,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        startObserver()
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -227,6 +228,23 @@ public final class AmityMessageListViewController: AmityViewController {
     
     private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
+    }
+    
+    private func startObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(refreshPresence(notification:)),
+                                               name: Notification.Name("RefreshChannelPresence"),
+                                               object: nil)
+    }
+    
+    private func stopObserver() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+    }
+    
+    @objc func refreshPresence(notification: Notification) {
+        DispatchQueue.main.async() { [self] in
+            screenViewModel.action.getChannel()
+        }
     }
     
     @objc func handleCustomSwipeBackAction(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
@@ -615,7 +633,6 @@ private extension AmityMessageListViewController {
         screenViewModel.delegate = self
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
-        screenViewModel.startReading()
         screenViewModel.action.getTotalUnreadCount()
     }
 }
@@ -770,7 +787,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
         }
@@ -1273,6 +1290,8 @@ extension AmityMessageListViewController {
             self.replyContainerViewHeightConstraint.constant = 55
             self.replyContainerView.isHidden = false
         }
+        
+        composeBar.updateViewDidReplyProcess(isReplying: true)
     }
     
     private func hideReplyContainerView() {
@@ -1281,6 +1300,8 @@ extension AmityMessageListViewController {
             self.replyContainerView.isHidden = true
             self.message = nil
         }
+        
+        composeBar.updateViewDidReplyProcess(isReplying: false)
     }
     
     func shakeCell(at indexPath: IndexPath) {

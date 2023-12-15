@@ -12,7 +12,7 @@ class AmityEditMenuViewController: UIViewController {
     
     // MARK: - Component
     @IBOutlet private weak var menuListView: UICollectionView!
-    public var currentDynamicTableViewWidth: CGFloat { return self.maxRowContentWidth }
+    public var currentDynamicTableViewWidth: CGFloat { return ((Constant.cellHeightSize + Constant.spacing) * CGFloat(items.count)) + Constant.spacing }
     public var currentDynamicTableViewHeight: CGFloat { return Constant.spacing + Constant.cellHeightSize + Constant.spacing }
     private(set) var maxRowContentWidth: CGFloat = 4
     
@@ -89,9 +89,5 @@ extension AmityEditMenuViewController: UICollectionViewDataSource {
         cell.display(with: items[indexPath.row])
         
         return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        maxRowContentWidth += Constant.cellHeightSize + Constant.spacing
     }
 }

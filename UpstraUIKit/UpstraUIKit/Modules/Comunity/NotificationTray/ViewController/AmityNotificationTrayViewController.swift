@@ -42,10 +42,6 @@ class AmityNotificationTrayViewController: AmityViewController {
         setupScreenViewModel()
         setupTableView()
         setupNavigationBar()
-    }
-    
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         screenViewModel.fetchData()
         screenViewModel.updateReadTray()
     }

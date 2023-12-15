@@ -154,10 +154,10 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                             icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                             title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                             description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+//                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
-                settingsItems.append(.separator)
+//                settingsItems.append(.separator)
                 
                 // MARK: Leave chat (Group Chat)
                 let itemLeaveChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.leave.identifier,

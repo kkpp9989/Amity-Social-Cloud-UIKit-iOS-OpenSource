@@ -124,9 +124,16 @@ struct RequestGetNotification {
                 return
             }
             
+            if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
+               let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
+               let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("-------> JSON Response: \(jsonString)")
+            }
+            
             switch httpResponse.statusCode {
             case 200:
                 guard let dataModel = try? JSONDecoder().decode(Bool.self, from: data) else {
+                    logErrorDeCodeData(data: data)
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
@@ -136,6 +143,14 @@ struct RequestGetNotification {
             default:
                 completion(.failure(HandleError.connectionError))
             }
+        }
+    }
+    
+    func logErrorDeCodeData(data: Data) {
+        do {
+            let _ = try JSONDecoder().decode(Bool.self, from: data)
+        } catch {
+            print("Parsing Error : \(String(describing: error))")
         }
     }
 }
