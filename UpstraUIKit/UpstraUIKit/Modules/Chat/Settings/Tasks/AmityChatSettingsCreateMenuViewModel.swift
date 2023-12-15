@@ -154,7 +154,7 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                             icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                             title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                             description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+//                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
                 settingsItems.append(.separator)
