@@ -45,12 +45,14 @@ extension AmityReadingListScreenViewModel {
 extension AmityReadingListScreenViewModel {
 
     func fetchData() {
+        delegate?.screenViewModel(self, loadingState: .loading)
         let builderMemberships: Set<MessageReadMembershipFilter> = [.member]
         userCollection = messageObjc?.object.getReadUsers(memberships: builderMemberships)
         token = userCollection?.observe({ [weak self] (collection, _, error) in
             guard let strongSelf = self else { return }
             if let _ = error {
                 strongSelf.delegate?.screenViewModelDidFetchSuccess(strongSelf)
+                strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
             } else {
                 if collection.dataStatus == .fresh {
                     var users: [AmityUserModel] = []
@@ -60,6 +62,8 @@ extension AmityReadingListScreenViewModel {
                     }
                     strongSelf.usersList = users
                     strongSelf.delegate?.screenViewModelDidFetchSuccess(strongSelf)
+                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
+
                 }
             }
         })
@@ -70,6 +74,7 @@ extension AmityReadingListScreenViewModel {
         switch collection.loadingStatus {
         case .loaded:
             if collection.hasNext {
+                AmityEventHandler.shared.showKTBLoading()
                 collection.nextPage()
             }
         default:

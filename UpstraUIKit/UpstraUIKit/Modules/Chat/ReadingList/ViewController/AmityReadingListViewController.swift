@@ -12,7 +12,8 @@ class AmityReadingListViewController: AmityViewController {
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
-    
+    @IBOutlet private var readCountLabel: UILabel!
+
     // MARK: - Properties
     private var screenViewModel: AmityReadingListScreenViewModelType!
     private var emptyView = AmitySearchEmptyView()
@@ -40,6 +41,9 @@ class AmityReadingListViewController: AmityViewController {
     // MARK: - Setup views
     private func setupView() {
         navigationBarType = .custom
+        
+        readCountLabel.text = "Read by 0 people"
+        readCountLabel.font = AmityFontSet.bodyBold
     }
     
     private func setupTableView() {
@@ -56,7 +60,7 @@ class AmityReadingListViewController: AmityViewController {
 extension AmityReadingListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let model = screenViewModel.dataSource.item(at: indexPath) else { return }
-        AmityEventHandler.shared.userDidTap(from: self, userId: model.userId)
+        AmityEventHandler.shared.userKTBDidTap(from: self, userId: model.userId)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -78,7 +82,7 @@ extension AmityReadingListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AmityMessageSearchTableViewCell.identifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: AmityReadingTableViewCell.identifier, for: indexPath)
         configure(for: cell, at: indexPath)
         return cell
     }
@@ -97,6 +101,9 @@ extension AmityReadingListViewController: AmityReadingListScreenViewModelDelegat
         emptyView.removeFromSuperview()
         tableView.reloadData()
         AmityEventHandler.shared.hideKTBLoading()
+        
+        let readCount = screenViewModel.dataSource.numberOfKeyword()
+        readCountLabel.text = "Read by \(readCount) people"
     }
     
     func screenViewModelDidClearText(_ viewModel: AmityReadingListScreenViewModelType) {

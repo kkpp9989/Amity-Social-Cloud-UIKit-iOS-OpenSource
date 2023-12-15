@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityReadingListViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
+                <outlet property="readCountLabel" destination="8nn-nx-yUI" id="b4g-N9-e12"/>
                 <outlet property="tableView" destination="qHV-hB-gJs" id="BbD-Ox-mBq"/>
                 <outlet property="view" destination="BLZ-ff-HMu" id="UTr-pR-Uoh"/>
             </connections>
@@ -21,19 +22,31 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qHV-hB-gJs">
-                    <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                    <rect key="frame" x="0.0" y="112" width="393" height="706"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8nn-nx-yUI">
+                    <rect key="frame" x="16" y="75" width="361" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="PU2-TL-49g"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="0gm-1a-kMM"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="0gm-1a-kMM" firstAttribute="trailing" secondItem="qHV-hB-gJs" secondAttribute="trailing" id="03u-Rd-fpP"/>
+                <constraint firstItem="8nn-nx-yUI" firstAttribute="top" secondItem="0gm-1a-kMM" secondAttribute="top" constant="16" id="0EJ-Ih-Jsp"/>
                 <constraint firstItem="0gm-1a-kMM" firstAttribute="bottom" secondItem="qHV-hB-gJs" secondAttribute="bottom" id="ENd-5a-lKK"/>
+                <constraint firstItem="0gm-1a-kMM" firstAttribute="trailing" secondItem="8nn-nx-yUI" secondAttribute="trailing" constant="16" id="FNw-Q5-XQj"/>
+                <constraint firstItem="qHV-hB-gJs" firstAttribute="top" secondItem="8nn-nx-yUI" secondAttribute="bottom" constant="16" id="Zwk-ic-JUb"/>
+                <constraint firstItem="8nn-nx-yUI" firstAttribute="leading" secondItem="0gm-1a-kMM" secondAttribute="leading" constant="16" id="cQy-jE-7Cz"/>
                 <constraint firstItem="qHV-hB-gJs" firstAttribute="leading" secondItem="0gm-1a-kMM" secondAttribute="leading" id="hJo-Mh-ZOO"/>
-                <constraint firstItem="qHV-hB-gJs" firstAttribute="top" secondItem="0gm-1a-kMM" secondAttribute="top" id="sqF-lJ-fzv"/>
             </constraints>
-            <point key="canvasLocation" x="139" y="105"/>
+            <point key="canvasLocation" x="138.1679389312977" y="104.92957746478874"/>
         </view>
     </objects>
     <resources>
