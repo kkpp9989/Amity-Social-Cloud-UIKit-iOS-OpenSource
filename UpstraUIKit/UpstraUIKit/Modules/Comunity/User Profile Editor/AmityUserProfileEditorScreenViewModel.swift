@@ -44,7 +44,6 @@ class AmityUserProfileEditorScreenViewModel: AmityUserProfileEditorScreenViewMod
         
         // Update
         dispatchGroup.enter()
-        amityUserUpdateBuilder.setDisplayName(displayName)
         amityUserUpdateBuilder.setUserDescription(about)
         AmityUIKitManagerInternal.shared.client.updateUser(amityUserUpdateBuilder, completion: completion)
         

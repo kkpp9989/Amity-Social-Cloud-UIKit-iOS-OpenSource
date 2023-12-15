@@ -488,7 +488,12 @@ private extension AmityMentionManager {
                 }
             }
             if isSearchingStarted {
-                delegate?.didGetUsers(users: users)
+                let filteredArray = users.filter { user in
+                    !mentions.contains { mention in
+                        mention.userId == user.userId
+                    }
+                }
+                delegate?.didGetUsers(users: filteredArray)
             }
         case .error:
             collectionToken?.invalidate()

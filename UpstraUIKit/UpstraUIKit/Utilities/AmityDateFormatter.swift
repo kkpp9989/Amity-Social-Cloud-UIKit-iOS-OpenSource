@@ -99,7 +99,8 @@ struct AmityDateFormatter {
             }
             
             if _date.message.isEmpty {
-                dateFormatter.dateFormat = "MMMM dd, yyyy"
+//                dateFormatter.dateFormat = "MMMM dd, yyyy" // [Backup]
+                dateFormatter.dateFormat = "d MMMM yyyy"
                 return dateFormatter.string(from: _date)
             }
             

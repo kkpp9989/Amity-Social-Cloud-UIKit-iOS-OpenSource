@@ -39,7 +39,7 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         durationView.clipsToBounds = true
         durationView.layer.cornerRadius = 4
         durationLabel.font = AmityFontSet.caption
-        durationLabel.textColor = AmityThemeManager.currentTheme.baseInverse
+        durationLabel.textColor = .white
         
         alertView.isHidden = true
         alertView.backgroundColor = .black.withAlphaComponent(0.4)
@@ -56,7 +56,11 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         case .downloadableImage: break
         case .downloadableVideo: break
         case .localAsset(let asset):
-            coverImageView.image = getAssetThumbnail(asset: asset)
+            getAssetThumbnail(asset: asset) { [weak self] thumbnail in
+                DispatchQueue.main.async {
+                    self?.coverImageView.image = thumbnail
+                }
+            }
             if asset.mediaType == .video {
                 durationView.isHidden = false
                 durationLabel.text = getDurationFormatter(showHour: asset.duration >= 3600).string(from: asset.duration)
@@ -82,24 +86,19 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
         return formatter
     }
     
-    func getAssetThumbnail(asset: PHAsset) -> UIImage {
+    func getAssetThumbnail(asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
         let manager = PHImageManager.default()
         let option = PHImageRequestOptions()
-        var thumbnail = UIImage()
 
         // Request the original dimensions of the asset
         let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
 
-        option.isSynchronous = true
-        option.deliveryMode = .opportunistic
+        option.isSynchronous = false // Make it asynchronous
+        option.deliveryMode = .highQualityFormat
 
-        manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
-            if let result = result {
-                thumbnail = result
-            }
+        manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: option, resultHandler: {(result, info) -> Void in
+            completion(result) // Pass the result back via completion handler
         })
-
-        return thumbnail
     }
 
     func checkFileSize(for asset: PHAsset, completion: @escaping (Bool) -> Void) {

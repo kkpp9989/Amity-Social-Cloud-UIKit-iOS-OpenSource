@@ -299,6 +299,10 @@ public final class AmityUIKitManager {
         
         return isOnline
     }
+    
+    public static func setASMRemoteConfig(_ isEnableMenu: Bool) {
+        AmityUIKitManagerInternal.shared.isEnableMenu = isEnableMenu
+    }
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -320,7 +324,7 @@ final class AmityUIKitManagerInternal: NSObject {
     var displayName: String { return client.user?.snapshot?.displayName ?? "" }
     var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
     var userStatus: AmityUserStatus.StatusType = .AVAILABLE
-    var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "" }
+    var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "available" }
 
     private var userToken: String = ""
     public var currentUserToken: String { return self.userToken }
@@ -341,6 +345,8 @@ final class AmityUIKitManagerInternal: NSObject {
     }
     
     var env: [String: Any] = [:]
+    
+    var isEnableMenu: Bool = true
     
     // MARK: - Initializer
     

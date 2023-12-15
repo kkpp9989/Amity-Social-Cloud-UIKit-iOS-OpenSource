@@ -27,10 +27,11 @@ final class AmityForwardSelectUserController {
         
         if let user = newSelectedUsers.first(where: { $0 == selectedUser}), let index = newSelectedUsers.firstIndex(of: user) {
             newSelectedUsers.remove(at: index)
+            selectedUser.isSelected = false
         } else {
             newSelectedUsers.append(selectedUser)
+            selectedUser.isSelected = true
         }
-        selectedUser.isSelected.toggle()
     }
     
     func deselect(searchUsers: inout [AmitySelectMemberModel], users: inout AmityFetchUserController.GroupUser, newSelectedUsers: inout [AmitySelectMemberModel], at indexPath: IndexPath) {

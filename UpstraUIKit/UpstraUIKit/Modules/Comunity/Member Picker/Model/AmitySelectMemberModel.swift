@@ -73,4 +73,11 @@ public final class AmitySelectMemberModel: Equatable {
         self.object = object
         self.type = .channel
     }
+    
+    init(object: Channel, avatarURL: String?) { // From search channel API
+        self.userId = object.channelId ?? ""
+        self.displayName = object.displayName ?? ""
+        self.avatarURL = avatarURL ?? ""
+        self.type = .channel
+    }
 }

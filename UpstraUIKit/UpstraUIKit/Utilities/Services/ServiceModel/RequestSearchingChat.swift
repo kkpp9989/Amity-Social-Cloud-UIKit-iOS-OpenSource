@@ -13,6 +13,11 @@ struct jsonChannelOptions {
     var next: String?
 }
 
+enum orderByResponse: String {
+    case desc = "desc"
+    case asc = "asc"
+}
+
 struct RequestSearchingChat {
     
     let requestMeta = BaseRequestMeta()
@@ -22,6 +27,8 @@ struct RequestSearchingChat {
     var keyword: String = ""
     var size: Int = 20
     var paginateToken: String = ""
+    var isMemberOnly: Bool = false
+    var orderBy: orderByResponse?
     
     func requestSearchMessages(_ completion: @escaping(Result<AmitySearchMessagesModel,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co/api/v1"
@@ -60,12 +67,17 @@ struct RequestSearchingChat {
     func requestSearchChannels(_ completion: @escaping(Result<SearchChannelsModel,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co"
         
-        var urlReuest = "\(domainURL)/api/v2/search/channels?query=\(keyword)&types[]=community&options[limit]=\(size)&exactMatch=false&isMemberOnly=false"
+        var urlRequest = "\(domainURL)/api/v2/search/channels?query=\(keyword)&types[]=community&options[limit]=\(size)&exactMatch=false&isMemberOnly=\(isMemberOnly)"
 
         if !paginateToken.isEmpty {
-            urlReuest += "&options[token]=\(paginateToken)"
+            urlRequest += "&options[token]=\(paginateToken)"
         }
-        requestMeta.urlRequest = urlReuest
+        
+        if let orderBy = orderBy {
+            urlRequest += "&options[orderBy]=\(orderBy.rawValue)"
+        }
+        
+        requestMeta.urlRequest = urlRequest
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
