@@ -633,7 +633,6 @@ private extension AmityMessageListViewController {
         screenViewModel.delegate = self
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
-        screenViewModel.startReading()
         screenViewModel.action.getTotalUnreadCount()
     }
 }
@@ -788,7 +787,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
         }
