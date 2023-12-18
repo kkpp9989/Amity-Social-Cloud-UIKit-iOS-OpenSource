@@ -9,7 +9,7 @@
 import AmitySDK
 import UIKit
 
-public struct AmityMentionUserModel {
+public struct AmityMentionUserModel: Hashable {
     let userId: String?
     let displayName: String
     let avatarURL: String?
@@ -488,16 +488,24 @@ private extension AmityMentionManager {
                 }
             }
             if isSearchingStarted {
-                let filteredArray = users.filter { user in
+                // Filter selected mention user out
+                var filteredArray = users.filter { user in
                     !mentions.contains { mention in
                         mention.userId == user.userId
                     }
                 }
+                
+                // Filter duplicate user in list
+                filteredArray = Array(Set(filteredArray))
+                
                 delegate?.didGetUsers(users: filteredArray)
             }
         case .error:
             collectionToken?.invalidate()
-            delegate?.didGetUsers(users: users)
+            
+            // Filter duplicate user in list
+            let filteredArray = Array(Set(users))
+            delegate?.didGetUsers(users: filteredArray)
         default: break
         }
     }
