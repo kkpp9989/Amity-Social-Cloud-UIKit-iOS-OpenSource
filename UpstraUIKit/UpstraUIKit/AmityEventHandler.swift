@@ -23,6 +23,12 @@ import AmitySDK
 ///    2. User avatar is tapped and `userDidTap` get called
 ///    3. Code within `userDidTap` get executed depends on what you write
 ///
+///
+public enum AmityContentType {
+    case communityProfilePage
+    case chat
+    case userProfile
+}
 
 public enum AmityPostContentType {
     case post
@@ -285,5 +291,5 @@ open class AmityEventHandler {
     // ktb kk
     /// show ktb view share qr
     open func gotoKTBShareQR(v:UIViewController, url:String) { }
-
+    open func gotoKTBShareQR(v:UIViewController, type:AmityContentType, id:String, title:String, desc:String) { }
 }
