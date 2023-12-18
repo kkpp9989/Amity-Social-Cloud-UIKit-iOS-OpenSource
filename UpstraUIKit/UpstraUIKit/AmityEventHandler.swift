@@ -281,5 +281,9 @@ open class AmityEventHandler {
     /// Behavior for present loading ktb.
     open func showKTBLoading() { }
     open func hideKTBLoading() { }
+    
+    // ktb kk
+    /// show ktb view share qr
+    open func gotoKTBShareQR(v:UIViewController, url:String) { }
 
 }

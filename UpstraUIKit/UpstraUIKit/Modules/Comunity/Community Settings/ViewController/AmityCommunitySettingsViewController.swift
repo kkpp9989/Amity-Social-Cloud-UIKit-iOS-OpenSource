@@ -90,6 +90,9 @@ final class AmityCommunitySettingsViewController: AmityViewController {
             case .postReview:
                 let vc = AmityPostReviewSettingsViewController.make(communityId: community.communityId)
                 navigationController?.pushViewController(vc, animated: true)
+            case .inviteViaQRAndLink:
+                // ktb kk goto ahare qr from Community setting
+                AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityCommunitySetting")
             default:
                 break
             }
