@@ -108,6 +108,14 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                     settingsItems.append(.textContent(content: itemNotificationContent))
                 }
                 
+                // ktb kk custom add menu Invite Via QR And Link
+                // MARK: Invite Via QR And Link
+                let iteminviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
+                                                                           icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
+                                                                      title: AmityChatSettingsItem.inviteViaQRAndLink.title,
+                                                                      description: nil)
+                settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+                
                 // MARK: Separator
                 settingsItems.append(.separator)
                 

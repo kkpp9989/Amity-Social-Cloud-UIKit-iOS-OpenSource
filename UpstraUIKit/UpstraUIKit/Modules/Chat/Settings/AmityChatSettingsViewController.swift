@@ -181,6 +181,10 @@ final class AmityChatSettingsViewController: AmityViewController {
             case "notification": // (1:1 Chat, Group Chat)
                 // Use in text content instead
                 break
+            case "inviteViaQRAndLink":
+                // ktb kk goto ahare qr from Community setting
+                AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                break
             default:
                 break
             }

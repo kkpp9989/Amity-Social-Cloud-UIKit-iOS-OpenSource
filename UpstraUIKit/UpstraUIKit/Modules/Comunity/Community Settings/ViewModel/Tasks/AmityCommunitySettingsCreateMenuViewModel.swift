@@ -76,6 +76,15 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                                   description: AmityCommunitySettingsItem.members.description)
         settingsItems.append(.navigationContent(content: itemMemberContent))
         
+        // ktb kk custom add menu Invite Via QR And Link
+        // MARK: Invite Via QR And Link
+        let iteminviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityCommunitySettingsItem.inviteViaQRAndLink.identifier,
+                                                                  icon: AmityCommunitySettingsItem.inviteViaQRAndLink.icon,
+                                                                  title: AmityCommunitySettingsItem.inviteViaQRAndLink.title,
+                                                                  description: AmityCommunitySettingsItem.inviteViaQRAndLink.description)
+        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+        
+        
         // MARK: Create notification item
         if shouldNotificationItemShow {
             let itemNotificationDesc = isNotificationEnabled ? AmityLocalizedStringSet.General.on : AmityLocalizedStringSet.General.off
