@@ -145,14 +145,14 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         aboutCounterLabel.font = AmityFontSet.caption
         aboutCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
         aboutTextView.customTextViewDelegate = self
-        
-        // [Custom for ONE Krungthai] Set constant from maxCharacterOfAboutInfo instead
+        aboutTextView.layer.borderWidth = 0
+        aboutTextView.isScrollEnabled = false
+        aboutTextView.textContainer.lineBreakMode = .byWordWrapping
+        aboutTextView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
         aboutTextView.maxCharacters = Constant.maxCharacterOfAboutInfo
-        
-        // [Fix defect] Set font of about text field refer to AmityFontSet and delete padding left
+        aboutTextView.maxLength = Constant.maxCharacterOfAboutInfo
         aboutTextView.font = AmityFontSet.body
         aboutTextView.textColor = AmityColorSet.base
-        aboutTextView.padding = UIEdgeInsets.zero
         
         // separator
         aboutSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
