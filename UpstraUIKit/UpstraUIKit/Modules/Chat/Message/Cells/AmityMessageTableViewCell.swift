@@ -130,7 +130,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                 containerView.backgroundColor = AmityColorSet.backgroundColor
             }
             
-            setReadmoreText()
+            setReadCountText()
         } else {
             avatarView.placeholder = AmityIconSet.defaultAvatar
             setAvatarImage(message)
@@ -196,6 +196,10 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             }
         }
         metadataLabel?.attributedText = fullString
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(readTap))
+        readCountLabel.isUserInteractionEnabled = true
+        readCountLabel.addGestureRecognizer(tapGesture)
     }
     
     func setChannelType(channelType: AmityChannelType) {
@@ -229,7 +233,23 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     }
     
     private func setDisplayName(_ name: String?) {
-        displayNameLabel.text = name
+        // Create an image attachment
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = AmityIconSet.Chat.iconBroadcast
+        
+        // Set the image size as per your requirement
+        let imageSize = CGSize(width: 20, height: 20) // Change the size as needed
+        imageAttachment.bounds = CGRect(origin: .zero, size: imageSize)
+        
+        // Create an attributed string with both text and the image attachment
+        let attributedString = NSMutableAttributedString(string: "\(name ?? "") ")
+        let imageString = NSAttributedString(attachment: imageAttachment)
+        if channelType == .broadcast {
+            attributedString.append(imageString)
+        }
+        
+        // Set the attributed string to the label
+        displayNameLabel.attributedText = attributedString
     }
     
     private func setAvatarImage(_ messageModel: AmityMessageModel) {
@@ -240,7 +260,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         avatarView.addGestureRecognizer(tapGesture)
     }
     
-    private func setReadmoreText() {
+    private func setReadCountText() {
         if let channelType = self.channelType {
             switch channelType {
             case .conversation:
@@ -299,6 +319,10 @@ private extension AmityMessageTableViewCell {
             
     @objc func avatarTap() {
         screenViewModel.action.performCellEvent(for: .avatar(indexPath: indexPath))
+    }
+    
+    @objc func readTap() {
+        screenViewModel.action.performCellEvent(for: .openReadViewer(indexPath: indexPath))
     }
 }
 
