@@ -113,6 +113,10 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.env = env
     }
     
+    public static func isInitialClient() -> Bool {
+        AmityUIKitManagerInternal.shared.isInitialClient()
+    }
+    
     public static func isModeratorUserInCommunity(withUserId userId: String, communityId: String) -> Bool {
         let membershipParticipation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
         let member = membershipParticipation.getMember(withId: userId)
@@ -382,6 +386,8 @@ final class AmityUIKitManagerInternal: NSObject {
         // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
         self.apiKey = apiKey
     }
+    
+    func isInitialClient() -> Bool { _client != nil }
     
     func registerDevice(_ userId: String,
                         displayName: String?,
