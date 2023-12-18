@@ -252,7 +252,7 @@ extension GroupChatCreatorSecondViewController: GroupChatCreatorScreenViewModelD
 	}
     
     func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: GroupChatCreatorScreenViewModelType, progressing: Double) {
-        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+//        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
         avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
 	

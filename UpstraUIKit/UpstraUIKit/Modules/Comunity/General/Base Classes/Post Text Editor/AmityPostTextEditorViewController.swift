@@ -596,6 +596,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         
         let cameraPicker = UIImagePickerController()
         cameraPicker.sourceType = .camera
+        cameraPicker.videoQuality = .typeHigh
         cameraPicker.delegate = self
         
         // We automatically choose media type based on last media pick.
