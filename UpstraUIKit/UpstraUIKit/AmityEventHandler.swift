@@ -121,6 +121,15 @@ open class AmityEventHandler {
         source.navigationController?.pushViewController(editProfileViewController, animated: true)
     }
     
+    /// Event for did edit user complete
+    /// It will be triggered when user profile update is complete
+    ///
+    /// A default behavior is pop back to prev view controller
+    open func didEditUserComplete(from source: AmityViewController) {
+        source.navigationController?.popViewController(animated: true)
+    }
+    
+    
     /// Event for selecting post target
     /// It will be triggered when the user choose target to create the post i.e their own feed or community feed.
     ///

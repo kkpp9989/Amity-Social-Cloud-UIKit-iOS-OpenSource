@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,11 +16,13 @@
                 <outlet property="aboutSeparatorView" destination="PPc-1u-xNa" id="hps-V0-SUZ"/>
                 <outlet property="aboutTextView" destination="PU3-9o-Gwh" id="FqL-Vc-6sS"/>
                 <outlet property="avatarButton" destination="tr5-OH-qLX" id="E6I-4Q-K9y"/>
+                <outlet property="avatarUploadingProgressBar" destination="SfF-qV-WAg" id="t67-Vn-XWK"/>
                 <outlet property="cameraImageView" destination="33Q-S5-18j" id="xEK-vG-w1B"/>
                 <outlet property="displayNameCounterLabel" destination="lCH-kd-7RV" id="ZfE-Xr-SYs"/>
                 <outlet property="displayNameLabel" destination="bNV-rE-H1k" id="wus-Oi-GcQ"/>
                 <outlet property="displayNameTextField" destination="uvC-K8-mz2" id="LhG-PL-BZs"/>
                 <outlet property="displaynameSeparatorView" destination="X58-yE-eLm" id="Fpj-Wf-lli"/>
+                <outlet property="overlayView" destination="jbo-Ja-CWH" id="T8U-wT-qS0"/>
                 <outlet property="userAvatarView" destination="RPo-cb-bwZ" id="23u-iC-tfH"/>
                 <outlet property="view" destination="dBg-wa-Rzk" id="a8I-OS-iWh"/>
             </connections>
@@ -41,8 +43,31 @@
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RPo-cb-bwZ" customClass="AmityAvatarView" customModule="AmityUIKit" customModuleProvider="target">
                                             <rect key="frame" x="175" y="16" width="64" height="64"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jbo-Ja-CWH">
+                                                    <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
+                                                    <subviews>
+                                                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SfF-qV-WAg">
+                                                            <rect key="frame" x="8" y="30" width="48" height="4"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="4" id="P6G-6l-SGm"/>
+                                                            </constraints>
+                                                        </progressView>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstItem="SfF-qV-WAg" firstAttribute="leading" secondItem="jbo-Ja-CWH" secondAttribute="leading" constant="8" id="bhV-TQ-qCq"/>
+                                                        <constraint firstAttribute="trailing" secondItem="SfF-qV-WAg" secondAttribute="trailing" constant="8" id="sSF-ic-rm7"/>
+                                                        <constraint firstItem="SfF-qV-WAg" firstAttribute="centerY" secondItem="jbo-Ja-CWH" secondAttribute="centerY" id="wHf-oc-pAW"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
                                             <color key="backgroundColor" systemColor="systemRedColor"/>
                                             <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="jbo-Ja-CWH" secondAttribute="trailing" id="1es-rM-7Tm"/>
+                                                <constraint firstItem="jbo-Ja-CWH" firstAttribute="top" secondItem="RPo-cb-bwZ" secondAttribute="top" id="GWq-ZZ-PpM"/>
+                                                <constraint firstAttribute="bottom" secondItem="jbo-Ja-CWH" secondAttribute="bottom" id="Krm-rW-zUs"/>
+                                                <constraint firstItem="jbo-Ja-CWH" firstAttribute="leading" secondItem="RPo-cb-bwZ" secondAttribute="leading" id="gkZ-7G-VPd"/>
                                                 <constraint firstAttribute="height" constant="64" id="lgo-p8-bIa"/>
                                                 <constraint firstAttribute="width" constant="64" id="xqh-eK-WRO"/>
                                             </constraints>
@@ -266,7 +291,7 @@
     <resources>
         <image name="icon_camera" width="16" height="17"/>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

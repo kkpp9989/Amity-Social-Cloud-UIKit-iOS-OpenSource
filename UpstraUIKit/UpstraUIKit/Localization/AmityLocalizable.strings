@@ -435,8 +435,7 @@
 "community_alert_unable_to_leave_community_desc" = "You’re the only moderator in this group. To leave social, nominate other members to moderator role.";
 
 // MARK: - Edit User Profile
-//"edit_user_profile_title" = "Edit Profile"; // [Original]
-"edit_user_profile_title" = "Group Profile"; // [Custom for ONE Krungthai] Change wording "edit_user_profile_title"
+"edit_user_profile_title" = "Edit Profile";
 "edit_user_profile_display_name_title" = "Display name";
 "edit_user_profile_email_title" = "Email";
 "edit_user_profile_phone_number_title" = "Phone number";

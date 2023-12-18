@@ -9,8 +9,10 @@
 import UIKit
 
 protocol AmityUserProfileEditorScreenViewModelAction {
-    func update(displayName: String, about: String)
-    func update(avatar: UIImage, completion: ((Bool) -> Void)?)
+    func update(displayName: String, about: String) // [Deprecated]
+    func update(displayName: String, about: String) async -> Bool
+    func update(avatar: UIImage, completion: ((Bool) -> Void)?) // [Deprecated]
+    func update(avatar: UIImage) async -> Bool
 }
 
 protocol AmityUserProfileScreenEditorViewModelDataSource {
@@ -19,6 +21,7 @@ protocol AmityUserProfileScreenEditorViewModelDataSource {
 
 protocol AmityUserProfileEditorScreenViewModelDelegate: AnyObject {
     func screenViewModelDidUpdate(_ viewModel: AmityUserProfileEditorScreenViewModelType)
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityUserProfileEditorScreenViewModelType, progressing: Double)
 }
 
 protocol AmityUserProfileEditorScreenViewModelType: AmityUserProfileEditorScreenViewModelAction, AmityUserProfileScreenEditorViewModelDataSource {

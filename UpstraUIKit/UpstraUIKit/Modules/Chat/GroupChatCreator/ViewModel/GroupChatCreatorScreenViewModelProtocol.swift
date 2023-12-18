@@ -10,7 +10,7 @@ import UIKit
 import AmitySDK
 
 protocol GroupChatCreatorScreenViewModelAction {
-    func update(avatar: UIImage, completion: ((Bool) -> Void)?) async
+    func update(avatar: UIImage) async -> Bool
     func createChannel(displayName: String)
 	func createChannel(users: [AmitySelectMemberModel], displayName: String)
 }

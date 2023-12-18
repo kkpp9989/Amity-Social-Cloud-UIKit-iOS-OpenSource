@@ -23,8 +23,11 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     @IBOutlet private weak var aboutSeparatorView: UIView!
     @IBOutlet private weak var displaynameSeparatorView: UIView!
     private var saveBarButtonItem: UIBarButtonItem!
+    @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
+    @IBOutlet private weak var overlayView: UIView!
     
     private var screenViewModel: AmityUserProfileEditorScreenViewModelType?
+    private var cacheAboutText: String = ""
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -98,12 +101,17 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     private func setupView() {
         // avatar
-        userAvatarView.placeholder = AmityIconSet.defaultAvatar
         cameraImageView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         cameraImageView.layer.borderColor = AmityColorSet.backgroundColor.cgColor
         cameraImageView.layer.borderWidth = 1.0
         cameraImageView.layer.cornerRadius = 14.0
         cameraImageView.clipsToBounds = true
+        userAvatarView.placeholder = AmityIconSet.defaultAvatar
+        userAvatarView.bringSubviewToFront(overlayView)
+        avatarUploadingProgressBar.tintColor = AmityColorSet.primary
+        avatarUploadingProgressBar.setProgress(0.0, animated: true)
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        overlayView.isHidden = true
         
         // display name
         /* [Original] */
@@ -155,28 +163,50 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         view.endEditing(true)
+        AmityHUD.show(.loading)
         
-        // Update display name and about
-        screenViewModel?.action.update(displayName: displayNameTextField.text ?? "", about: aboutTextView.text ?? "")
-        
-        // Update user avatar
-        if let avatar = uploadingAvatarImage {
-            userAvatarView.state = .loading
-            screenViewModel?.action.update(avatar: avatar) { [weak self] success in
-                if success {
+        Task { @MainActor in
+            // Update display name and about data
+            let newDisplayName = displayNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let newAbout = aboutTextView.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isUpdateTextSuccess = await screenViewModel?.action.update(displayName: newDisplayName, about: newAbout)
+            
+            // Check is display name and about data update fail for show error
+            if let isUpdateTextSuccess, !isUpdateTextSuccess {
+                AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                return
+            }
+            
+            // Update user avatar if need
+            if let avatar = uploadingAvatarImage {
+                // Show overlay view and progress bar
+                avatarUploadingProgressBar.setProgress(0.0, animated: true)
+                overlayView.isHidden = false // Custom overlay for this view controller only
+                
+                // Start update user avatar
+                let isUpdateAvatarSuccess = await screenViewModel?.action.update(avatar: avatar)
+                
+                // Hide overlay view and progress bar
+                overlayView.isHidden = true // Custom overlay for this view controller only
+                avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+                
+                // Reset cache image and update view state
+                uploadingAvatarImage = nil
+                updateViewState()
+                
+                // Check is avatar update success for show error or success
+                if let isUpdateAvatarSuccess, isUpdateAvatarSuccess {
                     AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                    self?.userAvatarView.image = avatar
+                    AmityEventHandler.shared.didEditUserComplete(from: self)
                 } else {
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 }
-                self?.userAvatarView.state = .idle
-                self?.uploadingAvatarImage = nil
-                self?.updateViewState()
+            } else {
+                // when there is no image update
+                // directly show success message after updated
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                AmityEventHandler.shared.didEditUserComplete(from: self)
             }
-        } else {
-            // when there is no image update
-            // directly show success message after updated
-            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
         }
     }
     
@@ -261,6 +291,11 @@ extension AmityUserProfileEditorViewController: AmityUserProfileEditorScreenView
         }
         
         updateViewState()
+    }
+    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityUserProfileEditorScreenViewModelType, progressing: Double) {
+//        print("[Avatar][Chat] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+        avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
     
 }
