@@ -196,10 +196,6 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             }
         }
         metadataLabel?.attributedText = fullString
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(readTap))
-        readCountLabel.isUserInteractionEnabled = true
-        readCountLabel.addGestureRecognizer(tapGesture)
     }
     
     func setChannelType(channelType: AmityChannelType) {
@@ -319,10 +315,6 @@ private extension AmityMessageTableViewCell {
             
     @objc func avatarTap() {
         screenViewModel.action.performCellEvent(for: .avatar(indexPath: indexPath))
-    }
-    
-    @objc func readTap() {
-        screenViewModel.action.performCellEvent(for: .openReadViewer(indexPath: indexPath))
     }
 }
 
