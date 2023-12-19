@@ -1025,6 +1025,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .resend(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             screenViewModel.action.resend(with: message, at: indexPath)
+        }
     }
     
     func screenViewModelToggleDefaultKeyboardAndAudioKeyboard(for events: AmityMessageListScreenViewModel.KeyboardInputEvents) {
