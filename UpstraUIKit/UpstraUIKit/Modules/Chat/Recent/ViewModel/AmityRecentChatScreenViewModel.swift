@@ -309,7 +309,7 @@ private extension AmityRecentChatScreenViewModel {
         let query = AmityChannelQuery()
         query.filter = .userIsMember
         query.includeDeleted = false
-        query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community, AmityChannelQueryType.broadcast]
+        query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community]
         channelsCollection = channelRepository.getChannels(with: query)
         
         AmityEventHandler.shared.showKTBLoading()
