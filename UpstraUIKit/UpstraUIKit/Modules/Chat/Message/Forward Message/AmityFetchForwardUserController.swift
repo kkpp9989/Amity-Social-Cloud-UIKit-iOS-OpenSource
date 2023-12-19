@@ -36,7 +36,7 @@ final class AmityFetchForwardUserController {
         }
         
         token = collection?.observe { [weak self] (userCollection, change, error) in
-            guard let strongSelf = self else { return }
+            guard let strongSelf = self, userCollection.dataStatus == .fresh else { return }
             strongSelf.token?.invalidate()
             if let error = error {
                 completion(.failure(error))
