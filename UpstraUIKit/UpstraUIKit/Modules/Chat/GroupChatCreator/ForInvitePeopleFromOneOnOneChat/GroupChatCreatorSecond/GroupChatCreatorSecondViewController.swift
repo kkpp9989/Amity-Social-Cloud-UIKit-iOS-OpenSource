@@ -26,8 +26,6 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 	private var saveBarButtonItem: UIBarButtonItem!
     @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
     @IBOutlet private weak var overlayView: UIView!
-    
-    private var mockUploadProgressingTimer: Timer?
 	
 	private var screenViewModel: GroupChatCreatorScreenViewModelType?
 	
@@ -207,44 +205,27 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 	
 	private func handleImage(_ image: UIImage?) {
 		if let avatar = image {
-//			userAvatarView.state = .loading // [Backup]
-            // [Workaround] Mock upload avatar progressing
-            // Set start progressing
-            var currentProgressing: Float = 0.1
-            avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
-            overlayView.isHidden = false // Custom overlay for this view controller only
-//            print("[Avatar] Upload progressing number: \(currentProgressing) | Start")
-            // Mock progressing with random data every 1 second
-            mockUploadProgressingTimer = Timer(timeInterval: 1.0, repeats: true) { timer in
-                DispatchQueue.main.async {
-                    let mockIncreaseProgressing: [Float] = [0.1, 0.2, 0.3]
-                    currentProgressing += mockIncreaseProgressing.randomElement() ?? 0.1
-                    self.avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
-//                    print("[Avatar] Upload progressing number: \(currentProgressing) | Progressing")
+            Task { @MainActor in
+                // Show overlay view and progress bar
+                avatarUploadingProgressBar.setProgress(0.0, animated: true)
+                overlayView.isHidden = false // Custom overlay for this view controller only
+                
+                // Start update group chat avatar
+                let isUpdateAvatarSuccess = await screenViewModel?.action.update(avatar: avatar)
+                
+                // Hide overlay view and progress bar
+                overlayView.isHidden = true // Custom overlay for this view controller only
+                avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+                
+                // Check is avatar update success for show error or success
+                if let isUpdateAvatarSuccess, isUpdateAvatarSuccess {
+                    AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                    userAvatarView.image = avatar
+                } else {
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 }
-            }
-            // Start add mock progressing
-            RunLoop.current.add(mockUploadProgressingTimer!, forMode: .common)
-            mockUploadProgressingTimer?.fire()
-            Task {
-                await screenViewModel?.action.update(avatar: avatar) { [weak self] success in// Stop add mock progressing
-                    self?.mockUploadProgressingTimer?.invalidate()
-                    self?.mockUploadProgressingTimer = nil
-                    self?.avatarUploadingProgressBar.setProgress(1.0, animated: true)
-//                    print("[Avatar] Upload progressing number: 1.0 | End")
-                    self?.overlayView.isHidden = true // Custom overlay for this view controller only
-                    self?.avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
-                    
-                    if success {
-                        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                        self?.userAvatarView.image = avatar
-                    } else {
-                        AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
-                    }
-//                    self?.userAvatarView.state = .idle
-                    self?.uploadingAvatarImage = image
-                    self?.updateViewState()
-                }
+                uploadingAvatarImage = image
+                updateViewState()
             }
 		}
 	}
@@ -271,7 +252,7 @@ extension GroupChatCreatorSecondViewController: GroupChatCreatorScreenViewModelD
 	}
     
     func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: GroupChatCreatorScreenViewModelType, progressing: Double) {
-        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+//        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
         avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
 	

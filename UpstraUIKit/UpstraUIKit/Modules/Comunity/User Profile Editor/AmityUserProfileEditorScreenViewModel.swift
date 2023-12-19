@@ -25,13 +25,14 @@ class AmityUserProfileEditorScreenViewModel: AmityUserProfileEditorScreenViewMod
         userObject = userRepository.getUser(AmityUIKitManagerInternal.shared.client.currentUserId!)
         userCollectionToken = userObject?.observe { [weak self] user, error in
             guard let strongSelf = self,
-                let user = user.object else{ return }
+                  let user = user.snapshot else { return }
             
             strongSelf.user = AmityUserModel(user: user)
             strongSelf.delegate?.screenViewModelDidUpdate(strongSelf)
         }
     }
     
+    // [Deprecated]
     func update(displayName: String, about: String) {
         
         let completion: AmityRequestCompletion? = { [weak self] success, error in
@@ -56,6 +57,20 @@ class AmityUserProfileEditorScreenViewModel: AmityUserProfileEditorScreenViewMod
         }
     }
     
+    func update(displayName: String, about: String) async -> Bool {
+        do {
+            // Set about text to builder
+            amityUserUpdateBuilder.setUserDescription(about)
+            // Update profile
+            let isSuccess = try await AmityUIKitManagerInternal.shared.client.editUser(amityUserUpdateBuilder)
+            return isSuccess
+        } catch {
+//            print("[Chat] Can't update display name / about to profile with error: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    // [Deprecated]
     func update(avatar: UIImage, completion: ((Bool) -> Void)?) {
         // Update user avatar
         dispatchGroup.enter()
@@ -70,6 +85,26 @@ class AmityUserProfileEditorScreenViewModel: AmityUserProfileEditorScreenViewMod
                 }
                 completion?(success)
             }
+        }
+    }
+    
+    func update(avatar: UIImage) async -> Bool {
+        do {
+            // Upload avatar image
+            let imageData = try await fileRepository.uploadImage(avatar) { progress in
+//                print("[Avatar][Chat] Upload progressing result: \(progress)")
+                DispatchQueue.main.async {
+                    self.delegate?.screenViewModelDidUpdateAvatarUploadingProgress(self, progressing: progress)
+                }
+            }
+            // Set avatar to update builder
+            amityUserUpdateBuilder.setAvatar(imageData)
+            // Update user profile
+            let isSuccess = try await AmityUIKitManagerInternal.shared.client.editUser(amityUserUpdateBuilder)
+            return isSuccess
+        } catch {
+//          print("[Chat] Can't update avatar to profile with error: \(error.localizedDescription)")
+            return false
         }
     }
 }

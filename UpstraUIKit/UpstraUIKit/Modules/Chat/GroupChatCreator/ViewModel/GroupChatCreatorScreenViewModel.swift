@@ -27,41 +27,22 @@ class GroupChatCreatorScreenViewModel: GroupChatCreatorScreenViewModelType {
         self.selectUsersData = selectUsersData
     }
     
-    func update(avatar: UIImage, completion: ((Bool) -> Void)?) async {
+    func update(avatar: UIImage) async -> Bool {
         do {
             // Upload avatar image
             let imageData = try await fileRepository.uploadImage(avatar) { progress in
-//                print("[Avatar] Upload progressing result: \(progress)")
+//                print("[Avatar][Chat] Upload progressing result: \(progress)")
                 DispatchQueue.main.async {
                     self.delegate?.screenViewModelDidUpdateAvatarUploadingProgress(self, progressing: progress)
                 }
             }
             // Set avatar to update builder
             amityUserUpdateBuilder.setAvatar(imageData)
-            DispatchQueue.main.async {
-                completion?(true)
-            }
+            return true
         } catch {
-//            print("[Avatar] Can't update avatar group chat with error: \(error.localizedDescription)")
-            DispatchQueue.main.async {
-                completion?(false)
-            }
+//            print("[Avatar][Chat] Can't update avatar group chat with error: \(error.localizedDescription)")
+            return false
         }
-        
-        // Update user avatar // [Back up]
-//        dispatchGroup.enter()
-//        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
-//            guard let self = self else { return }
-//            if let error = error {
-//                self.dispatchGroup.leaveWithError(error)
-//                completion?(false)
-//            }
-//            if let imageData = imageData {
-//                self.amityUserUpdateBuilder.setAvatar(imageData)
-//                self.dispatchGroup.leave()
-//                completion?(true)
-//            }
-//        }
     }
     
 	// MARK: - For Create New Group
