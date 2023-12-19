@@ -127,7 +127,6 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startObserver()
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -156,6 +155,7 @@ public final class AmityMessageListViewController: AmityViewController {
         screenViewModel.action.inputSource(for: .default)
         screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
+        screenViewModel.action.stopUserRealtimeSubscription()
         
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
@@ -228,23 +228,6 @@ public final class AmityMessageListViewController: AmityViewController {
     
     private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
-    }
-    
-    private func startObserver() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(refreshPresence(notification:)),
-                                               name: Notification.Name("RefreshChannelPresence"),
-                                               object: nil)
-    }
-    
-    private func stopObserver() {
-        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
-    }
-    
-    @objc func refreshPresence(notification: Notification) {
-        DispatchQueue.main.async() { [self] in
-            screenViewModel.action.getChannel()
-        }
     }
     
     @objc func handleCustomSwipeBackAction(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
@@ -790,6 +773,32 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
+        }
+        
+        if channel.object.currentUserMembership != .member {
+            composeBar.showJoinMenuButton(show: true)
+            
+            if #available(iOS 16.0, *) {
+                // iOS 16.0 and newer
+                navigationItem.rightBarButtonItem?.isHidden = true
+            } else {
+                // iOS version prior to 16.0
+                navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+            }
+        }
+        
+        // Update interaction of compose bar view
+        if channel.isMuted || channel.isDeleted {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
+        } else {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
+        }
+    }
+    
+    func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+            let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user)
         }
         
         if channel.object.currentUserMembership != .member {

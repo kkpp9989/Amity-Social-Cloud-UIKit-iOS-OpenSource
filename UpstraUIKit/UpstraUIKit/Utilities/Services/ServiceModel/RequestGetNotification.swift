@@ -132,12 +132,7 @@ struct RequestGetNotification {
             
             switch httpResponse.statusCode {
             case 200:
-                guard let dataModel = try? JSONDecoder().decode(Bool.self, from: data) else {
-                    logErrorDeCodeData(data: data)
-                    completion(.failure(HandleError.JsonDecodeError))
-                    return
-                }
-                completion(.success(dataModel))
+                completion(.success(true))
             case 400...499:
                 completion(.failure(HandleError.notFound))
             default:

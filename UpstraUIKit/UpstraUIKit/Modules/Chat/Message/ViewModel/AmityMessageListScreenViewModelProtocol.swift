@@ -14,6 +14,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelRoute(route: AmityMessageListScreenViewModel.Route)
     func screenViewModelDidGetChannel(channel: AmityChannelModel)
+    func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel)
     func screenViewModelScrollToBottom(for indexPath: IndexPath)
     func screenViewModelDidTextChange(text: String)
     func screenViewModelLoadingState(for state: AmityLoadingState)
@@ -103,6 +104,9 @@ protocol AmityMessageListScreenViewModelAction {
     
     func startRealtimeSubscription()
     func stopRealtimeSubscription()
+    
+    func startUserRealtimeSubscription()
+    func stopUserRealtimeSubscription()
     
     func join()
     
