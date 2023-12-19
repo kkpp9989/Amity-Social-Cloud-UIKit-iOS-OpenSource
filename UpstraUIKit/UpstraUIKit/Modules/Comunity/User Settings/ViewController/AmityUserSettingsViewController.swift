@@ -100,8 +100,9 @@ final class AmityUserSettingsViewController: AmityViewController {
                 let vc = AmityUserNotificationSettingsViewController.make()
                 navigationController?.pushViewController(vc, animated: true)
             case .inviteViaQRAndLink:
-                // ktb kk goto ahare qr from user setting
-                AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
+                // ktb kk goto share qr from user setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
             case .basicInfo, .manage, .report, .unfollow, .unreport:
                 break
             }
