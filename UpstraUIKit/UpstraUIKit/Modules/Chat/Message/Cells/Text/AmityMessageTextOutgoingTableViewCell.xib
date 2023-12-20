@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="188" id="rWK-Cp-Vgs" customClass="AmityMessageTextTableViewCell" customModule="AmityUIKit" customModuleProvider="target">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="188" id="rWK-Cp-Vgs" customClass="AmityMessageTextOutgoingTableViewCell" customModule="AmityUIKit" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="412" height="188"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rWK-Cp-Vgs" id="jr9-Vy-i7l">
@@ -121,12 +121,12 @@
                 <outlet property="containerMetadataView" destination="FDI-li-ClV" id="I1o-zU-7gG"/>
                 <outlet property="containerView" destination="bAb-yH-6zC" id="sj0-ej-tCp"/>
                 <outlet property="errorButton" destination="nY4-f1-xBr" id="TGi-8h-GPK"/>
-                <outlet property="leadingTextMessageViewConstraint" destination="n1p-T1-OIg" id="N5q-QY-6vs"/>
+                <outlet property="leadingTextMessageViewConstraint" destination="n1p-T1-OIg" id="tst-SQ-heD"/>
                 <outlet property="metadataLabel" destination="FTp-Po-pci" id="moq-Bb-2Uh"/>
                 <outlet property="readCountLabel" destination="d62-o9-n3i" id="0vh-87-m6Z"/>
                 <outlet property="reportIconImageView" destination="cgP-XD-cec" id="geI-3z-B39"/>
-                <outlet property="stackMainView" destination="1Bw-Wb-xXL" id="oMf-ne-umH"/>
-                <outlet property="stackWithinContainerMessageView" destination="AcQ-nU-6da" id="NCg-Yq-m01"/>
+                <outlet property="stackMainView" destination="1Bw-Wb-xXL" id="Vsb-cu-L52"/>
+                <outlet property="stackWithinContainerMessageView" destination="AcQ-nU-6da" id="jAr-lx-5O7"/>
                 <outlet property="statusMetadataImageView" destination="Dnb-mt-hmn" id="tRW-V9-hNW"/>
                 <outlet property="textMessageView" destination="LVU-ej-YHX" id="iiU-Ih-Phk"/>
             </connections>
