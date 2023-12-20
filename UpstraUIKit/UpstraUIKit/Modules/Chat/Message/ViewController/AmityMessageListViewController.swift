@@ -158,6 +158,7 @@ public final class AmityMessageListViewController: AmityViewController {
         screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
         screenViewModel.action.stopUserRealtimeSubscription()
+        screenViewModel.action.stopObserve()
         
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero

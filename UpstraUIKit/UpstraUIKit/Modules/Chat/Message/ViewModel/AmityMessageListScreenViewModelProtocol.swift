@@ -111,6 +111,8 @@ protocol AmityMessageListScreenViewModelAction {
     func join()
     
     func getTotalUnreadCount()
+    
+    func stopObserve()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {
