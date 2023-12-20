@@ -850,24 +850,6 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
     
-//    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
-//        var operations: [AsyncOperation] = []
-//
-//        switch type {
-//        case .image:
-//            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
-//        case .video:
-//            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
-//        }
-//
-//        // Define serial dependency A <- B <- C <- ... <- Z
-//        for (left, right) in zip(operations, operations.dropFirst()) {
-//            right.addDependency(left)
-//        }
-//
-//        queue.addOperations(operations, waitUntilFinished: false)
-//    }
-    
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
         for media in medias {
             // Separate process from state of media
@@ -1033,5 +1015,16 @@ extension AmityMessageListScreenViewModel {
         guard let object = userInfo else { return }
         let topic = AmityUserTopic(user: object.object, andEvent: .user)
         userSubscription?.unsubscribeTopic(topic) { _, _ in }
+    }
+    
+    func stopObserve() {
+        subChannelNotificationToken?.invalidate()
+        channelNotificationToken?.invalidate()
+        messagesNotificationToken?.invalidate()
+        createMessageNotificationToken?.invalidate()
+        userNotificationToken?.invalidate()
+        getMessagesNotificationToken?.invalidate()
+        topicSubscription = nil
+        userSubscription = nil
     }
 }

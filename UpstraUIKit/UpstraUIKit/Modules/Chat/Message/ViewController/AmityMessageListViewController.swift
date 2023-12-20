@@ -158,6 +158,7 @@ public final class AmityMessageListViewController: AmityViewController {
         screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
         screenViewModel.action.stopUserRealtimeSubscription()
+        screenViewModel.action.stopObserve()
         
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
@@ -841,6 +842,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
+        guard indexPath.section < screenViewModel.numberOfSection() else { return }
+        guard indexPath.row < screenViewModel.numberOfMessage(in: indexPath.section) else { return }
         messageViewController.scrollToBottom(indexPath: indexPath)
     }
     
