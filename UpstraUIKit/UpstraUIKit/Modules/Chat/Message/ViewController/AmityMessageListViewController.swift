@@ -841,6 +841,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
+        guard indexPath.section < screenViewModel.numberOfSection() else { return }
+        guard indexPath.row < screenViewModel.numberOfMessage(in: indexPath.section) else { return }
         messageViewController.scrollToBottom(indexPath: indexPath)
     }
     
