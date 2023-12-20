@@ -13,6 +13,7 @@ final class AmityMessageListTableViewController: UITableViewController {
     
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
+    private var expandedMessageIdList: [String] = []
     
     var oldIndexPath: IndexPath?
     
@@ -159,6 +160,10 @@ extension AmityMessageListTableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let message = screenViewModel.dataSource.message(at: indexPath) else { return 0 }
         
+        if expandedMessageIdList.contains(where: { $0 == message.messageId }) {
+            message.appearance.isExpanding = true
+        }
+        
         return cellType(for: message)?
             .height(for: message, boundingWidth: tableView.bounds.width) ?? 0.0
     }
@@ -262,6 +267,7 @@ extension AmityMessageListTableViewController: AmityMessageCellDelegate {
                 DispatchQueue.main.async { [weak self] in
                     self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 }
+                expandedMessageIdList.append(message.messageId)
             }
         case .didCollapseExpandableLabel:
             message.appearance.isExpanding = false
@@ -299,6 +305,10 @@ extension AmityMessageListTableViewController {
             cell.setViewModel(with: screenViewModel)
             cell.setIndexPath(with: indexPath)
         }
+        if let _ = cell as? AmityMessageTextTableViewCell, expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
+            message.appearance.isExpanding = true
+        }
+        
         let channelType = screenViewModel.dataSource.getChannelType()
         (cell as? AmityMessageCellProtocol)?.display(message: message)
         (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
