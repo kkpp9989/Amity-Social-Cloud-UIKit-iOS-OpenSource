@@ -333,16 +333,11 @@ private extension AmityMessageListViewController {
         let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-        imagePicker.settings.selection.max = 20
+        imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
         presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
-//            let media = assets.map { asset in
-//                AmityMedia(state: .image(self?.getAssetThumbnail(asset: asset) ?? UIImage()), type: .image)
-//            }
-            
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
-            
             let vc = PreviewImagePickerController.make(media: medias,
                                                        viewModel: (self?.screenViewModel)!,
                                                        mediaType: .image,

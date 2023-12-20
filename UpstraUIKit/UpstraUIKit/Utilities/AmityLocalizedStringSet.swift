@@ -164,6 +164,7 @@ public struct AmityLocalizedStringSet {
         static let alertMicrophoneDisabledTitle = "message_list_alert_microphone_disabled_title"
         static let alertMicrophoneDisabledDesc = "message_list_alert_microphone_disabled_desc"
         static let alertSharedMessageSuccessfully = "message_list_alert_shared_message_successfully"
+        static let alertSelectImageFull = "message_list_alert_select_image_full"
     }
     
     // MARK: - Empty Community in category
