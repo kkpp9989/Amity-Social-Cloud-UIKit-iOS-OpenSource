@@ -14,9 +14,13 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
     enum Constant {
         static let maximumLines: Int = 8
         static let textMessageFont = AmityFontSet.body
+        static let spaceOfStackWithinContainerMessageView = 4.0
     }
     
+    @IBOutlet private var stackWithinContainerMessageView: UIStackView!
     @IBOutlet private var textMessageView: AmityExpandableLabel!
+    @IBOutlet private var stackMainView: UIStackView!
+    @IBOutlet private var leadingTextMessageViewConstraint: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,13 +28,15 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
     }
 
     private func setupView() {
+        stackWithinContainerMessageView.spacing = Constant.spaceOfStackWithinContainerMessageView
         textMessageView.text = ""
         textMessageView.textAlignment = .left
         textMessageView.numberOfLines = Constant.maximumLines
         textMessageView.isExpanded = false
         textMessageView.font = Constant.textMessageFont
         textMessageView.backgroundColor = .clear
-        textMessageView.delegate = self        
+        textMessageView.delegate = self
+        textMessageView.preferredMaxLayoutWidth = stackMainView.frame.width - leadingTextMessageViewConstraint.constant - Constant.spaceOfStackWithinContainerMessageView
     }
         
     override func display(message: AmityMessageModel) {
@@ -71,6 +77,7 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
 		} else {
 			textMessageView.text = message.text
 		}
+        
         textMessageView.isExpanded = message.appearance.isExpanding
     }
     

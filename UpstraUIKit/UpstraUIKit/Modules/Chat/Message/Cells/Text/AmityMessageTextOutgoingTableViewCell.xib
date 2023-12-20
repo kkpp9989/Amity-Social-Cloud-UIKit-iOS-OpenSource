@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,13 +18,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="412" height="188"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="fillProportionally" alignment="bottom" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="1Bw-Wb-xXL">
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="bottom" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="1Bw-Wb-xXL">
                         <rect key="frame" x="72" y="8" width="324" height="143.5"/>
                         <subviews>
-                            <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tfQ-2r-PrA">
+                            <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="tfQ-2r-PrA">
                                 <rect key="frame" x="0.0" y="0.0" width="324" height="143.5"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" distribution="fillProportionally" alignment="bottom" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="AcQ-nU-6da">
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="bottom" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="AcQ-nU-6da">
                                         <rect key="frame" x="0.0" y="0.0" width="324" height="143.5"/>
                                         <subviews>
                                             <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconError" translatesAutoresizingMaskIntoConstraints="NO" id="cgP-XD-cec">
@@ -34,7 +34,7 @@
                                                     <constraint firstAttribute="height" constant="24" id="tQT-nj-64j"/>
                                                 </constraints>
                                             </imageView>
-                                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nY4-f1-xBr">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nY4-f1-xBr">
                                                 <rect key="frame" x="0.0" y="118.5" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="25" id="1RX-9L-DXP"/>
@@ -45,7 +45,7 @@
                                                     <action selector="errorTap" destination="rWK-Cp-Vgs" eventType="touchUpInside" id="DCI-m7-Yq4"/>
                                                 </connections>
                                             </button>
-                                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bAb-yH-6zC" customClass="AmityResponsiveView" customModule="AmityUIKit" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bAb-yH-6zC" customClass="AmityResponsiveView" customModule="AmityUIKit" customModuleProvider="target">
                                                 <rect key="frame" x="29" y="90.5" width="295" height="53"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="LVU-ej-YHX" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
@@ -73,23 +73,23 @@
                             </view>
                         </subviews>
                     </stackView>
-                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FDI-li-ClV">
-                        <rect key="frame" x="254.5" y="155.5" width="141.5" height="20.5"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FDI-li-ClV">
+                        <rect key="frame" x="256.5" y="155.5" width="139.5" height="20.5"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="SXE-Xc-Ix8">
-                                <rect key="frame" x="0.0" y="0.0" width="141.5" height="20.5"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="SXE-Xc-Ix8">
+                                <rect key="frame" x="0.0" y="0.0" width="139.5" height="20.5"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="Dnb-mt-hmn">
-                                        <rect key="frame" x="0.0" y="2.5" width="16" height="16"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="Dnb-mt-hmn">
+                                        <rect key="frame" x="0.0" y="2.5" width="14" height="16"/>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FTp-Po-pci">
-                                        <rect key="frame" x="20" y="0.0" width="64" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FTp-Po-pci">
+                                        <rect key="frame" x="18" y="0.0" width="64" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d62-o9-n3i">
-                                        <rect key="frame" x="88" y="0.0" width="53.5" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d62-o9-n3i">
+                                        <rect key="frame" x="86" y="0.0" width="53.5" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -100,7 +100,7 @@
                         <constraints>
                             <constraint firstItem="SXE-Xc-Ix8" firstAttribute="top" secondItem="FDI-li-ClV" secondAttribute="top" id="6uE-Ut-U7v"/>
                             <constraint firstItem="SXE-Xc-Ix8" firstAttribute="leading" secondItem="FDI-li-ClV" secondAttribute="leading" id="Aii-Gs-k9i"/>
-                            <constraint firstAttribute="bottom" secondItem="SXE-Xc-Ix8" secondAttribute="bottom" id="gLk-bB-kvY"/>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="SXE-Xc-Ix8" secondAttribute="bottom" id="gLk-bB-kvY"/>
                             <constraint firstAttribute="trailing" secondItem="SXE-Xc-Ix8" secondAttribute="trailing" id="jjQ-Wa-2xH"/>
                         </constraints>
                     </view>
@@ -121,9 +121,12 @@
                 <outlet property="containerMetadataView" destination="FDI-li-ClV" id="I1o-zU-7gG"/>
                 <outlet property="containerView" destination="bAb-yH-6zC" id="sj0-ej-tCp"/>
                 <outlet property="errorButton" destination="nY4-f1-xBr" id="TGi-8h-GPK"/>
+                <outlet property="leadingTextMessageViewConstraint" destination="n1p-T1-OIg" id="N5q-QY-6vs"/>
                 <outlet property="metadataLabel" destination="FTp-Po-pci" id="moq-Bb-2Uh"/>
                 <outlet property="readCountLabel" destination="d62-o9-n3i" id="0vh-87-m6Z"/>
                 <outlet property="reportIconImageView" destination="cgP-XD-cec" id="geI-3z-B39"/>
+                <outlet property="stackMainView" destination="1Bw-Wb-xXL" id="oMf-ne-umH"/>
+                <outlet property="stackWithinContainerMessageView" destination="AcQ-nU-6da" id="NCg-Yq-m01"/>
                 <outlet property="statusMetadataImageView" destination="Dnb-mt-hmn" id="tRW-V9-hNW"/>
                 <outlet property="textMessageView" destination="LVU-ej-YHX" id="iiU-Ih-Phk"/>
             </connections>
@@ -132,7 +135,7 @@
     </objects>
     <resources>
         <image name="iconError" width="78" height="78"/>
-        <image name="icon_delete_message" width="16" height="16"/>
+        <image name="icon_delete_message" width="14" height="16"/>
         <image name="icon_message_failed" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
