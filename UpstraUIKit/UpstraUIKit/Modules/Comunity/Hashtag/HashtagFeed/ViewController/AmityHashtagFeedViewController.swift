@@ -596,6 +596,14 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
                         self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                     }
                 }
+                // expand label in comment preview with url preview cell
+                if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentWithURLPreviewTableViewCell,
+                   let comment = commentPreviewCell.comment {
+                    expandedIds.insert(comment.id)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in
+                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    }
+                }
             }
             tableView.endUpdates()
         case .willCollapseExpandableLabel:
@@ -605,6 +613,14 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
             if let indexPath = tableView.indexPathForRow(at: point) as IndexPath? {
                 // expand label in comment preview cell
                 if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentTableViewCell,
+                   let comment = commentPreviewCell.comment {
+                    expandedIds.remove(comment.id)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in
+                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    }
+                }
+                // expand label in comment preview with url preview cell
+                if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentWithURLPreviewTableViewCell,
                    let comment = commentPreviewCell.comment {
                     expandedIds.remove(comment.id)
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in

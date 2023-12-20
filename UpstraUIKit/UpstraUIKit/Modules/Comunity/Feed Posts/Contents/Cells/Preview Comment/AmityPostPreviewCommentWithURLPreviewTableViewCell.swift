@@ -1,19 +1,19 @@
 //
-//  AmityPostPreviewCommentTableViewCell.swift
+//  AmityPostPreviewCommentWithURLPreviewTableViewCell.swift
 //  AmityUIKit
 //
-//  Created by sarawoot khunsri on 2/9/21.
-//  Copyright © 2021 Amity. All rights reserved.
+//  Created by Thanaphat Thanawatpanya on 7/12/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 
-public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbable, AmityPostPreviewCommentProtocol {
+public final class AmityPostPreviewCommentWithURLPreviewTableViewCell: UITableViewCell, Nibbable, AmityPostPreviewCommentProtocol {
     
     public weak var delegate: AmityPostPreviewCommentDelegate?
     
     // MARK: - IBOutlet Properties
-    @IBOutlet private var commentView: AmityCommentView!
+    @IBOutlet private var commentView: AmityCommentViewWithURLPreview!
     @IBOutlet private var separatorView: UIView!
     
     // MARK: - Properties
@@ -30,7 +30,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         self.comment = comment
         self.post = post
         guard let comment = comment else { return }
-        let layout = AmityCommentView.Layout(
+        let layout = AmityCommentViewWithURLPreview.Layout(
             type: .commentPreview,
             isExpanded: isExpanded,
             shouldShowActions: post.isCommentable,
@@ -63,7 +63,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
 }
 
 // MARK: AmityExpandableLabelDelegate
-extension AmityPostPreviewCommentTableViewCell: AmityExpandableLabelDelegate {
+extension AmityPostPreviewCommentWithURLPreviewTableViewCell: AmityExpandableLabelDelegate {
     public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
         performAction(action: .tapOnHashtag(keyword: keyword, count: count))
     }
@@ -94,13 +94,13 @@ extension AmityPostPreviewCommentTableViewCell: AmityExpandableLabelDelegate {
 }
 
 // MARK: AmityCommentViewDelegate
-extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
+extension AmityPostPreviewCommentWithURLPreviewTableViewCell: AmityCommentViewWithURLPreviewDelegate {
     
-    func commentView(_ view: AmityCommentView, didTapAction action: AmityCommentViewAction) {
+    func commentView(_ view: AmityCommentViewWithURLPreview, didTapAction action: AmityCommentViewAction) {
         guard let comment = view.comment else { return }
         switch action {
         case .avatar:
-            // [Custom for ONE Krungthai] Check moderator user in official community for prepare tap action
+            // Check moderator user in official community for prepare tap action
             if view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity { // Case : Post is from official community and owner is moderator
                 if let currentPost = post, view.shouldDidTapAction { // Post must to output from newsfeed only
                     performAction(action: .tapCommunityName(post: currentPost)) // Send post model for get community model
