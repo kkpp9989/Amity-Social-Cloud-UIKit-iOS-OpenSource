@@ -120,6 +120,17 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         customMessageController = AmityCustomMessageController(channelId: channelId)
     }
     
+    deinit {
+        subChannelNotificationToken?.invalidate()
+        channelNotificationToken?.invalidate()
+        messagesNotificationToken?.invalidate()
+        createMessageNotificationToken?.invalidate()
+        userNotificationToken?.invalidate()
+        getMessagesNotificationToken?.invalidate()
+        topicSubscription = nil
+        userSubscription = nil
+    }
+    
     // MARK: - DataSource
     private let queue = OperationQueue()
     private var messages: [[AmityMessageModel]] = []
