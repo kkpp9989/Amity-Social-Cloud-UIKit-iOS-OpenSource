@@ -36,6 +36,7 @@ public protocol AmityMentionManagerDelegate: AnyObject {
     func didMentionsReachToMaximumLimit()
     func didCharactersReachToMaximumLimit()
     func didGetHashtag(keywords: [AmityHashtagModel])
+    func didRemoveAttributedString()
 }
 
 public enum AmityMentionManagerType {
@@ -215,6 +216,12 @@ public extension AmityMentionManager {
             }
             finishSearching()
             finishHashtagSearching()
+            
+            if let startPosition = textInput.position(from: textInput.beginningOfDocument, offset: range.location),
+               let endPosition = textInput.position(from: textInput.beginningOfDocument, offset: range.location + range.length), let selectedRange = textInput.selectedTextRange {
+                
+                return canRemove(textInput, inRange: range, withSelectedRange: selectedRange, startPosition: startPosition, endPosition: endPosition, inText: text)
+            }
         }
         
         return true
@@ -545,6 +552,8 @@ private extension AmityMentionManager {
                 }
             }
         }
+        
+        delegate?.didRemoveAttributedString()
     }
     
     func hasMentionInRange(range: NSRange) -> Bool {
