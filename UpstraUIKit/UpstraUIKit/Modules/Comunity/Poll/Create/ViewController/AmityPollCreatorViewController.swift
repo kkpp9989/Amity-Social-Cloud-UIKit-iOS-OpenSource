@@ -406,6 +406,12 @@ extension AmityPollCreatorViewController: AmityPollCreatorCellProtocolDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPollCreatorViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AmityPollCreatorQusetionTableViewCell, let textView = cell.getTextView() {
+            textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+        }
+    }
+    
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0

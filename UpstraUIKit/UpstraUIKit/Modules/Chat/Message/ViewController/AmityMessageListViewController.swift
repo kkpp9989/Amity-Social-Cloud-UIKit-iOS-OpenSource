@@ -1154,6 +1154,10 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 		composeBar.textView.attributedText = attributedString
 		composeBar.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
 	}
+    
+    public func didRemoveAttributedString() {
+        composeBar.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
 	
 	public func didGetUsers(users: [AmityMentionUserModel]) {
 		if users.isEmpty {

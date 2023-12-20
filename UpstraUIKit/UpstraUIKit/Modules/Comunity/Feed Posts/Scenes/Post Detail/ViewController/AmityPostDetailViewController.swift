@@ -968,6 +968,10 @@ extension AmityPostDetailViewController: UITableViewDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostDetailViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        commentComposeBarView.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
+    
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0

@@ -704,6 +704,10 @@ extension LiveStreamBroadcastViewController: AmityVideoBroadcasterDelegate {
 
 // MARK: - AmityMentionManagerDelegate
 extension LiveStreamBroadcastViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        descriptionTextView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: UIColor.white]
+    }
+    
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         
     }

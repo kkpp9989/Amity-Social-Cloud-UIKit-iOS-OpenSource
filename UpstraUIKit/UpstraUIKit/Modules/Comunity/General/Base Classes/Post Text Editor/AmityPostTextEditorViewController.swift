@@ -1098,6 +1098,10 @@ extension AmityPostTextEditorViewController: UITableViewDataSource {
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
+    
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0
