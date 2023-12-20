@@ -230,7 +230,7 @@ extension AmityMessageListScreenViewModel {
     
     func getChannel(){
         channelNotificationToken?.invalidate()
-        channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
+        channelNotificationToken = channelRepository.getChannel(channelId).observeOnce { [weak self] (channel, error) in
             guard let strongSelf = self else { return }
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
@@ -238,6 +238,8 @@ extension AmityMessageListScreenViewModel {
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
+                AmityUIKitManager.getSyncAllChannelPresence()
+                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }

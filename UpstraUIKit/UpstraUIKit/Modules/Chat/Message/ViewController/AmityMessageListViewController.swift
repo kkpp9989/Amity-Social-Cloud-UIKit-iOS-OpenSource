@@ -116,6 +116,8 @@ public final class AmityMessageListViewController: AmityViewController {
         setupFilePicker()
         setupReplyView()
         
+        startObserver()
+        
         // Set swipe back gesture if from notification
         if isFromNotification {
             setupCustomSwipeBackGesture()
@@ -216,6 +218,23 @@ public final class AmityMessageListViewController: AmityViewController {
         replyDisplayNameLabel.font = AmityFontSet.bodyBold
         replyDescLabel.font = AmityFontSet.body
         replyDescLabel.textColor = AmityColorSet.base.blend(.shade3)
+    }
+    
+    private func startObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(refreshPresence(notification:)),
+                                               name: Notification.Name("RefreshChannelPresence"),
+                                               object: nil)
+    }
+    
+    private func stopObserver() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+    }
+    
+    @objc func refreshPresence(notification: Notification) {
+        DispatchQueue.main.async() { [self] in
+            screenViewModel.action.getChannel()
+        }
     }
     
     private func setupCustomSwipeBackGesture() {
