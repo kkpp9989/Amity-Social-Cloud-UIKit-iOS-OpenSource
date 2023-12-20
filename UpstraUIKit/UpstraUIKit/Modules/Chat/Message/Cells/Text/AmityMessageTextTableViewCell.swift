@@ -17,18 +17,14 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         static let spaceOfStackWithinContainerMessageView = 4.0
     }
     
-    @IBOutlet private var stackWithinContainerMessageView: UIStackView!
-    @IBOutlet private var textMessageView: AmityExpandableLabel!
-    @IBOutlet private var stackMainView: UIStackView!
-    @IBOutlet private var leadingTextMessageViewConstraint: NSLayoutConstraint!
+    @IBOutlet var textMessageView: AmityExpandableLabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
     }
 
-    private func setupView() {
-        stackWithinContainerMessageView.spacing = Constant.spaceOfStackWithinContainerMessageView
+    func setupView() {
         textMessageView.text = ""
         textMessageView.textAlignment = .left
         textMessageView.numberOfLines = Constant.maximumLines
@@ -36,7 +32,6 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         textMessageView.font = Constant.textMessageFont
         textMessageView.backgroundColor = .clear
         textMessageView.delegate = self
-        textMessageView.preferredMaxLayoutWidth = stackMainView.frame.width - leadingTextMessageViewConstraint.constant - Constant.spaceOfStackWithinContainerMessageView
     }
         
     override func display(message: AmityMessageModel) {
