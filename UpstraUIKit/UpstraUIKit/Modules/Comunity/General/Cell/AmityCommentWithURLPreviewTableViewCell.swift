@@ -1,31 +1,31 @@
 //
-//  AmityCommentTableViewCell.swift
+//  AmityCommentWithURLPreviewTableViewCell.swift
 //  AmityUIKit
 //
-//  Created by Nontapat Siengsanor on 14/8/2563 BE.
-//  Copyright © 2563 Amity Communication. All rights reserved.
+//  Created by Thanaphat Thanawatpanya on 21/12/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 
-protocol AmityCommentTableViewCellDelegate: AnyObject {
-    func commentCellDidTapReadMore(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapLike(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapReply(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapOption(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?)
-    func commentCellDidTapReactionDetails(_ cell: AmityCommentTableViewCell)
+protocol AmityCommentWithURLPreviewTableViewCellDelegate: AnyObject {
+    func commentCellDidTapReadMore(_ cell: AmityCommentWithURLPreviewTableViewCell)
+    func commentCellDidTapLike(_ cell: AmityCommentWithURLPreviewTableViewCell)
+    func commentCellDidTapReply(_ cell: AmityCommentWithURLPreviewTableViewCell)
+    func commentCellDidTapOption(_ cell: AmityCommentWithURLPreviewTableViewCell)
+    func commentCellDidTapAvatar(_ cell: AmityCommentWithURLPreviewTableViewCell, userId: String, communityId: String?)
+    func commentCellDidTapReactionDetails(_ cell: AmityCommentWithURLPreviewTableViewCell)
 }
 
-class AmityCommentTableViewCell: UITableViewCell, Nibbable {
+class AmityCommentWithURLPreviewTableViewCell: UITableViewCell, Nibbable {
 
-    @IBOutlet private var commentView: AmityCommentView!
+    @IBOutlet private var commentView: AmityCommentViewWithURLPreview!
     
     public private(set) var post: AmityPostModel?
     public private(set) var comment: AmityCommentModel?
     public private(set) var indexPath: IndexPath?
     
-    weak var actionDelegate: AmityCommentTableViewCellDelegate?
+    weak var actionDelegate: AmityCommentWithURLPreviewTableViewCellDelegate?
     
     var labelDelegate: AmityExpandableLabelDelegate? {
         get {
@@ -36,7 +36,7 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, indexPath: IndexPath, post: AmityPostModel? = nil) {
+    func configure(with comment: AmityCommentModel, layout: AmityCommentViewWithURLPreview.Layout, indexPath: IndexPath, post: AmityPostModel? = nil) {
         self.post = post
         self.comment = comment
         self.indexPath = indexPath
@@ -60,9 +60,9 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
     }
 }
 
-extension AmityCommentTableViewCell: AmityCommentViewDelegate {
+extension AmityCommentWithURLPreviewTableViewCell: AmityCommentViewWithURLPreviewDelegate {
     
-    func commentView(_ view: AmityCommentView, didTapAction action: AmityCommentViewAction) {
+    func commentView(_ view: AmityCommentViewWithURLPreview, didTapAction action: AmityCommentViewAction) {
         switch action {
         case .avatar:
             // Check moderator user in official community for prepare tap displayname or avatar action
