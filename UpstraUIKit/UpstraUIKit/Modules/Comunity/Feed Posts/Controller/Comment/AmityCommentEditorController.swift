@@ -25,30 +25,25 @@ final class AmityCommentEditorController: AmityCommentEditorControllerProtocol {
         
     func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, completion: AmityRequestCompletion?) {
         commentRepository = AmityCommentRepository(client: AmityUIKitManagerInternal.shared.client)
-        
-        // [Custom for ONE Krgunthai][URL Preview] Add get URL metadata for cache in post metadata to show URL preview
+        // [URL Preview] Add get URL metadata for cache in comment metadata to show URL preview
         var updatedMetadata = metadata ?? [:]
-        if let urlInString = AmityURLCustomManager.Utilities.getURLInText(text: text) {
+        if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
             // Get URL metadata
-            AmityURLCustomManager.Metadata.fetchAmityURLMetadata(url: urlInString) { [self] urlMetadata in
-                DispatchQueue.main.async {
-                    if let newURLMetadata = urlMetadata {
-                        // Set title, URL and static value to post metadata
-                        updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
-                        updatedMetadata["url_preview_cache_url"] = newURLMetadata.fullURL
-                        updatedMetadata["is_show_url_preview"] = true
-                        
-                        // Clear cache of URL metadata
-                        AmityURLPreviewCacheManager.shared.removeCacheMetadata(forURL: newURLMetadata.fullURL)
-                    } else {
-                        updatedMetadata["url_preview_cache_title"] = ""
-                        updatedMetadata["url_preview_cache_url"] = ""
-                        updatedMetadata["is_show_url_preview"] = false
-                    }
-                    self.doEdit(withComment: comment, text: text, metadata: updatedMetadata, mentionees: mentionees, completion: completion)
+            Task { @MainActor in
+                var updatedMetadata = metadata ?? [:]
+                if let newURLMetadata = await AmityPreviewLinkWizard.shared.getMetadata(url: urlData) {
+                    updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                    updatedMetadata["url_preview_cache_url"] = urlData.absoluteString
+                    updatedMetadata["is_show_url_preview"] = true
+                } else {
+                    updatedMetadata["url_preview_cache_title"] = ""
+                    updatedMetadata["url_preview_cache_url"] = ""
+                    updatedMetadata["is_show_url_preview"] = false
                 }
+                doEdit(withComment: comment, text: text, metadata: updatedMetadata, mentionees: mentionees, completion: completion)
             }
         } else {
+            var updatedMetadata = metadata ?? [:]
             updatedMetadata["url_preview_cache_title"] = ""
             updatedMetadata["url_preview_cache_url"] = ""
             updatedMetadata["is_show_url_preview"] = false

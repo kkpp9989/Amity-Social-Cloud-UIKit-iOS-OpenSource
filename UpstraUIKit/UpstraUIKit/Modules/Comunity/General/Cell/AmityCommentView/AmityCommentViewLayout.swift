@@ -17,6 +17,42 @@ protocol AmityCommentLayoutSpace {
     var belowStack: CGFloat { get }
 }
 
+extension AmityCommentViewWithURLPreview {
+    
+    struct Layout {
+        
+        enum LayoutType {
+            case comment
+            case commentPreview
+            case reply
+        }
+        
+        let type: LayoutType
+        let isExpanded: Bool
+        let shouldShowActions: Bool
+        let shouldLineShow: Bool
+        
+        var space: AmityCommentLayoutSpace {
+            switch type {
+            case .comment: return CommentSpace()
+            case .commentPreview: return CommentPreviewSpace()
+            case .reply: return ReplySpace()
+            }
+        }
+        
+        func shouldShowViewReplyButton(for comment: AmityCommentModel) -> Bool {
+            switch type {
+            case .commentPreview:
+                return comment.isChildrenExisted
+            default:
+                return false
+            }
+        }
+        
+    }
+    
+}
+
 extension AmityCommentView {
     
     struct Layout {

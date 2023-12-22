@@ -51,12 +51,20 @@ public struct AmityPostMediaComponent: AmityPostComposable {
             let cell: AmityPostViewAllCommentsTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             return cell
         default:
-            let cell: AmityPostPreviewCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             let comment = post.getComment(at: indexPath, totalComponent: AmityPostConstant.defaultNumberComponent)
-            let isExpanded = post.commentExpandedIds.contains(comment?.id ?? "absolutely-cannot-found-xc")
-            cell.setIsExpanded(isExpanded)
-            cell.display(post: post, comment: comment, indexPath: indexPath)
-            return cell
+            if let isShowURLPreview = comment?.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview {
+                let cell: AmityPostPreviewCommentWithURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                let isExpanded = post.commentExpandedIds.contains(comment?.id ?? "absolutely-cannot-found-xc")
+                cell.setIsExpanded(isExpanded)
+                cell.display(post: post, comment: comment, indexPath: indexPath)
+                return cell
+            } else {
+                let cell: AmityPostPreviewCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                let isExpanded = post.commentExpandedIds.contains(comment?.id ?? "absolutely-cannot-found-xc")
+                cell.setIsExpanded(isExpanded)
+                cell.display(post: post, comment: comment, indexPath: indexPath)
+                return cell
+            }
         }
     }
     

@@ -129,6 +129,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = false
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)

@@ -163,6 +163,7 @@ open class AmityPostDetailViewController: AmityViewController {
         tableView.registerCustomCell()
         tableView.registerPostCell()
         tableView.register(cell: AmityCommentTableViewCell.self)
+        tableView.register(cell: AmityCommentWithURLPreviewTableViewCell.self)
         tableView.register(cell: AmityPostDetailDeletedTableViewCell.self)
         tableView.register(cell: AmityViewMoreReplyTableViewCell.self)
         tableView.register(cell: AmityDeletedReplyTableViewCell.self)
@@ -399,47 +400,71 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
             
             return cell
         case .comment(let comment):
-            
-            // [Custom for ONE Krungthai][Improvement][URL Preview] Move configure cell to cellForRowAt same as AmityFeedViewController for can adjust size with url preview success
             if comment.isDeleted {
                 let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 cell.configure(deletedAt: comment.updatedAt)
                 return cell
             } else {
-                let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                let layout = AmityCommentView.Layout(
-                    type: .comment,
-                    isExpanded: expandedIds.contains(comment.id),
-                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                    shouldLineShow: viewModel.isReplyType
-                )
-                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing and handle after displaying URL preview
-                cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
-                cell.labelDelegate = self
-                cell.actionDelegate = self
-                
-                return cell
+                if let isShowURLPreview = comment.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview {
+                    let cell: AmityCommentWithURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentViewWithURLPreview.Layout(
+                        type: .comment,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                } else {
+                    let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentView.Layout(
+                        type: .comment,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                }
             }
         case .replyComment(let comment):
-            
-            // [Custom for ONE Krungthai][Improvement][URL Preview] Move configure cell to cellForRowAt same as AmityFeedViewController for can adjust size with url preview success
             if comment.isDeleted {
                 let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 return cell
             } else {
-                let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-                let layout = AmityCommentView.Layout(
-                    type: .reply,
-                    isExpanded: expandedIds.contains(comment.id),
-                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                    shouldLineShow: viewModel.isReplyType
-                )
-                // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing and handle after displaying URL preview
-                cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
-                cell.labelDelegate = self
-                cell.actionDelegate = self
-                
-                return cell
+                if let isShowURLPreview = comment.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview {
+                    let cell: AmityCommentWithURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentViewWithURLPreview.Layout(
+                        type: .reply,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                } else {
+                    let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentView.Layout(
+                        type: .reply,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                }
             }
             
         case .loadMoreReply:
@@ -855,6 +880,7 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
         }
     }
     
+    // Use both of AmityCommentTableViewCellDelegate and AmityCommentWithURLPreviewTableViewCellDelegate
     private func presentOptionBottomSheet(comment: AmityCommentModel) {
         let communityId = (screenViewModel.dataSource.community?.isPublic ?? false) ? nil : screenViewModel.dataSource.community?.communityId
         // Comment options
@@ -908,6 +934,66 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
         } else {
             // get report status for comment and then trigger didReceiveCommentReportStatus on delegate
             screenViewModel.action.getCommentReportStatus(with: comment)
+        }
+    }
+}
+
+extension AmityPostDetailViewController: AmityCommentWithURLPreviewTableViewCellDelegate {
+    func commentCellDidTapAvatar(_ cell: AmityCommentWithURLPreviewTableViewCell, userId: String, communityId: String?) {
+        // [Custom for ONE Krungthai] Add check condition for tap to community for moderator user in official community action
+        if let currentCommunityId = communityId {
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: currentCommunityId)
+        } else {
+            AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        }
+    }
+    
+    func commentCellDidTapReadMore(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        //
+    }
+    
+    func commentCellDidTapLike(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            if comment.isLiked {
+                screenViewModel.action.unlikeComment(withCommendId: comment.id)
+            } else {
+                screenViewModel.action.likeComment(withCommendId: comment.id)
+            }
+        case .post, .loadMoreReply:
+            break
+        }
+    }
+    
+    func commentCellDidTapReply(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell),
+            case .comment(let comment) = screenViewModel.item(at: indexPath) else { return }
+        parentComment = comment
+        _ = commentComposeBarView.becomeFirstResponder()
+    }
+    
+    func commentCellDidTapOption(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            presentOptionBottomSheet(comment: comment)
+        case .post, .loadMoreReply:
+            break
+        }
+    }
+    
+    func commentCellDidTapReactionDetails(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            let info = AmityReactionInfo(referenceId: comment.id, referenceType: .comment, reactionsCount: comment.reactionsCount)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: [:])
+        case .post, .loadMoreReply:
+            break
         }
     }
 }
