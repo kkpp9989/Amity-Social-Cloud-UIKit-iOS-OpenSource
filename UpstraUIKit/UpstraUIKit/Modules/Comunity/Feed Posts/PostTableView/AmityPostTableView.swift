@@ -84,6 +84,7 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
         register(cell: AmityPostHeaderTableViewCell.self)
         register(cell: AmityPostFooterTableViewCell.self)
         register(cell: AmityPostPreviewCommentTableViewCell.self)
+        register(cell: AmityPostPreviewCommentWithURLPreviewTableViewCell.self)
         register(cell: AmityPostTextTableViewCell.self)
         register(cell: AmityPostGalleryTableViewCell.self)
         register(cell: AmityPostFileTableViewCell.self)
@@ -91,6 +92,7 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
         register(cell: AmityPostPlaceHolderTableViewCell.self)
         register(cell: AmityPostViewAllCommentsTableViewCell.self)
         register(cell: AmityPostPollTableViewCell.self)
+        register(cell: AmityPreviewLinkCell.self)
     }
     
     

@@ -9,7 +9,7 @@
 import AmitySDK
 import UIKit
 
-public struct AmityMentionUserModel {
+public struct AmityMentionUserModel: Hashable {
     let userId: String?
     let displayName: String
     let avatarURL: String?
@@ -36,6 +36,7 @@ public protocol AmityMentionManagerDelegate: AnyObject {
     func didMentionsReachToMaximumLimit()
     func didCharactersReachToMaximumLimit()
     func didGetHashtag(keywords: [AmityHashtagModel])
+    func didRemoveAttributedString()
 }
 
 public enum AmityMentionManagerType {
@@ -215,6 +216,12 @@ public extension AmityMentionManager {
             }
             finishSearching()
             finishHashtagSearching()
+            
+            if let startPosition = textInput.position(from: textInput.beginningOfDocument, offset: range.location),
+               let endPosition = textInput.position(from: textInput.beginningOfDocument, offset: range.location + range.length), let selectedRange = textInput.selectedTextRange {
+                
+                return canRemove(textInput, inRange: range, withSelectedRange: selectedRange, startPosition: startPosition, endPosition: endPosition, inText: text)
+            }
         }
         
         return true
@@ -488,16 +495,24 @@ private extension AmityMentionManager {
                 }
             }
             if isSearchingStarted {
-                let filteredArray = users.filter { user in
+                // Filter selected mention user out
+                var filteredArray = users.filter { user in
                     !mentions.contains { mention in
                         mention.userId == user.userId
                     }
                 }
+                
+                // Filter duplicate user in list
+                filteredArray = Array(Set(filteredArray))
+                
                 delegate?.didGetUsers(users: filteredArray)
             }
         case .error:
             collectionToken?.invalidate()
-            delegate?.didGetUsers(users: users)
+            
+            // Filter duplicate user in list
+            let filteredArray = Array(Set(users))
+            delegate?.didGetUsers(users: filteredArray)
         default: break
         }
     }
@@ -537,6 +552,8 @@ private extension AmityMentionManager {
                 }
             }
         }
+        
+        delegate?.didRemoveAttributedString()
     }
     
     func hasMentionInRange(range: NSRange) -> Bool {

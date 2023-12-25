@@ -41,8 +41,6 @@ class AmityGroupChatEditViewController: AmityViewController {
         return (isValueChanged && isValueExisted)
     }
     
-    private var mockUploadProgressingTimer: Timer?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -81,7 +79,7 @@ class AmityGroupChatEditViewController: AmityViewController {
     }
     
     func setupView() {
-        title = AmityLocalizedStringSet.editUserProfileTitle.localizedString
+        title = AmityLocalizedStringSet.ChatSettings.groupProfile.localizedString
         screenViewModel = AmityGroupChatEditScreenViewModel(channelId: channelId)
         screenViewModel?.delegate = self
         avatarView.placeholder = AmityIconSet.defaultGroupChat
@@ -179,54 +177,48 @@ class AmityGroupChatEditViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         AmityHUD.show(.loading)
-        // Update user avatar
-        if let avatar = uploadingAvatarImage {
-//            avatarView.state = .loading // [Backup]
-            // [Workaround] Mock upload avatar progressing
-            // Set start progressing
-            var currentProgressing: Float = 0.1
-            avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
-            overlayView.isHidden = false // Custom overlay for this view controller only
-//            print("[Avatar] Upload progressing number: \(currentProgressing) | Start")
-            // Mock progressing with random data every 1 second
-            mockUploadProgressingTimer = Timer(timeInterval: 1.0, repeats: true) { timer in
-                DispatchQueue.main.async {
-                    let mockIncreaseProgressing: [Float] = [0.1, 0.2, 0.3]
-                    currentProgressing += mockIncreaseProgressing.randomElement() ?? 0.1
-                    self.avatarUploadingProgressBar.setProgress(currentProgressing, animated: true)
-//                    print("[Avatar] Upload progressing number: \(currentProgressing) | Progressing")
+        
+        Task { @MainActor in
+            // Update display name data
+            let newDisplayName = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isUpdateTextSuccess = await screenViewModel?.action.update(displayName: newDisplayName)
+            
+            // Check is display name data update fail for show error
+            if let isUpdateTextSuccess, !isUpdateTextSuccess {
+                AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                return
+            }
+            
+            // Update user avatar if need
+            if let avatar = uploadingAvatarImage {
+                // Show overlay view and progress bar
+                avatarUploadingProgressBar.setProgress(0.0, animated: true)
+                overlayView.isHidden = false // Custom overlay for this view controller only
+                
+                // Start update group chat avatar
+                let isUpdateAvatarSuccess = await screenViewModel?.action.update(avatar: avatar)
+                
+                // Hide overlay view and progress bar
+                overlayView.isHidden = true // Custom overlay for this view controller only
+                avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+                
+                // Reset cache image and update view state
+                uploadingAvatarImage = nil
+                updateViewState()
+                
+                // Check is avatar update success for show error or success
+                if let isUpdateAvatarSuccess, isUpdateAvatarSuccess {
+                    AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                    AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
+                } else {
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 }
+            } else {
+                // when there is no image update
+                // directly show success message after updated
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
             }
-            // Start add mock progressing
-            RunLoop.current.add(mockUploadProgressingTimer!, forMode: .common)
-            mockUploadProgressingTimer?.fire()
-            Task {
-                await screenViewModel?.action.update(avatar: avatar, completion: { [weak self] result in
-                    guard let weakSelf = self else { return }
-                    // Stop add mock progressing
-                    weakSelf.mockUploadProgressingTimer?.invalidate()
-                    weakSelf.mockUploadProgressingTimer = nil
-                    weakSelf.avatarUploadingProgressBar.setProgress(1.0, animated: true)
-//                    print("[Avatar] Upload progressing number: 1.0 | End")
-                    weakSelf.overlayView.isHidden = true // Custom overlay for this view controller only
-                    weakSelf.avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
-    //                weakSelf.avatarView.state = .idle // [Backup]
-                    
-                    if result {
-                        weakSelf.uploadingAvatarImage = nil
-                        if weakSelf.isValueChanged {
-                            weakSelf.screenViewModel?.action.update(displayName: weakSelf.nameTextField.text ?? "")
-                        } else {
-                            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                            AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: weakSelf)
-                        }
-                    } else {
-                        AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
-                    }
-                })
-            }
-        } else if isValueChanged {
-            screenViewModel?.action.update(displayName: nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
         }
     }
 }
@@ -255,16 +247,6 @@ extension AmityGroupChatEditViewController: AmityTextViewDelegate {
 
 extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelDelegate {
     
-    func screenViewModelDidUpdateFailed(_ viewModel: AmityGroupChatEditorScreenViewModelType, withError error: String) {
-        AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
-        updateViewState()
-    }
-    
-    func screenViewModelDidUpdateSuccess(_ viewModel: AmityGroupChatEditorScreenViewModelType) {
-        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-        AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
-    }
-    
     func screenViewModelDidUpdate(_ viewModel: AmityGroupChatEditorScreenViewModelType) {
         guard let channel = viewModel.dataSource.channel else { return }
         setupNavigationBar()
@@ -282,7 +264,7 @@ extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelD
     }
     
     func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityGroupChatEditorScreenViewModelType, progressing: Double) {
-        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+//        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
         avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
 }

@@ -56,7 +56,6 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         case openEditMenu(indexPath: IndexPath, sourceView: UIView, sourceTableViewCell: UITableViewCell, options: [AmityEditMenuItem])
         case resend(indexPath: IndexPath)
         case openResendMenu(indexPath: IndexPath) // [Deprecated] User .openEditMenu instead
-        case openReadViewer(indexPath: IndexPath)
     }
     
     enum KeyboardInputEvents {
@@ -74,6 +73,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var editor: AmityMessageEditor?
     private var messageFlagger: AmityMessageFlagger?
     private var topicSubscription: AmityTopicSubscription?
+    private var userSubscription: AmityTopicSubscription?
     private var customMessageController: AmityCustomMessageController
 
     // MARK: - Collection
@@ -95,7 +95,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var isFirstTimeLoaded: Bool = true
     private var isJumpMessage: Bool = false
     private var isScrollUp: Bool = false
-
+    private var isAlreadySub: Bool = false
+    
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
     private var lastMessageHash: Int = -1 // to track if the last message changes
@@ -114,6 +115,8 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
         subChannelRepository = AmitySubChannelRepository(client: AmityUIKitManagerInternal.shared.client)
         topicSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
+        userSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
+        userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         customMessageController = AmityCustomMessageController(channelId: channelId)
     }
     
@@ -135,6 +138,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     
     private var channelType: AmityChannelType = .conversation
     
+    private var userInfo: AmityUserModel?
     private var subChannel: AmitySubChannel?
     private var forwardMessageList: [AmityMessageModel] = []
     
@@ -226,11 +230,18 @@ extension AmityMessageListScreenViewModel {
     
     func getChannel(){
         channelNotificationToken?.invalidate()
-        channelNotificationToken = channelRepository.getChannel(channelId).observe { [weak self] (channel, error) in
+        channelNotificationToken = channelRepository.getChannel(channelId).observeOnce { [weak self] (channel, error) in
+            guard let strongSelf = self else { return }
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
-            self?.channelType = channelModel.channelType
-            self?.delegate?.screenViewModelDidGetChannel(channel: channelModel)
+            strongSelf.channelType = channelModel.channelType
+            if channelModel.channelType == .conversation {
+                let userId = channelModel.getOtherUserId()
+                strongSelf.getUserInfo(userId: userId, channel: channelModel)
+                AmityUIKitManager.getSyncAllChannelPresence()
+                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+            }
+            strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
     }
     
@@ -244,6 +255,20 @@ extension AmityMessageListScreenViewModel {
             }
             self?.startReading()
             self?.subChannelNotificationToken?.invalidate()
+        }
+    }
+    
+    func getUserInfo(userId: String, channel: AmityChannelModel) {
+        userNotificationToken?.invalidate()
+        userNotificationToken = userRepository.getUser(userId).observe { [weak self] (user, error)in
+            guard let strongSelf = self else { return }
+            guard let object = user.snapshot else { return }
+            let user = AmityUserModel(user: object)
+            strongSelf.userInfo = user
+            if !strongSelf.isAlreadySub {
+                strongSelf.startUserRealtimeSubscription()
+            }
+            strongSelf.delegate?.screenViewModelDidGetUser(channel: channel, user: user)
         }
     }
     
@@ -825,24 +850,6 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Image / Video
 extension AmityMessageListScreenViewModel {
     
-//    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
-//        var operations: [AsyncOperation] = []
-//
-//        switch type {
-//        case .image:
-//            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
-//        case .video:
-//            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: "") }
-//        }
-//
-//        // Define serial dependency A <- B <- C <- ... <- Z
-//        for (left, right) in zip(operations, operations.dropFirst()) {
-//            right.addDependency(left)
-//        }
-//
-//        queue.addOperations(operations, waitUntilFinished: false)
-//    }
-    
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
         for media in medias {
             // Separate process from state of media
@@ -994,5 +1001,30 @@ extension AmityMessageListScreenViewModel {
         guard let channel = subChannel else { return }
         let topic = AmitySubChannelTopic(subChannel: channel)
         topicSubscription?.unsubscribeTopic(topic) { _, _ in }
+    }
+    
+    func startUserRealtimeSubscription() {
+        guard let object = userInfo else { return }
+        let topic = AmityUserTopic(user: object.object, andEvent: .user)
+        userSubscription?.subscribeTopic(topic) { isSuccess, _ in
+            self.isAlreadySub = isSuccess
+        }
+    }
+    
+    func stopUserRealtimeSubscription() {
+        guard let object = userInfo else { return }
+        let topic = AmityUserTopic(user: object.object, andEvent: .user)
+        userSubscription?.unsubscribeTopic(topic) { _, _ in }
+    }
+    
+    func stopObserve() {
+        subChannelNotificationToken?.invalidate()
+        channelNotificationToken?.invalidate()
+        messagesNotificationToken?.invalidate()
+        createMessageNotificationToken?.invalidate()
+        userNotificationToken?.invalidate()
+        getMessagesNotificationToken?.invalidate()
+        topicSubscription = nil
+        userSubscription = nil
     }
 }

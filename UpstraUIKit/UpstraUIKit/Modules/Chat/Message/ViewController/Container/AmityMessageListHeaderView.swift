@@ -79,7 +79,7 @@ private extension AmityMessageListHeaderView {
 
 extension AmityMessageListHeaderView {
     
-    func updateViews(channel: AmityChannelModel, isOnline: Bool) {
+    func updateViews(channel: AmityChannelModel, isOnline: Bool, user: AmityUserModel? = nil) {
         avatarView.isHidden = false
         
         switch channel.channelType {
@@ -93,9 +93,9 @@ extension AmityMessageListHeaderView {
             memberCount.isHidden = false
             statusView.isHidden = true
         case .conversation:
-            getOtherUser(channel: channel) { user in
-                DispatchQueue.main.async { [self] in
-                    if let otherMember = user {
+//            getOtherUser(channel: channel) { user in
+//                DispatchQueue.main.async { [self] in
+            if let otherMember = user?.object {
                         // Set avatar
                         avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                         // Set displayName
@@ -104,8 +104,8 @@ extension AmityMessageListHeaderView {
                         updateUserStatus(user: otherMember, isOnline: isOnline)
                         // Hide member count because it's 1:1 Chat
                         memberCount.isHidden = true
-                    }
-                }
+//                    }
+//                }
             }
         case .community, .live:
             displayNameLabel.text = channel.displayName

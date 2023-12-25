@@ -1,29 +1,21 @@
 //
-//  AmityCommentView.swift
+//  AmityCommentViewWithURLPreview.swift
 //  AmityUIKit
 //
-//  Created by Nontapat Siengsanor on 23/9/2563 BE.
-//  Copyright © 2563 Amity. All rights reserved.
+//  Created by Thanaphat Thanawatpanya on 7/12/2566 BE.
+//  Copyright © 2566 BE Amity. All rights reserved.
 //
 
 import UIKit
 import AmitySDK
 
-enum AmityCommentViewAction {
-    case avatar
-    case like
-    case reply
-    case option
-    case viewReply
-    case reactionDetails
+protocol AmityCommentViewWithURLPreviewDelegate: AnyObject {
+    func commentView(_ view: AmityCommentViewWithURLPreview, didTapAction action: AmityCommentViewAction)
 }
 
-protocol AmityCommentViewDelegate: AnyObject {
-    func commentView(_ view: AmityCommentView, didTapAction action: AmityCommentViewAction)
-}
-
-class AmityCommentView: AmityView {
+class AmityCommentViewWithURLPreview: AmityView {
     
+    // MARK: - IBOutlet Properties
     @IBOutlet private weak var avatarView: AmityAvatarView!
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var timeLabel: UILabel!
@@ -43,19 +35,28 @@ class AmityCommentView: AmityView {
     @IBOutlet private weak var reactionDetailLikeIcon: UIImageView!
     @IBOutlet private weak var reactionDetailLabel: UILabel!
     @IBOutlet private weak var reactionDetailButton: UIButton!
-    @IBOutlet private weak var footerStackView: UIStackView! // Use for calculate preferredMaxLayoutWidth of content label because it has max width in comment view
     
-    weak var delegate: AmityCommentViewDelegate?
+    // MARK: - Properties
+    weak var delegate: AmityCommentViewWithURLPreviewDelegate?
     private(set) var comment: AmityCommentModel?
-    
-    // [Custom for ONE Krungthai] For use check condition of moderator user in official community for outputing
     public var isModeratorUserInOfficialCommunity: Bool = false
     public var isOfficialCommunity: Bool = false
     public var shouldDidTapAction: Bool = true
     
+    // MARK: - URLPreview IBOutlet Properties
+    @IBOutlet var urlPreviewImage: UIImageView!
+    @IBOutlet var urlPreviewDomain: UILabel!
+    @IBOutlet var urlPreviewTitle: UILabel!
+    @IBOutlet var urlPreviewView: UIView!
+    @IBOutlet var loadingIndicator: UIActivityIndicatorView!
+    
+    // MARK: - URLPreview Properties
+    private var urlToOpen: URL?
+    
     override func initial() {
         loadNibContent()
         setupView()
+        setupURLPreviewView()
     }
     
     private func setupView() {
@@ -72,7 +73,6 @@ class AmityCommentView: AmityView {
         contentLabel.textColor = AmityColorSet.base
         contentLabel.font = AmityFontSet.body
         contentLabel.numberOfLines = 8
-        contentLabel.preferredMaxLayoutWidth = footerStackView.frame.width
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
@@ -120,7 +120,7 @@ class AmityCommentView: AmityView {
     }
     
     // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, post: AmityPostModel? = nil) {
+    func configure(with comment: AmityCommentModel, layout: AmityCommentViewWithURLPreview.Layout, post: AmityPostModel? = nil) {
         self.comment = comment
         if comment.isEdited {
             timeLabel.text = String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.postDetailCommentEdit.localizedString, comment.createdAt.relativeTime)
@@ -191,9 +191,11 @@ class AmityCommentView: AmityView {
         viewReplyButton.isHidden = !layout.shouldShowViewReplyButton(for: comment)
         leadingAvatarImageViewConstraint.constant = layout.space.avatarLeading
         topAvatarImageViewConstraint.constant = layout.space.aboveAvatar
+        
+        displayURLPreview(comment: comment)
     }
     
-    func toggleActionVisibility(comment: AmityCommentModel, layout: AmityCommentView.Layout) {
+    func toggleActionVisibility(comment: AmityCommentModel, layout: AmityCommentViewWithURLPreview.Layout) {
         var actionButtons = [likeButton, replyButton, optionButton]
         
         // [Custom for ONE Krungthai] Hide reply button if comment is reply comment
@@ -242,6 +244,7 @@ class AmityCommentView: AmityView {
     func prepareForReuse() {
         bannedImageView.image = nil
         comment = nil
+        clearURLPreviewView()
     }
     
     open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat) -> CGFloat {
@@ -259,7 +262,7 @@ class AmityCommentView: AmityView {
                 boundingWidth: labelBoundingWidth,
                 maximumLines: maximumLines
             )
-            return height
+            return height + 100
         } ()
         
         
@@ -289,4 +292,97 @@ class AmityCommentView: AmityView {
         
     }
     
+}
+
+// MARK: URL Preview
+extension AmityCommentViewWithURLPreview {
+    // MARK: - Setup URL Preview
+    func setupURLPreviewView() {
+        // Setup image
+        urlPreviewImage.image = nil
+        urlPreviewImage.contentMode = .scaleAspectFill
+        loadingIndicator.hidesWhenStopped = true
+
+        // Setup domain
+        urlPreviewDomain.text = " "
+        urlPreviewDomain.font = AmityFontSet.caption
+        urlPreviewDomain.textColor = AmityColorSet.disableTextField
+        urlPreviewDomain.numberOfLines = 1
+
+        // Setup title
+        urlPreviewTitle.text = " "
+        urlPreviewTitle.font = AmityFontSet.captionBold
+        urlPreviewTitle.textColor = AmityColorSet.base
+        urlPreviewTitle.numberOfLines = 2
+
+        // Setup ishidden status of view & constant for URL preview
+        urlPreviewView.isHidden = false
+
+        // Setup tap gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openURLTapAction(_:)))
+        urlPreviewView.addGestureRecognizer(tapGesture)
+        urlToOpen = nil
+    }
+
+    // MARK: - Display URL Preview
+    func displayURLPreview(comment: AmityCommentModel) {
+        if let title = comment.metadata?["url_preview_cache_title"] as? String,
+           let fullURL = comment.metadata?["url_preview_cache_url"] as? String,
+           let urlData = URL(string: fullURL),
+           let domainURL = urlData.host?.replacingOccurrences(of: "www.", with: ""),
+           let urlDetected = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: comment.text), urlDetected == fullURL
+        {
+            // Set URL data to open
+            urlToOpen = urlData
+            
+            // Set domain and title text
+            urlPreviewTitle.text = title
+            urlPreviewDomain.text = domainURL
+            
+            // Show URL preview view
+            urlPreviewView.isHidden = false
+            
+            // Show loading indicator
+            self.loadingIndicator.startAnimating()
+            
+            // Get URL Metadata for loading image preview
+            Task { @MainActor in
+                if let metadata = await AmityPreviewLinkWizard.shared.getMetadata(url: urlData), let imageProvider = metadata.imageProvider {
+                    // Loading image preview
+                    imageProvider.loadObject(ofClass: UIImage.self, completionHandler: { [weak self] image, error in
+                        guard let self else { return }
+                        // Set image preview if have or default image URL preview
+                        DispatchQueue.main.async {
+                            if let image = image as? UIImage {
+                                self.urlPreviewImage.image = image
+                            } else {
+                                self.urlPreviewImage.image = AmityIconSet.defaultImageURLPreview
+                            }
+                            // Stop loading indicator
+                            self.loadingIndicator.stopAnimating()
+                        }
+                    })
+                } else {
+                    self.urlPreviewImage.image = AmityIconSet.defaultImageURLPreview
+                    self.loadingIndicator.stopAnimating()
+                }
+            }
+        }
+    }
+
+    // MARK: - Clear URL Preview
+    private func clearURLPreviewView() {
+        urlPreviewView.isHidden = false
+        urlPreviewTitle.text = " "
+        urlPreviewDomain.text = " "
+        urlPreviewImage.image = nil
+        urlToOpen = nil
+    }
+
+    // MARK: - Perform open URL Action
+    @objc func openURLTapAction(_ sender: UITapGestureRecognizer) {
+        if let currentURLData = urlToOpen {
+            UIApplication.shared.open(currentURLData, options: [:], completionHandler: nil)
+        }
+    }
 }

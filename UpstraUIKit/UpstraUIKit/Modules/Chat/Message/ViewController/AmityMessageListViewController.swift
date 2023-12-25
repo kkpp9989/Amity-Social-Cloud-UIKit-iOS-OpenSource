@@ -116,6 +116,8 @@ public final class AmityMessageListViewController: AmityViewController {
         setupFilePicker()
         setupReplyView()
         
+        startObserver()
+        
         // Set swipe back gesture if from notification
         if isFromNotification {
             setupCustomSwipeBackGesture()
@@ -127,7 +129,7 @@ public final class AmityMessageListViewController: AmityViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startObserver()
+        navigationController?.isNavigationBarHidden = false
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -156,6 +158,8 @@ public final class AmityMessageListViewController: AmityViewController {
         screenViewModel.action.inputSource(for: .default)
         screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
+        screenViewModel.action.stopUserRealtimeSubscription()
+        screenViewModel.action.stopObserve()
         
         AmityAudioPlayer.shared.stop()
         bottomConstraint.constant = .zero
@@ -218,18 +222,6 @@ public final class AmityMessageListViewController: AmityViewController {
         replyDescLabel.textColor = AmityColorSet.base.blend(.shade3)
     }
     
-    private func setupCustomSwipeBackGesture() {
-        setDefaultSwipeBackGestureEnabled(isEnabled: false) // ** Set to disabled (Temp) **
-        
-        let swipeBack = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handleCustomSwipeBackAction(_:)))
-        swipeBack.edges = .left // Set the edge to recognize the swipe from the left
-        view.addGestureRecognizer(swipeBack)
-    }
-    
-    private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
-    }
-    
     private func startObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(refreshPresence(notification:)),
@@ -245,6 +237,18 @@ public final class AmityMessageListViewController: AmityViewController {
         DispatchQueue.main.async() { [self] in
             screenViewModel.action.getChannel()
         }
+    }
+    
+    private func setupCustomSwipeBackGesture() {
+        setDefaultSwipeBackGestureEnabled(isEnabled: false) // ** Set to disabled (Temp) **
+        
+        let swipeBack = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handleCustomSwipeBackAction(_:)))
+        swipeBack.edges = .left // Set the edge to recognize the swipe from the left
+        view.addGestureRecognizer(swipeBack)
+    }
+    
+    private func setDefaultSwipeBackGestureEnabled(isEnabled: Bool) {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = isEnabled
     }
     
     @objc func handleCustomSwipeBackAction(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
@@ -330,16 +334,11 @@ private extension AmityMessageListViewController {
         let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-        imagePicker.settings.selection.max = 20
+        imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
         imagePicker.settings.theme.selectionStyle = .numbered
         presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
-//            let media = assets.map { asset in
-//                AmityMedia(state: .image(self?.getAssetThumbnail(asset: asset) ?? UIImage()), type: .image)
-//            }
-            
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
-            
             let vc = PreviewImagePickerController.make(media: medias,
                                                        viewModel: (self?.screenViewModel)!,
                                                        mediaType: .image,
@@ -812,7 +811,35 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
     }
     
+    func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+            let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user)
+        }
+        
+        if channel.object.currentUserMembership != .member {
+            composeBar.showJoinMenuButton(show: true)
+            
+            if #available(iOS 16.0, *) {
+                // iOS 16.0 and newer
+                navigationItem.rightBarButtonItem?.isHidden = true
+            } else {
+                // iOS version prior to 16.0
+                navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+            }
+        }
+        
+        // Update interaction of compose bar view
+        if channel.isMuted || channel.isDeleted {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
+        } else {
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
+        }
+    }
+    
     func screenViewModelScrollToBottom(for indexPath: IndexPath) {
+        guard indexPath.section < screenViewModel.numberOfSection() else { return }
+        guard indexPath.row < screenViewModel.numberOfMessage(in: indexPath.section) else { return }
         messageViewController.scrollToBottom(indexPath: indexPath)
     }
     
@@ -1131,6 +1158,10 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 		composeBar.textView.attributedText = attributedString
 		composeBar.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
 	}
+    
+    public func didRemoveAttributedString() {
+        composeBar.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
 	
 	public func didGetUsers(users: [AmityMentionUserModel]) {
 		if users.isEmpty {

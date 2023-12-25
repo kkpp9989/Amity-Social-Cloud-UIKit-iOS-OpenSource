@@ -189,7 +189,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
         if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
             return 0
         } else {
-            return UITableView.automaticDimension
+            return 28
         }
     }
 }
@@ -197,6 +197,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
 extension AmityForwatdChannelPickerViewController: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
         return screenViewModel.numberOfAlphabet()
+        
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

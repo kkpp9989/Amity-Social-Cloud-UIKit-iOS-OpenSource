@@ -113,6 +113,10 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.env = env
     }
     
+    public static func isInitialClient() -> Bool {
+        AmityUIKitManagerInternal.shared.isInitialClient()
+    }
+    
     public static func isModeratorUserInCommunity(withUserId userId: String, communityId: String) -> Bool {
         let membershipParticipation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
         let member = membershipParticipation.getMember(withId: userId)
@@ -299,17 +303,10 @@ public final class AmityUIKitManager {
         
         return isOnline
     }
-
+    
     public static func setASMRemoteConfig(_ isEnableMenu: Bool) {
         AmityUIKitManagerInternal.shared.isEnableMenu = isEnableMenu
     }
-
-    //ktb kk custom share menu
-    public static func getShareExternalURL(post: AmityPostModel) -> String {
-        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
-        return externalURL
-    }
-
 }
 
 final class AmityUIKitManagerInternal: NSObject {
@@ -389,6 +386,8 @@ final class AmityUIKitManagerInternal: NSObject {
         // [Custom for ONE Krungthai] Set apiKey for use some function of AmitySDK
         self.apiKey = apiKey
     }
+    
+    func isInitialClient() -> Bool { _client != nil }
     
     func registerDevice(_ userId: String,
                         displayName: String?,

@@ -108,6 +108,7 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                                       title: AmityCommunitySettingsItem.postReview.title,
                                                                       description: AmityCommunitySettingsItem.postReview.description)
             settingsItems.append(.navigationContent(content: itemPostReviewContent))
+            settingsItems.append(.separator)
         }
         
         // MARK: Create leave community item
@@ -128,8 +129,9 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                            title: AmityCommunitySettingsItem.closeCommunity.title,
                                                            description: AmityCommunitySettingsItem.closeCommunity.description,
                                                            titleTextColor: AmityColorSet.alert)
-            settingsItems.append(.textContent(content: closeContent))
-            settingsItems.append(.separator)
+            // [Custom for ONE Krungthai] Hide close social button for close social at backend console only
+//            settingsItems.append(.textContent(content: closeContent))
+//            settingsItems.append(.separator)
         }
         
         completion?(settingsItems)
