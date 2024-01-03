@@ -60,6 +60,7 @@ protocol AmityMessageListScreenViewModelAction {
     func getChannel()
     func getSubChannel()
     func getMessage()
+    func scrollToLatestMessage()
     
     func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func send(withMedias medias: [AmityMedia], type: AmityMediaType)

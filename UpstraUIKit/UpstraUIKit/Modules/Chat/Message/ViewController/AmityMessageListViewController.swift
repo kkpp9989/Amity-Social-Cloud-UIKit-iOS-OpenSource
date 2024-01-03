@@ -650,12 +650,13 @@ extension AmityMessageListViewController: AmityKeyboardServiceDelegate {
             screenViewModel.action.inputSource(for: .default)
         } else {
             screenViewModel.action.toggleKeyboardVisible(visible: true)
+//            screenViewModel.shouldScrollToBottom(force: true) // [Backup]
             
-            // Check is replying for prevent force scroll to bottom from jump message when start replying then app crash
+            // [Current] Check is replying for prevent scroll to bottom from jump message when start replying then app crash
             if let composeBar = composeBar as? AmityMessageListComposeBarViewController, composeBar.isReplying {
-                screenViewModel.shouldScrollToBottom(force: false)
+                // PASS
             } else {
-                screenViewModel.shouldScrollToBottom(force: true)
+                screenViewModel.shouldScrollToBottom(force: false)
             }
         }
     }
@@ -893,7 +894,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 screenViewModel.action.jumpToMessageId(messageId)
             }
         case .didSendText:
-            screenViewModel.shouldScrollToBottom(force: true)
+//            screenViewModel.shouldScrollToBottom(force: true) // Use scrollToLastestMessage() in screenviewmodel instead
+            break
         case .didEditText:
             break
         case .didDelete(let indexPath):
