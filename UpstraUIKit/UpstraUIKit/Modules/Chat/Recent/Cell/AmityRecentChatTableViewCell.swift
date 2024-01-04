@@ -27,6 +27,9 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
 
     private var token: AmityNotificationToken?
     private var repository: AmityUserRepository?
+    private var userSubscription: AmityTopicSubscription?
+    
+    private var isAlreadySub: Bool = false
     
     public var channel: AmityChannelModel?
     
@@ -48,6 +51,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     
     private func setupView() {
         repository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+        userSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
         
         containerDisplayNameView.backgroundColor = AmityColorSet.backgroundColor
         containerMessageView.backgroundColor = AmityColorSet.backgroundColor
@@ -114,16 +118,19 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             avatarView.placeholder = AmityIconSet.defaultAvatar
 
             // Set avatar
-            avatarView.setImage(withImageURL: channel.userInfo?.getAvatarInfo()?.fileURL)
-            titleLabel.text = channel.userInfo?.displayName
-            let status = channel.userInfo?.metadata?["user_presence"] as? String ?? "available"
-            if status != "available" {
-                statusBadgeImageView.image = setImageFromStatus(status)
-            } else {
-                if isOnline {
-                    statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+            getOtherUser(userId: channel.getOtherUserId()) { [self] (user) in
+                startUserRealtimeSubscription(user: user)
+                avatarView.setImage(withImageURL: user?.getAvatarInfo()?.fileURL)
+                titleLabel.text = user?.displayName
+                let status = user?.metadata?["user_presence"] as? String ?? "available"
+                if status != "available" {
+                    statusBadgeImageView.image = setImageFromStatus(status)
                 } else {
-                    statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                    if isOnline {
+                        statusBadgeImageView.image = AmityIconSet.Chat.iconOnlineIndicator
+                    } else {
+                        statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
+                    }
                 }
             }
         case .community, .live:
@@ -197,15 +204,28 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {
+    func getOtherUser(userId: String, completion: @escaping (_ user: AmityUser?) -> Void) {
         token?.invalidate()
-        if !channel.getOtherUserId().isEmpty {
-            token = repository?.getUser(channel.getOtherUserId()).observeOnce({ [weak self] user, error in
+        if !userId.isEmpty {
+            token = repository?.getUser(userId).observe({ [weak self] user, error in
                 guard let weakSelf = self else { return }
                 let userObject = user.snapshot
-                weakSelf.token?.invalidate()
-                completion(userObject)
+                if user.dataStatus == .fresh {
+                    print("[Amity Log] user: \(userId), user status: \(userObject?.metadata?["user_presence"] as? String ?? "")")
+                    completion(userObject)
+                }
             })
+        }
+    }
+    
+    func startUserRealtimeSubscription(user: AmityUser?) {
+        if isAlreadySub { return }
+        isAlreadySub = true
+        guard let object = user else { return }
+        let topic = AmityUserTopic(user: object, andEvent: .user)
+        userSubscription?.subscribeTopic(topic) { isSuccess, error in
+            print("[Amity Log] isSuccess: \(isSuccess)")
+            print("[Amity Log] error: \(String(describing: error?.localizedDescription))")
         }
     }
 }

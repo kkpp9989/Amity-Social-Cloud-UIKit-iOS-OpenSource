@@ -240,6 +240,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
             requestGetViewerCount()
+            requestLiveStatusAPI()
             
             viewerCountLabel.text = String(viewerCount)
         })
@@ -856,6 +857,20 @@ extension LiveStreamBroadcastViewController {
                     break
                 }
             }
+        }
+    }
+    
+    func requestLiveStatusAPI() {
+        guard let currentPost = createdPost else { return }
+        guard let createdPost,
+              let firstChildPost = createdPost.childrenPosts.first,
+              let stream = firstChildPost.getLiveStreamInfo() else {
+            return
+        }
+        var serviceRequest = RequestLiveStreamStatus()
+        serviceRequest.request(postId: currentPost.postId, streamId: stream.streamId, isLive: true) { [weak self] (result) in
+            guard let self = self else { return }
+            print("Amity Log \(result)")
         }
     }
     

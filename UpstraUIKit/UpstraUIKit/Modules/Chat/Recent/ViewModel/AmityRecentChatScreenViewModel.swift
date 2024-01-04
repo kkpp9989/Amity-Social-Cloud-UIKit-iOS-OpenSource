@@ -77,7 +77,7 @@ public class AmityChannelModel {
             token = repository.getUser(getOtherUserId()).observeOnce({ [weak self] user, error in
                 guard let weakSelf = self else { return }
                 let userObject = user.snapshot
-                weakSelf.token?.invalidate()
+//                weakSelf.token?.invalidate()
                 completion(userObject)
             })
         }
@@ -86,7 +86,6 @@ public class AmityChannelModel {
 
 final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     weak var delegate: AmityRecentChatScreenViewModelDelegate?
-    
     
     enum Route {
         case messageView(channelId: String, subChannelId: String)
