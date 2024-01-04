@@ -50,10 +50,14 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        startObserver()
         setupScreenViewModel()
         AmityUIKitManager.getUnreadCount()
         AmityUIKitManager.getSyncAllChannelPresence()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startObserver()
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
@@ -62,6 +66,10 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         //  Stop syncing presence for all users as user
         AmityUIKitManager.unsyncAllChannelPresence()
         screenViewModel.action.viewWillDisappear()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         stopObserver()
     }
     

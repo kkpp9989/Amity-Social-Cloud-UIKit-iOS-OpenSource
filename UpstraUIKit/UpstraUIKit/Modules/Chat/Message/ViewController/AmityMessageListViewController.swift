@@ -116,8 +116,6 @@ public final class AmityMessageListViewController: AmityViewController {
         setupFilePicker()
         setupReplyView()
         
-        startObserver()
-        
         // Set swipe back gesture if from notification
         if isFromNotification {
             setupCustomSwipeBackGesture()
@@ -148,6 +146,11 @@ public final class AmityMessageListViewController: AmityViewController {
         }
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startObserver()
+    }
+    
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         AmityAudioPlayer.shared.stop()
@@ -169,6 +172,11 @@ public final class AmityMessageListViewController: AmityViewController {
         if isFromNotification {
             setDefaultSwipeBackGestureEnabled(isEnabled: true)
         }
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopObserver()
     }
     
     /// Create `AmityMessageListViewController` instance.
@@ -650,12 +658,13 @@ extension AmityMessageListViewController: AmityKeyboardServiceDelegate {
             screenViewModel.action.inputSource(for: .default)
         } else {
             screenViewModel.action.toggleKeyboardVisible(visible: true)
+//            screenViewModel.shouldScrollToBottom(force: true) // [Backup]
             
-            // Check is replying for prevent force scroll to bottom from jump message when start replying then app crash
+            // [Current] Check is replying for prevent scroll to bottom from jump message when start replying then app crash
             if let composeBar = composeBar as? AmityMessageListComposeBarViewController, composeBar.isReplying {
-                screenViewModel.shouldScrollToBottom(force: false)
+                // PASS
             } else {
-                screenViewModel.shouldScrollToBottom(force: true)
+                screenViewModel.shouldScrollToBottom(force: false)
             }
         }
     }
@@ -893,7 +902,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 screenViewModel.action.jumpToMessageId(messageId)
             }
         case .didSendText:
-            screenViewModel.shouldScrollToBottom(force: true)
+//            screenViewModel.shouldScrollToBottom(force: true) // Use scrollToLastestMessage() in screenviewmodel instead
+            break
         case .didEditText:
             break
         case .didDelete(let indexPath):

@@ -93,9 +93,11 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private let channelId: String
     private let subChannelId: String
     private var isFirstTimeLoaded: Bool = true
+    private var isMustToScrollToLatestMessage: Bool = false
     private var isJumpMessage: Bool = false
     private var isScrollUp: Bool = false
     private var isAlreadySub: Bool = false
+    private var isSyncChannelPresence: Bool = false
     
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
@@ -238,8 +240,14 @@ extension AmityMessageListScreenViewModel {
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
-                AmityUIKitManager.getSyncAllChannelPresence()
-                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                // [Back up]
+//                AmityUIKitManager.getSyncAllChannelPresence()
+//                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                // [Current]
+                if !strongSelf.isSyncChannelPresence {
+                    AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                    strongSelf.isSyncChannelPresence = true
+                }
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
@@ -276,7 +284,7 @@ extension AmityMessageListScreenViewModel {
         AmityEventHandler.shared.showKTBLoading()
         let queryOptions = AmityMessageQueryOptions(subChannelId: channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
         messagesCollection = messageRepository.getMessages(options: queryOptions)
-        
+        messagesNotificationToken?.invalidate()
         messagesNotificationToken = messagesCollection?.observe { [weak self] (liveCollection, change, error) in
             self?.groupMessages(in: liveCollection, change: change)
         }
@@ -287,6 +295,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send text progressing
+        
         let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !textMessage.isEmpty else {
             return
@@ -357,6 +367,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send text progressing
+        
         let textMessage = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !textMessage.isEmpty else {
             return
@@ -644,6 +656,19 @@ extension AmityMessageListScreenViewModel {
         queryMessages(queryOptions: queryOptions, messageId: messageId)
     }
     
+    func scrollToLatestMessage() {
+        DispatchQueue.main.async { [weak self] in
+            guard let weakSelf = self else { return }
+            weakSelf.isMustToScrollToLatestMessage = true
+            let queryOptions = AmityMessageQueryOptions(subChannelId: weakSelf.channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
+            weakSelf.messagesCollection = weakSelf.messageRepository.getMessages(options: queryOptions)
+            weakSelf.messagesNotificationToken?.invalidate()
+            weakSelf.messagesNotificationToken = weakSelf.messagesCollection?.observe { (liveCollection, change, error) in
+                weakSelf.groupMessages(in: liveCollection, change: change)
+            }
+        }
+    }
+    
     func getTotalUnreadCount() {
         AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
             AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
@@ -734,8 +759,9 @@ private extension AmityMessageListScreenViewModel {
     }
     
     private func queryMessages(queryOptions: AmityMessageQueryOptions, messageId: String) {
-        AmityEventHandler.shared.showKTBLoading() // Disable it because fix duplicate show loading in some case
+        AmityEventHandler.shared.showKTBLoading()
         messagesCollection = messageRepository.getMessages(options: queryOptions)
+        messagesNotificationToken?.invalidate()
         messagesNotificationToken = messagesCollection?.observe { (liveCollection, change, error) in
             if let error = error {
                 print("Error: \(error).")
@@ -761,6 +787,10 @@ private extension AmityMessageListScreenViewModel {
             // If this screen is opened for first time, we want to scroll to bottom.
             shouldScrollToBottom(force: true)
             isFirstTimeLoaded = false
+        } else if isMustToScrollToLatestMessage {
+            // If sending message and must to loading latest message again, we want to scroll to bottom.
+            shouldScrollToBottom(force: true)
+            isMustToScrollToLatestMessage = false
         } else if let lastMessage = messages.last?.last, lastMessageHash != lastMessage.hashValue {
             // Compare message hash
             // - if it's equal, the last message remains the same -> do nothing
@@ -878,7 +908,6 @@ extension AmityMessageListScreenViewModel {
                         media.state = .error
                         return
                     }
-                    
                     self?.createVideoMessage(videoURL: url)
                 }
             }
@@ -911,6 +940,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     private func createImageMessage(imageURL: URL, fileURLString: String) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send image progressing
+        
         let channelId = self.subChannelId
         let createOptions = AmityImageMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: imageURL), fullImage: true)
         
@@ -929,6 +960,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     private func createVideoMessage(videoURL: URL) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send video progressing
+        
         let channelId = self.subChannelId
         let createOptions = AmityVideoMessageCreateOptions(subChannelId: channelId, attachment: .localURL(url: videoURL))
         
@@ -947,22 +980,26 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send Audio
 extension AmityMessageListScreenViewModel {
     func sendAudio() {
+        self.scrollToLatestMessage() // Scroll to latest message for see send audio progressing
+        
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         messageAudio?.create { [weak self] in
             self?.messageAudio = nil
             self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
-            self?.shouldScrollToBottom(force: true)
+//            self?.shouldScrollToBottom(force: true) // Use scrollToLatestMessage() instead
         }
     }
     
     func sendAudio(tempAudioURL: URL) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send audio progressing
+        
         messageAudio = AmityMessageAudioController(subChannelId: subChannelId, repository: messageRepository)
         messageAudio?.create(tempAudioURL: tempAudioURL) { [weak self] in
             self?.messageAudio = nil
             self?.delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: true))
             self?.delegate?.screenViewModelEvents(for: .didSendAudio)
-            self?.shouldScrollToBottom(force: true)
+//            self?.shouldScrollToBottom(force: true) // Use scrollToLatestMessage() instead
         }
     }
 }
@@ -970,6 +1007,8 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send File
 extension AmityMessageListScreenViewModel {
     func send(withFiles files: [AmityFile]) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send file progressing
+        
         let operations = files.map { UploadFileMessageOperation(subChannelId: subChannelId, file: $0, repository: messageRepository) }
         
         // Define serial dependency A <- B <- C <- ... <- Z
@@ -1024,6 +1063,7 @@ extension AmityMessageListScreenViewModel {
         createMessageNotificationToken?.invalidate()
         userNotificationToken?.invalidate()
         getMessagesNotificationToken?.invalidate()
+        AmityUIKitManager.unsyncChannelPresence(channelId)
         topicSubscription = nil
         userSubscription = nil
     }
