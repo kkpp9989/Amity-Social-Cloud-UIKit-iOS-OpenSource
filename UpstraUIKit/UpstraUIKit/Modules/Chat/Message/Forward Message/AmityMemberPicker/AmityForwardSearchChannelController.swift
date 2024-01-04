@@ -74,7 +74,6 @@ final class AmityForwardSearchChannelController {
         var request = RequestSearchingChat()
         request.keyword = currentKeyword
         request.isMemberOnly = true
-        request.orderBy = .desc
         request.paginateToken = paginateToken
         request.requestSearchChannels { [weak self] result in
             guard let strongSelf = self else { return }
@@ -88,7 +87,8 @@ final class AmityForwardSearchChannelController {
                 }
                 // Get data from response
                 let resultChannels = dataResponse.channels ?? []
-                print("[Search][Channel][Group] Amount latest result search : \(resultChannels.count) | paginateToken: \(strongSelf.paginateToken)")
+                let dummyChannelIdList = resultChannels.compactMap({ $0.channelId }) // Use for sort response
+//                print("[Search][Channel][Group] Amount latest result search : \(resultChannels.count) | paginateToken: \(strongSelf.paginateToken)")
                 let endIndex = resultChannels.count
                 // Process data
                 for index in 0..<endIndex {
@@ -96,6 +96,7 @@ final class AmityForwardSearchChannelController {
                     
                     // Get each channel data and create model
                     let object: Channel = resultChannels[index]
+//                    print("[Search][Channel][Group] Group name: \(object.displayName ?? "") | id: \(object.channelId ?? "")")
                     // Get image URL
                     AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: object.avatarFileId ?? "") { resultImageURL in
                         var model: AmitySelectMemberModel
@@ -120,7 +121,6 @@ final class AmityForwardSearchChannelController {
                 }
                 
                 strongSelf.dispatchGroup.notify(queue: .main) {
-                    let dummyChannelIdList = strongSelf.channels.compactMap({ $0.userId })
                     let sortedArray = strongSelf.sortArrayPositions(array1: dummyChannelIdList, array2: strongSelf.channels)
                     completion(.success(sortedArray))
                 }

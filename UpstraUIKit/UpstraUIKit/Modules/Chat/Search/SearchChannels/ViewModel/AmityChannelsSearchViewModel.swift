@@ -85,19 +85,19 @@ extension AmityChannelsSearchViewModel {
                 }
 
                 var channels: [Channel] = dataResponse.channels ?? []
+                dummyList = channels.compactMap({ $0.channelId })
                 let channelsPermission: [ChannelUserPermission] = dataResponse.channelsPermission ?? []
 //                print("[Search][Channel][Group] Amount latest result search : \(channels.count) | paginateToken: \(self.paginateToken)")
 
                 // Map data user permission to channels data : .membership
                 for (index, data) in channels.enumerated() {
-//                    print("[Search][Channel][Group] ------> channelId: \(data.channelId) | displayName: \(data.displayName)")
+//                    print("[Search][Channel][Group] Group name: \(data.displayName ?? "") | id: \(data.channelId ?? "")")
                     if let indexOfChannelId = channelsPermission.firstIndex(where: { $0.channelId == data.channelId }) {
                         channels[index].membership = channelsPermission[indexOfChannelId].membership
                     }
                 }
                 
                 // Prepare data
-                dummyList = channels.compactMap({ $0.channelId })
                 let sortedArray = sortArrayPositions(array1: dummyList, array2: channels)
                 prepareData(updatedChannelList: sortedArray)
             case .failure(let error):
