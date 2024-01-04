@@ -772,6 +772,7 @@
 		DF3F4CE32ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3F4CE12ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.swift */; };
 		DF3F4CE42ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF3F4CE22ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.xib */; };
 		DF3F4CE72ADD2A12009879E9 /* AmityChannelListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3F4CE62ADD2A12009879E9 /* AmityChannelListController.swift */; };
+		DF56F8652B46C6F9001695FF /* AmityChannelPresence+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF56F8642B46C6F9001695FF /* AmityChannelPresence+Extension.swift */; };
 		DF5842482B01D71A0076D461 /* AmityCustomMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF5842472B01D71A0076D461 /* AmityCustomMessageController.swift */; };
 		DF68BEA22A694B0D004C901F /* RequestGetPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */; };
 		DF80240E2B26EBD20088161F /* AmityForwardSearchChannelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF80240D2B26EBD20088161F /* AmityForwardSearchChannelController.swift */; };
@@ -1614,6 +1615,7 @@
 		DF3F4CE12ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmitySelectChannelListTableViewCell.swift; sourceTree = "<group>"; };
 		DF3F4CE22ADD16B4009879E9 /* AmitySelectChannelListTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmitySelectChannelListTableViewCell.xib; sourceTree = "<group>"; };
 		DF3F4CE62ADD2A12009879E9 /* AmityChannelListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChannelListController.swift; sourceTree = "<group>"; };
+		DF56F8642B46C6F9001695FF /* AmityChannelPresence+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AmityChannelPresence+Extension.swift"; sourceTree = "<group>"; };
 		DF5842472B01D71A0076D461 /* AmityCustomMessageController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityCustomMessageController.swift; sourceTree = "<group>"; };
 		DF68BE9C2A694B0D004C901F /* RequestGetPost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestGetPost.swift; sourceTree = "<group>"; };
 		DF80240D2B26EBD20088161F /* AmityForwardSearchChannelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityForwardSearchChannelController.swift; sourceTree = "<group>"; };
@@ -2545,6 +2547,7 @@
 				72A3508224EA820700DA9D46 /* UIViewController+Extension.swift */,
 				A062145327004E9800037C34 /* UIViewController+PostCreateDialogue.swift */,
 				72BD0710282D2BFD00178B22 /* Array+Extension.swift */,
+				DF56F8642B46C6F9001695FF /* AmityChannelPresence+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -5953,6 +5956,7 @@
 				AACEF1B62AA9B1D1001D7020 /* AmityCategoryCommunityListViewEmptyView.swift in Sources */,
 				72A3518824EA820800DA9D46 /* DropdownPresentationController.swift in Sources */,
 				D41B61DF2615A181008538CD /* NotificationSettingsType.swift in Sources */,
+				DF56F8652B46C6F9001695FF /* AmityChannelPresence+Extension.swift in Sources */,
 				72A3517724EA820800DA9D46 /* LivePreviewViewController.swift in Sources */,
 				DF3134E02ACAF96A0032B8C2 /* AmityChatSettingsCreateMenuViewModel.swift in Sources */,
 				7236EB3D255922D60006F785 /* AmityUserFeedViewController.swift in Sources */,

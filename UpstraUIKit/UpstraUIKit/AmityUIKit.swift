@@ -340,6 +340,7 @@ final class AmityUIKitManagerInternal: NSObject {
     
     var totalUnreadCount: Int = 0
     var onlinePresences: [AmityChannelPresence] = []
+    var onlinePresencesDataHash: Int = -1
 
     var client: AmityClient {
         guard let client = _client else {
@@ -557,8 +558,12 @@ final class AmityUIKitManagerInternal: NSObject {
             /// Channel presences where any other member is online
             let onlinePresences = presences.filter { $0.isAnyMemberOnline }
             
-            self.onlinePresences = onlinePresences
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
+            /// Check different of new and current onlinePresences data for prevent refresh channel presence too frequently
+            if self.onlinePresencesDataHash != onlinePresences.hashValue {
+                self.onlinePresencesDataHash = onlinePresences.hashValue
+                self.onlinePresences = onlinePresences
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
+            }
         }.store(in: &disposeBag)
     }
     

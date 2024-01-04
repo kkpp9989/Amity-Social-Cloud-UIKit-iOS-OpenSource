@@ -116,8 +116,6 @@ public final class AmityMessageListViewController: AmityViewController {
         setupFilePicker()
         setupReplyView()
         
-        startObserver()
-        
         // Set swipe back gesture if from notification
         if isFromNotification {
             setupCustomSwipeBackGesture()
@@ -148,6 +146,11 @@ public final class AmityMessageListViewController: AmityViewController {
         }
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startObserver()
+    }
+    
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         AmityAudioPlayer.shared.stop()
@@ -169,6 +172,11 @@ public final class AmityMessageListViewController: AmityViewController {
         if isFromNotification {
             setDefaultSwipeBackGestureEnabled(isEnabled: true)
         }
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopObserver()
     }
     
     /// Create `AmityMessageListViewController` instance.

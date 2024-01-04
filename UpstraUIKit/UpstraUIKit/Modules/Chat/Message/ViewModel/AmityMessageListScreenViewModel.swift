@@ -97,6 +97,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var isJumpMessage: Bool = false
     private var isScrollUp: Bool = false
     private var isAlreadySub: Bool = false
+    private var isSyncChannelPresence: Bool = false
     
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
@@ -239,8 +240,14 @@ extension AmityMessageListScreenViewModel {
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
-                AmityUIKitManager.getSyncAllChannelPresence()
-                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                // [Back up]
+//                AmityUIKitManager.getSyncAllChannelPresence()
+//                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                // [Current]
+                if !strongSelf.isSyncChannelPresence {
+                    AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
+                    strongSelf.isSyncChannelPresence = true
+                }
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
@@ -1056,6 +1063,7 @@ extension AmityMessageListScreenViewModel {
         createMessageNotificationToken?.invalidate()
         userNotificationToken?.invalidate()
         getMessagesNotificationToken?.invalidate()
+        AmityUIKitManager.unsyncChannelPresence(channelId)
         topicSubscription = nil
         userSubscription = nil
     }

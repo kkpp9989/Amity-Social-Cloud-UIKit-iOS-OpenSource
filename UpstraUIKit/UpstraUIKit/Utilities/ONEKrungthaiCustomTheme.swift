@@ -11,7 +11,7 @@ import UIKit
 
 class ONEKrungthaiCustomTheme {
     
-    var viewController: UIViewController
+    weak var viewController: UIViewController?
     
     static let defaultIconBarItemWidth: CGFloat = 32.0
     static let defaultIconBarItemHeight: CGFloat = 32.0
@@ -45,7 +45,7 @@ class ONEKrungthaiCustomTheme {
             backgroundImageView.frame.size.width = fullScreenWidth
         }
         
-        viewController.view.insertSubview(backgroundImageView, at: index)
+        viewController?.view.insertSubview(backgroundImageView, at: index)
     }
     
     public func setBackgroundNavigationBar() {
@@ -60,11 +60,11 @@ class ONEKrungthaiCustomTheme {
             navBarAppearance.backgroundImage = background
     
             // Apply the navigation bar appearance to the navigation bar
-            viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
-            viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+            viewController?.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            viewController?.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         } else { // For iOS 14 or lower
-            viewController.navigationController?.navigationBar.isTranslucent = false
-            viewController.navigationController?.navigationBar.setBackgroundImage(background, for: .default)
+            viewController?.navigationController?.navigationBar.isTranslucent = false
+            viewController?.navigationController?.navigationBar.setBackgroundImage(background, for: .default)
         }
     }
     
@@ -81,11 +81,11 @@ class ONEKrungthaiCustomTheme {
             navBarAppearance.shadowImage = UIImage()
     
             // Apply the navigation bar appearance to the navigation bar
-            viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
-            viewController.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+            viewController?.navigationController?.navigationBar.standardAppearance = navBarAppearance
+            viewController?.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
         } else { // For iOS 14 or lower
-            viewController.navigationController?.navigationBar.isTranslucent = true
-            viewController.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            viewController?.navigationController?.navigationBar.isTranslucent = true
+            viewController?.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         }
     }
     
@@ -97,7 +97,7 @@ class ONEKrungthaiCustomTheme {
             UIColor(red: CGFloat(128.0/255.0), green: CGFloat(220.0/255.0), blue: CGFloat(255.0/255.0), alpha: 0.7).cgColor] // #80DCFF with alpha 70%
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
-        gradientLayer.frame = viewController.view.bounds
+        gradientLayer.frame = viewController?.view.bounds ?? CGRect.zero
         gradientLayer.locations = [0.1, 1.0]
 
         // Adjust the frame to extend beyond the navigation bar by 50 pixels
@@ -122,7 +122,7 @@ class ONEKrungthaiCustomTheme {
             UIColor(red: CGFloat(128.0/255.0), green: CGFloat(220.0/255.0), blue: CGFloat(255.0/255.0), alpha: 0.7).cgColor] // #80DCFF with alpha 70%
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
-        gradientLayer.frame = viewController.navigationController?.navigationBar.bounds ?? CGRect.zero
+        gradientLayer.frame = viewController?.navigationController?.navigationBar.bounds ?? CGRect.zero
         
         let extendedHeight = navigationBarHeight + 50
 
