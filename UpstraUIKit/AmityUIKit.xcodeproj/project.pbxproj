@@ -752,6 +752,12 @@
 		DF0CABAF2AF0FF48008BD12D /* AmityTempSendFileMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF0CABAE2AF0FF48008BD12D /* AmityTempSendFileMessageData.swift */; };
 		DF1E137F2B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1E137D2B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.swift */; };
 		DF1E13802B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF1E137E2B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.xib */; };
+		DF2633BB2B47FDCB00C82DF4 /* AmityReadingListScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2633B42B47FDCB00C82DF4 /* AmityReadingListScreenViewModel.swift */; };
+		DF2633BC2B47FDCB00C82DF4 /* AmityReadingListScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2633B52B47FDCB00C82DF4 /* AmityReadingListScreenViewModelProtocol.swift */; };
+		DF2633BD2B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2633B62B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift */; };
+		DF2633BE2B47FDCB00C82DF4 /* AmityReadingListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF2633B82B47FDCB00C82DF4 /* AmityReadingListViewController.xib */; };
+		DF2633BF2B47FDCB00C82DF4 /* AmityReadingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2633B92B47FDCB00C82DF4 /* AmityReadingListViewController.swift */; };
+		DF2633C02B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF2633BA2B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib */; };
 		DF27F1042AD6533A00767DDE /* AmityMessageFileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F1032AD6533A00767DDE /* AmityMessageFileTableViewCell.swift */; };
 		DF27F1072AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF27F1052AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift */; };
 		DF27F1082AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DF27F1062AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib */; };
@@ -1595,6 +1601,12 @@
 		DF0CABAE2AF0FF48008BD12D /* AmityTempSendFileMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityTempSendFileMessageData.swift; sourceTree = "<group>"; };
 		DF1E137D2B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityCommentWithURLPreviewTableViewCell.swift; sourceTree = "<group>"; };
 		DF1E137E2B33625E005D1048 /* AmityCommentWithURLPreviewTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityCommentWithURLPreviewTableViewCell.xib; sourceTree = "<group>"; };
+		DF2633B42B47FDCB00C82DF4 /* AmityReadingListScreenViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReadingListScreenViewModel.swift; sourceTree = "<group>"; };
+		DF2633B52B47FDCB00C82DF4 /* AmityReadingListScreenViewModelProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReadingListScreenViewModelProtocol.swift; sourceTree = "<group>"; };
+		DF2633B62B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReadingTableViewCell.swift; sourceTree = "<group>"; };
+		DF2633B82B47FDCB00C82DF4 /* AmityReadingListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityReadingListViewController.xib; sourceTree = "<group>"; };
+		DF2633B92B47FDCB00C82DF4 /* AmityReadingListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReadingListViewController.swift; sourceTree = "<group>"; };
+		DF2633BA2B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityReadingTableViewCell.xib; sourceTree = "<group>"; };
 		DF27F1032AD6533A00767DDE /* AmityMessageFileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMessageFileTableViewCell.swift; sourceTree = "<group>"; };
 		DF27F1052AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityMessageFileIncomingTableViewCell.swift; sourceTree = "<group>"; };
 		DF27F1062AD6535800767DDE /* AmityMessageFileIncomingTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityMessageFileIncomingTableViewCell.xib; sourceTree = "<group>"; };
@@ -2600,6 +2612,7 @@
 		72A3509224EA820700DA9D46 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				DF2633B22B47FDCB00C82DF4 /* ReadingList */,
 				DF80240F2B2843DB0088161F /* Member Picker */,
 				FC91930B2ACC8574006A1E33 /* ViewUserStatus */,
 				DF3134E62ACB25110032B8C2 /* Controller */,
@@ -5245,6 +5258,35 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
+		DF2633B22B47FDCB00C82DF4 /* ReadingList */ = {
+			isa = PBXGroup;
+			children = (
+				DF2633B32B47FDCB00C82DF4 /* ViewModel */,
+				DF2633B62B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift */,
+				DF2633B72B47FDCB00C82DF4 /* ViewController */,
+				DF2633BA2B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib */,
+			);
+			path = ReadingList;
+			sourceTree = "<group>";
+		};
+		DF2633B32B47FDCB00C82DF4 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DF2633B42B47FDCB00C82DF4 /* AmityReadingListScreenViewModel.swift */,
+				DF2633B52B47FDCB00C82DF4 /* AmityReadingListScreenViewModelProtocol.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DF2633B72B47FDCB00C82DF4 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DF2633B82B47FDCB00C82DF4 /* AmityReadingListViewController.xib */,
+				DF2633B92B47FDCB00C82DF4 /* AmityReadingListViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		DF27F1022AD6518B00767DDE /* File */ = {
 			isa = PBXGroup;
 			children = (
@@ -5688,6 +5730,7 @@
 				97D723DA2695B133000735F5 /* AmityFollowRequestsViewController.xib in Resources */,
 				AACF118C2A680C84006C2907 /* AmityHashtagSearchViewController.xib in Resources */,
 				72887A1A2537F78D00188FAD /* AmityUserProfileEditorViewController.xib in Resources */,
+				DF2633C02B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib in Resources */,
 				78C1C4EA25F3F45400D6F092 /* AmitySettingsItemToggleContentTableViewCell.xib in Resources */,
 				A9E890F729F933D900A22B35 /* AmityReactionUsersViewController.xib in Resources */,
 				72A3511824EA820800DA9D46 /* AmityTextComposeBarView.xib in Resources */,
@@ -5788,6 +5831,7 @@
 				97D7C4A8264BF91000EA24F5 /* AmityChannelMemberViewController.xib in Resources */,
 				B7C026882574CBC5007CC334 /* AmityPopoverMessageViewController.xib in Resources */,
 				1A88282326D620390057A066 /* LICENSE in Resources */,
+				DF2633BE2B47FDCB00C82DF4 /* AmityReadingListViewController.xib in Resources */,
 				B7B31C59250F4ACF000AC6E4 /* ButtonCell.xib in Resources */,
 				72A3518E24EA820800DA9D46 /* AmityCommunityTableViewCell.xib in Resources */,
 				A0E2B23326B7B68200F1C4D5 /* AmityPostGalleryViewController.xib in Resources */,
@@ -5818,6 +5862,7 @@
 				AA9A02BF2ADCED6800D25FFE /* JsonEncodeDecodeHelper.swift in Sources */,
 				DF0CABAF2AF0FF48008BD12D /* AmityTempSendFileMessageData.swift in Sources */,
 				97D7C4D3264BFDC600EA24F5 /* AmityChannelFetchMemberController.swift in Sources */,
+				DF2633BB2B47FDCB00C82DF4 /* AmityReadingListScreenViewModel.swift in Sources */,
 				72C67DC124EB62EB00B637F5 /* AmityCommunityHomePageViewController.swift in Sources */,
 				B761FD36257A0E1800826342 /* AmityMessageImageIncomingTableViewCell.swift in Sources */,
 				72A3519824EA820800DA9D46 /* AmityPhotoCollectionViewCell.swift in Sources */,
@@ -6122,6 +6167,7 @@
 				B7B604FE24FBA410005FB53D /* AmityDynamicHeightCollectionView.swift in Sources */,
 				72A3516D24EA820800DA9D46 /* AssetStore.swift in Sources */,
 				DFEAD5EE2B21E33600B2C05E /* AmityCommentViewWithURLPreview.swift in Sources */,
+				DF2633BF2B47FDCB00C82DF4 /* AmityReadingListViewController.swift in Sources */,
 				B7A9242824F428DE001F4B49 /* AmityNewsfeedEmptyView.swift in Sources */,
 				0DA0BD1C25D98016004804BA /* AmityPostDetailScreenViewModelProtocol.swift in Sources */,
 				7855F8FC26346B4D00D054FB /* AmityCommunityListRepositoryManager.swift in Sources */,
@@ -6360,6 +6406,7 @@
 				72DAC8472614415400422325 /* AmityUserNotification+Extension.swift in Sources */,
 				B7ED34522538BE23005E33A7 /* UILabel+Extension.swift in Sources */,
 				7271C2422523729300E13F9D /* AmityUserModel.swift in Sources */,
+				DF2633BD2B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift in Sources */,
 				0DBC356525A32EE00064D138 /* AmityFetchUserController.swift in Sources */,
 				A062145427004E9800037C34 /* UIViewController+PostCreateDialogue.swift in Sources */,
 				D404015925FF88FE00311C83 /* AmityCommunityNotificationSettingsViewController.swift in Sources */,
@@ -6406,6 +6453,7 @@
 				B77D391C24FB4AED004907CF /* AmityMessageDateView.swift in Sources */,
 				72D58B0A25D551C5000F3BB2 /* Debouncer.swift in Sources */,
 				789F81F926E2B9C800C16C68 /* AmityPollCreatorTimeframeView.swift in Sources */,
+				DF2633BC2B47FDCB00C82DF4 /* AmityReadingListScreenViewModelProtocol.swift in Sources */,
 				AACEF1B42AA9B1D1001D7020 /* AmityCategoryCommunityListScreenViewModel.swift in Sources */,
 				78CFD35526E2B76400975AAB /* AmityPollCreatorScheduleTableViewCell.swift in Sources */,
 				97D7C4B7264BF92100EA24F5 /* AmityChannelMemberSettingsViewController.swift in Sources */,
