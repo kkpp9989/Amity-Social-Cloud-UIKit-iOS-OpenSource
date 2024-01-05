@@ -76,6 +76,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var topicSubscription: AmityTopicSubscription?
     private var userSubscription: AmityTopicSubscription?
     private var customMessageController: AmityCustomMessageController
+    private var userController: AmityChatUserController
 
     // MARK: - Collection
     private var messagesCollection: AmityCollection<AmityMessage>?
@@ -121,6 +122,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         userSubscription = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
         userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
         customMessageController = AmityCustomMessageController(channelId: channelId)
+        userController = AmityChatUserController(channelId: channelId)
     }
     
     // MARK: - DataSource
@@ -251,6 +253,17 @@ extension AmityMessageListScreenViewModel {
                 }
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
+            strongSelf.getShowSettingButtonAndSendingPermission()
+        }
+    }
+    
+    func getShowSettingButtonAndSendingPermission() {
+        if channelType == .broadcast {
+            userController.getEditGroupChannelPermission { [weak self] result in
+                self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: result)
+            }
+        } else {
+            delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: true)
         }
     }
     

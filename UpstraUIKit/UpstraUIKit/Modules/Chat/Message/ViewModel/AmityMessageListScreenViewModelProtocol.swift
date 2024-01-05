@@ -14,6 +14,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelRoute(route: AmityMessageListScreenViewModel.Route)
     func screenViewModelDidGetChannel(channel: AmityChannelModel)
+    func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool)
     func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel)
     func screenViewModelScrollToBottom(for indexPath: IndexPath)
     func screenViewModelDidTextChange(text: String)
@@ -58,6 +59,7 @@ protocol AmityMessageListScreenViewModelAction {
     func route(for route: AmityMessageListScreenViewModel.Route)
     func setText(withText text: String?)
     func getChannel()
+    func getShowSettingButtonAndSendingPermission()
     func getSubChannel()
     func getMessage()
     func scrollToLatestMessage()
