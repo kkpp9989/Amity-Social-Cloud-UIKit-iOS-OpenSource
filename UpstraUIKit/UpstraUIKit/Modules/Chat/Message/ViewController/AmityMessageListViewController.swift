@@ -23,7 +23,7 @@ public extension AmityMessageListViewController {
         /// Set compose bar style. The default value is `ComposeBarStyle.default`.
         public var composeBarStyle = ComposeBarStyle.default
         public var shouldHideAudioButton: Bool = false
-        public var shouldShowChatSettingBarButton: Bool = true // [Custom for ONE Krungthai] Open chat setting bar to default
+        public var shouldShowChatSettingBarButton: Bool = true // [Deprecated]
         public var enableConnectionBar: Bool = true
         public init() {
             // Intentionally left empty
@@ -437,19 +437,10 @@ private extension AmityMessageListViewController {
     }
     
     func setupCustomNavigationBar() {
-        if settings.shouldShowChatSettingBarButton {
-            // Just using the view form this
-            navigationBarType = .custom
-            navigationHeaderViewController = AmityMessageListHeaderView(viewModel: screenViewModel)
-            let item = UIBarButtonItem(customView: navigationHeaderViewController)
-            navigationItem.leftBarButtonItem = item
-            let image = AmityIconSet.Chat.iconSetting
-            let barButton = UIBarButtonItem(image: image,
-                                            style: .plain,
-                                            target: self,
-                                            action: #selector(didTapSetting))
-            navigationItem.rightBarButtonItem = barButton
-        }
+        navigationBarType = .custom
+        navigationHeaderViewController = AmityMessageListHeaderView(viewModel: screenViewModel)
+        let item = UIBarButtonItem(customView: navigationHeaderViewController)
+        navigationItem.leftBarButtonItem = item
     }
     
     func setupConnectionStatusBar() {
@@ -560,6 +551,8 @@ private extension AmityMessageListViewController {
 				viewModel: screenViewModel,
 				delegate: self)
         }
+        
+        composeBarContainerView.isHidden = true
         
         // Manage view controller
         addContainerView(composeBarViewController, to: composeBarContainerView)
@@ -849,6 +842,33 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
         } else {
             composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
+        }
+    }
+    
+    func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool) {
+        if shouldShow {
+            // Show Button setting to navigation bar
+            let image = AmityIconSet.Chat.iconSetting
+            let barButton = UIBarButtonItem(image: image,
+                                            style: .plain,
+                                            target: self,
+                                            action: #selector(didTapSetting))
+            navigationItem.rightBarButtonItem = barButton
+            
+            // Show composebar
+            composeBarContainerView.isHidden = false
+        } else {
+            // Hide Button setting from navigation bar
+            if #available(iOS 16.0, *) {
+                // iOS 16.0 and newer
+                navigationItem.rightBarButtonItem?.isHidden = true
+            } else {
+                // iOS version prior to 16.0
+                navigationItem.rightBarButtonItem = nil
+            }
+            
+            // Hide composebar
+            composeBarContainerView.isHidden = true
         }
     }
     
