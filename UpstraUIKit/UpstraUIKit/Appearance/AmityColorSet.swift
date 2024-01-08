@@ -34,6 +34,12 @@ struct AmityColorSet {
     static var messageBubbleInverse: UIColor {
         return AmityThemeManager.currentTheme.messageBubbleInverse
     }
+    static var messageBubbleBoardcast: UIColor {
+        return UIColor(hex: "#0080BD")
+    }
+    static var highlightMessageBoardcast: UIColor {
+        return UIColor(hex: "#FFBE16")
+    }
     
     static var backgroundColor: UIColor {
         return UIColor.white

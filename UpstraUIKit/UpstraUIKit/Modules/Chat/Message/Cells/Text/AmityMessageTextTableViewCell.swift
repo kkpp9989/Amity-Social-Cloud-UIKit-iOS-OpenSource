@@ -56,6 +56,15 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
             textMessageView.hyperLinkColor = AmityColorSet.highlight
             highlightColor = AmityColorSet.primary
         }
+        
+        // Set boardcast message bubble style if channel type is boardcast
+        if channelType == .broadcast {
+            containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+            // Change text color
+            textMessageView.textColor = AmityColorSet.baseInverse
+            textMessageView.readMoreColor = AmityColorSet.highlightMessageBoardcast
+            textMessageView.hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+        }
 		
 		let mentionees = message.mentionees ?? []
 		if let metadata = message.metadata,
