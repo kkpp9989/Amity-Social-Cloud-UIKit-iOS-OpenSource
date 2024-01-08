@@ -308,11 +308,9 @@ extension AmityMessageListTableViewController {
         if let _ = cell as? AmityMessageTextTableViewCell, expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
             message.appearance.isExpanding = true
         }
-        
         let channelType = screenViewModel.dataSource.getChannelType()
-        (cell as? AmityMessageCellProtocol)?.display(message: message)
         (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
-       
+        (cell as? AmityMessageCellProtocol)?.display(message: message)
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {
