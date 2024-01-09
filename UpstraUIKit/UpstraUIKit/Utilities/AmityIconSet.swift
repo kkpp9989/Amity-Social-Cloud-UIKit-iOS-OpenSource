@@ -164,6 +164,7 @@ public struct AmityIconSet {
 		public static var iconMentionAll = UIImage(named: "icon_mention_all", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconPrivateBadge = UIImage(named: "icon_private_badge", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconPublicBadge = UIImage(named: "icon_public_badge", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconBroadcastBadge = UIImage(named: "icon_broadcast_badge", in: AmityUIKitManager.bundle, compatibleWith: nil)
 
         // Audio
         public static var iconAudioStopRecord = UIImage(named: "ic_stop_record", in:  AmityUIKitManager.bundle, compatibleWith: nil)

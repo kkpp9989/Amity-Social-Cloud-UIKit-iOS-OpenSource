@@ -126,7 +126,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
                     statusBadgeImageView.image = AmityIconSet.Chat.iconOfflineIndicator
                 }
             }
-        case .community, .live:
+        case .community, .live, .broadcast:
             avatarView.setImage(withImageURL: channel.avatarURL)
             avatarView.placeholder = AmityIconSet.defaultGroupChat
             memberLabel.text = "(\(channel.memberCount))"
@@ -134,12 +134,16 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             badgeStatusView.isHidden = true
             badgeStatusView.backgroundColor = .clear
             iconImageView.isHidden = false
-            var iconBadge = AmityIconSet.Chat.iconPublicBadge
+            let iconBadge: UIImage?
             if !channel.object.isPublic {
                 iconBadge = AmityIconSet.Chat.iconPrivateBadge
+            } else if channel.channelType == .broadcast {
+                iconBadge = AmityIconSet.Chat.iconBroadcastBadge
+            } else {
+                iconBadge = AmityIconSet.Chat.iconPublicBadge
             }
             iconImageView.image = iconBadge
-        case .private, .broadcast, .unknown:
+        case .private, .unknown:
             break
         @unknown default:
             break

@@ -66,9 +66,14 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
         joinButton.isHidden = (data.membership ?? "none") == "member" ? true : false
         
         // Set badge by channel type
-        var iconBadge = AmityIconSet.Chat.iconPublicBadge
+        let channelType = data.channelType ?? ""
+        let iconBadge: UIImage?
         if !(data.isPublic ?? true) {
             iconBadge = AmityIconSet.Chat.iconPrivateBadge
+        } else if channelType == "broadcast" {
+            iconBadge = AmityIconSet.Chat.iconBroadcastBadge
+        } else {
+            iconBadge = AmityIconSet.Chat.iconPublicBadge
         }
         iconImageView.image = iconBadge
     }
