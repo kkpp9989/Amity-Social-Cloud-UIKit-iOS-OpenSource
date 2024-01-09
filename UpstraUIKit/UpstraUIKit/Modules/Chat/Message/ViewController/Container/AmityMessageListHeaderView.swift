@@ -107,7 +107,7 @@ extension AmityMessageListHeaderView {
 //                    }
 //                }
             }
-        case .community, .live:
+        case .community, .live, .broadcast:
             displayNameLabel.text = channel.displayName
 
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
