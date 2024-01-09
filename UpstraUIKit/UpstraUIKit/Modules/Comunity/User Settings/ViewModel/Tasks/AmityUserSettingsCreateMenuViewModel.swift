@@ -67,6 +67,13 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
         let reportItem = AmitySettingsItem.TextContent(identifier: report.identifier, icon: report.icon, title: report.title, description: nil)
         settingsItems.append(.textContent(content: reportItem))
         
+        // ktb kk custom add menu Invite Via QR And Link Friend
+        // MARK: Invite Via QR And Link
+        let iteminviteViaQRAndLinkFriend = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.inviteViaQRAndLinkFriend.identifier, icon: AmityUserSettingsItem.inviteViaQRAndLinkFriend.icon, title: AmityUserSettingsItem.inviteViaQRAndLinkFriend.title, description: nil)
+        
+        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLinkFriend))
+        
+        
         settingsItems.append(.separator)
         completion?(settingsItems)
     }
