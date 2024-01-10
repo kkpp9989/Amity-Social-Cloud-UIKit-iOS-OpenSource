@@ -71,7 +71,7 @@ public class AmityEditMenuView {
         vc.preferredContentSize = CGSize(width: width ?? vc.currentDynamicTableViewWidth, height: height ?? vc.currentDynamicTableViewHeight)
     }
     
-    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool) -> [AmityEditMenuItem] {
+    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool, isBroadcastMessage: Bool) -> [AmityEditMenuItem] {
         var items: [AmityEditMenuItem] = []
         
         /** Case : Error message **/
@@ -96,15 +96,17 @@ public class AmityEditMenuView {
         }
         
         /** Case : Message **/
-        // Add reply button
-        items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReply, title: "Reply", completion: { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)
-            if let indexPath = indexPath {
-                weakSelf.editMessageListActionDelegate?.didTapEditMenu(event: .reply(indexPath: indexPath), indexPath: indexPath)
-            }
-        }))
+        // Add reply button if not broadcast message
+        if !isBroadcastMessage {
+            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReply, title: "Reply", completion: { [weak self] in
+                guard let weakSelf = self else { return }
+                
+                // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)
+                if let indexPath = indexPath {
+                    weakSelf.editMessageListActionDelegate?.didTapEditMenu(event: .reply(indexPath: indexPath), indexPath: indexPath)
+                }
+            }))
+        }
         
         // Add edit button if message type is text and is owner
         if messageType == .text && isOwner {
