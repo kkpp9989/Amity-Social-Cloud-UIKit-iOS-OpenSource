@@ -13,6 +13,7 @@ import CoreMedia
 enum AmityAudioRecorderState {
     case finish
     case finishWithMaximumTime
+    case fileSizeIsExceeded
     case notFinish
     case timeTooShort
     case deleteAndClose
@@ -119,7 +120,19 @@ final class AmityAudioRecorder: NSObject {
                 deleteFile()
                 finishRecording(state: .timeTooShort)
             } else {
-                finishRecording(state: .finish)
+                if let audioURL = getAudioFileURL(),
+                   let audioFileAttributes = try? FileManager.default.attributesOfItem(atPath: audioURL.path),
+                   let audioFileSize = audioFileAttributes[.size] as? Double, // Get audio file size
+                   let limitFileSizeSettingInMB = AmityUIKitManagerInternal.shared.limitFileSize { // Get limit file size setting
+                    let audiofileSizeinMB: Double = audioFileSize / (1024 * 1024)
+                    if audiofileSizeinMB > limitFileSizeSettingInMB {
+                        finishRecording(state: .fileSizeIsExceeded)
+                    } else {
+                        finishRecording(state: .finish)
+                    }
+                } else {
+                    finishRecording(state: .finish)
+                }
             }
         }
     }

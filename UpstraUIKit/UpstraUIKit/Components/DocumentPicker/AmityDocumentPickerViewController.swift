@@ -59,7 +59,7 @@ open class AmityFilePicker: NSObject {
     
     enum Constant {
         static let numberOfIFiles: Int = 10
-        static let maximumSizeOfIFiles: Int = 1_000_000_000 // 1GB
+        static let maximumSizeOfIFiles: Int = 1_000_000_000 // 1GB [Deprecated]
     }
     
     init(presentationController: UIViewController, delegate: AmityFilePickerDelegate) {
@@ -94,10 +94,13 @@ extension AmityFilePicker: UIDocumentPickerDelegate{
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         
         let fileSizes = urls.compactMap { try? $0.resourceValues(forKeys:[.fileSizeKey]).fileSize }
+        let limitFileSizeSettingInMB: Double = AmityUIKitManagerInternal.shared.limitFileSize ?? Double(Constant.maximumSizeOfIFiles)
         
         #warning("Localized")
-        guard fileSizes.filter({ $0 > Constant.maximumSizeOfIFiles}).isEmpty else {
-            let alertController = UIAlertController(title: "Unable to attached the file", message: "The selected file is larger than 1GB. Plese select a new file.", preferredStyle: .alert)
+//        guard fileSizes.filter({ $0 > Constant.maximumSizeOfIFiles}).isEmpty else { // [Backup] [Deprecated]
+        guard fileSizes.filter({ Double($0 / (1024 * 1024)) > limitFileSizeSettingInMB}).isEmpty else {
+//            let alertController = UIAlertController(title: "Unable to attached the file", message: "The selected file is larger than 1GB. Plese select a new file.", preferredStyle: .alert) // [Backup] [Deprecated]
+            let alertController = UIAlertController(title: "Unable to send the file", message: "The file size is too large.", preferredStyle: .alert) // [Current]
             let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
             alertController.addAction(cancelAction)
             presentationController?.present(alertController, animated: true, completion: nil)
