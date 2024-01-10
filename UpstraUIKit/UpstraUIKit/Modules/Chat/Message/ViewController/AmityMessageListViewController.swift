@@ -76,6 +76,7 @@ public final class AmityMessageListViewController: AmityViewController {
 	private var mentionManager: AmityMentionManager?
     private var filePicker: AmityFilePicker?
     private var isFromNotification: Bool = false
+    private var shouldShowSettingButtonAndSendMessageView: Bool = false
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -856,6 +857,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     }
     
     func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool) {
+        shouldShowSettingButtonAndSendMessageView = shouldShow
         if shouldShow {
             // Show Button setting to navigation bar
             let image = AmityIconSet.Chat.iconSetting
@@ -1060,6 +1062,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .forward(indexPath: let indexPath):
             messageViewController.updateEditMode(isEdit: true, indexPath: indexPath)
             composeBar.showForwardMenuButton(show: true)
+            composeBarContainerView.isHidden = false
         case .copy(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             UIPasteboard.general.string = message.text
@@ -1260,6 +1263,7 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
     func composeViewDidCancelForwardMessage() {
         messageViewController.updateEditMode(isEdit: false)
         screenViewModel.action.resetDataInForwardMessageList()
+        composeBarContainerView.isHidden = !shouldShowSettingButtonAndSendMessageView
     }
     
     func composeViewDidSelectForwardMessage() {
@@ -1268,6 +1272,7 @@ extension AmityMessageListViewController: AmityMessageListComposeBarDelegate, Am
             self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels)
             self.messageViewController.updateEditMode(isEdit: false)
             self.composeBar.showForwardMenuButton(show: false)
+            self.composeBarContainerView.isHidden = !self.shouldShowSettingButtonAndSendMessageView
         }
     }
     
