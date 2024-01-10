@@ -341,6 +341,7 @@ final class AmityUIKitManagerInternal: NSObject {
     var totalUnreadCount: Int = 0
     var onlinePresences: [AmityChannelPresence] = []
     var onlinePresencesDataHash: Int = -1
+    var limitFileSize: Double? // .mb
 
     var client: AmityClient {
         guard let client = _client else {
@@ -449,6 +450,9 @@ final class AmityUIKitManagerInternal: NSObject {
             do {
                 let auth = try await AmityUserTokenManager(apiKey: apiKey, region: .SG).createUserToken(userId: userId, authToken: authToken)
                 userToken = auth.accessToken
+                
+                // [Custom for ONE Krungthai] Get custom limit file size setting after register user token
+                getCustomLimitFileSizeSetting()
             } catch let error {
             }
         }
@@ -487,6 +491,21 @@ final class AmityUIKitManagerInternal: NSObject {
                 print("[Notification] Disable chat user level notification fail with error : \(error.localizedDescription)")
             } else if let result = result {
                 print("[Notification] Disable chat user level notification result : \(result)")
+            }
+        }
+    }
+    
+    func getCustomLimitFileSizeSetting() {
+        let request = RequestCustomSettings()
+        request.requestLimitFileSizeSetting { [weak self] result in
+            guard let weakSelf = self else { return }
+            switch result {
+            case .success(let data):
+                weakSelf.limitFileSize = data.limitFileSize
+                print("[RequestCustomSettings] Get limit file size success with value: \(data.limitFileSize) mb")
+            case .failure(let error):
+                print("[RequestCustomSettings] Get limit file size fail with error: \(error.localizedDescription)")
+                break
             }
         }
     }

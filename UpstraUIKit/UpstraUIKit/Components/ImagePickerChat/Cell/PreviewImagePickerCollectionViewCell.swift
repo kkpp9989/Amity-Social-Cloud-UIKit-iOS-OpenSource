@@ -113,8 +113,16 @@ final class PreviewImagePickerCollectionViewCell: UICollectionViewCell {
                 let fileAttributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
                 if let fileSize = fileAttributes[.size] as? Double {
                     let fileSizeInMB = fileSize / (1024 * 1024)
-                    let isFileSizeGreaterThan300MB = fileSizeInMB > 300.0
-                    completion(isFileSizeGreaterThan300MB)
+                    // [Back up] [Deprcated]
+//                    let isFileSizeGreaterThan300MB = fileSizeInMB > 300.0
+//                    completion(isFileSizeGreaterThan300MB)
+                    // [Current]
+                    let limitFileSizeSettingInMB = AmityUIKitManagerInternal.shared.limitFileSize ?? 300.0 // Use limit file size from custom backend setting (.mb) or old setting (300.0 mb)
+                    var isAnyFileSizeGreaterThanSetting = false
+                    if fileSizeInMB > limitFileSizeSettingInMB {
+                        isAnyFileSizeGreaterThanSetting = true
+                    }
+                    completion(isAnyFileSizeGreaterThanSetting)
                 } else {
                     completion(false)
                 }

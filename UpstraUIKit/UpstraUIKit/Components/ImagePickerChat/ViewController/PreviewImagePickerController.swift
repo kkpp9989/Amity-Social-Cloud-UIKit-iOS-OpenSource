@@ -96,14 +96,15 @@ class PreviewImagePickerController: AmityViewController {
         assets.remove(at: indexPath.row)
         previweCollectionView.reloadData()
         
-        setupSendButton()
         if imageList.count == 0 {
             sendButton.isEnabled = false
+        } else {
+            setupSendButton()
         }
     }
     
     func checkFileSize(for assets: [PHAsset], completion: @escaping (Bool) -> Void) {
-        var isAnyFileSizeGreaterThan300MB = false
+        var isAnyFileSizeGreaterThanSetting = false
         
         let dispatchGroup = DispatchGroup()
         
@@ -126,8 +127,14 @@ class PreviewImagePickerController: AmityViewController {
                     
                     if let fileSize = fileAttributes[.size] as? Double {
                         let fileSizeInMB = fileSize / (1024 * 1024)
-                        if fileSizeInMB > 300.0 {
-                            isAnyFileSizeGreaterThan300MB = true
+                        // [Back up] [Deprecated]
+//                        if fileSizeInMB > 300.0 {
+//                            isAnyFileSizeGreaterThanSetting = true
+//                        }
+                        // [Current]
+                        let limitFileSizeSettingInMB = AmityUIKitManagerInternal.shared.limitFileSize ?? 300.0 // Use limit file size from custom backend setting (.mb) or old setting (300.0 mb)
+                        if fileSizeInMB > limitFileSizeSettingInMB {
+                            isAnyFileSizeGreaterThanSetting = true
                         }
                     } else {
                         completion(false)
@@ -139,7 +146,7 @@ class PreviewImagePickerController: AmityViewController {
         }
         
         dispatchGroup.notify(queue: DispatchQueue.global()) {
-            completion(isAnyFileSizeGreaterThan300MB)
+            completion(isAnyFileSizeGreaterThanSetting)
         }
     }
 }

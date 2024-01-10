@@ -605,6 +605,9 @@ private extension AmityMessageListViewController {
                 }
             case .deleteAndClose:
                 self?.circular.hide()
+            case .fileSizeIsExceeded:
+                self?.circular.hide()
+                self?.alertAudioFileSizeIsExceeded()
             }
         }
         
@@ -623,6 +626,13 @@ extension AmityMessageListViewController {
             Log.add("finishWithMaximumTime")
         }))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func alertAudioFileSizeIsExceeded() {
+        let alertController = UIAlertController(title: "Unable to send the audio", message: "The audio file size is too large.", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
 }
