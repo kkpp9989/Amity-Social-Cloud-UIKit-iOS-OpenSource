@@ -23,6 +23,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     // MARK: - Properties
     var message: AmityMessageModel?
     var channelType: AmityChannelType?
+    var tableBoundingWidth: CGFloat?
     
     override func awakeFromNib() {
         super.awakeFromNib()

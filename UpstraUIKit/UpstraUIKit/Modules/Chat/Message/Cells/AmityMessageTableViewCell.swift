@@ -36,6 +36,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     var screenViewModel: AmityMessageListScreenViewModelType!
     var message: AmityMessageModel!
     var channelType: AmityChannelType?
+    var tableBoundingWidth: CGFloat?
     
     var indexPath: IndexPath!
     let editMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.edit.localizedString, action: #selector(editTap))

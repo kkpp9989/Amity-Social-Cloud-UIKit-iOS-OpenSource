@@ -69,6 +69,9 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
 		let mentionees = message.mentionees ?? []
 		if let metadata = message.metadata,
 		   let text = message.text {
+            if let tableBoundingWidth = tableBoundingWidth {
+                textMessageView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+            }
 			textMessageView.setText(
 				text,
 				withAttributes: AmityMentionManager.getAttributes(
@@ -79,6 +82,9 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
 				)
 			)
 		} else {
+            if let tableBoundingWidth = tableBoundingWidth {
+                textMessageView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+            }
 			textMessageView.text = message.text
 		}
         
@@ -117,6 +123,21 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         
         return height
         
+    }
+    
+    private func actualWidth(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
+        var actualWidth: CGFloat = 0
+        
+        // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
+        if message.isOwner {
+            let horizontalPadding: CGFloat = 112
+            actualWidth = boundingWidth - horizontalPadding
+        } else {
+            let horizontalPadding: CGFloat = 164
+            actualWidth = boundingWidth - horizontalPadding
+        }
+        
+        return actualWidth
     }
     
     override func prepareForReuse() {
