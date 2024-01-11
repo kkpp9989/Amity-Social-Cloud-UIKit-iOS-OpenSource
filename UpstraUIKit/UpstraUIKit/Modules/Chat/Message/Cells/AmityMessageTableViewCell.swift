@@ -238,8 +238,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         imageAttachment.image = AmityIconSet.Chat.iconBroadcast
         
         // Set the image size as per your requirement
-        let imageSize = CGSize(width: 20, height: 20) // Change the size as needed
-        imageAttachment.bounds = CGRect(origin: .zero, size: imageSize)
+        let imageSize = CGSize(width: 16, height: 16) // Change the size as needed
+        imageAttachment.bounds = CGRect(origin: .init(x: 0, y: -(AmityFontSet.body.pointSize * 0.25)), size: imageSize) // Set bounds to center of display name label
         
         // Create an attributed string with both text and the image attachment
         let attributedString = NSMutableAttributedString(string: "\(name ?? "") ")
