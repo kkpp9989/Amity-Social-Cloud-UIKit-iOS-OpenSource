@@ -188,6 +188,7 @@ public struct AmityIconSet {
     }
     
     enum ChatSettings {
+        public static var iconChannelMute = UIImage(named: "icon_channel_mute", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconInviteUser = UIImage(named: "icon_invite_user", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMutedNotification = UIImage(named: "icon_muted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconUnmutedNotification = UIImage(named: "icon_unmuted_notification", in: AmityUIKitManager.bundle, compatibleWith: nil)

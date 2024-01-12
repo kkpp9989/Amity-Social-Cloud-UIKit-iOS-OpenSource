@@ -86,29 +86,25 @@ extension AmityMessageListHeaderView {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
-            displayNameLabel.text = channel.displayName
+            updateChannelName(channelName: channel.displayName, isMuted: channel.isMuted)
             
             /* [Custom for ONE Krungthai] Show member count and hide status view for group chat */
             memberCount.text = "\(channel.memberCount) \(channel.memberCount > 1 ? "members" : "member")"
             memberCount.isHidden = false
             statusView.isHidden = true
         case .conversation:
-//            getOtherUser(channel: channel) { user in
-//                DispatchQueue.main.async { [self] in
             if let otherMember = user?.object {
-                        // Set avatar
-                        avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
-                        // Set displayName
-                        displayNameLabel.text = otherMember.displayName
-                        // Set user status and show its | [Temp] Mock to Available
-                        updateUserStatus(user: otherMember, isOnline: isOnline)
-                        // Hide member count because it's 1:1 Chat
-                        memberCount.isHidden = true
-//                    }
-//                }
+                // Set avatar
+                avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
+                // Set displayName
+                updateChannelName(channelName: otherMember.displayName ?? "", isMuted: channel.isMuted)
+                // Set user status and show its | [Temp] Mock to Available
+                updateUserStatus(user: otherMember, isOnline: isOnline)
+                // Hide member count because it's 1:1 Chat
+                memberCount.isHidden = true
             }
         case .community, .live:
-            displayNameLabel.text = channel.displayName
+            updateChannelName(channelName: channel.displayName, isMuted: channel.isMuted)
 
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
@@ -121,6 +117,34 @@ extension AmityMessageListHeaderView {
         }
     }
     
+    func updateChannelName(channelName: String, isMuted: Bool) {
+        // Set the channel name as the text of displayNameLabel
+        displayNameLabel.text = channelName
+        
+        // Check if the channel is muted before setting the image
+        if isMuted {
+            // Set the channel's avatar image as the image of displayNameLabel
+            let attachment = NSTextAttachment()
+            attachment.image = AmityIconSet.ChatSettings.iconChannelMute
+            attachment.bounds = CGRect(x: 0, y: -2, width: 16, height: 16) // Adjust the bounds as needed
+            
+            let attachmentString = NSAttributedString(attachment: attachment)
+            let mutableAttributedString = NSMutableAttributedString(string: channelName)
+            
+            // Add a space between the image and the channel name
+            mutableAttributedString.append(NSAttributedString(string: " "))
+            
+            // Append the channel name
+            mutableAttributedString.append(attachmentString)
+            
+            // Set the final attributed text to displayNameLabel
+            displayNameLabel.attributedText = mutableAttributedString
+        } else {
+            // If the channel is not muted, set the text without the image
+            displayNameLabel.text = channelName
+        }
+    }
+
     func updateUserStatus(user: AmityUser, isOnline: Bool) {
         let status = user.metadata?["user_presence"] as? String ?? "available"
         switch status {
