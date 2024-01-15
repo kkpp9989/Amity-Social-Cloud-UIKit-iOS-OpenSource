@@ -14,6 +14,7 @@ enum AmityPostFooterProtocolHandlerAction {
     case tapHoldLike
     case tapComment
     case tapReactionDetails
+    case tapShare
 }
 protocol AmityPostFooterProtocolHandlerDelegate: AnyObject {
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel)
@@ -53,7 +54,7 @@ final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
     /* [Custom for ONE Krungthai][Share Post By URL] Create new function for open default share view of iOS refer to user story */
     private func handleShareOption(post: AmityPostModel) {
         guard let viewController = viewController else { return }
-        AmityFeedEventHandler.shared.sharePostDidTap(from: viewController, post: post)
+        delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapShare, withPost: post)
     }
     
     // [Original]

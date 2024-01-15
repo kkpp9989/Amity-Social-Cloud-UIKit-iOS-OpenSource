@@ -686,6 +686,8 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
                 }
             }
             showReactionPicker()
+        case .tapShare:
+            break
         }
     }
     
