@@ -303,10 +303,17 @@ public final class AmityUIKitManager {
         
         return isOnline
     }
-    
+
     public static func setASMRemoteConfig(_ isEnableMenu: Bool) {
         AmityUIKitManagerInternal.shared.isEnableMenu = isEnableMenu
     }
+
+    //ktb kk custom share menu
+    public static func getShareExternalURL(post: AmityPostModel) -> String {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        return externalURL
+    }
+
 }
 
 final class AmityUIKitManagerInternal: NSObject {

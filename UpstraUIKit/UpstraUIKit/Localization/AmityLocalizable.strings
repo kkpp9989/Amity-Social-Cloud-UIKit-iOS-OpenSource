@@ -397,6 +397,8 @@
 "user_settings_item_unreport_user" = "Unreport user";
 "user_settings_item_edit_profile" = "Edit profile";
 "user_settings_item_notifications" = "Notification"; // [Custom for ONE Krungthai][Improvement] Set title for notification settings in user settings
+"user_settings_item_inviteviaqrandlink_friend" = "Get friend's QR";
+
 "user_settings_unfollow_message" = "You’ll have to send a request again to follow %@. Continue?";
 "user_settings_unfollow_fail_title" = "Unable to unfollow %@";
 "user_settings_remove_user" = "Remove user";

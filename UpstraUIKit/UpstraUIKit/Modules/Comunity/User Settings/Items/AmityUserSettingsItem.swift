@@ -16,6 +16,8 @@ enum AmityUserSettingsItem: String {
     case basicInfo
     case editProfile
     case notification // [Custom for ONE Krungthai][Improvement] Add notification case for handle notification setting item
+    case inviteViaQRAndLink
+    case inviteViaQRAndLinkFriend
     
     var identifier: String {
         return self.rawValue
@@ -37,6 +39,10 @@ enum AmityUserSettingsItem: String {
             return AmityLocalizedStringSet.UserSettings.itemEditProfile.localizedString
         case .notification: // [Custom for ONE Krungthai][Improvement] Add notification case for get title of notification setting item
             return AmityLocalizedStringSet.UserSettings.itemNotifications.localizedString
+        case .inviteViaQRAndLink:
+            return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
+        case .inviteViaQRAndLinkFriend :
+            return AmityLocalizedStringSet.UserSettings.itemInviteViaQRAndLinkfriend.localizedString
         }
     }
     
@@ -50,6 +56,10 @@ enum AmityUserSettingsItem: String {
             return AmityIconSet.UserSettings.iconItemEditProfile
         case .notification: // [Custom for ONE Krungthai][Improvement] Add notification case for get image of notification setting item
             return AmityIconSet.UserSettings.iconNotification
+        case .inviteViaQRAndLink:
+            return AmityIconSet.ChatSettings.iconInviteViaQRAndLink
+        case .inviteViaQRAndLinkFriend:
+            return AmityIconSet.ChatSettings.iconInviteViaQRAndLink
         case .basicInfo, .manage:
             return nil
         }

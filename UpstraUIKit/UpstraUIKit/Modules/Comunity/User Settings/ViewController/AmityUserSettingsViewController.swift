@@ -87,6 +87,10 @@ final class AmityUserSettingsViewController: AmityViewController {
                 screenViewModel.action.unreportUser()
             case .basicInfo, .manage, .editProfile, .notification:
                 break
+            case .inviteViaQRAndLink:
+                break
+            case .inviteViaQRAndLinkFriend:
+                break
             }
         case .navigationContent(let content):
             guard let item = AmityUserSettingsItem(rawValue: content.identifier) else { return }
@@ -96,6 +100,13 @@ final class AmityUserSettingsViewController: AmityViewController {
             case .notification: // [Custom for ONE Krungthai][Improvement] Add handle action of notification setting item
                 let vc = AmityUserNotificationSettingsViewController.make()
                 navigationController?.pushViewController(vc, animated: true)
+            case .inviteViaQRAndLink:
+                // ktb kk goto share qr from user setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
+            case .inviteViaQRAndLinkFriend:
+                // ktb kk goto ahare qr from user setting
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
             case .basicInfo, .manage, .report, .unfollow, .unreport:
                 break
             }

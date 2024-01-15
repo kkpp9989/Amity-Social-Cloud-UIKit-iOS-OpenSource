@@ -363,6 +363,8 @@ public struct AmityLocalizedStringSet {
         static let itemUnreportUser = "user_settings_item_unreport_user"
         static let itemEditProfile = "user_settings_item_edit_profile"
         static let itemNotifications = "user_settings_item_notifications" // [Custom for ONE Krungthai][Improvement] Set title for notification settings in user settings
+        static let itemInviteViaQRAndLinkfriend = "user_settings_item_inviteviaqrandlink_friend"
+        
         
         enum UserSettingsMessages {
             static let unfollowMessage = "user_settings_unfollow_message"

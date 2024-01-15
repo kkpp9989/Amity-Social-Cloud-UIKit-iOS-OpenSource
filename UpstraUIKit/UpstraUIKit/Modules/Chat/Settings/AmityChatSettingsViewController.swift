@@ -155,6 +155,11 @@ final class AmityChatSettingsViewController: AmityViewController {
                 AmityHUD.show(.loading)
                 screenViewModel.action.changeNotificationSettings()
                 break
+            case "inviteViaQRAndLink":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
+                break
             default:
                 break
             }
@@ -180,6 +185,11 @@ final class AmityChatSettingsViewController: AmityViewController {
                 break
             case "notification": // (1:1 Chat, Group Chat)
                 // Use in text content instead
+                break
+            case "inviteViaQRAndLink":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
                 break
             default:
                 break
