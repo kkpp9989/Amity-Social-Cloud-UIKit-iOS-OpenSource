@@ -170,6 +170,14 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
             statusMetadataImageView.isHidden = false
+            
+            // Add your image to the attributed string
+            let attachment = NSTextAttachment()
+            attachment.bounds = CGRect(x: -3, y: -3, width: 15, height: 15)
+            attachment.image = AmityIconSet.Chat.iconMessageUnsent
+            let imageString = NSAttributedString(attachment: attachment)
+            fullString.append(imageString)
+            
             let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.unsentMessage.localizedString, message.time)
             fullString.append(NSAttributedString(string: deleteMessage, attributes: style))
             statusMetadataImageView.image = AmityIconSet.iconDeleteMessage
