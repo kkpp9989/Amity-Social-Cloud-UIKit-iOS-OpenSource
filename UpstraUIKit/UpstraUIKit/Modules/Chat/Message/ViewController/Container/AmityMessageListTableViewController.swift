@@ -14,6 +14,7 @@ final class AmityMessageListTableViewController: UITableViewController {
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
     private var expandedMessageIdList: [String] = []
+    var shouldShowSettingButtonAndSendMessageView: Bool = false
     
     var oldIndexPath: IndexPath?
     
@@ -212,6 +213,7 @@ extension AmityMessageListTableViewController {
         if message.messageType == .audio {
             if message.isOwner {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
@@ -224,6 +226,7 @@ extension AmityMessageListTableViewController {
                 return cell
             } else {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
@@ -307,6 +310,7 @@ extension AmityMessageListTableViewController {
             cell.delegate = self
             cell.setViewModel(with: screenViewModel)
             cell.setIndexPath(with: indexPath)
+            cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
         }
         if let _ = cell as? AmityMessageTextTableViewCell, expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
             message.appearance.isExpanding = true

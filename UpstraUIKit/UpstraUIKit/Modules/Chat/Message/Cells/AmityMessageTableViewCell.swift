@@ -37,6 +37,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     var message: AmityMessageModel!
     var channelType: AmityChannelType?
     var tableBoundingWidth: CGFloat?
+    var shouldShowTypingTab: Bool = false
     
     var indexPath: IndexPath!
     let editMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.edit.localizedString, action: #selector(editTap))
@@ -152,7 +153,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             readCountLabel?.isHidden = true
         }
         
-        containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: false, isReported: message.flagCount > 0, isBroadcastMessage: channelType == .broadcast)
+        containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: false, isReported: message.flagCount > 0, shouldShowTypingTab: shouldShowTypingTab)
         
         setMetadata(message: message)
     }
@@ -182,7 +183,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                     errorButton.isHidden = false
                     readCountLabel?.isHidden = true
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
-                    containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: true, isReported: message.flagCount > 0, isBroadcastMessage: channelType == .broadcast)
+                    containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: true, isReported: message.flagCount > 0, shouldShowTypingTab: shouldShowTypingTab)
                 case .syncing:
                     fullString.append(NSAttributedString(string: AmityLocalizedStringSet.MessageList.sending.localizedString, attributes: style))
                     readCountLabel?.isHidden = true

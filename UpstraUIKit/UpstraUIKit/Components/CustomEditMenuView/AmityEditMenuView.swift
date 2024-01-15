@@ -71,7 +71,7 @@ public class AmityEditMenuView {
         vc.preferredContentSize = CGSize(width: width ?? vc.currentDynamicTableViewWidth, height: height ?? vc.currentDynamicTableViewHeight)
     }
     
-    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool, isBroadcastMessage: Bool) -> [AmityEditMenuItem] {
+    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool, shouldShowTypingTab: Bool) -> [AmityEditMenuItem] {
         var items: [AmityEditMenuItem] = []
         
         /** Case : Error message **/
@@ -96,8 +96,8 @@ public class AmityEditMenuView {
         }
         
         /** Case : Message **/
-        // Add reply button if not broadcast message
-        if !isBroadcastMessage {
+        // Add reply button if should show typing tab view
+        if shouldShowTypingTab {
             items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReply, title: "Reply", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
