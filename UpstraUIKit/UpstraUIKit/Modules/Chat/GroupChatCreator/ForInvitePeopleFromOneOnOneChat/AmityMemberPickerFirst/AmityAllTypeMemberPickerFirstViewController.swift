@@ -38,7 +38,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         super.viewWillAppear(animated)
         
         // Set color navigation bar by custom theme
-        theme?.setBackgroundNavigationBar()
+        theme?.clearNavigationBarSetting()
     }
     
     public static func make(currentUsers: [AmitySelectMemberModel]) -> AmityAllTypeMemberPickerFirstViewController {
@@ -112,6 +112,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.clearNavigationBarSetting()
     }
     
     @objc func doneTap() {

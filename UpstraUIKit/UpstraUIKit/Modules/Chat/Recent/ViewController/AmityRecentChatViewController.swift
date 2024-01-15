@@ -46,6 +46,7 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupScreenViewModel()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
