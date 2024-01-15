@@ -38,9 +38,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Set color navigation bar by custom theme
-        theme?.setBackgroundNavigationBar()
+        theme?.clearNavigationBarSetting()
     }
     
     public static func make() -> AmityChannelPickerTabPageViewController {
@@ -120,6 +118,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.setBackgroundApp(index: 0)
     }
     
     @objc func doneTap() {

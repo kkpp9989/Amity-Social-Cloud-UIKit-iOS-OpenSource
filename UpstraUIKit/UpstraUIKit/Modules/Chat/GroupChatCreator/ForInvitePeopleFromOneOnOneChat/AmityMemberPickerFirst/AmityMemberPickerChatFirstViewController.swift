@@ -30,7 +30,8 @@ public final class AmityMemberPickerChatFirstViewController: AmityViewController
 		
 		// Initial ONE Krungthai Custom theme
 		theme = ONEKrungthaiCustomTheme(viewController: self)
-		
+        theme?.setBackgroundApp(index: 0
+        )
 		setupView()
 		
 		screenViewModel.delegate = self
@@ -41,7 +42,7 @@ public final class AmityMemberPickerChatFirstViewController: AmityViewController
 		super.viewWillAppear(animated)
 		
 		// Set color navigation bar by custom theme
-		theme?.setBackgroundNavigationBar()
+		theme?.clearNavigationBarSetting()
 	}
 
 	public static func make(withCurrentUsers users: [AmitySelectMemberModel] = []) -> AmityMemberPickerChatFirstViewController {

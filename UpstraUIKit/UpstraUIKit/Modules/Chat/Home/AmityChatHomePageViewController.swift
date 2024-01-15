@@ -16,6 +16,9 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     var followingChatViewController = AmityChatFriendPageViewController.make(type: .following)
     var followersChatViewController = AmityChatFriendPageViewController.make(type: .followers)
 
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     private init() {
         super.init(nibName: AmityChatHomePageViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -33,6 +36,13 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         AmityEventHandler.shared.hideKTBLoading() // Hide KTB Loading from main app if back from open chat detail by notification
+        
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.setBackgroundApp(index: 0)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        theme?.clearNavigationBarSetting()
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
