@@ -611,10 +611,18 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
             }
             options.append(shareOption)
             
+            /*
             let moreOption = TextItemOption(title: "More Option") {
                 AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
             }
             options.append(moreOption)
+             */
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
             
             contentView.configure(items: options, selectedItem: nil)
             present(bottomSheet, animated: false, completion: nil)
