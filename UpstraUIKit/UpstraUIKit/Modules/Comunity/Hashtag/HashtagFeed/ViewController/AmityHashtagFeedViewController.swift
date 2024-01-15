@@ -559,6 +559,8 @@ extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate
                 }
             }
             showReactionPicker()
+        case .tapShare:
+            break
         }
     }
 }
