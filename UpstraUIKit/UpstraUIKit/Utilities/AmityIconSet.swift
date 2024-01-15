@@ -185,6 +185,7 @@ public struct AmityIconSet {
         public static var iconStatusWorkFromHome = UIImage(named: "icon_status_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconOfflineIndicator = UIImage(named: "icon_offline_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconOnlineIndicator = UIImage(named: "icon_online_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMessageUnsent = UIImage(named: "icon_unsend_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum ChatSettings {
