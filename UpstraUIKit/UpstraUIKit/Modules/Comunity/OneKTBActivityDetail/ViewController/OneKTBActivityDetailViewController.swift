@@ -614,6 +614,8 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
                 }
             }
             showReactionPicker()
+        case .tapShare:
+            break
         }
     }
     

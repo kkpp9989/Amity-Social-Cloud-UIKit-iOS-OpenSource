@@ -595,6 +595,32 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
                 }
             }
             showReactionPicker()
+        case .tapShare:
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    //                self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels)
+                    //                self.messageViewController.updateEditMode(isEdit: false)
+                    //                self.composeBar.showForwardMenuButton(show: false)
+                    //                self.composeBarContainerView.isHidden = !self.shouldShowSettingButtonAndSendMessageView
+                }
+            }
+            options.append(shareOption)
+            
+            let moreOption = TextItemOption(title: "More Option") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(moreOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
 }
