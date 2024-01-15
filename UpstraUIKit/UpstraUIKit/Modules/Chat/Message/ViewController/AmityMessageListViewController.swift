@@ -858,6 +858,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     
     func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool) {
         shouldShowSettingButtonAndSendMessageView = shouldShow
+        messageViewController.shouldShowSettingButtonAndSendMessageView = shouldShow
         if shouldShow {
             // Show Button setting to navigation bar
             let image = AmityIconSet.Chat.iconSetting
