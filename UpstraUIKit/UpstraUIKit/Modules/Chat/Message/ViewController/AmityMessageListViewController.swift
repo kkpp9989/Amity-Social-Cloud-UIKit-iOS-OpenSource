@@ -955,6 +955,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             if error.isAmityErrorCode(.linkNotAllowed) {
                 alertErrorLabel.text = "Unable to send link This link isn't allowed in this chat."
                 alertViewFadeIn()
+            } else if error.isAmityErrorCode(.banWordFound){
+                alertErrorLabel.text = "Unable to type this word This word isn't allowed in this chat"
+                alertViewFadeIn()
             } else {
                 alertErrorLabel.text = "Can't send the message"
                 alertViewFadeIn()
