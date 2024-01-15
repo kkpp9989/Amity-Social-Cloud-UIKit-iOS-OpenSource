@@ -606,10 +606,7 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
             let shareOption = TextItemOption(title: "Share to Chat") {
                 AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
                     print(selectedChannels)
-                    //                self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels)
-                    //                self.messageViewController.updateEditMode(isEdit: false)
-                    //                self.composeBar.showForwardMenuButton(show: false)
-                    //                self.composeBarContainerView.isHidden = !self.shouldShowSettingButtonAndSendMessageView
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
                 }
             }
             options.append(shareOption)

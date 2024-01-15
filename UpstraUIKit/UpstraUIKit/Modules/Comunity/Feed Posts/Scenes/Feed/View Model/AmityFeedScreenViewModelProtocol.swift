@@ -88,6 +88,9 @@ protocol AmityFeedScreenViewModelAction {
     // MARK: Pin Post
     func pinpost(withpostId postId: String)
     func unpinpost(withpostId postId: String)
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }
 
 protocol AmityFeedScreenViewModelType: AmityFeedScreenViewModelAction, AmityFeedScreenViewModelDataSource {
