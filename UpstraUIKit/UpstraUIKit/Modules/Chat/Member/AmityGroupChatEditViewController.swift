@@ -97,7 +97,7 @@ class AmityGroupChatEditViewController: AmityViewController {
         // display name
 //        groupNameTitleLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*" // [Original]
         groupNameTitleLabel.text = AmityLocalizedStringSet.editGroupChatProfileDisplayNameTitle.localizedString + "*" // [Custom for ONE Krungthai] Change label of displayname refer to ONE KTB figma
-        groupNameTitleLabel.font = AmityFontSet.title
+        groupNameTitleLabel.font = AmityFontSet.bodyBold
         groupNameTitleLabel.textColor = AmityColorSet.base
         countLabel.font = AmityFontSet.caption
         countLabel.textColor = AmityColorSet.base.blend(.shade1)

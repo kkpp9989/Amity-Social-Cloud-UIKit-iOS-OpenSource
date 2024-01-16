@@ -139,7 +139,20 @@ class GroupChatCreatorSecondViewController: AmityViewController {
 		// separator
 		displaynameSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
 		
-		let combinedDisplayName = selectUsersData.map { $0.displayName ?? "" }.joined(separator: ", ")
+        // auto sign group name and set place holder
+        // combine current user displayname and all selected user displayname to group name
+        var combinedDisplayName: String = AmityUIKitManagerInternal.shared.displayName
+        if selectUsersData.count > 0 {
+            combinedDisplayName += ", "
+            combinedDisplayName += selectUsersData.map { $0.displayName ?? "" }.joined(separator: ", ")
+        }
+        // Substring not more than max character of display name
+        let indexLimit = min(Constant.maxCharacterOfDisplayname, combinedDisplayName.count)
+        if let endIndex = combinedDisplayName.index(combinedDisplayName.startIndex, offsetBy: indexLimit, limitedBy: combinedDisplayName.endIndex) {
+            combinedDisplayName = String(combinedDisplayName[..<endIndex])
+        }
+        // Set group name and placeholder
+        displayNameTextField.text = combinedDisplayName
 		displayNameTextField.placeholder = "Enter group name"
 		
 		updateViewState()

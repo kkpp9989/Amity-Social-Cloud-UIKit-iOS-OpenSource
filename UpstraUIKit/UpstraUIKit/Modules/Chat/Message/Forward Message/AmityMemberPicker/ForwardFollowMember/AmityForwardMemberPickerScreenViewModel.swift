@@ -82,7 +82,7 @@ extension AmityForwardMemberPickerScreenViewModel {
     }
     
     func getStoreUsers() -> [AmitySelectMemberModel] {
-        return newSelectedUsers + currentUsers
+        return currentUsers + newSelectedUsers
     }
     
     func getNewSelectedUsers() -> [AmitySelectMemberModel] {
