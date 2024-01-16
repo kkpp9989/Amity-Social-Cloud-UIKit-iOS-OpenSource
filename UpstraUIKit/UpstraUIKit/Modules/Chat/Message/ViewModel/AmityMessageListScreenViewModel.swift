@@ -128,6 +128,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var unsortedMessages: [AmityMessageModel] = []
     private var keyboardEvents: KeyboardInputEvents = .default
     private var keyboardVisible: Bool = false
+    private var isMuted: Bool = false
     private var isLoadMore: Bool = false
     private var text: String = "" {
         didSet {
@@ -194,6 +195,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     
     func isMessageInForwardMessageList(messageId: String) -> Bool {
         return forwardMessageList.contains(where: { $0.messageId == messageId })
+    }
+    
+    func getNotification() -> Bool {
+        return isMuted
     }
 }
 
@@ -1020,11 +1025,23 @@ extension AmityMessageListScreenViewModel {
     }
 }
 
-
 // MARK: - Audio Recording
 extension AmityMessageListScreenViewModel {
     func performAudioRecordingEvents(for event: AudioRecordingEvents) {
         delegate?.screenViewModelAudioRecordingEvents(for: event)
+    }
+}
+
+// MARK: - Retrieve Notification
+extension AmityMessageListScreenViewModel {
+    func retrieveNotificationSettings() {
+        let notificationManager = channelRepository.notificationManagerForChannel(withId: channelId)
+        notificationManager.getSettings { [weak self] (settings, error) in
+            guard let strongSelf = self else { return }
+            if let notificationSettings = settings {
+                strongSelf.isMuted = !notificationSettings.isEnabled
+            }
+        }
     }
 }
 
