@@ -312,7 +312,7 @@ extension AmityMessageListTableViewController {
             cell.setIndexPath(with: indexPath)
             cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
         }
-        if let _ = cell as? AmityMessageTextTableViewCell, expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
+        if expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
             message.appearance.isExpanding = true
         }
         let channelType = screenViewModel.dataSource.getChannelType()
@@ -326,7 +326,11 @@ extension AmityMessageListTableViewController {
             case .text:
                 return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
             case .image :
-                return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                if message.imageCaption != nil {
+                    return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                } else {
+                    return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                }
             case .audio:
                 return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
             case .video:
