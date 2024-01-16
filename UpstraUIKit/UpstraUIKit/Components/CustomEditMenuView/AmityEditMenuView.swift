@@ -71,12 +71,12 @@ public class AmityEditMenuView {
         vc.preferredContentSize = CGSize(width: width ?? vc.currentDynamicTableViewWidth, height: height ?? vc.currentDynamicTableViewHeight)
     }
     
-    func generateMenuItems(messageType: AmityMessageType, indexPath: IndexPath?, text: String?, isOwner: Bool, isErrorMessage: Bool, isReported: Bool, shouldShowTypingTab: Bool) -> [AmityEditMenuItem] {
+    func generateMenuItems(message: AmityMessageModel, indexPath: IndexPath?, shouldShowTypingTab: Bool) -> [AmityEditMenuItem] {
         var items: [AmityEditMenuItem] = []
         
         /** Case : Error message **/
         // Set edit error message menu if message is message sent not successfully
-        if isErrorMessage {
+        if message.syncState == .error {
             items = [AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconResend, title: "Resend", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
@@ -109,7 +109,7 @@ public class AmityEditMenuView {
         }
         
         // Add edit button if message type is text and is owner
-        if messageType == .text && isOwner {
+        if message.messageType == .text && message.isOwner {
             items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconEdit, title: "Edit", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
@@ -121,9 +121,9 @@ public class AmityEditMenuView {
         }
         
         // Add copy button if message type is text
-        if messageType == .text {
+        if message.messageType == .text || (message.messageType == .image && message.imageCaption != nil) {
             items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconCopy, title: "Copy", completion: {
-                UIPasteboard.general.string = text // Add text to copy clipboard
+                UIPasteboard.general.string = message.text ?? message.imageCaption // Add text to copy clipboard
             }))
         }
         
@@ -138,7 +138,7 @@ public class AmityEditMenuView {
         }))
         
         // Add unsend button if message is owner | Add report button if message is other
-        if isOwner {
+        if message.isOwner {
             items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconUnsend, title: "Unsend", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
@@ -148,7 +148,7 @@ public class AmityEditMenuView {
                 }
             }))
         } else {
-            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: isReported ? "Unreport" : "Report", completion: { [weak self] in
+            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: message.flagCount > 0 ? "Unreport" : "Report", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
                 // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)

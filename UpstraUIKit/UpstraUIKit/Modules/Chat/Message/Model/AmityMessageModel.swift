@@ -74,6 +74,14 @@ public final class AmityMessageModel {
     public var text: String? {
         return data?["text"] as? String
     }
+    
+    public var imageCaption: String? {
+        if let caption = data?["caption"] as? String, caption != "" {
+            return caption
+        } else {
+            return nil
+        }
+    }
 }
 
 extension AmityMessageModel {
