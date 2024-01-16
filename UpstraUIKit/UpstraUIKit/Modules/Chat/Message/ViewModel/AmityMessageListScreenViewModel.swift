@@ -500,6 +500,7 @@ extension AmityMessageListScreenViewModel {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: channelId) {result, error in
             if let error = AmityError(error: error) {
                 print(error)
+#warning("ERROR = Private -> go to PIN")
             } else {
                 if result?.currentUserMembership == .member {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
