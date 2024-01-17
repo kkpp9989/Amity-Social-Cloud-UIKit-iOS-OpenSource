@@ -236,10 +236,12 @@ public final class AmityMessageListViewController: AmityViewController {
                                                selector: #selector(refreshPresence(notification:)),
                                                name: Notification.Name("RefreshChannelPresence"),
                                                object: nil)
+        screenViewModel.action.syncChannelPresence()
     }
     
     private func stopObserver() {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+        screenViewModel.action.unsyncChannelPresence()
     }
     
     @objc func refreshPresence(notification: Notification) {

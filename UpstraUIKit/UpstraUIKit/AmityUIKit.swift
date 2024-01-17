@@ -346,6 +346,7 @@ final class AmityUIKitManagerInternal: NSObject {
     private var postIdCannotGetSnapshotList: [String] = []
     
     var totalUnreadCount: Int = 0
+    var isSyncingAllChannelPresence: Bool = false
     var onlinePresences: [AmityChannelPresence] = []
     var onlinePresencesDataHash: Int = -1
     var limitFileSize: Double? // .mb
@@ -572,37 +573,51 @@ final class AmityUIKitManagerInternal: NSObject {
     }
     
     func getSyncAllChannelPresence() {
-        channelPresenceRepo?.getSyncingChannelPresence().sink { completion in
-            // Handle completion
-            switch completion {
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            default:
-                print("[Amity SDK] getSyncingChannelPresence finish")
-            }
-        } receiveValue: { presences in
-            /// Channel presences where any other member is online
-            let onlinePresences = presences.filter { $0.isAnyMemberOnline }
-            
-            /// Check different of new and current onlinePresences data for prevent refresh channel presence too frequently
-            if self.onlinePresencesDataHash != onlinePresences.hashValue {
-                self.onlinePresencesDataHash = onlinePresences.hashValue
-                self.onlinePresences = onlinePresences
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
-            }
-        }.store(in: &disposeBag)
+        if !isSyncingAllChannelPresence {
+            isSyncingAllChannelPresence = true
+            channelPresenceRepo?.getSyncingChannelPresence().sink { completion in
+                // Handle completion
+                switch completion {
+                case .failure(let error):
+//                    print("-------------------> [Status] Start getSyncAllChannelPresence fail with error: \(error.localizedDescription)")
+                    print("\(error.localizedDescription)")
+                default:
+//                    print("-------------------> [Status] Start getSyncAllChannelPresence success")
+                    print("[Amity SDK] getSyncingChannelPresence finish")
+                }
+            } receiveValue: { presences in
+                /// Channel presences where any other member is online
+                let onlinePresences = presences.filter { $0.isAnyMemberOnline }
+//                print("-------------------> [Status] Receive new onlinePresences")
+//                for user in onlinePresences {
+//                    print("[Status] \(user.channelId) is online")
+//                }
+                /// Check different of new and current onlinePresences data for prevent refresh channel presence too frequently
+                if self.onlinePresencesDataHash != onlinePresences.hashValue {
+//                    print("[Status] have any update onlinePresences -> update online presences")
+                    self.onlinePresencesDataHash = onlinePresences.hashValue
+                    self.onlinePresences = onlinePresences
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
+                }
+//                print("-------------------- [Status] -------------------------->")
+            }.store(in: &disposeBag)
+        }
     }
     
     func syncChannelPresence(_ channelId: String) {
         channelPresenceRepo?.syncChannelPresence(id: channelId)
+//        print("-------------------> [Status] Start syncChannelPresence id \(channelId) success")
     }
     
     func unsyncChannelPresence(_ channelId: String) {
         channelPresenceRepo?.unsyncChannelPresence(id: channelId)
+//        print("-------------------> [Status] Start unsyncChannelPresence id \(channelId) success")
     }
     
     func unsyncAllChannelPresence() {
+        isSyncingAllChannelPresence = false
         channelPresenceRepo?.unsyncAllChannelPresence()
+//        print("-------------------> [Status] Start unsyncAllChannelPresence success")
     }
 }
 
