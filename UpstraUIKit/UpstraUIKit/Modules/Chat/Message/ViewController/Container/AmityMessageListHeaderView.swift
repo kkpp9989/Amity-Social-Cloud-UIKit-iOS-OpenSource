@@ -147,6 +147,7 @@ extension AmityMessageListHeaderView {
 
     func updateUserStatus(user: AmityUser, isOnline: Bool) {
         let status = user.metadata?["user_presence"] as? String ?? "available"
+//        print("[Status] status of \(user.displayName) is \(user.metadata?["user_presence"] as? String) | isOnline: \(isOnline)")
         switch status {
         case "available":
             if isOnline {

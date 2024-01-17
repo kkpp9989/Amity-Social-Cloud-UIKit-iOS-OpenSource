@@ -111,6 +111,9 @@ protocol AmityMessageListScreenViewModelAction {
     func startUserRealtimeSubscription()
     func stopUserRealtimeSubscription()
     
+    func syncChannelPresence()
+    func unsyncChannelPresence()
+    
     func join()
     
     func getTotalUnreadCount()
