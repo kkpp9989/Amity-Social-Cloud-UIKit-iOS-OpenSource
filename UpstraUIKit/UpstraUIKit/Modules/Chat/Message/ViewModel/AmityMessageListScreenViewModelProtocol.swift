@@ -53,6 +53,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func findIndexPath(forMessageId messageId: String) -> IndexPath?
     func getChannelType() -> AmityChannelType
     func isMessageInForwardMessageList(messageId: String) -> Bool
+    func getNotification() -> Bool
 }
 
 protocol AmityMessageListScreenViewModelAction {
@@ -119,6 +120,8 @@ protocol AmityMessageListScreenViewModelAction {
     func getTotalUnreadCount()
     
     func stopObserve()
+    
+    func retrieveNotificationSettings()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {

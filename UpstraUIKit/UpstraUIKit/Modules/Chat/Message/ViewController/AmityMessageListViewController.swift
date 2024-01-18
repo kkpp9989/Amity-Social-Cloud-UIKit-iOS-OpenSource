@@ -110,7 +110,6 @@ public final class AmityMessageListViewController: AmityViewController {
         super.viewDidLoad()
         setupView()
         setupConnectionStatusBar()
-        buildViewModel()
         shouldCellOverride()
 		
 		setupMentionTableView()
@@ -129,6 +128,7 @@ public final class AmityMessageListViewController: AmityViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
+        buildViewModel()
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -644,6 +644,7 @@ extension AmityMessageListViewController {
 private extension AmityMessageListViewController {
     func buildViewModel() {
         screenViewModel.delegate = self
+        screenViewModel.action.retrieveNotificationSettings()
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
         screenViewModel.action.getTotalUnreadCount()
@@ -809,7 +810,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
-            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
+            let isMuted = screenViewModel.dataSource.getNotification()
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, isMuted: isMuted)
         }
         
         if channel.object.currentUserMembership != .member {
@@ -835,7 +837,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
-            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user)
+            let isMuted = screenViewModel.dataSource.getNotification()
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user, isMuted: isMuted)
         }
         
         if channel.object.currentUserMembership != .member {
