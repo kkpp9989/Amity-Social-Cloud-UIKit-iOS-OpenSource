@@ -245,14 +245,7 @@ extension AmityMessageListScreenViewModel {
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
-                // [Back up]
-//                AmityUIKitManager.getSyncAllChannelPresence()
-//                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
-                // [Current]
-                if !strongSelf.isSyncChannelPresence {
-                    AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
-                    strongSelf.isSyncChannelPresence = true
-                }
+                strongSelf.syncChannelPresence()
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
         }
@@ -1073,6 +1066,17 @@ extension AmityMessageListScreenViewModel {
         userSubscription?.unsubscribeTopic(topic) { _, _ in }
     }
     
+    func syncChannelPresence() {
+        if !isSyncChannelPresence {
+            AmityUIKitManager.syncChannelPresence(channelId)
+            isSyncChannelPresence = true
+        }
+    }
+    func unsyncChannelPresence() {
+        AmityUIKitManager.unsyncChannelPresence(channelId)
+        isSyncChannelPresence = false
+    }
+    
     func stopObserve() {
         subChannelNotificationToken?.invalidate()
         channelNotificationToken?.invalidate()
@@ -1080,7 +1084,6 @@ extension AmityMessageListScreenViewModel {
         createMessageNotificationToken?.invalidate()
         userNotificationToken?.invalidate()
         getMessagesNotificationToken?.invalidate()
-        AmityUIKitManager.unsyncChannelPresence(channelId)
         topicSubscription = nil
         userSubscription = nil
     }
