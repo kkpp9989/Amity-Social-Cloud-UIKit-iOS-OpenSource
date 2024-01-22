@@ -50,6 +50,7 @@ public final class AmityMessageListViewController: AmityViewController {
     @IBOutlet private var messageContainerView: UIView!
     @IBOutlet private var composeBarContainerView: UIView!
     @IBOutlet private var bottomConstraint: NSLayoutConstraint!
+    private var overlayView: UIView = UIView()
     
     @IBOutlet weak var connectionStatusBar: UIView!
     @IBOutlet weak var connectionStatusBarTopSpace: NSLayoutConstraint!
@@ -546,6 +547,12 @@ private extension AmityMessageListViewController {
     func setupMessageContainer() {
         messageViewController = AmityMessageListTableViewController.make(viewModel: screenViewModel)
         addContainerView(messageViewController, to: messageContainerView)
+        
+        overlayView = UIView(frame: messageContainerView.bounds)
+        overlayView.backgroundColor = AmityColorSet.base.blend(.shade4)
+        overlayView.alpha = 0.5
+        overlayView.isHidden = true
+        messageContainerView.addSubview(overlayView)
     }
     
     func setupComposeBarContainer() {
@@ -1183,6 +1190,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 		if users.isEmpty {
 			mentionTableViewHeightConstraint.constant = 0
 			mentionTableView.isHidden = true
+            overlayView.isHidden = true
 		} else {
 			var heightConstant:CGFloat = 240.0
 			if users.count < 5 {
@@ -1191,6 +1199,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 			mentionTableViewHeightConstraint.constant = heightConstant
 			mentionTableView.isHidden = false
 			mentionTableView.reloadData()
+            overlayView.isHidden = false
 		}
 	}
 	
