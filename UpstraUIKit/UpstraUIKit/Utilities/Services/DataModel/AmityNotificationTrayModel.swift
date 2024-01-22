@@ -41,6 +41,19 @@ public struct NotificationTray: Codable {
         case targetType, actorsCount, targetName, actors
         case targetID = "targetId"
     }
+    
+    func getTargetType() -> NotificationTargetType? {
+        switch targetType {
+        case "post":
+            return NotificationTargetType.post
+        case "comment":
+            return NotificationTargetType.comment
+        case "community":
+            return NotificationTargetType.community
+        default:
+            return nil
+        }
+    }
 }
 
 // MARK: - Actor
@@ -56,4 +69,11 @@ struct AmityNotificationUnreadCount: Codable {
 // MARK: - DataClass
 struct DataClass: Codable {
     let totalUnreadCount: Int
+}
+
+// MARK: - Enum of target type
+public enum NotificationTargetType: String {
+    case post = "post"
+    case comment = "comment"
+    case community = "community"
 }
