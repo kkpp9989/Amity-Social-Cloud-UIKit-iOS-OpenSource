@@ -16,7 +16,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
         static let spaceOfStackWithinContainerMessageView = 4.0
     }
     
-    @IBOutlet private var textCaptionView: AmityExpandableLabel!
+    @IBOutlet weak var textCaptionView: AmityExpandableLabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,6 +29,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
         messageImageView.contentMode = .center
         textCaptionView.text = nil
         textCaptionView.isExpanded = false
+        textCaptionView.isHidden = false
     }
 
     func setupView() {
@@ -40,6 +41,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
         textCaptionView.font = Constant.textMessageFont
         textCaptionView.backgroundColor = .clear
         textCaptionView.delegate = self
+        textCaptionView.isHidden = false
         
         // Setup image view
         messageImageView.contentMode = .center
@@ -52,7 +54,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
     
     override func display(message: AmityMessageModel) {
         super.display(message: message)
-        // Display text
+        // Set style
         var highlightColor = AmityColorSet.primary
         if message.isOwner {
             if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
@@ -74,7 +76,6 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
             highlightColor = AmityColorSet.primary
         }
         
-        // Set boardcast message bubble style if channel type is boardcast
         if channelType == .broadcast {
             containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
             // Change text color
@@ -84,29 +85,34 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
             highlightColor = AmityColorSet.highlightMessageBoardcast
         }
         
+        // Display text
         let mentionees = message.mentionees ?? []
-        let text = message.imageCaption ?? ""
-        if let metadata = message.metadata {
-            if let tableBoundingWidth = tableBoundingWidth {
-                textCaptionView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
-            }
-            textCaptionView.setText(
-                text,
-                withAttributes: AmityMentionManager.getAttributes(
-                    fromText: text,
-                    withMetadata: metadata,
-                    mentionees: mentionees,
-                    highlightColor: highlightColor
+        if let text = message.imageCaption { // Case : Image with caption
+            if let metadata = message.metadata {
+                if let tableBoundingWidth = tableBoundingWidth {
+                    textCaptionView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+                }
+                textCaptionView.setText(
+                    text,
+                    withAttributes: AmityMentionManager.getAttributes(
+                        fromText: text,
+                        withMetadata: metadata,
+                        mentionees: mentionees,
+                        highlightColor: highlightColor
+                    )
                 )
-            )
-        } else {
-            if let tableBoundingWidth = tableBoundingWidth {
-                textCaptionView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+                textCaptionView.isExpanded = message.appearance.isExpanding
+                textCaptionView.isHidden = false
+            } else {
+                if let tableBoundingWidth = tableBoundingWidth {
+                    textCaptionView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+                }
+                textCaptionView.text = text
+                textCaptionView.isHidden = false
             }
-            textCaptionView.text = text
+        } else { // Case : Image only
+            textCaptionView.isHidden = true
         }
-
-        textCaptionView.isExpanded = message.appearance.isExpanding
         
         // Display image
         if !message.isDeleted {
@@ -131,39 +137,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
-        if message.isDeleted {
-            let displaynameHeight: CGFloat = message.isOwner ? 0 : 46
-            return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
-        }
-        
-        var height: CGFloat = 0
-        var actualWidth: CGFloat = 0
-        
-        // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
-        if message.isOwner {
-            let horizontalPadding: CGFloat = 132
-            actualWidth = boundingWidth - horizontalPadding
-            
-            let verticalPadding: CGFloat = 84
-            height += verticalPadding
-        } else {
-            let horizontalPadding: CGFloat = 164
-            actualWidth = boundingWidth - horizontalPadding
-            
-            let verticalPadding: CGFloat = 98
-            height += verticalPadding
-        }
-        
-        if let text = message.imageCaption {
-            let maximumLines = message.appearance.isExpanding ? 0 : Constant.maximumLines
-            let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
-            height += messageHeight
-        }
-        
-        height += 132 // Add height of image view with padding (120 + 12)
-        
-        return height
-        
+        return UITableView.automaticDimension
     }
     
     private func actualWidth(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -171,7 +145,7 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
         
         // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
         if message.isOwner {
-            let horizontalPadding: CGFloat = 132
+            let horizontalPadding: CGFloat = 112
             actualWidth = boundingWidth - horizontalPadding
         } else {
             let horizontalPadding: CGFloat = 164

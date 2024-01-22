@@ -10,15 +10,8 @@ import UIKit
 
 final class AmityMessageImageWithCaptionOutgoingTableViewCell: AmityMessageImageWithCaptionTableViewCell {
     
-    enum Constant {
-        static let spaceOfStackWithinContainerMessageView = 4.0
-    }
-    
-    @IBOutlet private weak var stackMainView: UIStackView!
-    @IBOutlet private weak var stackWithinContainerMessageView: UIStackView!
     @IBOutlet private weak var drimView: UIView!
     @IBOutlet private weak var activityIndicatorView: UIActivityIndicatorView!
-    @IBOutlet private weak var leadingTextCaptionViewConstraint: NSLayoutConstraint!
     
     override func awakeFromNib() {
         super.awakeFromNib()
