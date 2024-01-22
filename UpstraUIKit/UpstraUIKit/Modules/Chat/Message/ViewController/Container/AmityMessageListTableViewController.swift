@@ -74,6 +74,7 @@ extension AmityMessageListTableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsMultipleSelectionDuringEditing = true
+        tableView.estimatedRowHeight = 1.0
     }
 }
 
@@ -326,7 +327,7 @@ extension AmityMessageListTableViewController {
             case .text:
                 return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
             case .image :
-                if message.imageCaption != nil {
+                if screenViewModel.dataSource.getChannelType() == .broadcast {
                     return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
                 } else {
                     return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
