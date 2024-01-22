@@ -538,6 +538,9 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     }
     
     func screenViewModelDidLikePost(_ viewModel: AmityPostDetailScreenViewModelType) {
+        //ktb kk save coin reaction
+        AmityEventHandler.shared.saveKTBCoin(v: self, type: .react, id: viewModel.post?.postId ?? "")
+        
         tableView.feedDelegate?.didPerformActionLikePost()
     }
     
