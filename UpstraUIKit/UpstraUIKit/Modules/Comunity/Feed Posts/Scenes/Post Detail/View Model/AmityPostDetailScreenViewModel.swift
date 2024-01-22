@@ -513,6 +513,7 @@ extension AmityPostDetailScreenViewModel {
         reactionController.addReaction(withReaction: .like, referanceId: commentId, referenceType: .comment) { [weak self] (success, error) in
             guard let strongSelf = self else { return }
             if success {
+                // ktb kk save coin when react detail by commentId
                 strongSelf.delegate?.screenViewModelDidLikeComment(strongSelf)
             } else {
                 strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)

@@ -784,6 +784,10 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
         }
         
         if let post = post {
+            
+            // ktb kk save coin when post
+            AmityEventHandler.shared.saveKTBCoin(v: self , type: .post, id: post.postId )
+            
             switch post.getFeedType() {
             case .reviewing:
                 AmityAlertController.present(title: AmityLocalizedStringSet.postCreationSubmitTitle.localizedString,
