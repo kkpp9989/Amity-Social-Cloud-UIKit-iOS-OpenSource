@@ -18,6 +18,7 @@ protocol AmityPostTableViewDelegate: AnyObject {
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
     func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView?
     func tableViewWillBeginDragging(_ tableView: AmityPostTableView)
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
 }
 extension AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, didSelectRowAt indexPath: IndexPath) { }
@@ -31,6 +32,7 @@ extension AmityPostTableViewDelegate {
         return nil
     }
     func tableViewWillBeginDragging(_ tableView: AmityPostTableView) { }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) { }
 }
 
 protocol AmityPostTableViewDataSource: AnyObject {
@@ -131,6 +133,10 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         postDelegate?.tableViewWillBeginDragging(self)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        postDelegate?.scrollViewDidScroll(scrollView)
     }
     
     // MARK: - DatSource

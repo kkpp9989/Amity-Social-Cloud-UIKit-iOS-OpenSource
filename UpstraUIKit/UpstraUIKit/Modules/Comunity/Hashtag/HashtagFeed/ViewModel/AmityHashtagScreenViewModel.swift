@@ -23,6 +23,7 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
     
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.3)
+    private let debouncerLoadingMore = Debouncer(delay: 1.0)
     private let feedType: AmityPostFeedType
     private var postComponents = [AmityPostComponent]()
     private(set) var isPrivate: Bool
@@ -32,11 +33,13 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
             delegate?.screenViewModelLoadingStatusDidChange(self, isLoading: isLoading)
         }
     }
+    private(set) var isLoadingMore: Bool = false
     
     private var keyword: String = ""
     
     private var tokenArray: [AmityNotificationToken?] = []
     private var fromIndex: Int = 0
+    private var requestPostSize: Int = 20
     private let dispatchGroup = DispatchGroup()
     private var postLists: [AmityPostModel] = []
     private var dummyList: AmitySearchPostsModel = AmitySearchPostsModel(postIDS: [])
@@ -98,6 +101,7 @@ extension AmityHashtagScreenViewModel {
             }
         }
         isLoading = false
+        isLoadingMore = false
         delegate?.screenViewModelDidUpdateDataSuccess(self)
     }
     
@@ -115,25 +119,44 @@ extension AmityHashtagScreenViewModel {
         var serviceRequest = RequestSearchingPosts()
         serviceRequest.keyword = keyword
         serviceRequest.from = fromIndex
+        serviceRequest.size = requestPostSize
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//        print(#"[Feed][Hashtag] Start request post with hashtag "\#(keyword)" from index \#(fromIndex) with size \#(requestPostSize)"#)
         serviceRequest.request { result in
             switch result {
             case .success(let data):
+//                print(#"[Feed][Hashtag] Request post with hashtag "\#(keyword)" success with data \#(data.postIDS.count): \#(data.postIDS)"#)
                 self.getPostbyPostIDsList(posts: data)
+                self.fromIndex = data.postIDS.count == 0 ? self.fromIndex - serviceRequest.size : self.fromIndex
             case .failure(let error):
-                print(error)
+//                print(#"[Feed][Hashtag] Request post with hashtag "\#(keyword)" fail with error \#(error.localizedDescription)"#)
+                self.fromIndex = self.fromIndex - serviceRequest.size
             }
+//            print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
         }
     }
     
     func loadMore() {
-        fromIndex += 20
-        fetchPosts(keyword: keyword)
+        debouncerLoadingMore.run { [weak self] in
+            guard let weakSelf = self else { return }
+            if !weakSelf.isLoadingMore && !weakSelf.isLoading && !weakSelf.postLists.isEmpty {
+                weakSelf.isLoadingMore = true
+                weakSelf.fromIndex += weakSelf.requestPostSize
+//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//                print(#"[Feed][Hashtag] Start loading more post with from index \#(weakSelf.fromIndex)"#)
+//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+                weakSelf.fetchPosts(keyword: weakSelf.keyword)
+            }
+        }
     }
     
     func refresh() {
         fromIndex = 0
         dummyList.postIDS = []
         postLists = []
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//        print(#"[Feed][Hashtag] Refresh hashtag feed"#)
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
     }
     
     func getPostbyPostIDsList(posts: AmitySearchPostsModel) {
