@@ -1050,6 +1050,10 @@ extension AmityPostDetailViewController: UITableViewDelegate {
             }
         }
     }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Do not anything
+    }
 }
 
 // MARK: - AmityMentionManagerDelegate
