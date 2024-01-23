@@ -7,23 +7,20 @@
 
 import Foundation
 
+// MARK: - ViewerStatisticsModel
 struct ViewerStatisticsModel: Codable {
-    let viewerCount: Int?
-    let postId: String?
-    let message: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case viewerCount = "viewerCount"
-        case postId = "postId"
-        case message = "message"
-    }
+    let statusCode: Int?
+    let data: ViewersModel?
 }
 
+// MARK: - ViewersModel
 struct ViewersModel: Codable {
+    let userIDS: [String]?
     let viewerCount: Int?
-    
+
     enum CodingKeys: String, CodingKey {
-        case viewerCount = "viewerCount"
+        case userIDS = "userIds"
+        case viewerCount
     }
 }
 

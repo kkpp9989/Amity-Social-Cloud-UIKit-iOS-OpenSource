@@ -141,7 +141,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
 
     private var isPostSubscribe: Bool = false
     private var isCommentSubscribe: Bool = false
-    
+    private var isLive: Bool = true
+
     private var postObject: AmityObject<AmityPost>?
     private var postToken: AmityNotificationToken?
     
@@ -240,6 +241,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
             requestGetViewerCount()
+            requestLiveStreamStatus()
             
             viewerCountLabel.text = String(viewerCount)
         })
@@ -850,7 +852,7 @@ extension LiveStreamBroadcastViewController {
             serviceRequest.sendViewerStatistics(postId: currentPost.postId, viewerUserId: client.currentUserId ?? "", viewerDisplayName: client.user?.object?.displayName ?? "", isTrack: false, streamId: "") { result in
                 switch result {
                 case .success(let dataResponse):
-                    self.viewerCount = dataResponse.viewerCount ?? 0
+                    self.viewerCount = dataResponse.data?.viewerCount ?? 0
                     break
                 case .failure(_):
                     break
@@ -868,10 +870,24 @@ extension LiveStreamBroadcastViewController {
                 switch result {
                 case .success(let dataResponse):
                     self.viewerCount = dataResponse.viewerCount ?? 0
-//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count success | viewerCount: \(dataResponse.viewerCount ?? 0) | postId: \(currentPost.postId)")
                     break
                 case .failure(let error):
-//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count fail with error: \(error.localizedDescription) | postId: \(currentPost.postId)")
+                    break
+                }
+            }
+        }
+    }
+    
+    private func requestLiveStreamStatus() {
+        DispatchQueue.main.async { [self] in
+            guard let currentPost = createdPost else { return }
+            let serviceRequest = RequestViewerStatistics()
+            serviceRequest.liveStreamStatus(postId: currentPost.postId, streamId: currentPost.getLiveStreamInfo()?.streamId ?? "", isLive: true) { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let isLive):
+                    break
+                case .failure(let error):
                     break
                 }
             }
