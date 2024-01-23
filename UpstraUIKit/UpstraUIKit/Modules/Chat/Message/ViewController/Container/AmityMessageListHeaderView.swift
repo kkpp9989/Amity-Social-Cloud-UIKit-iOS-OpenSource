@@ -104,7 +104,7 @@ extension AmityMessageListHeaderView {
                 memberCount.isHidden = true
             }
         case .community, .live:
-            updateChannelName(channelName: channel.displayName, isMuted: channel.isMuted)
+            updateChannelName(channelName: channel.displayName, isMuted: isMuted)
 
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
