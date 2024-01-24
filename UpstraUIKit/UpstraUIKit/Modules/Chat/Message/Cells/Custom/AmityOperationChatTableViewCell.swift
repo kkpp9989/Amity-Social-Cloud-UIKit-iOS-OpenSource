@@ -71,7 +71,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
         guard let text = message.text else { return UITableView.automaticDimension }
-        let boundingWidthWithMargin = boundingWidth - 16 - 16 // Delete left & right margin
+        let boundingWidthWithMargin = boundingWidth - 24 - 24 // Delete left & right margin
         let numberOfLines = text.numberOfLines(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
 
         if numberOfLines > 1 {
