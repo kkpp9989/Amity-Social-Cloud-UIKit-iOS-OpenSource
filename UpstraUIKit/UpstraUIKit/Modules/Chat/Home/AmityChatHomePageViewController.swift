@@ -35,7 +35,6 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        AmityEventHandler.shared.hideKTBLoading() // Hide KTB Loading from main app if back from open chat detail by notification
         
         theme = ONEKrungthaiCustomTheme(viewController: self)
         theme?.setBackgroundApp(index: 0)

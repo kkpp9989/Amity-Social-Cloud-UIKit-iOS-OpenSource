@@ -124,7 +124,7 @@ private extension AmityRecentChatViewController {
         tableView.separatorInset.left = 64
         tableView.showsVerticalScrollIndicator = false
         tableView.tableFooterView = UIView()
-        tableView.backgroundView = emptyView
+        tableView.backgroundView = nil
         tableView.delegate = self
         tableView.dataSource = self
     }
