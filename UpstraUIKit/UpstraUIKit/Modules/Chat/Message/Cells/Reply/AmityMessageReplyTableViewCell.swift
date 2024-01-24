@@ -212,7 +212,7 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
             let verticalPadding: CGFloat = 98
             height += verticalPadding
             
-            let replyHeight: CGFloat = 70
+            let replyHeight: CGFloat = 65
             height += replyHeight
         }
         
