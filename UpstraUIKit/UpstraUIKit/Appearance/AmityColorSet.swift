@@ -48,6 +48,10 @@ struct AmityColorSet {
         return UIColor.white
     }
     
+    static var chatBackgroundColor: UIColor {
+        return UIColor(hex: "#292B32").blend(.shade4).withAlphaComponent(0.3)
+    }
+    
     static var dnaSangsun: UIColor {
         return UIColor(hex: "#FFC104")
     }
