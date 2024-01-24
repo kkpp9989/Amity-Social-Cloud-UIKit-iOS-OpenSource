@@ -523,8 +523,8 @@
 "chat_setting_dimiss_to_moderator" = "Dismiss from moderator";
 "chat_setting_remove_from_group_chat" = "Remove from group chat";
 "chat_setting_report" = "Report";
-"chat_setting_member_title" = "Member";
-"chat_setting_moderator_title" = "Moderator";
+"chat_setting_member_title" = "Members";
+"chat_setting_moderator_title" = "Moderators";
 //"chat_setting_member_detail_title" = "Member Details"; // [Original]
 "chat_setting_member_detail_title" = "Members"; // [Custom for ONE Krungthai] Change wording "chat_setting_member_detail_title"
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
