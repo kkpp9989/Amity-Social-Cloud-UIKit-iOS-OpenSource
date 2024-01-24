@@ -58,8 +58,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         self.message = message
         guard let text = message.text else { return }
         textMessageView.text = text
-        containerView.layer.cornerRadius = contentView.frame.height / 3
-        containerView.layer.masksToBounds = true
+        containerView.layer.cornerRadius = cornerRadius(for: text, boundingWidth: tableBoundingWidth ?? 0.0)
     }
     
     func displaySelected(isSelected: Bool) {
@@ -68,6 +67,12 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     func setChannelType(channelType: AmitySDK.AmityChannelType) {
         self.channelType = channelType
+    }
+    
+    private func cornerRadius(for text: String, boundingWidth: CGFloat) -> CGFloat {
+        let boundingWidthWithMargin = boundingWidth - 24 - 24 // Delete left & right margin
+        let numberOfLines = text.numberOfLines(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
+        return (19.0 * CGFloat(numberOfLines)) / 2.0 // 19 = is Average of text height one line with caption font of amity | * if change font, it will must to calculate again *
     }
     
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
