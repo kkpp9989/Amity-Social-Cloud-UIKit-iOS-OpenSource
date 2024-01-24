@@ -117,8 +117,8 @@ class GroupChatCreatorFirstViewController: AmityViewController {
         
         // display name
         displayNameLabel.font = AmityFontSet.bodyBold
-        displayNameLabel.textColor = AmityColorSet.base.blend(.shade1)
-        displayNameLabel.text = "Group Name"
+        displayNameLabel.textColor = AmityColorSet.base
+        displayNameLabel.text = "Group Name*"
         
         displayNameCounterLabel.font = AmityFontSet.caption
         displayNameCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
