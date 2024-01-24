@@ -212,6 +212,7 @@ extension AmityMessageListTableViewController {
         if message.messageType == .audio {
             if message.isOwner {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.tableBoundingWidth = tableView.bounds.width
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
                 cell.setIndexPath(with: indexPath)
@@ -223,6 +224,7 @@ extension AmityMessageListTableViewController {
                 return cell
             } else {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                cell.tableBoundingWidth = tableView.bounds.width
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
                 cell.setIndexPath(with: indexPath)
@@ -235,6 +237,7 @@ extension AmityMessageListTableViewController {
             }
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+            (cell as? AmityMessageCellProtocol)?.tableBoundingWidth = tableView.bounds.width
             configure(for: cell, at: indexPath)
             return cell
         }
