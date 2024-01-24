@@ -509,6 +509,7 @@
 "chat_setting_report_sent" = "Report Sent";
 "chat_setting_unreport_sent" = "Unreport Sent"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_title" = "Leave chat";
+"chat_setting_leave_chat_conversation_chat_message" = "If you leave this conversation, you won't be able to see chat room in the recent chat."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_member_role_group_chat_message" = "If leave this group, you’ll no longer be able to see any messages and files."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" = "As you’re the last moderator and member, leaving will also close this chat. All messages shared in chat will be deleted. This cannot be undone."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" = "If leave this group, you’ll no longer be able to see any messages and files."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added

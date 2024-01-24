@@ -479,6 +479,7 @@ public struct AmityLocalizedStringSet {
         static let unreportSent = "chat_setting_unreport_sent" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatTitle = "chat_setting_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatMemberRoleGroupChatMessage = "chat_setting_leave_chat_member_role_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatConversationChatMessage = "chat_setting_leave_chat_conversation_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatModeratorRoleWithOneMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatModeratorRoleWithManyMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let unableLeaveChatTitle = "chat_setting_unable_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
