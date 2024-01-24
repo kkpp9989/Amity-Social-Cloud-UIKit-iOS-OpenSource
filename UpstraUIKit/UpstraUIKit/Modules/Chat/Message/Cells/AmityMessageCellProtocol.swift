@@ -10,6 +10,7 @@ import UIKit
 import AmitySDK
 
 public protocol AmityMessageCellProtocol: UITableViewCell, AmityCellIdentifiable {
+    var tableBoundingWidth: CGFloat? { get set }
     func display(message: AmityMessageModel)
     func displaySelected(isSelected: Bool)
     func setChannelType(channelType: AmityChannelType)
