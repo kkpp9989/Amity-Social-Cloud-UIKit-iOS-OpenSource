@@ -66,7 +66,7 @@ extension AmityMessageListTableViewController {
         tableView.tableFooterView = UIView()
         tableView.keyboardDismissMode = .onDrag
         tableView.estimatedRowHeight = 0
-        tableView.backgroundColor = AmityColorSet.backgroundColor
+        tableView.backgroundColor = AmityColorSet.chatBackgroundColor
         screenViewModel.dataSource.allCellNibs.forEach {
             tableView.register($0.value, forCellReuseIdentifier: $0.key)
         }

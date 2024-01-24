@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -102,10 +102,8 @@
                                                 <subviews>
                                                     <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="gyv-DM-5kU" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
                                                         <rect key="frame" x="12" y="12" width="286" height="112"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                 </subviews>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="bottom" secondItem="gyv-DM-5kU" secondAttribute="bottom" constant="12" id="MdY-oc-k8J"/>
                                                     <constraint firstItem="gyv-DM-5kU" firstAttribute="top" secondItem="d55-Zz-lcH" secondAttribute="top" constant="12" id="h3r-Ku-taM"/>
@@ -116,7 +114,6 @@
                                         </subviews>
                                     </stackView>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="qeq-h1-26H" secondAttribute="bottom" id="6Jk-c9-Zzz"/>
                                     <constraint firstItem="97n-eP-Rz6" firstAttribute="top" secondItem="Gkb-jd-7jc" secondAttribute="top" id="6uj-Wi-eMv"/>
@@ -130,22 +127,22 @@
                         </subviews>
                     </stackView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GvX-8t-mo0">
-                        <rect key="frame" x="245.66666666666663" y="198.66666666666666" width="161.33333333333337" height="20.333333333333343"/>
+                        <rect key="frame" x="247.66666666666663" y="198.66666666666666" width="159.33333333333337" height="20.333333333333343"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="aCB-hT-WNT">
-                                <rect key="frame" x="20.000000000000028" y="0.0" width="141.33333333333334" height="20.333333333333332"/>
+                                <rect key="frame" x="20.000000000000028" y="0.0" width="139.33333333333334" height="20.333333333333332"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="RUL-rJ-QJs">
-                                        <rect key="frame" x="0.0" y="2.3333333333333286" width="16" height="16"/>
+                                        <rect key="frame" x="0.0" y="2.3333333333333286" width="14" height="16"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kr7-qR-NsE">
-                                        <rect key="frame" x="20" y="0.0" width="64" height="20.333333333333332"/>
+                                        <rect key="frame" x="18" y="0.0" width="64" height="20.333333333333332"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sXP-f1-FTf">
-                                        <rect key="frame" x="88" y="0.0" width="53.333333333333343" height="20.333333333333332"/>
+                                        <rect key="frame" x="86" y="0.0" width="53.333333333333343" height="20.333333333333332"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -191,7 +188,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="icon_delete_message" width="16" height="16"/>
+        <image name="icon_delete_message" width="14" height="16"/>
         <image name="icon_message_failed" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
