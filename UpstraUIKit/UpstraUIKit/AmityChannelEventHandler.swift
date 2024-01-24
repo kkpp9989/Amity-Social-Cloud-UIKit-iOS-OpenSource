@@ -157,7 +157,7 @@ open class AmityChannelEventHandler {
             completionHandler(storeUsers)
         }
         let navVc = UINavigationController(rootViewController: vc)
-        navVc.modalPresentationStyle = .fullScreen
+        navVc.modalPresentationStyle = .overFullScreen
         source.present(navVc, animated: true, completion: nil)
     }
 }
