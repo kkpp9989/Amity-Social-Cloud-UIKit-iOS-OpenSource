@@ -31,7 +31,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     override func prepareForReuse() {
         textMessageView.text = ""
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 0
         containerView.layer.masksToBounds = true
     }
     
@@ -40,7 +40,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         contentView.backgroundColor = .clear
         
         containerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 0
         containerView.layer.masksToBounds = true
         isUserInteractionEnabled = false
         
