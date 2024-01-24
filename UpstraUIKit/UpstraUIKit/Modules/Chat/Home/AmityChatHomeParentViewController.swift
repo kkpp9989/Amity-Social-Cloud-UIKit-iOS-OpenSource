@@ -103,7 +103,7 @@ public class AmityChatHomeParentViewController: AmityViewController {
         
         // Add the new child view controller
         addChild(childViewController)
-//        childViewController.view.frame = view.bounds // [Back up]
+//      childViewController.view.frame = view.bounds // [Back up]
         childViewController.view.frame = CGRect(x: view.bounds.origin.x, y: view.bounds.origin.x, width: view.bounds.width, height: view.bounds.height - (tabBarController?.tabBar.frame.height ?? 0.0)) // [Current]
         view.addSubview(childViewController.view)
         childViewController.didMove(toParent: self)
