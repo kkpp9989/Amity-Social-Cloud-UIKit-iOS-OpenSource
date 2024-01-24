@@ -167,7 +167,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         if message.isDeleted {
             readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
-            statusMetadataImageView.isHidden = false
+            statusMetadataImageView.isHidden = true // Use unsent icon that attached in string instead
             
             // Add your image to the attributed string
             let attachment = NSTextAttachment()
@@ -226,7 +226,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         readCountLabel.font =  AmityFontSet.caption
         readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
         
-        contentView.backgroundColor = AmityColorSet.backgroundColor
+        contentView.backgroundColor = AmityColorSet.chatBackgroundColor
         
         reportIconImageView?.image = AmityIconSet.Chat.iconReport
         isSelected = false
