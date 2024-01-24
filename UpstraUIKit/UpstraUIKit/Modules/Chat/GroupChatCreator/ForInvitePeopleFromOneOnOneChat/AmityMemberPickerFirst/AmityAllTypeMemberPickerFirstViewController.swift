@@ -112,7 +112,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
-        theme?.clearNavigationBarSetting()
+        theme?.setBackgroundApp(index: 0)
     }
     
     @objc func doneTap() {
