@@ -77,11 +77,11 @@ struct RequestViewerStatistics {
             
             switch httpResponse.statusCode {
             case 200:
-                guard let dataModel = try? JSONDecoder().decode(ViewerStatisticsModel.self, from: data) else {
+                guard let dataModel = try? JSONDecoder().decode(ViewersModel.self, from: data) else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
-                completion(.success(dataModel.data!))
+                completion(.success(dataModel))
                 
                 let responseDataString = String(data: data, encoding: .utf8)
                 print("[Livestream][getViewerCount] Response Data: \(responseDataString ?? "Unable to convert data to string")")
