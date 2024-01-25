@@ -81,10 +81,9 @@ public final class AmityUIKitManager {
         sessionHandler: SessionHandler,
         completion: AmityRequestCompletion? = nil) {
             
-        unregisterDevice()
-            DispatchQueue.main.async {
-                AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
-            }
+        DispatchQueue.main.async {
+            AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
+        }
     }
     
     /// Unregisters current user. This removes all data related to current user & terminates conenction with server. This is analogous to "logout" process.
@@ -96,6 +95,9 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.unregisterDevice()
     }
     
+    public static func clearCache() {
+        AmityUIKitManagerInternal.shared.clearCache()
+    }
     
     /// Registers this device for receiving apple push notification
     /// - Parameter deviceToken: Correct apple push notificatoin token received from the app.
@@ -411,6 +413,8 @@ final class AmityUIKitManagerInternal: NSObject {
             // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
             self?.disableLivestreamUserLevelNotification()
             
+            self?.clearCache()
+            
             completion?(true, error)
         }
     }
@@ -418,6 +422,10 @@ final class AmityUIKitManagerInternal: NSObject {
     func unregisterDevice() {
         AmityFileCache.shared.clearCache()
         self._client?.logout()
+    }
+    
+    func clearCache() {
+        AmityFileCache.shared.clearCache()
     }
     
     func registerDeviceForPushNotification(_ deviceToken: String, completion: AmityRequestCompletion? = nil) {
