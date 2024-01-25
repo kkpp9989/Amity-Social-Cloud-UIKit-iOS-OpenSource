@@ -95,11 +95,12 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private let channelId: String
     private let subChannelId: String
     private var isFirstTimeLoaded: Bool = true
-    private var isMustToScrollToLatestMessage: Bool = false
+    private var isMustToScrollAfterSendMessage: Bool = false
     private var isJumpMessage: Bool = false
     private var isScrollUp: Bool = false
     private var isAlreadySub: Bool = false
     private var isSyncChannelPresence: Bool = false
+    private var isShowJumpMessageGroup: Bool = false
     
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
@@ -671,13 +672,18 @@ extension AmityMessageListScreenViewModel {
     func scrollToLatestMessage() {
         DispatchQueue.main.async { [weak self] in
             guard let weakSelf = self else { return }
-            weakSelf.isMustToScrollToLatestMessage = true
-            let queryOptions = AmityMessageQueryOptions(subChannelId: weakSelf.channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
-            weakSelf.messagesCollection = weakSelf.messageRepository.getMessages(options: queryOptions)
-            weakSelf.messagesNotificationToken?.invalidate()
-            weakSelf.messagesNotificationToken = weakSelf.messagesCollection?.observe { (liveCollection, change, error) in
-                weakSelf.groupMessages(in: liveCollection, change: change)
+            if weakSelf.isShowJumpMessageGroup { // Case : Show jump message group (From reply message, message search) -> Load latest message before scroll to bottom
+                weakSelf.isShowJumpMessageGroup = false
+                
+                let queryOptions = AmityMessageQueryOptions(subChannelId: weakSelf.channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
+                weakSelf.messagesCollection = weakSelf.messageRepository.getMessages(options: queryOptions)
+                weakSelf.messagesNotificationToken?.invalidate()
+                weakSelf.messagesNotificationToken = weakSelf.messagesCollection?.observe { (liveCollection, change, error) in
+                    weakSelf.groupMessages(in: liveCollection, change: change)
+                }
             }
+            
+            weakSelf.isMustToScrollAfterSendMessage = true
         }
     }
     
@@ -757,6 +763,7 @@ private extension AmityMessageListScreenViewModel {
         
         dataSourceHash = storedMessages.hashValue
         unsortedMessages = storedMessages
+        isShowJumpMessageGroup = true
                 
         // We use debouncer to prevent data updating too frequently and interupting UI.
         // When data is settled for a particular second, then updating UI in one time.
@@ -799,10 +806,10 @@ private extension AmityMessageListScreenViewModel {
             // If this screen is opened for first time, we want to scroll to bottom.
             shouldScrollToBottom(force: true)
             isFirstTimeLoaded = false
-        } else if isMustToScrollToLatestMessage {
+        } else if isMustToScrollAfterSendMessage {
             // If sending message and must to loading latest message again, we want to scroll to bottom.
             shouldScrollToBottom(force: true)
-            isMustToScrollToLatestMessage = false
+            isMustToScrollAfterSendMessage = false
         } else if let lastMessage = messages.last?.last, lastMessageHash != lastMessage.hashValue {
             // Compare message hash
             // - if it's equal, the last message remains the same -> do nothing

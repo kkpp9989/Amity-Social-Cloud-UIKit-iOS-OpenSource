@@ -1170,7 +1170,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 
                 if indexPath.section < numberOfSections && indexPath.row < numberOfRows {
                     strongSelf.messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                    strongSelf.shakeCell(at: indexPath)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { strongSelf.shakeCell(at: indexPath) })
                 }
             }
         }
