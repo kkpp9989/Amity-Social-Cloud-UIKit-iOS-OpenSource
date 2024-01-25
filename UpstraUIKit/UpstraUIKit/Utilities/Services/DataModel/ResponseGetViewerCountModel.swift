@@ -17,3 +17,20 @@ struct ResponseGetViewerCountModel: Codable {
         case postId = "postId"
     }
 }
+
+// MARK: - ViewerStatisticsModel
+struct ViewerStatisticsModel: Codable {
+    let statusCode: Int?
+    let data: ViewersModel?
+}
+
+// MARK: - ViewersModel
+struct ViewersModel: Codable {
+    let userIDS: [String]?
+    let viewerCount: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case userIDS = "userIds"
+        case viewerCount
+    }
+}
