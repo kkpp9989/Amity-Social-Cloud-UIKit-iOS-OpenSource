@@ -103,9 +103,17 @@ public class AmityChatHomeParentViewController: AmityViewController {
         
         // Add the new child view controller
         addChild(childViewController)
-//      childViewController.view.frame = view.bounds // [Back up]
-        childViewController.view.frame = CGRect(x: view.bounds.origin.x, y: view.bounds.origin.x, width: view.bounds.width, height: view.bounds.height - (tabBarController?.tabBar.frame.height ?? 0.0)) // [Current]
+        childViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(childViewController.view)
+        
+        // Set constraints to the safe area
+        NSLayoutConstraint.activate([
+            childViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            childViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            childViewController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            childViewController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+        ])
+        
         childViewController.didMove(toParent: self)
         
         // Set the current child view controller
