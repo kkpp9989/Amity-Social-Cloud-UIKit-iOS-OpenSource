@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -21,6 +21,7 @@
                 <outlet property="mentionTableView" destination="eYm-4L-JE5" id="GMn-SM-4XP"/>
                 <outlet property="mentionTableViewHeightConstraint" destination="EiY-fa-Wa9" id="cZk-tu-Jkf"/>
                 <outlet property="messageContainerView" destination="mUQ-dS-Mpp" id="WQJ-AO-bAc"/>
+                <outlet property="messageSectionView" destination="hBh-SR-CLm" id="oZj-F6-Byc"/>
                 <outlet property="refreshActivityIndicator" destination="1RN-ft-T36" id="NG2-64-RyR"/>
                 <outlet property="refreshOverlay" destination="xHg-OU-Y9M" id="Er8-te-mSh"/>
                 <outlet property="replyAvatarView" destination="hhR-QL-P9O" id="OJK-SU-jAP"/>
