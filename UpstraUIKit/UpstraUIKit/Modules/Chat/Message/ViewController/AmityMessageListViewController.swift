@@ -47,6 +47,8 @@ public final class AmityMessageListViewController: AmityViewController {
     public weak var dataSource: AmityMessageListDataSource?
     
     // MARK: - IBOutlet Properties
+    
+    @IBOutlet private var messageSectionView: UIView!
     @IBOutlet private var messageContainerView: UIView!
     @IBOutlet private var composeBarContainerView: UIView!
     @IBOutlet private var bottomConstraint: NSLayoutConstraint!
@@ -540,7 +542,7 @@ private extension AmityMessageListViewController {
         messageViewController = AmityMessageListTableViewController.make(viewModel: screenViewModel)
         addContainerView(messageViewController, to: messageContainerView)
         
-        overlayView = UIView(frame: messageContainerView.bounds)
+        overlayView = UIView()
         overlayView.backgroundColor = AmityColorSet.base.blend(.shade4)
         overlayView.alpha = 0.5
         overlayView.isHidden = true
@@ -1232,7 +1234,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 		if users.isEmpty {
 			mentionTableViewHeightConstraint.constant = 0
 			mentionTableView.isHidden = true
-            overlayView.isHidden = true
+            hideOverlayView()
 		} else {
 			var heightConstant:CGFloat = 240.0
 			if users.count < 5 {
@@ -1241,7 +1243,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 			mentionTableViewHeightConstraint.constant = heightConstant
 			mentionTableView.isHidden = false
 			mentionTableView.reloadData()
-            overlayView.isHidden = false
+            showOverlayView()
 		}
 	}
 	
@@ -1419,6 +1421,18 @@ extension AmityMessageListViewController {
         
         // Apply the animation to the cell's layer
         cell.layer.add(shake, forKey: "cellShakeAnimation")
+    }
+}
+
+// MARK: - Overlay View
+extension AmityMessageListViewController {
+    func showOverlayView() {
+        overlayView.frame = messageSectionView.frame
+        overlayView.isHidden = false
+    }
+    
+    func hideOverlayView() {
+        overlayView.isHidden = true
     }
 }
 
