@@ -327,7 +327,15 @@ final class AmityUIKitManagerInternal: NSObject {
     private(set) var channelPresenceRepo: AmityChannelPresenceRepository?
 
     var currentUserId: String { return client.currentUserId ?? "" }
-    var displayName: String { return client.user?.snapshot?.displayName ?? "" }
+    var displayName: String {
+        if let displayName = client.user?.snapshot?.displayName {
+            cacheDisplayName = displayName
+            return displayName
+        } else {
+            return cacheDisplayName
+        }
+    }
+    private var cacheDisplayName: String = ""
     var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
     var userStatus: AmityUserStatus.StatusType = .AVAILABLE
     var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "available" }
@@ -414,6 +422,8 @@ final class AmityUIKitManagerInternal: NSObject {
             self?.disableLivestreamUserLevelNotification()
             
             self?.clearCache()
+            
+            self?.cacheDisplayName = ""
             
             completion?(true, error)
         }
