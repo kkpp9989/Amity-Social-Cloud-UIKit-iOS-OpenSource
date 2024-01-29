@@ -153,7 +153,7 @@ class GroupChatCreatorSecondViewController: AmityViewController {
         }
         // Set group name and placeholder
         displayNameTextField.text = combinedDisplayName
-		displayNameTextField.placeholder = "Enter group name"
+        displayNameTextField.placeholder = "Enter group name"
 		
 		updateViewState()
 	}
