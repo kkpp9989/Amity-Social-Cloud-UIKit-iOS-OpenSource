@@ -713,7 +713,10 @@ private extension AmityMessageListScreenViewModel {
     func groupMessages(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?) {
         
         // First we get message from the collection
-        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        
+        // Filter duplicate message
+        storedMessages = Array(Set(storedMessages))
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
@@ -752,7 +755,10 @@ private extension AmityMessageListScreenViewModel {
     func groupMessagesAndJumpToTarget(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?, messageId: String) {
         
         // First we get message from the collection
-        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        
+        // Filter duplicate message
+        storedMessages = Array(Set(storedMessages))
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
