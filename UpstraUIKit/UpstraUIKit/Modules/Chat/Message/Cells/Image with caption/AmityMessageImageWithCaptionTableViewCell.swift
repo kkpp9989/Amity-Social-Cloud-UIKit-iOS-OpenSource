@@ -137,7 +137,40 @@ class AmityMessageImageWithCaptionTableViewCell: AmityMessageTableViewCell {
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
-        return UITableView.automaticDimension
+        if message.isDeleted {
+            let displaynameHeight: CGFloat = message.isOwner ? 0 : 46
+            return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
+        }
+        
+        var height: CGFloat = 0
+        var actualWidth: CGFloat = 0
+        
+        // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
+        if message.isOwner {
+            let horizontalPadding: CGFloat = 112
+            actualWidth = boundingWidth - horizontalPadding
+            
+            let verticalPadding: CGFloat = 64
+            height += verticalPadding
+        } else {
+            let horizontalPadding: CGFloat = 164
+            actualWidth = boundingWidth - horizontalPadding
+            
+            let verticalPadding: CGFloat = 98
+            height += verticalPadding
+        }
+        
+        if let text = message.imageCaption {
+            let maximumLines = message.appearance.isExpanding ? 0 : Constant.maximumLines
+            let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
+            height += messageHeight
+        }
+        
+        if let _ = message.object.getImageInfo() {
+            height += actualWidth + 12 // height is equal actualwidth because must to set image ratio 1:1 | 12 is spacing between image and caption
+        }
+        
+        return height
     }
     
     private func actualWidth(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
