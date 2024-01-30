@@ -381,6 +381,8 @@ extension AmityPostDetailScreenViewModel {
         reactionController.addReaction(withReaction: .like, referanceId: postId, referenceType: .post) { [weak self] (success, error) in
             guard let strongSelf = self else { return }
             if success {
+                //ktb kk save coin reaction
+                AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: strongSelf.postId , reactType: AmityReactionType.like.rawValue)
                 strongSelf.delegate?.screenViewModelDidLikePost(strongSelf)
             } else {
                 strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
@@ -405,6 +407,8 @@ extension AmityPostDetailScreenViewModel {
                 guard let strongSelf = self else { return }
                 strongSelf.isReactionLoading = false
                 if success {
+                    //ktb kk save coin reaction
+                    AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: strongSelf.postId , reactType: type.rawValue)
                     strongSelf.delegate?.screenViewModelDidLikePost(strongSelf)
                 } else {
                     strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)

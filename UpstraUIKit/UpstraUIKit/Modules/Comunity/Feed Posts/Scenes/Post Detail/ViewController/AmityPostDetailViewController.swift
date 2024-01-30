@@ -505,9 +505,6 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     }
     
     func screenViewModelDidLikePost(_ viewModel: AmityPostDetailScreenViewModelType) {
-        //ktb kk save coin reaction
-        AmityEventHandler.shared.saveKTBCoin(v: self, type: .react, id: viewModel.post?.postId ?? "")
-        
         tableView.feedDelegate?.didPerformActionLikePost()
     }
     
@@ -540,7 +537,7 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModelDidCreateComment(_ viewModel: AmityPostDetailScreenViewModelType, comment: AmityCommentModel) {
         
         // ktb kk save coin when comment & reply
-        AmityEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: viewModel.post?.postId ?? "")
+        AmityEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: viewModel.post?.postId ?? "", reactType: nil)
         
         if comment.parentId == nil {
             // When new parent comment is created, it will not show in query stream.
@@ -557,10 +554,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     }
     
     func screenViewModelDidLikeComment(_ viewModel: AmityPostDetailScreenViewModelType) {
-        
-        // ktb kk save coin when react detail comment
-        AmityEventHandler.shared.saveKTBCoin(v: self, type: .react, id: viewModel.post?.postId ?? "")
-        
+        //ktb kk save coin reaction
+        AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: viewModel.post?.postId ?? "" , reactType: AmityReactionType.like.rawValue)
         tableView.feedDelegate?.didPerformActionLikeComment()
     }
     

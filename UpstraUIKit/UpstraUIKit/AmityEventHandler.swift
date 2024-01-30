@@ -299,5 +299,5 @@ open class AmityEventHandler {
     open func gotoKTBShareQR(v:UIViewController, url:String) { }
     open func gotoKTBShareQR(v:UIViewController, type:AmityContentType, id:String, title:String, desc:String) { }
     /// save coin when post comment react
-    open func saveKTBCoin(v:UIViewController?, type:AmitySaveActivityType, id:String) { }
+    open func saveKTBCoin(v:UIViewController?, type:AmitySaveActivityType, id:String, reactType:String?) { }
 }
