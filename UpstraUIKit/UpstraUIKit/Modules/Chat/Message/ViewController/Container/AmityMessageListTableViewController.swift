@@ -74,7 +74,6 @@ extension AmityMessageListTableViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsMultipleSelectionDuringEditing = true
-        tableView.estimatedRowHeight = 1.0
     }
 }
 
