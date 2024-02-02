@@ -29,6 +29,24 @@ final class AmityForwardSelectUserController {
             newSelectedUsers.remove(at: index)
             selectedUser.isSelected = false
         } else {
+            if newSelectedUsers.count == 20 {
+                let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.General.ok,
+                                                                textColor: AmityColorSet.baseInverse,
+                                                                backgroundColor: AmityColorSet.primary)
+                let communityPostModel = AmityDefaultModalModel(image: nil,
+                                                                title: "Unable to select one more chat?",
+                                                                description: "Maximun number of chats that you can forward to is 20.",
+                                                                firstAction: firstAction, secondAction: nil,
+                                                                layout: .horizontal)
+                let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
+                communityPostModalView.firstActionHandler = {
+                    AmityHUD.hide()
+                }
+                
+                AmityHUD.show(.custom(view: communityPostModalView))
+                
+                return
+            }
             newSelectedUsers.append(selectedUser)
             selectedUser.isSelected = true
         }
