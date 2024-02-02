@@ -46,7 +46,7 @@ protocol AmityPostDetailScreenViewModelDelegate: AnyObject {
     func screenViewModelDidLikePost(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModelDidUnLikePost(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModel(_ viewModel: AmityPostDetailScreenViewModelType, didReceiveReportStatus isReported: Bool)
-    
+
     // MARK: - Comment
     func screenViewModelDidDeleteComment(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModelDidEditComment(_ viewModel: AmityPostDetailScreenViewModelType)
