@@ -271,7 +271,7 @@ extension AmityMessageListScreenViewModel {
         subChannelNotificationToken = subChannelRepository.getSubChannel(withId: subChannelId).observe { [weak self] (subChannel, error) in
             guard let object = subChannel.snapshot else { return }
             self?.subChannel = object
-            if self?.channelType == .conversation {
+            if self?.channelType == .conversation || self?.channelType == .broadcast {
                 self?.startRealtimeSubscription()
             }
             self?.startReading()
