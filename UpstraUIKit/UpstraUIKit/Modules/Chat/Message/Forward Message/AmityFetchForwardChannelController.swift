@@ -39,6 +39,9 @@ final class AmityFetchForwardChannelController {
         
         if targetType == .recent {
             collection = repository?.getChannels(with: query)
+        } else if targetType == .broadcast {
+            query.types = [AmityChannelQueryType.broadcast]
+            collection = repository?.getChannels(with: query)
         } else {
             query.types = [AmityChannelQueryType.community]
             collection = repository?.getChannels(with: query)
@@ -76,6 +79,17 @@ final class AmityFetchForwardChannelController {
                                     }
                                 })
                                 strongSelf.tokenArray.append(tempToken)
+                            } else if object.channelType == .broadcast {
+                                let userController = AmityChatUserController(channelId: model.userId)
+                                userController.getEditGroupChannelPermission { isHavePermission in
+                                    if isHavePermission {
+                                        strongSelf.channel.append(model)
+                                    }
+                                    if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                        channelIdLeaveMap[String(index)] = true
+                                        strongSelf.dispatchGroup.leave()
+                                    }
+                                }
                             } else {
                                 strongSelf.channel.append(model)
                                 if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
@@ -112,7 +126,7 @@ final class AmityFetchForwardChannelController {
                     }
                     
                     var groupUsers: AmityFetchForwardChannelController.GroupUser
-                    if strongSelf.targetType == .group {
+                    if strongSelf.targetType == .group || strongSelf.targetType == .broadcast {
                         groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: predicate).sorted { $0.0 < $1.0 }
                     } else {
                         groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: { _ in "" }).sorted { $0.0 < $1.0 }

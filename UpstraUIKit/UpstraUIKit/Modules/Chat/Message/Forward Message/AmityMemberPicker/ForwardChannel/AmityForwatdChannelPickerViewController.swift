@@ -10,7 +10,7 @@ import UIKit
 import AmitySDK
 
 public enum AmityChannelViewType {
-    case recent, group
+    case recent, group, broadcast
 }
 
 extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
@@ -33,6 +33,9 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityForwardChannelPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
+    
+    // MARK: - Optional Properties (Keep data from previous viewcontroller for send next viewcontroller)
+    private var broadcastMessage: AmityBroadcastMessageCreatorModel?
     
     var pageTitle: String?
     private let debouncer = Debouncer(delay: 0.3)
@@ -59,6 +62,16 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
         return vc
     }
     
+    public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType, broadcastMessage: AmityBroadcastMessageCreatorModel) -> AmityForwatdChannelPickerViewController {
+        let viewModel: AmityForwardChannelPickerScreenViewModelType = AmityForwardChannelPickerScreenViewModel(type: type)
+        viewModel.setCurrentUsers(users: users)
+        let vc = AmityForwatdChannelPickerViewController(nibName: AmityForwatdChannelPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.pageTitle = pageTitle
+        vc.broadcastMessage = broadcastMessage
+        return vc
+    }
+    
     public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
         screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
     }
@@ -66,9 +79,16 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
 
 private extension AmityForwatdChannelPickerViewController {
     @objc func doneTap() {
-        dismiss(animated: true) { [weak self] in
-            guard let strongSelf = self else { return }
-//            strongSelf.selectUsersHandler?(strongSelf.screenViewModel.dataSource.getStoreUsers())
+        if isLastViewController { // Case : Is last viewcontroller -> Dismiss viewcontroller
+            dismiss(animated: true)
+        } else {
+            if screenViewModel.dataSource.targetType == .broadcast, let broadcastMessage = broadcastMessage { // Case : Isn't last viewcontroller and target type is broadcast -> Push preview select channel viewcontroller
+                let previewSelectedViewController = AmityPreviewSelectedFromPickerViewController.make(pageTitle: "Broadcast to", selectedData: screenViewModel.dataSource.getStoreUsers(), broadcastMessage: broadcastMessage)
+                previewSelectedViewController.isLastViewController = true
+                navigationController?.pushViewController(previewSelectedViewController, animated: true)
+            } else { // Case : Isn't last viewcontroller but other target type -> Dismiss viewcontroller
+                dismiss(animated: true)
+            }
         }
     }
     
@@ -90,7 +110,6 @@ private extension AmityForwatdChannelPickerViewController {
     }
     
     func setupNavigationBar() {
-        navigationBarType = .custom
         view.backgroundColor = AmityColorSet.backgroundColor
         
         let customView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
@@ -104,13 +123,17 @@ private extension AmityForwatdChannelPickerViewController {
         navigationItem.titleView = customView
         let numberOfSelectedUseres = screenViewModel.dataSource.numberOfSelectedUsers()
         if numberOfSelectedUseres == 0 {
-            title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            switch screenViewModel.dataSource.targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
         } else {
-            
             title = String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(numberOfSelectedUseres)")
         }
         
-        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.done.localizedString, style: .plain, target: self, action: #selector(doneTap))
+        doneButton = UIBarButtonItem(title: isLastViewController ? AmityLocalizedStringSet.General.done.localizedString : AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
         doneButton?.isEnabled = !(numberOfSelectedUseres == 0)
         // [Improvement] Add set font style to label of done button
@@ -118,14 +141,21 @@ private extension AmityForwatdChannelPickerViewController {
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
         
-        let cancelButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .plain, target: self, action: #selector(cancelTap))
-        cancelButton.tintColor = AmityColorSet.base
-        // [Improvement] Add set font style to label of cancel button
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        if self.navigationController == nil {
+            navigationBarType = .custom
+            
+            let cancelButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .plain, target: self, action: #selector(cancelTap))
+            cancelButton.tintColor = AmityColorSet.base
+            // [Improvement] Add set font style to label of cancel button
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+            
+            navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationBarType = .push
+        }
         
-        navigationItem.leftBarButtonItem = cancelButton
         navigationItem.rightBarButtonItem = doneButton
     }
     

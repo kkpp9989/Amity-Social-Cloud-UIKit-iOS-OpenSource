@@ -76,6 +76,8 @@ open class AmityViewController: UIViewController {
         }
     }
     
+    var isLastViewController: Bool = false
+    
     private var leftBarButtonItem: UIBarButtonItem?
     private let fullWidthBackGestureRecognizer = UIPanGestureRecognizer()
     

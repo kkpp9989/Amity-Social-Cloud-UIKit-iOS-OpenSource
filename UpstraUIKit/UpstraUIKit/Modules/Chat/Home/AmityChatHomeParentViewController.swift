@@ -52,10 +52,17 @@ public class AmityChatHomeParentViewController: AmityViewController {
             // [Improvement] Change set button solution to use custom stack view
             var rightButtonItems: [UIButton] = []
             
+            // Broadcast Button
+            let broadcastButton: UIButton = UIButton.init(type: .custom)
+            broadcastButton.setImage(AmityIconSet.iconBroadCastNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            broadcastButton.addTarget(self, action: #selector(broadcastTap), for: .touchUpInside)
+            broadcastButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            rightButtonItems.append(broadcastButton)
+            
             // Create chat button
             let createChatButton: UIButton = UIButton.init(type: .custom)
             createChatButton.setImage(AmityIconSet.iconCreateGroupChat?.withRenderingMode(.alwaysOriginal), for: .normal)
-            createChatButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+            createChatButton.addTarget(self, action: #selector(createChannelTap), for: .touchUpInside)
             createChatButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
             rightButtonItems.append(createChatButton)
             
@@ -128,6 +135,10 @@ public class AmityChatHomeParentViewController: AmityViewController {
 // MARK: - Action
 
 private extension AmityChatHomeParentViewController {
+    @objc func broadcastTap() {
+        AmityChannelEventHandler.shared.createBroadCastBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
+    }
+    
     @objc func searchTap() {
         let searchVC = AmityChatSearchParentViewController.make()
         let nav = UINavigationController(rootViewController: searchVC)
@@ -136,10 +147,17 @@ private extension AmityChatHomeParentViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    @objc func createPostTap() {
+    @objc func createChannelTap() {
         AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self, selectUsers: []) { [weak self] channelId, subChannelId in
             guard let weakSelf = self else { return }
             AmityChannelEventHandler.shared.channelDidTap(from: weakSelf, channelId: channelId, subChannelId: subChannelId)
         }
+    }
+}
+
+// MARK: - For use open pull down menu
+extension AmityChatHomeParentViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Show the popover on iPhone devices as well
     }
 }
