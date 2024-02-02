@@ -20,6 +20,7 @@ protocol AmityForwardChannelPickerScreenViewModelDelegate: AnyObject {
 }
 
 protocol AmityForwardChannelPickerScreenViewModelDataSource {
+    var targetType: AmityChannelViewType { get }
     func numberOfAlphabet() -> Int
     func numberOfUsers(in section: Int) -> Int
     func numberOfSelectedUsers() -> Int

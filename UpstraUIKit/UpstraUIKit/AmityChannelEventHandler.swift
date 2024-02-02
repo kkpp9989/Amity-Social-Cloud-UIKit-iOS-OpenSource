@@ -8,6 +8,11 @@
 
 import UIKit
 
+public enum AmityBroadcastCreatorType {
+    case file
+    case content
+}
+
 /// Share event handler for channel
 ///
 /// Events which are interacted on AmityUIKIt will trigger following functions
@@ -159,5 +164,47 @@ open class AmityChannelEventHandler {
         let navVc = UINavigationController(rootViewController: vc)
         navVc.modalPresentationStyle = .overFullScreen
         source.present(navVc, animated: true, completion: nil)
+    }
+    
+    /// Event for broadcast message channel creator
+    /// It will be triggered when broadcast button is tapped
+    open func createBroadCastBeingPrepared(from source: AmityViewController, menustyle: AmityEventOutputMenuStyleType = .bottom, selectItem: UIBarButtonItem? = nil) {
+        // Setup completion
+        let completion: ((AmityBroadcastCreatorType) -> Void) = { contentType in
+            // Setup setting attachment
+            let settings: AmityMessageFullTextEditorSettings = AmityMessageFullTextEditorSettings()
+            switch contentType {
+            case .content:
+                settings.allowMessageAttachments = [.image]
+            case .file:
+                settings.allowMessageAttachments = [.file]
+            }
+            
+            // Push broadcast message creator view controller
+            let viewController = AmityBroadcastMessageCreatorViewController(messageTarget: .broadcast(channels: nil), messageMode: .create, settings: settings)
+            viewController.hidesBottomBarWhenPushed = true
+            source.navigationController?.pushViewController(viewController, animated: true)
+        }
+        
+        // Setup option
+        let contentOption = ImageItemOption(title: "Content", image: AmityIconSet.iconContent) {
+            completion(.content)
+        }
+        let fileOption = ImageItemOption(title: "File", image: AmityIconSet.iconAttach) {
+            completion(.file)
+        }
+        
+        switch menustyle {
+        case .bottom:
+            // present bottom sheet
+            AmityBottomSheet.present(options: [contentOption, fileOption], from: source)
+        case .pullDownMenuFromNavigationButton:
+            // present pull down menu from navigation button -> if source have UIPopoverPresentationControllerDelegate and selected button
+            if let vc = source as? UIPopoverPresentationControllerDelegate, let selectedButton = selectItem {
+                AmityPullDownMenuFromButtonView.present(options: [contentOption, fileOption], selectedItem: selectedButton, from: vc, width: 164.0) // Custom witdth from Figma
+            } else { // present bottom sheet -> if source don't have UIPopoverPresentationControllerDelegate
+                AmityBottomSheet.present(options: [contentOption, fileOption], from: source)
+            }
+        }
     }
 }

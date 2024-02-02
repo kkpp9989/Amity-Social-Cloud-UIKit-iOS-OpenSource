@@ -30,7 +30,7 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     private var currentUsers: [AmitySelectMemberModel] = []
     private var currentKeyword: String = ""
     private var isSearch: Bool = false
-    private var targetType: AmityChannelViewType
+    var targetType: AmityChannelViewType
     
     init(type: AmityChannelViewType) {
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
@@ -97,7 +97,15 @@ extension AmityForwardChannelPickerScreenViewModel {
         currentUsers = users
         
         if currentUsers.count == 0 {
-            delegate?.screenViewModelDidSetCurrentUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSetCurrentUsers(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSetCurrentUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
@@ -107,7 +115,15 @@ extension AmityForwardChannelPickerScreenViewModel {
         newSelectedUsers = users
         
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSetNewSelectedUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: title, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
         } else {
             delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab)
         }
@@ -150,7 +166,7 @@ extension AmityForwardChannelPickerScreenViewModel {
         searchUserController?.delegate = self
         isSearch = true
         currentKeyword = text
-        if targetType == .group {
+        if targetType == .group || targetType == .broadcast {
             searchUserController?.searchGroupType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
@@ -194,7 +210,15 @@ extension AmityForwardChannelPickerScreenViewModel {
     func selectUser(at indexPath: IndexPath) {
         selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath, isSearch: isSearch)
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSelectUser(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
@@ -203,7 +227,15 @@ extension AmityForwardChannelPickerScreenViewModel {
     func deselectUser(at indexPath: IndexPath) {
         selectUserContrller?.deselect(searchUsers: &searchUsers, users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath)
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSelectUser(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
