@@ -600,6 +600,21 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
             if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
                 ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString, in: window)
             }
+        case .noPermission, .noUserAccessPermission:
+            let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.General.ok,
+                                                            textColor: AmityColorSet.baseInverse,
+                                                            backgroundColor: AmityColorSet.primary)
+            let communityPostModel = AmityDefaultModalModel(image: nil,
+                                                            title: "Permission required",
+                                                            description: "You don't have permission to view this post.",
+                                                            firstAction: firstAction, secondAction: nil,
+                                                            layout: .horizontal)
+            let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
+            communityPostModalView.firstActionHandler = {
+                AmityHUD.hide()
+            }
+            
+            AmityHUD.show(.custom(view: communityPostModalView))
         default:
             break
         }

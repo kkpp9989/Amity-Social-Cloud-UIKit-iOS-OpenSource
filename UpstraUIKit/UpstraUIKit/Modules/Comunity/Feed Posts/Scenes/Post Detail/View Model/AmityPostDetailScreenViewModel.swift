@@ -299,21 +299,22 @@ extension AmityPostDetailScreenViewModel {
         func doFetchPost() {
             DispatchQueue.main.async { [self] in
                 postController.getPostForPostId(withPostId: postId) { [weak self] (result) in
+                    guard let strongSelf = self else { return }
                     switch result {
                     case .success(let post):
-                        self?.post = post
-                        self?.post?.viewerCount = self?.viewerCount ?? 0
+                        strongSelf.post = post
+                        strongSelf.post?.viewerCount = strongSelf.viewerCount ?? 0
                         
                         /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
-                        let isReactionChanging = self?.isReactionChanging ?? false
+                        let isReactionChanging = strongSelf.isReactionChanging ?? false
                         if !isReactionChanging {
-                            self?.debouncer.run {
-                                self?.prepareData()
+                            strongSelf.debouncer.run {
+                                strongSelf.prepareData()
                             }
                         }
-                        self?.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
-                    case .failure:
-                        break
+                        strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
+                    case .failure(let error):
+                        strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
                     }
                 }
             }
@@ -347,11 +348,12 @@ extension AmityPostDetailScreenViewModel {
     func fetchComments() {
         DispatchQueue.main.async { [self] in
             commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .ascending, includeDeleted: true) { [weak self] (result) in
+                guard let strongSelf = self else { return }
                 switch result {
                 case .success(let comments):
-                    self?.comments = comments
-                    self?.debouncer.run {
-                        self?.prepareData()
+                    strongSelf.comments = comments
+                    strongSelf.debouncer.run {
+                        strongSelf.prepareData()
                     }
                 case .failure:
                     break
