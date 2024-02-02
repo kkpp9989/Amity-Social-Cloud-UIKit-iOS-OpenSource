@@ -28,6 +28,7 @@ final class AmitySelectUserController {
         if let user = newSelectedUsers.first(where: { $0 == selectedUser}), let index = newSelectedUsers.firstIndex(of: user) {
             newSelectedUsers.remove(at: index)
         } else {
+            
             newSelectedUsers.append(selectedUser)
         }
         selectedUser.isSelected.toggle()
