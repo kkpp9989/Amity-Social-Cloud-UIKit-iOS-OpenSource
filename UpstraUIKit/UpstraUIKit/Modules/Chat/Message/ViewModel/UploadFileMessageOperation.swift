@@ -32,11 +32,18 @@ class UploadFileMessageOperation: AsyncOperation {
     override func main() {
         // Perform actual task on main queue.
         DispatchQueue.main.async { [weak self] in
-            // get local file url for uploading
-            if let fileURL = self?.file.fileURL {
+            guard let strongSelf = self else { return }
+            
+            let state = strongSelf.file.state
+            switch state {
+            case .local(let document):
+                let fileURL = document.fileURL
                 self?.cacheFile(fileURL: fileURL)
                 self?.createFileMessage(fileURL: fileURL)
-            } else {
+            case .uploaded(let data), .downloadable(let data):
+                let fileId = data.fileId
+                self?.createFileMessage(fileId: fileId)
+            default:
                 self?.finish()
             }
         }
@@ -77,6 +84,43 @@ class UploadFileMessageOperation: AsyncOperation {
                     return
                 }
                 Log.add("[UIKit] Sync state file message (URL: \(fileURL)) : \(message.syncState) | type: \(message.messageType)")
+                switch message.syncState {
+                case .syncing, .default:
+                    // We don't cache local file URL as sdk handles itself
+                    break
+                case .synced, .error:
+                    self?.token = nil
+                    self?.finish()
+                @unknown default:
+                    fatalError()
+                }
+            }
+        }
+    }
+    
+    private func createFileMessage(fileId: String) {
+        let channelId = self.subChannelId
+        let createOptions = AmityFileMessageCreateOptions(subChannelId: channelId, attachment: .fileId(id: fileId))
+        
+        guard let repository = repository else {
+            finish()
+            return
+        }
+        
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
+            guard error == nil, let message = message else {
+                Log.add("[UIKit] Create file message (fileId: \(fileId)) fail with error: \(error?.localizedDescription)")
+                return
+            }
+            
+            Log.add("[UIKit] Create file message (fileId: \(fileId)) success with message Id: \(message.messageId) | type: \(message.messageType)")
+            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
+                guard error == nil, let message = liveObject.snapshot else {
+                    self?.token = nil
+                    self?.finish()
+                    return
+                }
+                Log.add("[UIKit] Sync state file message (URL: (fileId: \(fileId)) : \(message.syncState) | type: \(message.messageType)")
                 switch message.syncState {
                 case .syncing, .default:
                     // We don't cache local file URL as sdk handles itself
