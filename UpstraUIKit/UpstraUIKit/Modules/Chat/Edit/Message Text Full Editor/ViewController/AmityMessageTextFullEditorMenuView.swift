@@ -105,7 +105,7 @@ class AmityMessageTextFullEditorMenuView: UIView {
         }
         
         // Set buttons visibility based on allowMessageAttachments.
-        cameraButton.isHidden = true
+        cameraButton.isHidden = !allowMessageAttachments.isDisjoint(with: [.file])
         albumButton.isHidden = allowMessageAttachments.isDisjoint(with: [.image])
         videoButton.isHidden = allowMessageAttachments.isDisjoint(with: [.video])
         fileButton.isHidden = allowMessageAttachments.isDisjoint(with: [.file])
