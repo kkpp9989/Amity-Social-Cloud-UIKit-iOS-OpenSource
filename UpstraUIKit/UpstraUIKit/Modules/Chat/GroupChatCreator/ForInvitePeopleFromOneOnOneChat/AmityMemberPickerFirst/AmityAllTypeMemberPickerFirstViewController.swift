@@ -53,7 +53,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followersTitle.localizedString, users: currentUsersInChat, type: .followers)
         memberVC = AmityForwardAccountMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.accounts.localizedString, users: currentUsersInChat)
         
-        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
@@ -62,7 +62,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
         }
-        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
@@ -131,10 +131,10 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
             memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
         case 1:
 //            print("--------> [User] Go to tab following")
-            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
         case 2:
 //            print("--------> [User] Go to tab follower")
-            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
         default:
             break
         }
