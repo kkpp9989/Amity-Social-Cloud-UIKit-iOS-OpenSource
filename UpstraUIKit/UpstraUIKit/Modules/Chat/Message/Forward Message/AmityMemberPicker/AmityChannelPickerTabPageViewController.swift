@@ -25,6 +25,7 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     // MARK: - Properties
     private var numberOfSelectedUsers: [AmitySelectMemberModel] = []
     private var numberOfStoreUsers: [AmitySelectMemberModel] = []
+    private var keyword: String = ""
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -53,37 +54,41 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         followerVC = AmityForwardMemberPickerViewController.make(pageTitle: AmityLocalizedStringSet.followersTitle.localizedString, users: [], type: .followers)
         groupChatVC = AmityForwatdChannelPickerViewController.make(pageTitle: AmityLocalizedStringSet.groups.localizedString, users: [], type: .group)
         
-        recentVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        recentVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUsers = newSelectedUsers
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.keyword = keyword
         }
-        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        followingVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUsers = newSelectedUsers
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.keyword = keyword
         }
-        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUsers = newSelectedUsers
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.keyword = keyword
         }
-        groupChatVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        groupChatVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
             strongSelf.numberOfSelectedUsers = newSelectedUsers
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
+            strongSelf.keyword = keyword
         }
         return [recentVC!, followingVC!, followerVC!, groupChatVC!]
     }
@@ -135,20 +140,16 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-//            print("--------> [User] Go to tab recent")
-            recentVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            recentVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             break
         case 1:
-//            print("--------> [User] Go to tab following")
-            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             break
         case 2:
-//            print("--------> [User] Go to tab follower")
-            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             break
         case 3:
-//            print("--------> [User] Go to tab group")
-            groupChatVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            groupChatVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             break
         default:
             break
