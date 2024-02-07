@@ -190,9 +190,16 @@ private extension AmityForwatdChannelPickerViewController {
 
 extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        debouncer.run { [weak self] in
-            self?.screenViewModel.action.searchUser(with: searchText)
+//        lastSearchKeyword = searchText
+//        screenViewModel.action.searchUser(with: searchText)
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
         }
+        
+        screenViewModel.action.searchUser(with: searchText)
     }
 }
 

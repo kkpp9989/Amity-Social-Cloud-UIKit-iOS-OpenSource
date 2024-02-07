@@ -157,6 +157,15 @@ private extension AmityForwardMemberPickerViewController {
 extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
+//        screenViewModel.action.searchUser(with: searchText)
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
+        }
+        
+        lastSearchKeyword = searchText
         screenViewModel.action.searchUser(with: searchText)
     }
 }
