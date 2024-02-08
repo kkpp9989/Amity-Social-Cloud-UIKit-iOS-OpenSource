@@ -85,13 +85,11 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var subChannelNotificationToken: AmityNotificationToken?
     private var channelNotificationToken: AmityNotificationToken?
     private var messagesNotificationToken: AmityNotificationToken?
-    private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
-    private var getMessagesNotificationToken: AmityNotificationToken?
-
     private var messageAudio: AmityMessageAudioController?
     
     // MARK: - Properties
+    private var channelModel: AmityChannelModel?
     private let channelId: String
     private let subChannelId: String
     private var isFirstTimeLoaded: Bool = true
@@ -176,6 +174,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         return messages[section].count
     }
     
+    func getChannelModel() -> AmityChannelModel? {
+        return channelModel
+    }
+    
     func getChannelId() -> String {
         return channelId
     }
@@ -245,6 +247,7 @@ extension AmityMessageListScreenViewModel {
             guard let strongSelf = self else { return }
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
+            strongSelf.channelModel = channelModel
             strongSelf.channelType = channelModel.channelType
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
@@ -555,6 +558,10 @@ extension AmityMessageListScreenViewModel {
             keyboardEvents = .default
         }
         delegate?.screenViewModelKeyboardInputEvents(for: keyboardEvents)
+    }
+    
+    func toggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType) {
+        delegate?.screenViewModelToggleOpenCreateBroadcastMessageEditor(type: type)
     }
     
     func toggleKeyboardVisible(visible: Bool) {
@@ -1104,13 +1111,14 @@ extension AmityMessageListScreenViewModel {
         isSyncChannelPresence = false
     }
     
+    func stopObserveMessageNotificationToken() {
+        messagesNotificationToken?.invalidate()
+    }
+    
     func stopObserve() {
         subChannelNotificationToken?.invalidate()
         channelNotificationToken?.invalidate()
-        messagesNotificationToken?.invalidate()
-        createMessageNotificationToken?.invalidate()
         userNotificationToken?.invalidate()
-        getMessagesNotificationToken?.invalidate()
         topicSubscription = nil
         userSubscription = nil
     }

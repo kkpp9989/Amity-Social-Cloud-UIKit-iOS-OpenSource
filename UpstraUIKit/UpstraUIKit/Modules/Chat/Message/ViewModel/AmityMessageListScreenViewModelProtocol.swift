@@ -24,6 +24,7 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     func screenViewModelKeyboardInputEvents(for events: AmityMessageListScreenViewModel.KeyboardInputEvents)
     func screenViewModelToggleDefaultKeyboardAndAudioKeyboard(for events: AmityMessageListScreenViewModel.KeyboardInputEvents)
     func screenViewModelAudioRecordingEvents(for events: AmityMessageListScreenViewModel.AudioRecordingEvents)
+    func screenViewModelToggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType)
     
     func screenViewModelShouldUpdateScrollPosition(to indexPath: IndexPath)
     
@@ -48,6 +49,7 @@ protocol AmityMessageListScreenViewModelDataSource {
     func numberOfSection() -> Int
     func numberOfMessage(in section: Int) -> Int
     func getChannelId() -> String
+    func getChannelModel() -> AmityChannelModel?
     func getCommunityId() -> String
     func isKeyboardVisible() -> Bool
     func findIndexPath(forMessageId messageId: String) -> IndexPath?
@@ -90,6 +92,8 @@ protocol AmityMessageListScreenViewModelAction {
     func toggleInputSource()
     func toggleKeyboardVisible(visible: Bool)
     
+    func toggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType)
+    
     func performCellEvent(for event: AmityMessageListScreenViewModel.CellEvents)
     
     func loadMoreScrollUp(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
@@ -111,6 +115,8 @@ protocol AmityMessageListScreenViewModelAction {
     
     func startUserRealtimeSubscription()
     func stopUserRealtimeSubscription()
+    
+    func stopObserveMessageNotificationToken()
     
     func syncChannelPresence()
     func unsyncChannelPresence()

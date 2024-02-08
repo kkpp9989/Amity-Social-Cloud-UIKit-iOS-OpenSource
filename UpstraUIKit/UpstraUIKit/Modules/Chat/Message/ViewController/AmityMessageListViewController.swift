@@ -109,6 +109,11 @@ public final class AmityMessageListViewController: AmityViewController {
     public var backHandler: (() -> Void)?
     
     // MARK: - View lifecyle
+    
+    deinit {
+        screenViewModel.action.stopObserveMessageNotificationToken()
+    }
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -835,6 +840,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             }
         }
         
+        // Update view by channel data
+        composeBar.updateViewDidGetChannel(channel: channel)
+        
         // Update interaction of compose bar view
         if channel.isMuted || channel.isDeleted {
             composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
@@ -1182,6 +1190,22 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         composeBar.showJoinMenuButton(show: false)
         setupCustomNavigationBar()
         screenViewModel.action.getMessage()
+    }
+    
+    func screenViewModelToggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType) {
+        // Setup setting attachment
+        let settings: AmityMessageFullTextEditorSettings = AmityMessageFullTextEditorSettings()
+        switch type {
+        case .content:
+            settings.allowMessageAttachments = [.image]
+        case .file:
+            settings.allowMessageAttachments = [.file]
+        }
+        
+        // Push broadcast message creator view controller
+        guard let channel = screenViewModel.dataSource.getChannelModel() else { return }
+        let viewController = AmityBroadcastMessageCreatorViewController(messageTarget: .broadcast(channel: channel), messageMode: .create, settings: settings)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 

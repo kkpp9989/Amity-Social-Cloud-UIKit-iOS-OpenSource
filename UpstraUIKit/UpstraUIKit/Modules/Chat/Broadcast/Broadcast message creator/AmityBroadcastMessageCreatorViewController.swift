@@ -12,8 +12,8 @@ import UIKit
 public class AmityBroadcastMessageCreatorViewController: AmityMessageTextFullEditorViewController {
 
     // This is a wrapper class to help fill in parameters.
-    public static func make(messageTarget: AmityMessageTarget, settings: AmityMessageFullTextEditorSettings = AmityMessageFullTextEditorSettings()) -> AmityBroadcastMessageCreatorViewController {
-        return AmityBroadcastMessageCreatorViewController(messageTarget: messageTarget, messageMode: .create, settings: settings)
+    public static func make(messageTarget: AmityMessageTarget, messageMode: AmityMessageMode, settings: AmityMessageFullTextEditorSettings = AmityMessageFullTextEditorSettings()) -> AmityBroadcastMessageCreatorViewController {
+        return AmityBroadcastMessageCreatorViewController(messageTarget: messageTarget, messageMode: messageMode, settings: settings)
     }
     
 }
