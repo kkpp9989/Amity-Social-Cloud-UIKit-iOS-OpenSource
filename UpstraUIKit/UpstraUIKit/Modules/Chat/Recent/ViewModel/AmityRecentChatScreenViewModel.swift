@@ -328,7 +328,7 @@ private extension AmityRecentChatScreenViewModel {
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
-            if model.previewMessage != nil {
+            if !(model.channelType == .conversation && model.previewMessage == nil) {
                 _channels.append(model)
             }
         }
