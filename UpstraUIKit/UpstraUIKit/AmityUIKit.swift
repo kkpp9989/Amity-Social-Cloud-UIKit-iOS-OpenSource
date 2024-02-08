@@ -157,6 +157,10 @@ public final class AmityUIKitManager {
         return AmityUIKitManagerInternal.shared.avatarURL
     }
     
+    public static var isHaveCreateBroadcastPermission: Bool {
+        return AmityUIKitManagerInternal.shared.isHaveCreateBroadcastPermission
+    }
+    
     // [Custom for ONE Krungthai] Add env property for get env for use some function
     public static var env: [String: Any] {
         return AmityUIKitManagerInternal.shared.env
@@ -352,6 +356,7 @@ final class AmityUIKitManagerInternal: NSObject {
     
     private var userCollectionToken: AmityNotificationToken?
     private var channelCollectionToken: AmityNotificationToken?
+    private var broadcastChannelCollectionToken: AmityNotificationToken?
     private var disposeBag: Set<AnyCancellable> = []
     private var postIdCannotGetSnapshotList: [String] = []
     
@@ -360,6 +365,8 @@ final class AmityUIKitManagerInternal: NSObject {
     var onlinePresences: [AmityChannelPresence] = []
     var onlinePresencesDataHash: Int = -1
     var limitFileSize: Double? // .mb
+    var isHaveCreateBroadcastPermission: Bool = false
+    private let dispatchGroup = DispatchGroup()
 
     var client: AmityClient {
         guard let client = _client else {
@@ -432,6 +439,8 @@ final class AmityUIKitManagerInternal: NSObject {
             self?.clearCache()
             
             self?.cacheDisplayName = ""
+            
+            self?.getCreateBroadcastMessagePermission()
             
             completion?(true, error)
         }
@@ -532,6 +541,34 @@ final class AmityUIKitManagerInternal: NSObject {
             case .failure(let error):
                 print("[RequestCustomSettings] Get limit file size fail with error: \(error.localizedDescription)")
                 break
+            }
+        }
+    }
+    
+    func getCreateBroadcastMessagePermission() {
+        // Set default value back to false before get new one
+        isHaveCreateBroadcastPermission = false
+        
+        // Query broadcast channels
+        guard let channelRepo = channelRepository, let client = _client else { return }
+        let query = AmityChannelQuery()
+        query.filter = .userIsMember
+        query.includeDeleted = false
+        query.types = [AmityChannelQueryType.broadcast]
+        let channelsCollection = channelRepo.getChannels(with: query)
+        
+        // Check each group that have channel-moderator role
+        broadcastChannelCollectionToken = channelsCollection.observe { [weak self] (collection, change, error) in
+            guard let strongSelf = self else { return }
+            
+            // Get permission each channel
+            let channelModels = collection.allObjects().map( { AmityChannelModel(object: $0) } )
+            for channel in channelModels {
+                client.hasPermission(.editChannel, forChannel: channel.channelId) { isHavePermission in
+                    if isHavePermission {
+                        self?.isHaveCreateBroadcastPermission = true
+                    }
+                }
             }
         }
     }
