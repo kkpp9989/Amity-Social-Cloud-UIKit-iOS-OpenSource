@@ -230,7 +230,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         readCountLabel.font =  AmityFontSet.caption
         readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
         
-        contentView.backgroundColor = AmityColorSet.chatBackgroundColor
+        contentView.superview?.backgroundColor = .clear
         
         reportIconImageView?.image = AmityIconSet.Chat.iconReport
         isSelected = false

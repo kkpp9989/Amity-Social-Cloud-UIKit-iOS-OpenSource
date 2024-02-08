@@ -131,6 +131,7 @@
 //"text_message_placeholder" = "Type message"; // [Original]
 "text_message_placeholder" = "Write a message";
 "text_message_placeholder_muted" = "Cannot send message";
+"text_broadcast_message_placeholder" = "Write broadcast message...";
 
 "message_delete" = "Message deleted • %@";
 "message_unsent" = "Message unsent • %@";
