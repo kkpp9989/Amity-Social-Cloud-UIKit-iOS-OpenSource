@@ -22,8 +22,8 @@ extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
 class AmityForwatdChannelPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
-    
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String, _ keyword: String) -> Void)?
+
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
     @IBOutlet private var collectionView: UICollectionView!
@@ -38,6 +38,7 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     private var broadcastMessage: AmityBroadcastMessageCreatorModel?
     
     var pageTitle: String?
+    var lastSearchKeyword: String = ""
     private let debouncer = Debouncer(delay: 0.3)
 
     public override func viewDidLoad() {
@@ -72,8 +73,8 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
         return vc
     }
     
-    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
     }
 }
 
@@ -190,9 +191,16 @@ private extension AmityForwatdChannelPickerViewController {
 
 extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        debouncer.run { [weak self] in
-            self?.screenViewModel.action.searchUser(with: searchText)
+        lastSearchKeyword = searchText
+//        screenViewModel.action.searchUser(with: searchText)
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
         }
+        
+        screenViewModel.action.searchUser(with: searchText)
     }
 }
 
@@ -307,16 +315,19 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
     }
     
     func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
         tableView.reloadData()
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
         // Set title if need
         self.title = title
+        
+        // Set keyword if need
+        searchBar.text = keyword
         
         // Update collection view
         collectionView.isHidden = isEmpty
@@ -329,7 +340,7 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         tableView.reloadData()
 
         // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
