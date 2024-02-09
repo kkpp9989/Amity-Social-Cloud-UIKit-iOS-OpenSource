@@ -168,6 +168,7 @@ private extension AmityForwatdChannelPickerViewController {
         searchBar.returnKeyType = .done
         (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
         ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
+        searchBar.text = lastSearchKeyword
     }
     
     func setupTableView() {
@@ -192,7 +193,7 @@ private extension AmityForwatdChannelPickerViewController {
 extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
-//        screenViewModel.action.searchUser(with: searchText)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -300,10 +301,12 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func screenViewModelCanDone(enable: Bool) {
@@ -327,6 +330,7 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         self.title = title
         
         // Set keyword if need
+        lastSearchKeyword = keyword
         searchBar.text = keyword
         
         // Update collection view

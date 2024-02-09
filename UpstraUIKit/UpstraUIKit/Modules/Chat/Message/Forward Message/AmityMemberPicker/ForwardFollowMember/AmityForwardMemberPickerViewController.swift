@@ -29,7 +29,7 @@ class AmityForwardMemberPickerViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityForwardMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
-    private var lastSearchKeyword: String = ""
+    var lastSearchKeyword: String = ""
     
     var pageTitle: String?
 
@@ -133,6 +133,7 @@ private extension AmityForwardMemberPickerViewController {
         searchBar.returnKeyType = .done
         (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
         ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
+        searchBar.text = lastSearchKeyword
     }
     
     func setupTableView() {
@@ -157,7 +158,7 @@ private extension AmityForwardMemberPickerViewController {
 extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
-//        screenViewModel.action.searchUser(with: searchText)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -257,11 +258,12 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func screenViewModelCanDone(enable: Bool) {
@@ -285,6 +287,7 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         self.title = title
         
         // Set keyword if need
+        lastSearchKeyword = keyword
         searchBar.text = keyword
         
         // Update collection view

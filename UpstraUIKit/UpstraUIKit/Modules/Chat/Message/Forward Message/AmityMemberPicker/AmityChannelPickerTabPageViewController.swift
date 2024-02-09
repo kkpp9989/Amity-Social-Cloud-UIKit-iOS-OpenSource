@@ -141,15 +141,19 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         switch newIndex {
         case 0:
             recentVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            recentVC?.lastSearchKeyword = keyword
             break
         case 1:
             followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followingVC?.lastSearchKeyword = keyword
             break
         case 2:
             followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followerVC?.lastSearchKeyword = keyword
             break
         case 3:
             groupChatVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            groupChatVC?.lastSearchKeyword = keyword
             break
         default:
             break
