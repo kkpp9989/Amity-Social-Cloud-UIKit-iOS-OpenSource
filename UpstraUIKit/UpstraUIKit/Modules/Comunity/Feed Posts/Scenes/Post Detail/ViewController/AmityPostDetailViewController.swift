@@ -39,6 +39,8 @@ open class AmityPostDetailViewController: AmityViewController {
     
     private var livestreamId: String?
     
+    public var backHandler: (() -> Void)?
+
     private var parentComment: AmityCommentModel? {
         didSet {
             // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
@@ -611,15 +613,20 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
                                                             layout: .horizontal)
             let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
             communityPostModalView.firstActionHandler = {
-                AmityHUD.hide()
+                AmityHUD.hide{ [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.navigationController?.popViewController(animated: true)
+                    
+                    // Check if backHandler is not nil, then invoke it
+                    strongSelf.backHandler?()
+                }
             }
             
-            AmityHUD.show(.custom(view: communityPostModalView))
+            AmityHUD.showWithoutRepresenting(.custom(view: communityPostModalView))
         default:
             break
         }
     }
-    
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
