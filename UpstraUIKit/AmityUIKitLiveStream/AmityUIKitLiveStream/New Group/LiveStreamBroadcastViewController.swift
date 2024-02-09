@@ -356,7 +356,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             UIBarButtonItem(title: AmityLocalizedStringSet.General.done.localizedString, style: .done, target: self, action: #selector(cancelInput))
         ]
         textViewToolbar.sizeToFit()
-        commentTextView.backgroundColor = UIColor(hex: "#FFFFFF")?.withAlphaComponent(0.1)
+        commentTextView.backgroundColor = .black
         commentTextView.layer.cornerRadius = 4
         commentTextView.font = AmityFontSet.body
         commentTextView.textColor = .white
