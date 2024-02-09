@@ -22,8 +22,7 @@ public class AmityMessageFullTextEditorSettings {
 }
 
 protocol AmityMessageTextFullEditorViewControllerDelegate: AnyObject {
-    func messageTextFullEditorViewController(_ viewController: UIViewController, didCreateMessage post: AmityMessageModel)
-    func messageTextFullEditorViewController(_ viewController: UIViewController, didUpdateMessage post: AmityMessageModel)
+    func messageTextFullEditorViewController(_ viewController: UIViewController, didCreateMessage message: AmityMessageModel)
 }
 
 public class AmityMessageTextFullEditorViewController: AmityViewController {
@@ -95,8 +94,17 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         filePicker = AmityFilePicker(presentationController: self, delegate: self)
         
-        let isCreateMode = (messageMode == .create)
-        createButton = UIBarButtonItem(title: isCreateMode ? AmityLocalizedStringSet.General.next.localizedString : AmityLocalizedStringSet.General.save.localizedString, style: .plain, target: self, action: #selector(oncreateButtonTap))
+        let title: String
+        switch messageMode {
+        case .create:
+            title = AmityLocalizedStringSet.General.send.localizedString
+        case .createManyChannel:
+            title = AmityLocalizedStringSet.General.next.localizedString
+        case .edit(let messageId):
+            title = AmityLocalizedStringSet.General.save.localizedString
+        }
+        
+        createButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(oncreateButtonTap))
         createButton.tintColor = AmityColorSet.primary
         
         // [Fix defect] Set font of post button refer to AmityFontSet
@@ -150,7 +158,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         messageMenuViewBottomConstraints = NSLayoutConstraint(item: messageMenuView, attribute: .bottom, relatedBy: .equal, toItem: view.layoutMarginsGuide, attribute: .bottom, multiplier: 1, constant: 0)
         
         switch messageMode {
-        case .create:
+        case .create, .createManyChannel:
             // If there is no menu to show, so we don't show postMenuView.
             messageMenuView.isHidden = settings.allowMessageAttachments.isEmpty
         case .edit:
@@ -247,22 +255,33 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         view.endEditing(true)
         createButton.isEnabled = false
         
-        // Clarified broadcast type
-        var broadcastType: AmityBroadcastMessageCreatorType?
-        if !medias.isEmpty {
-            broadcastType = !text.isEmpty ? .imageWithCaption : .image
-        } else if !files.isEmpty {
-            broadcastType = .file
-        } else if !text.isEmpty {
-            broadcastType = .text
-        }
-        
-        // Push to broadcast chat picker viewcontroller if can clarified broadcast type
-        if let currentBroadcastType = broadcastType {
+        // Send message each type
+        switch messageTarget {
+        case .broadcast(let channel):
+            // Clarified broadcast type
+            var broadcastType: AmityBroadcastMessageCreatorType?
+            if !medias.isEmpty {
+                broadcastType = !text.isEmpty ? .imageWithCaption : .image
+            } else if !files.isEmpty {
+                broadcastType = .file
+            } else if !text.isEmpty {
+                broadcastType = .text
+            }
+            guard let currentBroadcastType = broadcastType else { break }
+            
+            // Create message creator model
             let messageCreatorModel = AmityBroadcastMessageCreatorModel(broadcastType: currentBroadcastType, text: text, medias: medias, files: files)
-            let channelPickerViewController = AmityForwatdChannelPickerViewController.make(pageTitle: "Select group", type: .broadcast, broadcastMessage: messageCreatorModel)
-            channelPickerViewController.isLastViewController = false
-            navigationController?.pushViewController(channelPickerViewController, animated: true)
+            
+            // Send broadcast message
+            if let selectedChannel = channel { // Case : Send broadcast one group
+                screenViewModel.action.createMessage(message: messageCreatorModel, channelId: selectedChannel.channelId)
+            } else { // Case : Send broadcast many group
+                let channelPickerViewController = AmityForwatdChannelPickerViewController.make(pageTitle: "Select group", type: .broadcast, broadcastMessage: messageCreatorModel)
+                channelPickerViewController.isLastViewController = false
+                navigationController?.pushViewController(channelPickerViewController, animated: true)
+            }
+        default:
+            break // Not ready for other type
         }
     }
     
@@ -584,7 +603,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         let maxNumberOfSelection: Int
         switch messageMode {
-        case .create:
+        case .create, .createManyChannel:
             maxNumberOfSelection = Constant.maximumNumberOfImages
         case .edit:
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
@@ -647,7 +666,7 @@ extension AmityMessageTextFullEditorViewController: AmityTextViewDelegate {
     }
     
     public func textViewDidChangeSelection(_ textView: AmityTextView) {
-        
+        // Not use
     }
 }
 
@@ -668,7 +687,7 @@ extension AmityMessageTextFullEditorViewController: AmityFilePickerDelegate {
 extension AmityMessageTextFullEditorViewController: AmityFileTableViewDelegate {
     
     func fileTableView(_ view: AmityFileTableView, didTapAt index: Int) {
-        //
+        // Not use
     }
     
     func fileTableViewDidDeleteData(_ view: AmityFileTableView, at index: Int) {
@@ -680,45 +699,30 @@ extension AmityMessageTextFullEditorViewController: AmityFileTableViewDelegate {
     }
     
     func fileTableViewDidTapViewAll(_ view: AmityFileTableView) {
-        //
+        // Not use
     }
     
 }
 
 extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorViewControllerDelegate {
-    func messageTextFullEditorViewController(_ viewController: UIViewController, didCreateMessage post: AmityMessageModel) {
-
+    func messageTextFullEditorViewController(_ viewController: UIViewController, didCreateMessage message: AmityMessageModel) {
+        // Not use
     }
     
-    func messageTextFullEditorViewController(_ viewController: UIViewController, didUpdateMessage post: AmityMessageModel) {
-        
-    }
-    
-    private func closeViewController() {
-        if let firstVCInNavigationVC = navigationController?.viewControllers.first {
-            if firstVCInNavigationVC is AmityCommunityHomePageViewController {
-                navigationController?.popViewController(animated: true)
-            } else {
-                dismiss(animated: true, completion: nil)
-            }
-        }
+    func messageTextFullEditorViewController(_ viewController: UIViewController, didUpdateMessage message: AmityMessageModel) {
+        // Not use
     }
 }
 
 extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorScreenViewModelDelegate {
-    func screenViewModelDidLoadMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmitySDK.AmityMessage) {
-        
+    func screenViewModelDidCreateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmityMessage?, error: Error?) {
+        if let message = message {
+            AmityHUD.show(.success(message: "Broadcast Sent"))
+            navigationController?.popViewController(animated: true)
+        } else {
+            AmityHUD.show(.success(message: "Broadcast Failed"))
+        }
     }
-    
-    func screenViewModelDidCreateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmitySDK.AmityMessage?, error: Error?) {
-        
-    }
-    
-    func screenViewModelDidUpdateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, error: Error?) {
-        
-    }
-    
-    
 }
 
 extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorMenuViewDelegate {

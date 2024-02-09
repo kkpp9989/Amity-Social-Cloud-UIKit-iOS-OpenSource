@@ -9,11 +9,12 @@
 import UIKit
 import AmitySDK
 
-enum AmityMessageMode: Equatable {
+public enum AmityMessageMode: Equatable {
     case create
+    case createManyChannel
     case edit(messageId: String)
     
-    static func == (lhs: AmityMessageMode, rhs: AmityMessageMode) -> Bool {
+    public static func == (lhs: AmityMessageMode, rhs: AmityMessageMode) -> Bool {
         if case .create = lhs, case .create = rhs {
             return true
         }
@@ -22,25 +23,21 @@ enum AmityMessageMode: Equatable {
 }
 
 public enum AmityMessageTarget {
-    case conversation(channels: [AmityChannelModel]?)
-    case community(channels: [AmityChannelModel]?)
-    case privateChannel(channels: [AmityChannelModel]?)
-    case broadcast(channels: [AmityChannelModel]?)
+    case conversation
+    case community
+    case privateChannel
+    case broadcast(channel: AmityChannelModel?)
 }
 
 protocol AmityMessageTextFullEditorScreenViewModelDataSource {
-    func loadMessage(for postId: String)
 }
 
 protocol AmityMessageTextFullEditorScreenViewModelDelegate: AnyObject {
-    func screenViewModelDidLoadMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmityMessage)
     func screenViewModelDidCreateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmityMessage?, error: Error?)
-    func screenViewModelDidUpdateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, error: Error?)
 }
 
 protocol AmityAmityMessageTextFullEditorScreenViewModelAction {
-    func createMessage(text: String, medias: [AmityMedia], files: [AmityFile], channelId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
-    func updateMessage(oldMessage: AmityMessageModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func createMessage(message: AmityBroadcastMessageCreatorModel, channelId: String)
 }
 
 protocol AmityMessageTextFullEditorScreenViewModelType: AmityAmityMessageTextFullEditorScreenViewModelAction, AmityMessageTextFullEditorScreenViewModelDataSource {

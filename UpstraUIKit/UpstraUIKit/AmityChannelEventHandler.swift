@@ -181,7 +181,7 @@ open class AmityChannelEventHandler {
             }
             
             // Push broadcast message creator view controller
-            let viewController = AmityBroadcastMessageCreatorViewController(messageTarget: .broadcast(channels: nil), messageMode: .create, settings: settings)
+            let viewController = AmityBroadcastMessageCreatorViewController(messageTarget: .broadcast(channel: nil), messageMode: .createManyChannel, settings: settings)
             viewController.hidesBottomBarWhenPushed = true
             source.navigationController?.pushViewController(viewController, animated: true)
         }
