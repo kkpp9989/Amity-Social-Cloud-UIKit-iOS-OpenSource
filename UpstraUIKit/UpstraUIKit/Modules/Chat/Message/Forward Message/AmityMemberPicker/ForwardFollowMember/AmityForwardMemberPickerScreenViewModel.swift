@@ -129,6 +129,7 @@ extension AmityForwardMemberPickerScreenViewModel {
     
     func searchUser(with text: String) {
         isSearch = true
+        AmityEventHandler.shared.showKTBLoading()
         searchUserController?.search(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] (result) in
             switch result {
             case .success(let users):
@@ -138,6 +139,7 @@ extension AmityForwardMemberPickerScreenViewModel {
                 switch error {
                 case .textEmpty:
                     self?.isSearch = false
+                    self?.updateSelectedUserInfo()
                     self?.delegate?.screenViewModelDidSearchUser()
                 case .unknown:
                     break

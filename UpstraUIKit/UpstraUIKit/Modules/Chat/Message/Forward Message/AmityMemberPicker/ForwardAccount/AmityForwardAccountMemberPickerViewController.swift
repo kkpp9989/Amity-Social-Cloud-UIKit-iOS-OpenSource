@@ -166,7 +166,6 @@ private extension AmityForwardAccountMemberPickerViewController {
 extension AmityForwardAccountMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
-//        screenViewModel.action.searchUser(with: searchText)
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -292,6 +291,8 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
     func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
         // Set title if need
         self.title = title
+        
+        searchBar.text = lastSearchKeyword
         
         // Update collection view
         collectionView.isHidden = isEmpty

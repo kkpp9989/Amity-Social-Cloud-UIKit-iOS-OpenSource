@@ -166,6 +166,7 @@ extension AmityForwardChannelPickerScreenViewModel {
         searchUserController?.delegate = self
         isSearch = true
         currentKeyword = text
+        AmityEventHandler.shared.showKTBLoading()
         if targetType == .group || targetType == .broadcast {
             searchUserController?.searchGroupType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] result in
                 DispatchQueue.main.async {

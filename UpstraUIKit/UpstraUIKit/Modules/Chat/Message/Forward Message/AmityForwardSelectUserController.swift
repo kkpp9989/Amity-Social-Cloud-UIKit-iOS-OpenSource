@@ -43,7 +43,7 @@ final class AmityForwardSelectUserController {
                     AmityHUD.hide()
                 }
                 
-                AmityHUD.show(.custom(view: communityPostModalView))
+                AmityHUD.showWithoutRepresenting(.custom(view: communityPostModalView))
                 
                 return
             }
