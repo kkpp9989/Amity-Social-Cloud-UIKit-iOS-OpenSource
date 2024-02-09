@@ -303,10 +303,10 @@ extension AmityPostDetailScreenViewModel {
                     switch result {
                     case .success(let post):
                         strongSelf.post = post
-                        strongSelf.post?.viewerCount = strongSelf.viewerCount ?? 0
+                        strongSelf.post?.viewerCount = strongSelf.viewerCount
                         
                         /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
-                        let isReactionChanging = strongSelf.isReactionChanging ?? false
+                        let isReactionChanging = strongSelf.isReactionChanging
                         if !isReactionChanging {
                             strongSelf.debouncer.run {
                                 strongSelf.prepareData()
