@@ -215,9 +215,9 @@ extension AmityMessageListTableViewController {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
-                cell.setIndexPath(with: indexPath)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
@@ -228,9 +228,9 @@ extension AmityMessageListTableViewController {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
-                cell.setIndexPath(with: indexPath)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
