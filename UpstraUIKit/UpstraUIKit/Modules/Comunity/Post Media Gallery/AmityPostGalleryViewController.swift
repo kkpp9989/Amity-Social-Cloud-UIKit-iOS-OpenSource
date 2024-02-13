@@ -52,7 +52,8 @@ public class AmityPostGalleryViewController: AmityViewController {
     
     private func presentPhotoViewer(referenceView: UIImageView, media: AmityMedia) {
         currentMedia = media
-        let photoViewerVC = AmityPhotoViewerController(referencedView: referenceView, image: referenceView.image)
+        let imageURL = media.image?.fileURL
+        let photoViewerVC = AmityPhotoViewerController(referencedView: referenceView, image: referenceView.image, imageURL: imageURL)
         photoViewerVC.dataSource = self
         photoViewerVC.delegate = self
         present(photoViewerVC, animated: true, completion: nil)

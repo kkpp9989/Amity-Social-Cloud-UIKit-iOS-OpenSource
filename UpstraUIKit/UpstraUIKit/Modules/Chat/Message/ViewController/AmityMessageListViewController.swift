@@ -1048,7 +1048,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: message.object, size: .full, progress: nil) { [weak self] (result) in
                 switch result {
                 case .success(let image):
-                    let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: image)
+                    let imageURL = message.object.getImageInfo()?.fileURL
+                    let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: image, imageURL: imageURL)
                     self?.present(photoViewerVC, animated: true, completion: nil)
                 case .failure:
                     break
