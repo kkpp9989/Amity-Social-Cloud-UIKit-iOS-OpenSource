@@ -611,5 +611,11 @@ public struct AmityLocalizedStringSet {
     public enum Chat {
         public static let chatUnableToChatTitle = "chat_unable_to_chat_title";
         public static let chatUnableToChatDescription = "chat_unable_to_chat_description";
+        public static let messageCreationDiscardMessageTitle = "message_creation_discard_message_title";
+        public static let messageCreationDiscardMessageDescription = "message_creation_discard_message_description";
+        public static let messageUnableToCreateMessageTitle = "message_unable_to_create_message_title";
+        public static let messageUnableToCreateMessageDescription = "message_unable_to_create_message_description";
+        public static let messageCreationUploadIncompleteTitle = "message_creation_file_upload_incomplete_title";
+        public static let messageCreationUploadIncompleteDescription = "message_creation_file_upload_incomplete_description";
     }
 }

@@ -625,3 +625,10 @@
 "reaction_empty_state_title" = "Sorry, we couldn't show the content";
 "reaction_empty_state_subtitle" = "Please try again or contact the administrator for more information";
 
+// MARK: - Message Creation
+"message_creation_discard_message_title" = "Discard Message?";
+"message_creation_discard_message_description" = "Do you want to discard your message?";
+"message_unable_to_create_message_title" = "Unable to create message";
+"message_unable_to_create_message_description" = "You have reached maximum 20,000 characters in a message.";
+"message_creation_file_upload_incomplete_title" = "Upload incomplete";
+"message_creation_file_upload_incomplete_description" = "Some files could not be uploaded.\nPlease remove and try again";
