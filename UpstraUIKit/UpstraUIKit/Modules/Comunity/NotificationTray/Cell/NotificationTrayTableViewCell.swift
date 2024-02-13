@@ -52,6 +52,8 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
             action = shouldRenderTarget(targetName: model.targetName) ? "commented on your \(targetType) in" : "commented on your \(targetType)"
         } else if model.verb == "mention" {
             action = shouldRenderTarget(targetName: model.targetName) ? "mentioned you in a \(targetType) in" : "mentioned you in a \(targetType)"
+        } else if model.verb == "mentreply" {
+            action = shouldRenderTarget(targetName: model.targetName) ? "replied to your \(targetType) in" : "replied to your \(targetType)"
         } else {
             action = shouldRenderTarget(targetName: model.targetName) ? "reacted on your \(targetType) in" : "reacted on your \(targetType)"
         }
