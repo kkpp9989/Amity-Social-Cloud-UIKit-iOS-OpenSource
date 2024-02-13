@@ -25,6 +25,7 @@
 "general_done" = "Done";
 "general_ok" = "OK";
 "general_post" = "Post";
+"general_broadcast" = "Broadcast";
 "general_discard" = "Discard";
 "general_leave" = "Leave";
 "general_next" = "Next"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
@@ -50,6 +51,7 @@
 "general_follow" = "Follow";
 "general_camera" = "Camera";
 "general_file" = "File";
+"general_content" = "Content";
 "general_album" = "Album";
 "general_location" = "Location";
 "general_image_gallery" = "Image Gallery";
@@ -459,6 +461,8 @@
 "hud_report_sent" = "Report sent";
 "hud_unreport_sent" = "Unreport sent";
 "hud_deleted" = "Deleted";
+"hud_broadcast_message_success" = "Broadcast Sent";
+"hud_broadcast_message_fail" = "Broadcast Fail";
 
 
 // MARK: - Popover Text Message
@@ -632,3 +636,7 @@
 "message_unable_to_create_message_description" = "You have reached maximum 20,000 characters in a message.";
 "message_creation_file_upload_incomplete_title" = "Upload incomplete";
 "message_creation_file_upload_incomplete_description" = "Some files could not be uploaded.\nPlease remove and try again";
+
+// MARK: - Broadcast Message Creation
+"broadcast_message_creation_text_placeholder" = "Write broadcast message...";
+"broadcast_message_creation_file_type_only_placeholder" = "Select file to broadcast";

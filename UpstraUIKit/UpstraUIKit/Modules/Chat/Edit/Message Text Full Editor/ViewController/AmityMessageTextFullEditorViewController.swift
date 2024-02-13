@@ -6,6 +6,8 @@
 //  Copyright © 2567 BE Amity. All rights reserved.
 //
 
+/// It's use for create broadcast message only. if want to use for other message type, will must to improve for its of some function.
+
 import UIKit
 import Photos
 import AmitySDK
@@ -90,7 +92,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
-        title = "Broadcast" // กลับมาแก้ด้วย -> ใช้ localize แทน และ แยก type
+        title = AmityLocalizedStringSet.General.broadcast.localizedString
         
         filePicker = AmityFilePicker(presentationController: self, delegate: self)
         
@@ -106,8 +108,6 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         createButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(oncreateButtonTap))
         createButton.tintColor = AmityColorSet.primary
-        
-        // [Fix defect] Set font of create button refer to AmityFontSet
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
@@ -129,7 +129,16 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
         textView.setupWithoutSuggestions()
-        textView.placeholder = "Write broadcast message..." // กลับมาแก้ด้วย -> ใช้ localize แทน
+        
+        /// It's use for create broadcast message only. if want to use for other message type, will must to improve for its
+        let placeholder: String
+        if settings.allowMessageAttachments.contains(.file) {
+            placeholder = AmityLocalizedStringSet.Chat.broadcastMessageCreationFileTypeOnlyPlaceholder.localizedString
+        } else {
+            placeholder = AmityLocalizedStringSet.Chat.broadcastMessageCreationTextPlaceholder.localizedString
+        }
+        textView.placeholder = placeholder
+        
         scrollView.addSubview(textView)
         
         separaterLine.translatesAutoresizingMaskIntoConstraints = false
@@ -256,6 +265,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         createButton.isEnabled = false
         
         // Send message each type
+        /// It's use for create broadcast message only. if want to use for other message type, will must to improve for its
         switch messageTarget {
         case .broadcast(let channel):
             // Clarified broadcast type
@@ -717,10 +727,10 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorVi
 extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorScreenViewModelDelegate {
     func screenViewModelDidCreateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmityMessage?, error: Error?) {
         if let message = message {
-            AmityHUD.show(.success(message: "Broadcast Sent"))
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.hudBroadcastMessageSuccess.localizedString))
             navigationController?.popViewController(animated: true)
         } else {
-            AmityHUD.show(.success(message: "Broadcast Failed"))
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.hudBroadcastMessageFail.localizedString))
         }
     }
 }
