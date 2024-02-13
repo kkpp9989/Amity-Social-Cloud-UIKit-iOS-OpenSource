@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -78,6 +78,7 @@
 		2B4876B82A5FE214001C5099 /* AmityReactionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4876B42A5FE213001C5099 /* AmityReactionPickerView.swift */; };
 		2B4876B92A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2B4876B52A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.xib */; };
 		2B4876BA2A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4876B62A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.swift */; };
+		4E7B9B222B7BDE09009197A1 /* AmityFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7B9B212B7BDE09009197A1 /* AmityFeedView.swift */; };
 		6895D9262975359000E377F1 /* AmityAsyncAwaitTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6895D9252975359000E377F1 /* AmityAsyncAwaitTransformer.swift */; };
 		69CAD3412AEAB61D00A09119 /* PreviewImagePickerController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 69CAD3402AEAB61D00A09119 /* PreviewImagePickerController.xib */; };
 		69CAD3432AEAB6AD00A09119 /* PreviewImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CAD3422AEAB6AD00A09119 /* PreviewImagePickerController.swift */; };
@@ -942,6 +943,7 @@
 		2B4876B42A5FE213001C5099 /* AmityReactionPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReactionPickerView.swift; sourceTree = "<group>"; };
 		2B4876B52A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AmityReactionPickerCollectionViewCell.xib; sourceTree = "<group>"; };
 		2B4876B62A5FE214001C5099 /* AmityReactionPickerCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityReactionPickerCollectionViewCell.swift; sourceTree = "<group>"; };
+		4E7B9B212B7BDE09009197A1 /* AmityFeedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmityFeedView.swift; sourceTree = "<group>"; };
 		6895D9252975359000E377F1 /* AmityAsyncAwaitTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityAsyncAwaitTransformer.swift; sourceTree = "<group>"; };
 		68EF84A529B077CF00C7EDEC /* RealmSwift.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = RealmSwift.xcframework; path = Shared/RealmSwift.xcframework; sourceTree = "<group>"; };
 		69CAD3402AEAB61D00A09119 /* PreviewImagePickerController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreviewImagePickerController.xib; sourceTree = "<group>"; };
@@ -1889,6 +1891,7 @@
 		0D43B17725D832EE00E6B604 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4E7B9B212B7BDE09009197A1 /* AmityFeedView.swift */,
 				0D43B15E25D82C7600E6B604 /* AmityFeedViewController.swift */,
 				0D43B15F25D82C7600E6B604 /* AmityFeedViewController.xib */,
 			);
@@ -6281,6 +6284,7 @@
 				2B4876B82A5FE214001C5099 /* AmityReactionPickerView.swift in Sources */,
 				AA8CC6DA2A6846CC003F8B8E /* AmityHashtagScreenViewModel.swift in Sources */,
 				72A3511424EA820800DA9D46 /* AmityExpandableLabel.swift in Sources */,
+				4E7B9B222B7BDE09009197A1 /* AmityFeedView.swift in Sources */,
 				0D43B16025D82C7600E6B604 /* AmityFeedViewController.swift in Sources */,
 				97D7236F2695A690000735F5 /* AmityUserProfileHeaderScreenViewModelProtocol.swift in Sources */,
 				0D43B18725D8363E00E6B604 /* AmityPostDeleteController.swift in Sources */,
