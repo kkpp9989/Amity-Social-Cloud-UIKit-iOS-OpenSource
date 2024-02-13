@@ -18,7 +18,7 @@ final class AmityMessageMediaService {
         switch message.messageType {
         case .audio:
             let fileName = message.messageId + ".m4a"
-            if let url = AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: fileName) {
+            if let url = AmityFileCache.shared.getCacheURL(for: .downloadedAudioDirectory, fileName: fileName) {
                 completion(.success(url))
             } else {
                 guard let fileRepository = fileRepository else {
@@ -35,7 +35,7 @@ final class AmityMessageMediaService {
                         }
                         return
                     }
-                    AmityFileCache.shared.cacheData(for: .audioDirectory, data: data, fileName: fileName, completion: { url in
+                    AmityFileCache.shared.cacheData(for: .downloadedAudioDirectory, data: data, fileName: fileName, completion: { url in
                         completion(.success(url))
                     })
                 })

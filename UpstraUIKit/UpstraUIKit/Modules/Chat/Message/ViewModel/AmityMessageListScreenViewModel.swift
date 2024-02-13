@@ -357,8 +357,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath) {
-        messageRepository?.deleteMessage(withId: message.messageId, completion: { [weak self] (status, error) in
-            guard error == nil , status else { return }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.softDeleteMessage(withId:), parameters: message.messageId) { [weak self] isSuccess, error in
+            guard error == nil else { return }
             switch message.messageType {
             case .audio:
                 AmityFileCache.shared.deleteFile(for: .audioDirectory, fileName: message.messageId + ".m4a")
@@ -367,13 +367,12 @@ extension AmityMessageListScreenViewModel {
             }
             self?.delegate?.screenViewModelEvents(for: .didDelete(indexPath: indexPath))
             self?.editor = nil
-        })
+        }
     }
     
-    
     func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool = false) {
-        messageRepository.deleteFailedMessage(messageId) { [weak self] (isSuccess, error) in
-            if isSuccess {
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.softDeleteMessage(withId:), parameters: messageId) { [weak self] isSuccess, error in
+            if let isSuccess = isSuccess, isSuccess {
                 if !isFromResend {
                     self?.delegate?.screenViewModelEvents(for: .didDeleteErrorMessage(indexPath: indexPath))
                 }
@@ -856,23 +855,22 @@ extension AmityMessageListScreenViewModel {
             deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             break
         case .image:
-            // Get image info and image URL data from path in image info from error message
+            // Get image info and image URL data from path in image info from error message (Cache in local)
             if let imageInfoFromMessage = message.object.getImageInfo(),
                let fileName = URL(string: imageInfoFromMessage.fileURL)?.lastPathComponent,
                let tempImageURLPath = AmityFileCache.shared.getCacheURL(for: .imageDirectory, fileName: fileName)?.path {
                 // Get image
                 let tempImageURL = URL(fileURLWithPath: tempImageURLPath)
-                guard let imageData = try? Data(contentsOf: tempImageURL),
-                      let image = UIImage(data: imageData) else { return }
+                guard let imageData = try? Data(contentsOf: tempImageURL) else { return }
                 // Generate AmityMedia type .image in state .local
-                let media = AmityMedia(state: .image(image), type: .image)
+                let media = AmityMedia(state: .localURL(url: tempImageURL), type: .image)
                 // Send image message again
                 send(withMedias: [media], type: .image)
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
         case .file:
-            // Get file info and file URL data from path in file info from error message
+            // Get file info and file URL data from path in file info from error message (Cache in local)
             if let fileInfoFromMessage = message.object.getFileInfo(),
                let fileName = URL(string: fileInfoFromMessage.fileURL)?.lastPathComponent,
                let tempFileURL = AmityFileCache.shared.getCacheURL(for: .fileDirectory, fileName: fileName) {
@@ -884,11 +882,12 @@ extension AmityMessageListScreenViewModel {
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
         case .audio:
-            // Get file info and file URL data from path in file info from error message
-            if let fileInfoFromMessage = message.object.getFileInfo(),
-               let audioURLData = URL(string: fileInfoFromMessage.fileURL) {
+            // Get audio file info and audio file URL data from path in file info from error message (Cache in local)
+            if let audioFileInfoFromMessage = message.object.getFileInfo(),
+               let audioFileName = URL(string: audioFileInfoFromMessage.fileURL)?.lastPathComponent,
+               let audioFileURL = AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: audioFileName) {
                 // Send audio message again
-                sendAudio(tempAudioURL: audioURLData)
+                sendAudio(tempAudioURL: audioFileURL)
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
@@ -924,20 +923,30 @@ extension AmityMessageListScreenViewModel {
                             let imageURL = self.createTempImage(image: image)
                             self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
                         case .failure:
-                            print("failure")
+                            print("[Message][Image] Can't get image uploading for send/resend message")
                         }
                     }
-                case .image(let image): // From resend image message
+                case .image(let image): // From resend image message (Deprecated)
                     let imageURL = self.createTempImage(image: image)
                     self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+                case .localURL(let imageURL): // From resend image message
+                    guard let imageData = try? Data(contentsOf: imageURL),
+                          let image = UIImage(data: imageData) else {
+                        print("[Message][Image] Can't get image from local url for send/resend message")
+                        return
+                    }
+                    let fileName = imageURL.lastPathComponent
+                    let imageURL = self.createTempImage(image: image, fileName: fileName)
+                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
                 default:
-                    print("failure")
+                    print("[Message][Image] Can't media state of processing invalid for send/resend message")
                 }
             } else {
                 // get local video url for uploading
                 media.getLocalURLForUploading { [weak self] url in
                     guard let url = url else {
                         media.state = .error
+                        print("[Message][Image] Can't get video uploading for send/resend message")
                         return
                     }
                     self?.createVideoMessage(videoURL: url)
@@ -954,9 +963,9 @@ extension AmityMessageListScreenViewModel {
         AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
     }
     
-    private func createTempImage(image: UIImage) -> URL {
+    private func createTempImage(image: UIImage, fileName: String? = nil) -> URL {
         // save image to temp directory and send local url path for uploading
-        let imageName = "\(UUID().uuidString).jpg"
+        let imageName = fileName ?? "\(UUID().uuidString).jpg"
         
         // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)

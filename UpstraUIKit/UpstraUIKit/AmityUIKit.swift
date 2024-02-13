@@ -95,8 +95,8 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.unregisterDevice()
     }
     
-    public static func clearCache() {
-        AmityUIKitManagerInternal.shared.clearCache()
+    public static func clearCache(isSkipResendCache: Bool = false) {
+        AmityUIKitManagerInternal.shared.clearCache(isSkipResendCache: isSkipResendCache)
     }
     
     /// Registers this device for receiving apple push notification
@@ -436,7 +436,7 @@ final class AmityUIKitManagerInternal: NSObject {
             // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
             self?.disableLivestreamUserLevelNotification()
             
-            self?.clearCache()
+            self?.clearCache(isSkipResendCache: true)
             
             self?.cacheDisplayName = ""
             
@@ -451,8 +451,8 @@ final class AmityUIKitManagerInternal: NSObject {
         self._client?.logout()
     }
     
-    func clearCache() {
-        AmityFileCache.shared.clearCache()
+    func clearCache(isSkipResendCache: Bool = false) {
+        AmityFileCache.shared.clearCache(isSkipResendCache: isSkipResendCache)
     }
     
     func registerDeviceForPushNotification(_ deviceToken: String, completion: AmityRequestCompletion? = nil) {
