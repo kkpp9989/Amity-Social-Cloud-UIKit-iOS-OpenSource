@@ -20,6 +20,11 @@ enum AmityMessageMenuActionType {
     case expand
 }
 
+enum AmityMessageTextFullEditorMenuViewAlignment {
+    case leading
+    case center
+}
+
 public enum AmityMessageAttachmentType: CaseIterable {
     case image
     case video
@@ -46,14 +51,17 @@ class AmityMessageTextFullEditorMenuView: UIView {
         }
     }
     
+    let alignment: AmityMessageTextFullEditorMenuViewAlignment
+    
     weak var delegate: AmityMessageTextFullEditorMenuViewDelegate?
     
     private enum Constant {
         static let topLineViewHeight: CGFloat = 1.0
     }
     
-    init(allowMessageAttachments: Set<AmityMessageAttachmentType>) {
+    init(allowMessageAttachments: Set<AmityMessageAttachmentType>, alignment: AmityMessageTextFullEditorMenuViewAlignment = .center) {
         self.allowMessageAttachments = allowMessageAttachments
+        self.alignment = alignment
         super.init(frame: .zero)
         commonInit()
     }
@@ -72,8 +80,15 @@ class AmityMessageTextFullEditorMenuView: UIView {
         clipsToBounds = true
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.distribution = .equalCentering
+        switch alignment {
+        case .leading:
+            stackView.distribution = .fill
+            stackView.spacing = 60
+        case .center:
+            stackView.distribution = .equalSpacing
+        }
         stackView.alignment = .center
+        
         topLineView.translatesAutoresizingMaskIntoConstraints = false
         topLineView.backgroundColor = .clear
         
@@ -115,7 +130,9 @@ class AmityMessageTextFullEditorMenuView: UIView {
         // To create buttons position arrangment, and also create negative space at left and right side.
         let visibleButtons = stackView.arrangedSubviews.filter { !$0.isHidden }
         if visibleButtons.count < 4 {
-            stackView.insertArrangedSubview(UIView(frame: .zero), at: 0)
+            if alignment == .center {
+                stackView.insertArrangedSubview(UIView(frame: .zero), at: 0)
+            }
             stackView.addArrangedSubview(UIView(frame: .zero))
         }
         

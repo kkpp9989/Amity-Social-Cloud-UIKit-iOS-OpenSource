@@ -73,7 +73,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         self.messageTarget = messageTarget
         self.messageMode = messageMode
         self.settings = settings
-        self.messageMenuView = AmityMessageTextFullEditorMenuView(allowMessageAttachments: settings.allowMessageAttachments)
+        self.messageMenuView = AmityMessageTextFullEditorMenuView(allowMessageAttachments: settings.allowMessageAttachments, alignment: .leading)
 
         super.init(nibName: nil, bundle: nil)
         
