@@ -44,6 +44,7 @@ class UploadFileMessageOperation: AsyncOperation {
                 let fileId = data.fileId
                 self?.createFileMessage(fileId: fileId)
             default:
+                Log.add("[UIKit][Message][file] fileid: \(strongSelf.file.id) | File state of processing invalid for send/resend message")
                 self?.finish()
             }
         }
@@ -52,10 +53,12 @@ class UploadFileMessageOperation: AsyncOperation {
     private func cacheFile(fileURL: URL) {
         guard let fileData = try? Data(contentsOf: fileURL) else { return }
         AmityFileCache.shared.cacheData(for: .fileDirectory, data: fileData, fileName: fileURL.lastPathComponent, completion: {_ in})
+        Log.add("[UIKit][Message][file] fileid: \(file.id) | Cache file success")
     }
     
     private func deleteCacheFile(fileURL: URL) {
         AmityFileCache.shared.deleteFile(for: .fileDirectory, fileName: fileURL.lastPathComponent)
+        Log.add("[UIKit][Message][file] fileid: \(file.id) | Delete cache file success")
     }
     
     private func createFileMessage(fileURL: URL) {
@@ -69,32 +72,15 @@ class UploadFileMessageOperation: AsyncOperation {
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
-                Log.add("[UIKit] Create file message (URL: \(fileURL)) fail with error: \(error?.localizedDescription)")
+                Log.add("[UIKit][Message][File] fileid: \(self?.file.id) | Create file message (URL: \(fileURL)) fail with error: \(error?.localizedDescription)")
+                self?.finish()
                 return
             }
             
             // Delete file to temp file message data if cache its
+            Log.add("[UIKit][Message][File] fileid: \(self?.file.id) | Create file message (URL: \(fileURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.deleteCacheFile(fileURL: fileURL)
-            
-            Log.add("[UIKit] Create file message (URL: \(fileURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
-            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
-                guard error == nil, let message = liveObject.snapshot else {
-                    self?.token = nil
-                    self?.finish()
-                    return
-                }
-                Log.add("[UIKit] Sync state file message (URL: \(fileURL)) : \(message.syncState) | type: \(message.messageType)")
-                switch message.syncState {
-                case .syncing, .default:
-                    // We don't cache local file URL as sdk handles itself
-                    break
-                case .synced, .error:
-                    self?.token = nil
-                    self?.finish()
-                @unknown default:
-                    fatalError()
-                }
-            }
+            self?.finish()
         }
     }
     
@@ -109,29 +95,13 @@ class UploadFileMessageOperation: AsyncOperation {
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createFileMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
-                Log.add("[UIKit] Create file message (fileId: \(fileId)) fail with error: \(error?.localizedDescription)")
+                Log.add("[UIKit][Message][File] fileid: \(self?.file.id) | Create file message (fileId: \(fileId)) fail with error: \(error?.localizedDescription)")
+                self?.finish()
                 return
             }
             
-            Log.add("[UIKit] Create file message (fileId: \(fileId)) success with message Id: \(message.messageId) | type: \(message.messageType)")
-            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
-                guard error == nil, let message = liveObject.snapshot else {
-                    self?.token = nil
-                    self?.finish()
-                    return
-                }
-                Log.add("[UIKit] Sync state file message (URL: (fileId: \(fileId)) : \(message.syncState) | type: \(message.messageType)")
-                switch message.syncState {
-                case .syncing, .default:
-                    // We don't cache local file URL as sdk handles itself
-                    break
-                case .synced, .error:
-                    self?.token = nil
-                    self?.finish()
-                @unknown default:
-                    fatalError()
-                }
-            }
+            Log.add("[UIKit][Message][File] fileid: \(self?.file.id) | Create file message (fileId: \(fileId)) success with message Id: \(message.messageId) | type: \(message.messageType)")
+            self?.finish()
         }
     }
 }
