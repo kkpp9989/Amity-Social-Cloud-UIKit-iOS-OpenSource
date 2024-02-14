@@ -103,10 +103,10 @@ final class AmityUserSettingsViewController: AmityViewController {
             case .inviteViaQRAndLink:
                 // ktb kk goto share qr from user setting
                 //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
-                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.userDescription ?? "")
             case .inviteViaQRAndLinkFriend:
                 // ktb kk goto ahare qr from user setting
-                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.userDescription ?? "")
             case .basicInfo, .manage, .report, .unfollow, .unreport:
                 break
             }
