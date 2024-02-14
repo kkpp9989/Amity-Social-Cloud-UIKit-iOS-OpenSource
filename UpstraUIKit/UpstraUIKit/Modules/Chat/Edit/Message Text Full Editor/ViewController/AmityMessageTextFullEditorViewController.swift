@@ -6,6 +6,8 @@
 //  Copyright © 2567 BE Amity. All rights reserved.
 //
 
+/// It's use for create broadcast message only. if want to use for other message type, will must to improve for its of some function.
+
 import UIKit
 import Photos
 import AmitySDK
@@ -16,7 +18,7 @@ public class AmityMessageFullTextEditorSettings {
     
     public init() { }
     
-    /// To set what are the attachment types to allow, the default value is `AmityPostAttachmentType.allCases`.
+    /// To set what are the attachment types to allow, the default value is `AmityMessageAttachmentType.allCases`.
     public var allowMessageAttachments: Set<AmityMessageAttachmentType> = Set<AmityMessageAttachmentType>(AmityMessageAttachmentType.allCases)
     
 }
@@ -73,7 +75,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         self.messageTarget = messageTarget
         self.messageMode = messageMode
         self.settings = settings
-        self.messageMenuView = AmityMessageTextFullEditorMenuView(allowMessageAttachments: settings.allowMessageAttachments)
+        self.messageMenuView = AmityMessageTextFullEditorMenuView(allowMessageAttachments: settings.allowMessageAttachments, alignment: .leading)
 
         super.init(nibName: nil, bundle: nil)
         
@@ -90,7 +92,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
-        title = "Broadcast" // กลับมาแก้ด้วย -> ใช้ localize แทน และ แยก type
+        title = AmityLocalizedStringSet.General.broadcast.localizedString
         
         filePicker = AmityFilePicker(presentationController: self, delegate: self)
         
@@ -106,8 +108,6 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         createButton = UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(oncreateButtonTap))
         createButton.tintColor = AmityColorSet.primary
-        
-        // [Fix defect] Set font of post button refer to AmityFontSet
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         createButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
@@ -119,7 +119,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.keyboardDismissMode = .onDrag
         scrollView.backgroundColor = AmityColorSet.backgroundColor
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityMessageTextFullEditorMenuView.defaultHeight, right: 0)
         view.addSubview(scrollView)
         
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -129,7 +129,16 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
         textView.setupWithoutSuggestions()
-        textView.placeholder = "Write broadcast message..." // กลับมาแก้ด้วย -> ใช้ localize แทน
+        
+        /// It's use for create broadcast message only. if want to use for other message type, will must to improve for its
+        let placeholder: String
+        if settings.allowMessageAttachments.contains(.file) {
+            placeholder = AmityLocalizedStringSet.Chat.broadcastMessageCreationFileTypeOnlyPlaceholder.localizedString
+        } else {
+            placeholder = AmityLocalizedStringSet.Chat.broadcastMessageCreationTextPlaceholder.localizedString
+        }
+        textView.placeholder = placeholder
+        
         scrollView.addSubview(textView)
         
         separaterLine.translatesAutoresizingMaskIntoConstraints = false
@@ -159,7 +168,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         switch messageMode {
         case .create, .createManyChannel:
-            // If there is no menu to show, so we don't show postMenuView.
+            // If there is no menu to show, so we don't show messageMenuView.
             messageMenuView.isHidden = settings.allowMessageAttachments.isEmpty
         case .edit:
             messageMenuView.isHidden = false
@@ -211,7 +220,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     
     public override func didTapLeftBarButton() {
         if isValueChanged {
-            let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
+            let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageCreationDiscardMessageTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageCreationDiscardMessageDescription.localizedString, preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
             let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
                 self?.generalDismiss()
@@ -233,10 +242,10 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         let keyboardScreenEndFrame = keyboardValue.size
         if notification.name == UIResponder.keyboardWillHideNotification {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityMessageTextFullEditorMenuView.defaultHeight, right: 0)
             messageMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityMessageTextFullEditorMenuView.defaultHeight, right: 0)
             messageMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
         scrollView.scrollIndicatorInsets = scrollView.contentInset
@@ -256,6 +265,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         createButton.isEnabled = false
         
         // Send message each type
+        /// It's use for create broadcast message only. if want to use for other message type, will must to improve for its
         switch messageTarget {
         case .broadcast(let channel):
             // Clarified broadcast type
@@ -292,7 +302,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         var isMessageValid = textView.isValid
         
-        // Update post button state
+        // Update create button state
         var isImageValid = true
         if !galleryView.medias.isEmpty {
             isImageValid = galleryView.medias.filter({
@@ -320,7 +330,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         
         createButton.isEnabled = isMessageValid
         
-        // Update postMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
+        // Update messageMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
         if !fileView.files.isEmpty {
             currentAttachmentState = .file
         } else if galleryView.medias.contains(where: { $0.type == .image }) {
@@ -500,7 +510,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     }
 
     private func showUploadFailureAlert() {
-        let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationUploadIncompletTitle.localizedString, message: AmityLocalizedStringSet.postCreationUploadIncompletDescription.localizedString, preferredStyle: .alert)
+        let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteDescription.localizedString, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
@@ -717,10 +727,10 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorVi
 extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorScreenViewModelDelegate {
     func screenViewModelDidCreateMessage(_ viewModel: AmityMessageTextFullEditorScreenViewModelType, message: AmityMessage?, error: Error?) {
         if let message = message {
-            AmityHUD.show(.success(message: "Broadcast Sent"))
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.hudBroadcastMessageSuccess.localizedString))
             navigationController?.popViewController(animated: true)
         } else {
-            AmityHUD.show(.success(message: "Broadcast Failed"))
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.hudBroadcastMessageFail.localizedString))
         }
     }
 }
@@ -808,7 +818,7 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorMe
             }
         }
         
-        // Each option will be added, based on allowPostAttachments.
+        // Each option will be added, based on allowMessageAttachments.
         var items: [ImageItemOption] = []
         if settings.allowMessageAttachments.contains(.image) || settings.allowMessageAttachments.contains(.video) {
             items.append(cameraOption)
@@ -854,7 +864,7 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorMe
     }
     
     private func showAlertForMaximumCharacters() {
-        let alertController = UIAlertController(title: AmityLocalizedStringSet.postUnableToPostTitle.localizedString, message: AmityLocalizedStringSet.postUnableToPostDescription.localizedString, preferredStyle: .alert)
+        let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageUnableToCreateMessageTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageUnableToCreateMessageDescription.localizedString, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.done.localizedString, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
@@ -924,7 +934,7 @@ extension AmityMessageTextFullEditorViewController {
         if let view = gestureRecognizer.view,
             let directions = (gestureRecognizer as? UIPanGestureRecognizer)?.direction(in: view),
             directions.contains(.right) {
-            let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
+            let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageCreationDiscardMessageTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageCreationDiscardMessageDescription.localizedString, preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
             let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
                 self?.generalDismiss()

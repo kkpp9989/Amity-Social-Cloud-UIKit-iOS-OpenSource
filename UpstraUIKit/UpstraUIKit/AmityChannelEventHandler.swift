@@ -187,10 +187,10 @@ open class AmityChannelEventHandler {
         }
         
         // Setup option
-        let contentOption = ImageItemOption(title: "Content", image: AmityIconSet.iconContent) {
+        let contentOption = ImageItemOption(title: AmityLocalizedStringSet.General.content.localizedString, image: AmityIconSet.iconContent) {
             completion(.content)
         }
-        let fileOption = ImageItemOption(title: "File", image: AmityIconSet.iconAttach) {
+        let fileOption = ImageItemOption(title: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconAttach) {
             completion(.file)
         }
         
