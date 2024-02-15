@@ -213,6 +213,21 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
 //        screenViewModel.action.clearOldPosts()
     }
     
+    
+    func tableViewDisableScroll(){
+        guard let tb = tableView else {
+            return
+        }
+        return tb.isScrollEnabled = false
+    }
+    func tableViewEnableScroll(){
+        guard let tb = tableView else {
+            return
+        }
+        return tb.isScrollEnabled = true
+    }
+ 
+    
 }
 
 // MARK: - ReactionPickerView
