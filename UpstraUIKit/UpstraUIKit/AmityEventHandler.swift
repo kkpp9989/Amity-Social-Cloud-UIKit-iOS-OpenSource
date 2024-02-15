@@ -33,6 +33,7 @@ public enum AmitySaveActivityType:String {
 public enum AmityContentType {
     case communityProfilePage
     case chat
+    case chat1_1
     case userProfile
 }
 
