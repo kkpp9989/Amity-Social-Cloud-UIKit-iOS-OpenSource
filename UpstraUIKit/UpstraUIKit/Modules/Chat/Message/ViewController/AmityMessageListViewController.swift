@@ -1168,6 +1168,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 		AmityEventHandler.shared.userDidTap(from: self, userId: userId)
 	}
     
+    func screenViewModelDidTapOnPostIdLink(with postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
+    
     func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int) {
         composeBar.updateViewDidSelectForwardMessage(amount: amountForwardMessageList)
     }

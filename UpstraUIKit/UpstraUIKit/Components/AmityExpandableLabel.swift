@@ -21,6 +21,7 @@ public protocol AmityExpandableLabelDelegate: AnyObject {
     func expandableLabeldidTap(_ label: AmityExpandableLabel)
     func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String)
     func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int)
+    func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String)
 }
 
 struct Hyperlink {
@@ -288,13 +289,18 @@ extension AmityExpandableLabel {
             switch hyperLink.type {
             case .url(let url):
 //                print("[URL] click hyperlink | url.absoluteString: \(url.absoluteString)")
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                if let postId = extractPostId(from: url) {
+                    print("Post ID: \(postId)")
+                    delegate?.didTapOnPostIdLink(self, withPostId: postId)
+                } else {
+                    print("Invalid URL or postId not found")
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
             case .mention(let userId):
                 delegate?.didTapOnMention(self, withUserId: userId)
             case .hashtag(keyword: let keyword, count: let count):
                 delegate?.didTapOnHashtag(self, withKeyword: keyword, count: count)
             }
-            
         } else {
             guard isExpandable else {
                 delegate?.expandableLabeldidTap(self)
@@ -320,7 +326,31 @@ extension AmityExpandableLabel {
         }
         
     }
-
+    
+    func extractPostId(from url: URL) -> String? {
+        do {
+            // Regular expression pattern to match the domain and postId parameter
+            let regex = try NSRegularExpression(pattern: "(https://social(-uat)?\\.krungthai\\.com).*postId=(\\w+)", options: .caseInsensitive)
+            
+            // Range of the entire string
+            let nsString = NSString(string: url.absoluteString)
+            let range = NSRange(location: 0, length: nsString.length)
+            
+            // Check if the string contains the valid link pattern
+            if let match = regex.firstMatch(in: url.absoluteString, options: [], range: range) {
+                // Check if the link contains postId parameter
+                let postIdRange = match.range(at: 3)
+                if postIdRange.location != NSNotFound {
+                    let postId = nsString.substring(with: postIdRange)
+                    return postId
+                }
+            }
+            return nil
+        } catch {
+            print("Error creating regular expression: \(error)")
+            return nil
+        }
+    }
 }
 
 // MARK: Privates

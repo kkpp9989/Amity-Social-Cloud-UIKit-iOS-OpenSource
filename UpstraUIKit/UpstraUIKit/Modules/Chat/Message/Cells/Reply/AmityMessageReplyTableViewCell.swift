@@ -234,6 +234,9 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
 }
 
 extension AmityMessageReplyTableViewCell: AmityExpandableLabelDelegate {
+    func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        delegate?.performEvent(self, labelEvents: .didTapOnPostIdLink(label: label, postId: postId))
+    }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
         delegate?.performEvent(self, labelEvents: .tapExpandableLabel(label: label))

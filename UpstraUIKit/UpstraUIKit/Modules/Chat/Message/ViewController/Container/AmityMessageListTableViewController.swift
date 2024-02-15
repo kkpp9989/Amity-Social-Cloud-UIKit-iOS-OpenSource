@@ -280,6 +280,8 @@ extension AmityMessageListTableViewController: AmityMessageCellDelegate {
             tableView.endUpdates()
 		case .didTapOnMention(_, let userId):
 			screenViewModel.action.tapOnMention(withUserId: userId)
+        case .didTapOnPostIdLink(label: let label, postId: let postId):
+            screenViewModel.action.tapOnPostIdLink(withPostId: postId)
         }
     }
     
