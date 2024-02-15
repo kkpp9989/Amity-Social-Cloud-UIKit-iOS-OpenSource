@@ -303,6 +303,9 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
 
 // MARK: AmityExpandableLabelDelegate
 extension AmityPostPollTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        delegate?.didPerformAction(self, action: .tapOnPostIdLink(postId: postId))
+    }
     
     // MARK: - Perform Action
     private func performAction(action: AmityPostAction) {
