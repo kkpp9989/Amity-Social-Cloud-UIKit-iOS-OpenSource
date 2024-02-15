@@ -72,11 +72,11 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             
             
             // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
-            let itemInviteViaQRAndLink = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
-                                                                        icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
-                                                                        title: AmityChatSettingsItem.inviteViaQRAndLink.title,
+            let itemInviteViaQRAndLink1_1 = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink1_1.identifier,
+                                                                        icon: AmityChatSettingsItem.inviteViaQRAndLink1_1.icon,
+                                                                        title: AmityChatSettingsItem.inviteViaQRAndLink1_1.title,
                                                                         description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+                settingsItems.append(.textContent(content: itemInviteViaQRAndLink1_1))
             
             // MARK: Separator
             //settingsItems.append(.separator)

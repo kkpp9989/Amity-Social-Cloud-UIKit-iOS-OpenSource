@@ -16,6 +16,7 @@ enum AmityChatSettingsItem: Equatable {
     case groupProfile
     case inviteUser
     case inviteViaQRAndLink
+    case inviteViaQRAndLink1_1
     case notification(Bool)
     
     var identifier: String {
@@ -36,6 +37,8 @@ enum AmityChatSettingsItem: Equatable {
             return "notification"
         case .inviteViaQRAndLink:
             return "inviteViaQRAndLink"
+        case .inviteViaQRAndLink1_1:
+            return "inviteViaQRAndLink1_1"
         }
     }
     
@@ -62,6 +65,8 @@ enum AmityChatSettingsItem: Equatable {
             }
             return AmityLocalizedStringSet.ChatSettings.unmuteNotification.localizedString
         case .inviteViaQRAndLink:
+            return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
+        case .inviteViaQRAndLink1_1:
             return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
         }
     }
@@ -96,6 +101,8 @@ enum AmityChatSettingsItem: Equatable {
             return UIColor(hex: "#292B32")
         case .inviteViaQRAndLink:
             return UIColor(hex: "#292B32")
+        case .inviteViaQRAndLink1_1:
+            return UIColor(hex: "#292B32")
         }
     }
     
@@ -115,6 +122,8 @@ enum AmityChatSettingsItem: Equatable {
             }
             return AmityIconSet.ChatSettings.iconMutedNotification
         case .inviteViaQRAndLink:
+            return AmityIconSet.ChatSettings.iconInviteViaQRAndLink
+        case .inviteViaQRAndLink1_1:
             return AmityIconSet.ChatSettings.iconInviteViaQRAndLink
         default:
             return nil
