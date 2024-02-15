@@ -912,57 +912,85 @@ extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
-        for media in medias {
-            // Separate process from state of media
-            if type == .image {
-                switch media.state {
-                case .localAsset(_): // From send image message
-                    media.getImageForUploading { result in
-                        switch result {
-                        case .success(let image):
-                            let imageURL = self.createTempImage(image: image)
-                            self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
-                        case .failure:
-                            print("[Message][Image] Can't get image uploading for send/resend message")
-                        }
-                    }
-                case .image(let image): // From resend image message (Deprecated)
-                    let imageURL = self.createTempImage(image: image)
-                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
-                case .localURL(let imageURL): // From resend image message
-                    guard let imageData = try? Data(contentsOf: imageURL),
-                          let image = UIImage(data: imageData) else {
-                        print("[Message][Image] Can't get image from local url for send/resend message")
-                        return
-                    }
-                    let fileName = imageURL.lastPathComponent
-                    let imageURL = self.createTempImage(image: image, fileName: fileName)
-                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
-                default:
-                    print("[Message][Image] Can't media state of processing invalid for send/resend message")
-                }
-            } else {
-                // get local video url for uploading
-                media.getLocalURLForUploading { [weak self] url in
-                    guard let url = url else {
-                        media.state = .error
-                        print("[Message][Image] Can't get video uploading for send/resend message")
-                        return
-                    }
-                    self?.createVideoMessage(videoURL: url)
-                }
+        let operations: [AsyncOperation]
+        
+        switch type {
+        case .image:
+            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+        case .video:
+            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: $0.id) }
+        }
+        
+        // Define serial dependency A <- B <- C <- ... <- Z
+        for (left, right) in zip(operations, operations.dropFirst()) {
+            right.addDependency(left)
+        }
+        
+        for operation in operations {
+            operation.completionBlock = { [weak self] in
+                self?.scrollToLatestMessage()
             }
         }
-    }
 
+        queue.addOperations(operations, waitUntilFinished: false)
+    }
+    
+    // [Deprecated] Use queue operation instead
+//    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
+//        for media in medias {
+//            // Separate process from state of media
+//            if type == .image {
+//                switch media.state {
+//                case .localAsset(_): // From send image message
+//                    media.getImageForUploading { result in
+//                        switch result {
+//                        case .success(let image):
+//                            let imageURL = self.createTempImage(image: image)
+//                            self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                        case .failure:
+//                            print("[Message][Image] Can't get image uploading for send/resend message")
+//                        }
+//                    }
+//                case .image(let image): // From resend image message (Deprecated)
+//                    let imageURL = self.createTempImage(image: image)
+//                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                case .localURL(let imageURL): // From resend image message
+//                    guard let imageData = try? Data(contentsOf: imageURL),
+//                          let image = UIImage(data: imageData) else {
+//                        print("[Message][Image] Can't get image from local url for send/resend message")
+//                        return
+//                    }
+//                    let fileName = imageURL.lastPathComponent
+//                    let imageURL = self.createTempImage(image: image, fileName: fileName)
+//                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                default:
+//                    print("[Message][Image] Can't media state of processing invalid for send/resend message")
+//                }
+//            } else {
+//                // get local video url for uploading
+//                media.getLocalURLForUploading { [weak self] url in
+//                    guard let url = url else {
+//                        media.state = .error
+//                        print("[Message][Image] Can't get video uploading for send/resend message")
+//                        return
+//                    }
+//                    self?.createVideoMessage(videoURL: url)
+//                }
+//            }
+//        }
+//    }
+
+    // [Deprecated] Use queue operation instead
     private func cacheImageFile(imageData: Data, fileName: String) {
         AmityFileCache.shared.cacheData(for: .imageDirectory, data: imageData, fileName: fileName, completion: {_ in})
     }
     
+    // [Deprecated] Use queue operation instead
     private func deleteCacheImageFile(fileName: String) {
         AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
     }
     
+    // [Deprecated] Use queue operation instead
     private func createTempImage(image: UIImage, fileName: String? = nil) -> URL {
         // save image to temp directory and send local url path for uploading
         let imageName = fileName ?? "\(UUID().uuidString).jpg"
@@ -980,6 +1008,7 @@ extension AmityMessageListScreenViewModel {
         return imageUrl
     }
     
+    // [Deprecated] Use queue operation instead
     private func createImageMessage(imageURL: URL, fileURLString: String) {
         self.scrollToLatestMessage() // Scroll to latest message for see send image progressing
         
@@ -990,16 +1019,21 @@ extension AmityMessageListScreenViewModel {
             return
         }
                 
+        print("[Message][Image] Start send image message | imageURL: \(imageURL.lastPathComponent)")
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
+                print("[Message][Image] Send image message fail with error: \(error?.localizedDescription) | imageURL: \(imageURL.lastPathComponent)")
                 return
             }
+            
+            print("[Message][Image] Send image message success | imageURL: \(imageURL.lastPathComponent)")
             
             // Delete cache if exists
             self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
         }
     }
     
+    // [Deprecated] Use queue operation instead
     private func createVideoMessage(videoURL: URL) {
         self.scrollToLatestMessage() // Scroll to latest message for see send video progressing
         
@@ -1048,13 +1082,17 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send File
 extension AmityMessageListScreenViewModel {
     func send(withFiles files: [AmityFile]) {
-        self.scrollToLatestMessage() // Scroll to latest message for see send file progressing
-        
         let operations = files.map { UploadFileMessageOperation(subChannelId: subChannelId, file: $0, repository: messageRepository) }
         
         // Define serial dependency A <- B <- C <- ... <- Z
         for (left, right) in zip(operations, operations.dropFirst()) {
             right.addDependency(left)
+        }
+        
+        for operation in operations {
+            operation.completionBlock = { [weak self] in
+                self?.scrollToLatestMessage()
+            }
         }
 
         queue.addOperations(operations, waitUntilFinished: false)
