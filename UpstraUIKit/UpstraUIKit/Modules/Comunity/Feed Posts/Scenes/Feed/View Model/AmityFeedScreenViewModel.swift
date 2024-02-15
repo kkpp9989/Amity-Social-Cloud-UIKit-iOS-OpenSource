@@ -390,6 +390,9 @@ extension AmityFeedScreenViewModel {
             reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
                 guard let strongSelf = self else { return }
                 if success {
+                    // ktb kk save coin when react
+                    AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: id, reactType: reaction.rawValue)
+
                     strongSelf.isReactionLoading = false
                     switch referenceType {
                     case .post:
