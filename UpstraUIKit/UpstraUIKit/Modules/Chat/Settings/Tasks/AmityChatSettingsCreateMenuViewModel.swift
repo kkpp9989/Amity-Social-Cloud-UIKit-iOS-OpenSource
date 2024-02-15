@@ -70,8 +70,16 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                description: nil)
             settingsItems.append(.textContent(content: itemReportUserContent))
             
+            
+            // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
+            let itemInviteViaQRAndLink = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
+                                                                        icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
+                                                                        title: AmityChatSettingsItem.inviteViaQRAndLink.title,
+                                                                        description: nil)
+                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+            
             // MARK: Separator
-            settingsItems.append(.separator)
+            //settingsItems.append(.separator)
             
             // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles])
             let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(false).identifier,
@@ -83,6 +91,7 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             
             // MARK: Separator
             settingsItems.append(.separator)
+
         default: // Group chat
             if let isCanEditGroupChannel = isCanEditGroupChannel, isCanEditGroupChannel { // Case : Moderator roles (delete channel, edit channel)
                 // MARK: Group profile (Group chat [Moderator roles])
@@ -116,6 +125,14 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                       description: nil)
                 settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
                 
+                // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles]) // [Mock]
+                let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(isCanEditGroupChannel).identifier,
+                                                                          icon: AmityChatSettingsItem.delete(isCanEditGroupChannel).icon,
+                                                                          title: AmityChatSettingsItem.delete(isCanEditGroupChannel).title,
+                                                                          description: AmityChatSettingsItem.delete(isCanEditGroupChannel).description,
+                                                                          titleTextColor: AmityColorSet.alert)
+                settingsItems.append(.textContent(content: itemDeleteChatContent))
+                
                 // MARK: Separator
                 settingsItems.append(.separator)
                 
@@ -127,16 +144,6 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                          titleTextColor: AmityColorSet.alert)
                 settingsItems.append(.textContent(content: itemLeaveChatContent))
                 
-                // MARK: Separator
-                settingsItems.append(.separator)
-                
-                // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles]) // [Mock]
-                let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(isCanEditGroupChannel).identifier,
-                                                                          icon: AmityChatSettingsItem.delete(isCanEditGroupChannel).icon,
-                                                                          title: AmityChatSettingsItem.delete(isCanEditGroupChannel).title,
-                                                                          description: AmityChatSettingsItem.delete(isCanEditGroupChannel).description,
-                                                                          titleTextColor: AmityColorSet.alert)
-//                settingsItems.append(.textContent(content: itemDeleteChatContent))
                 
                 // MARK: Separator
 //                settingsItems.append(.separator)
@@ -162,7 +169,7 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                             icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                             title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                             description: nil)
-//                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
 //                settingsItems.append(.separator)
