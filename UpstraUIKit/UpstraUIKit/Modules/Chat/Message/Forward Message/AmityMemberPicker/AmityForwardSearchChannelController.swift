@@ -75,7 +75,7 @@ final class AmityForwardSearchChannelController {
         request.keyword = currentKeyword
         request.isMemberOnly = true
         request.paginateToken = paginateToken
-        request.requestSearchChannels(type: targetType) { [weak self] result in
+        request.requestSearchChannels(types: [targetType]) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let dataResponse):

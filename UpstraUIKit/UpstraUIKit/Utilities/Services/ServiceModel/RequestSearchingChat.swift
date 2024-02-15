@@ -64,20 +64,22 @@ struct RequestSearchingChat {
         }
     }
     
-    func requestSearchChannels(type: AmityChannelViewType, _ completion: @escaping(Result<SearchChannelsModel,Error>) -> ()) {
+    func requestSearchChannels(types: [AmityChannelViewType], _ completion: @escaping(Result<SearchChannelsModel,Error>) -> ()) {
         let domainURL = "https://api.sg.amity.co"
         
-        let channelType: String
-        switch type {
-        case .group:
-            channelType = "community"
-        case .broadcast:
-            channelType = "broadcast"
-        default:
-            channelType = "community"
+        var channelType: String = ""
+        for (index, type) in types.enumerated() {
+            switch type {
+            case .broadcast:
+                channelType += "types[]=broadcast\(index < (types.count - 1) ? "&" : "")"
+            case .group:
+                channelType += "types[]=community\(index < (types.count - 1) ? "&" : "")"
+            default:
+                break
+            }
         }
         
-        var urlRequest = "\(domainURL)/api/v2/search/channels?query=\(keyword)&types[]=\(channelType)&options[limit]=\(size)&exactMatch=false&isMemberOnly=\(isMemberOnly)"
+        var urlRequest = "\(domainURL)/api/v2/search/channels?query=\(keyword)&\(channelType)&options[limit]=\(size)&exactMatch=false&isMemberOnly=\(isMemberOnly)"
 
         if !paginateToken.isEmpty {
             urlRequest += "&options[token]=\(paginateToken)"
