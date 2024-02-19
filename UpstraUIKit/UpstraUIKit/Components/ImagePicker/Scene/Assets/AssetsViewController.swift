@@ -219,7 +219,8 @@ extension AssetsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         guard store.count < settings.selection.max || settings.selection.unselectOnReachingMax else {
             if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
-                ToastView.shared.showToast(message: AmityLocalizedStringSet.MessageList.alertSelectImageFull.localizedString, in: window)
+                let message = String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.alertSelectImageFull.localizedString, String(settings.selection.max))
+                ToastView.shared.showToast(message: message, in: window)
             }
             return false
         }

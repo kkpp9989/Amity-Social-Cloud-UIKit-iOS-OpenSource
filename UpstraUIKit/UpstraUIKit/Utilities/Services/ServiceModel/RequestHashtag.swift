@@ -14,17 +14,23 @@ struct RequestHashtag {
     let currentUserToken = AmityUIKitManager.currentUserToken
     var keyword: String = ""
     var size: Int = 3
-    var from: Int = 0
+    var paginateToken: String = ""
 
     func request(_ completion: @escaping(Result<HashtagModel,Error>) -> ()) {
         let domainURL = "https://beta.amity.services"
-        requestMeta.urlRequest = "\(domainURL)/search/hashtag"
+        var urlRequest = "\(domainURL)/v3/searchHashtag?options[limit]=\(size)&keyword=\(keyword)"
+        
+        if !paginateToken.isEmpty {
+            urlRequest += "&options[token]=\(paginateToken)"
+        }
+        
+        requestMeta.urlRequest = urlRequest
         requestMeta.header = [["Content-Type": "application/json",
                                "Accept": "application/json",
                                "Authorization": "Bearer \(currentUserToken)"]]
-        requestMeta.method = .post
-        requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["text": keyword, "ignoreCase": true], "from": from, "size": size, "sort": [["count": "desc"]]]
+        requestMeta.method = .get
+        requestMeta.encoding = .urlEncoding
+        
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))

@@ -139,6 +139,8 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             AmityEventHandler.shared.hashtagDidTap(from: viewController!, keyword: keyword, count: count)
         case .tapPollAnswers(postId: let postId, pollAnswers: let pollAnswers):
             delegate?.amityPostProtocolHandlerDidTapPollAnswers(cell, postId: postId, pollAnswers: pollAnswers)
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: viewController!, postId: postId)
         }
         
     }
