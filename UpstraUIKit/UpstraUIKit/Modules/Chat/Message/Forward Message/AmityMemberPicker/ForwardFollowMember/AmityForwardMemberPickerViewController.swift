@@ -32,6 +32,8 @@ class AmityForwardMemberPickerViewController: AmityViewController {
     var lastSearchKeyword: String = ""
     
     var pageTitle: String?
+    
+    var isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,7 +174,10 @@ extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
         }
         
         lastSearchKeyword = searchText
+        
+        if !isReady { return }
         screenViewModel.action.searchUser(with: searchText)
+        isReady = false
     }
 }
 
@@ -277,6 +282,7 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        isReady = true
         AmityEventHandler.shared.hideKTBLoading()
     }
     
