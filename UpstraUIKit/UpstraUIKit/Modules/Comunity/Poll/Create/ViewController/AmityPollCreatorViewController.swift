@@ -171,6 +171,8 @@ extension AmityPollCreatorViewController: AmityPollCreatorScreenViewModelDelegat
                                                 self?.closeViewController()
                                              })], from: self)
             case .published, .declined:
+                // ktb kk save coin when create poll
+                AmityEventHandler.shared.saveKTBCoin(v: nil, type: .post, id: post.postId, reactType: nil)
                 postButton?.isEnabled = true
                 closeViewController()
             @unknown default:
