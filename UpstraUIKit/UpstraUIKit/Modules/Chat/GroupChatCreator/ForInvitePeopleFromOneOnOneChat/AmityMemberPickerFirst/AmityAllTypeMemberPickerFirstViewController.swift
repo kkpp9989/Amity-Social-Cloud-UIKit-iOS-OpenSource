@@ -27,6 +27,8 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
+    private var keyword: String = ""
+    
     // MARK: - View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,6 +63,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
         followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
@@ -70,8 +73,9 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
-        memberVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        memberVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
@@ -79,6 +83,7 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
         return [memberVC!, followingVC!, followerVC!]
     }
@@ -127,14 +132,15 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-//            print("--------> [User] Go to tab acoount")
-            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            memberVC?.lastSearchKeyword = keyword
         case 1:
-//            print("--------> [User] Go to tab following")
-            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followingVC?.lastSearchKeyword = keyword
         case 2:
 //            print("--------> [User] Go to tab follower")
-            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followerVC?.lastSearchKeyword = keyword
         default:
             break
         }

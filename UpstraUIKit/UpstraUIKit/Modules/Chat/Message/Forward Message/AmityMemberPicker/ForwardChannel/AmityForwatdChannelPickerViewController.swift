@@ -76,6 +76,11 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
         screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
     }
+    
+    public func fetchData() {
+        AmityEventHandler.shared.showKTBLoading()
+        screenViewModel.action.clearData()
+    }
 }
 
 private extension AmityForwatdChannelPickerViewController {
@@ -228,7 +233,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
         if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
             return 0
         } else {
-            return 28
+            return 0
         }
     }
 }
@@ -353,6 +358,14 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
             tableView.showLoadingIndicator()
         case .initial, .loaded:
             tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        tableView.reloadData()
+        debouncer.run { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.screenViewModel.action.searchUser(with: strongSelf.lastSearchKeyword)
         }
     }
 }

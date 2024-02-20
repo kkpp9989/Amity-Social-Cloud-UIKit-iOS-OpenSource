@@ -142,18 +142,22 @@ public final class AmityChannelPickerTabPageViewController: AmityPageViewControl
         case 0:
             recentVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             recentVC?.lastSearchKeyword = keyword
+            recentVC?.fetchData()
             break
         case 1:
             followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followingVC?.lastSearchKeyword = keyword
+            followingVC?.fetchData()
             break
         case 2:
             followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followerVC?.lastSearchKeyword = keyword
+            followerVC?.fetchData()
             break
         case 3:
             groupChatVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             groupChatVC?.lastSearchKeyword = keyword
+            groupChatVC?.fetchData()
             break
         default:
             break
