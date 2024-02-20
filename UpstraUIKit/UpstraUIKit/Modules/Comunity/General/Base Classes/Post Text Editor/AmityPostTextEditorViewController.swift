@@ -59,6 +59,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var hashtagTableView: AmityHashtagTableView
     private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
+    private var bottomScrollViewInset: CGFloat = 0
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -291,10 +292,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let keyboardScreenEndFrame = keyboardValue.size
         let comunityPanelHeight = comunityPanelView.isHidden ? 0.0 : AmityComunityPanelView.defaultHeight
         if notification.name == UIResponder.keyboardWillHideNotification {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
         scrollView.scrollIndicatorInsets = scrollView.contentInset
@@ -1106,6 +1109,7 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0
             hashtagTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
             var heightConstant:CGFloat = 240.0
             if keywords.count < 5 {
@@ -1114,7 +1118,12 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
             hashtagTableViewHeightConstraint.constant = heightConstant
             hashtagTableView.isHidden = false
             hashtagTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstant, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        let rect = textView.convert(textView.bounds, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
     }
     
     public func didCreateAttributedString(attributedString: NSAttributedString) {
@@ -1126,6 +1135,7 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0
             mentionTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
             var heightConstant:CGFloat = 240.0
             if users.count < 5 {
@@ -1134,7 +1144,12 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
             mentionTableViewHeightConstraint.constant = heightConstant
             mentionTableView.isHidden = false
             mentionTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstant, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        let rect = textView.convert(textView.bounds, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
     }
     
     public func didMentionsReachToMaximumLimit() {
