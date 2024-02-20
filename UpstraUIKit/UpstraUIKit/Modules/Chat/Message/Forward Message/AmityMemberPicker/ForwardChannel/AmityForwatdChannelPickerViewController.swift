@@ -40,6 +40,8 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     var pageTitle: String?
     var lastSearchKeyword: String = ""
     private let debouncer = Debouncer(delay: 0.3)
+    
+    private isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -206,7 +208,9 @@ extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
             return
         }
         
+        if !isReady { return }
         screenViewModel.action.searchUser(with: searchText)
+        isReady = false
     }
 }
 
@@ -311,6 +315,7 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        isReady = true
         AmityEventHandler.shared.hideKTBLoading()
     }
     
