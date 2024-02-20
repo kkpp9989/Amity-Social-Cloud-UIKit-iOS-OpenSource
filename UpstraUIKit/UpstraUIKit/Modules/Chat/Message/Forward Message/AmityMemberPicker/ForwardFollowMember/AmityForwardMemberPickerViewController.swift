@@ -58,6 +58,11 @@ class AmityForwardMemberPickerViewController: AmityViewController {
     public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
         screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
     }
+    
+    public func fetchData() {
+        AmityEventHandler.shared.showKTBLoading()
+        screenViewModel.action.clearData()
+    }
 }
 
 private extension AmityForwardMemberPickerViewController {
@@ -188,6 +193,15 @@ extension AmityForwardMemberPickerViewController: UITableViewDelegate {
         }
         return headerView
     }
+    
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Return a custom height for sections with empty string values
+        if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
+            return 0
+        } else {
+            return 0
+        }
+    }
 }
 
 extension AmityForwardMemberPickerViewController: UITableViewDataSource {
@@ -301,7 +315,7 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         tableView.reloadData()
 
         // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)        
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
@@ -311,5 +325,10 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         case .initial, .loaded:
             tableView.tableFooterView = UIView()
         }
+    }
+    
+    func screenViewModelClearData() {
+        tableView.reloadData()
+        screenViewModel.action.searchUser(with: lastSearchKeyword)
     }
 }

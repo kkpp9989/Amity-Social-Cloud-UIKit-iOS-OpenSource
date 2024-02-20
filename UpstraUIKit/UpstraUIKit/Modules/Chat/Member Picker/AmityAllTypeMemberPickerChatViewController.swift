@@ -28,6 +28,7 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
     private(set) var currentUsersInChat: [AmitySelectMemberModel] = []
     private var screenViewModel: AmityMemberPickerChatScreenViewModelType!
     private var displayName: String = ""
+    private var keyword: String = ""
 
     public var tapCreateButton: ((String, String) -> Void)?
 
@@ -74,6 +75,7 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
         followerVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
@@ -83,8 +85,9 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
-        memberVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title in
+        memberVC?.selectUsersHandler = { [weak self] newSelectedUsers, storeUsers, title, keyword in
             guard let strongSelf = self else { return }
             // Here you can access the selectedUsers from the child controller
             // Do whatever you need with the selectedUsers data
@@ -92,6 +95,7 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
             strongSelf.doneButton?.isEnabled = !newSelectedUsers.isEmpty
             strongSelf.numberOfStoreUsers = storeUsers
             strongSelf.title = title
+            strongSelf.keyword = keyword
         }
         return [memberVC!, followingVC!, followerVC!]
     }
@@ -142,14 +146,14 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-//            print("--------> [User] Go to tab acoount")
-            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true)
+            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            memberVC?.lastSearchKeyword = keyword
         case 1:
-//            print("--------> [User] Go to tab following")
-            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followingVC?.lastSearchKeyword = keyword
         case 2:
-//            print("--------> [User] Go to tab follower")
-            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
+            followerVC?.lastSearchKeyword = keyword
         default:
             break
         }
