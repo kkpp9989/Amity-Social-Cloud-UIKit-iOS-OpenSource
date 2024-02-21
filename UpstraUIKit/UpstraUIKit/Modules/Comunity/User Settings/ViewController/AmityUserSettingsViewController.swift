@@ -103,10 +103,17 @@ final class AmityUserSettingsViewController: AmityViewController {
             case .inviteViaQRAndLink:
                 // ktb kk goto share qr from user setting
                 //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
-                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
+            let descriptionOrDisplayName = screenViewModel?.dataSource.user?.userDescription.isEmpty != false
+                        ? screenViewModel?.dataSource.user?.displayName ?? ""
+                        : screenViewModel?.dataSource.user?.userDescription ?? ""
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: descriptionOrDisplayName)
             case .inviteViaQRAndLinkFriend:
                 // ktb kk goto ahare qr from user setting
-                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: screenViewModel?.dataSource.user?.displayName ?? "")
+                    
+                let descriptionOrDisplayName = screenViewModel?.dataSource.user?.userDescription.isEmpty != false
+                        ? screenViewModel?.dataSource.user?.displayName ?? ""
+                        : screenViewModel?.dataSource.user?.userDescription ?? ""
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: descriptionOrDisplayName)
             case .basicInfo, .manage, .report, .unfollow, .unreport:
                 break
             }

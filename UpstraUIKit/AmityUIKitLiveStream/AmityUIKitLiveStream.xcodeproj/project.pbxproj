@@ -39,6 +39,7 @@
 		DF68BDBC2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BDBB2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift */; };
 		DF68BEA92A699EFD004C901F /* RequestViewerStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */; };
 		DF68BEAB2A699FB8004C901F /* ViewerStatisticsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */; };
+		FA58E0632B847F620038D16B /* CustomEvenHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA58E0622B847F620038D16B /* CustomEvenHandle.swift */; };
 		FA6276D22A53B825003DFE4E /* AmitySDK in Frameworks */ = {isa = PBXBuildFile; productRef = FA6276D12A53B825003DFE4E /* AmitySDK */; };
 		FA645DAA2A4A7C0600BA401F /* AmityUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */; };
 /* End PBXBuildFile section */
@@ -83,6 +84,7 @@
 		DF68BDBB2A9DEFBF00CF47EF /* UIViewController + Notification Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController + Notification Extension.swift"; sourceTree = "<group>"; };
 		DF68BEA82A699EFD004C901F /* RequestViewerStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestViewerStatistics.swift; sourceTree = "<group>"; };
 		DF68BEAA2A699FB8004C901F /* ViewerStatisticsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStatisticsModel.swift; sourceTree = "<group>"; };
+		FA58E0622B847F620038D16B /* CustomEvenHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomEvenHandle.swift; sourceTree = "<group>"; };
 		FA6276C72A53B727003DFE4E /* AmitySDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AmitySDK.xcframework; path = ../Shared/AmitySDK.xcframework; sourceTree = "<group>"; };
 		FA645DA92A4A7C0500BA401F /* AmityUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AmityUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -194,6 +196,7 @@
 				A0BD0B5D26DF37160054088B /* LiveStreamBroadcastVC+Keyboard.swift */,
 				A0BD0B5B26DF35C80054088B /* LiveStreamBroadcastVC+Permission.swift */,
 				A0BD0B2E26DCE5800054088B /* LiveStreamBroadcastViewController.xib */,
+				FA58E0622B847F620038D16B /* CustomEvenHandle.swift */,
 			);
 			path = Broadcast;
 			sourceTree = "<group>";
@@ -422,6 +425,7 @@
 				A0B68B3626E07824007D7B5B /* AsyncOperation.swift in Sources */,
 				A0B68B4A26E0952E007D7B5B /* LiveStreamBroadcastViewController+FinishLive.swift in Sources */,
 				A0B68B5426E0BF5D007D7B5B /* LiveStreamViewController+Streaming.swift in Sources */,
+				FA58E0632B847F620038D16B /* CustomEvenHandle.swift in Sources */,
 				A0BD0B5626DE22F60054088B /* ErrorPresentation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -131,8 +131,15 @@ public struct AmityURLCustomManager {
 
         static func generateExternalURLOfPost(post: AmityPostModel) -> String {
             // Set parameter
-            let titleParameter = "ONE Krungthai Community : Recommend content For You"
-            let descriptionParameter = post.text.count > 20 ? String(post.text.prefix(20)) + "..." : post.text
+            var titleParameter = ""
+            
+            if post.targetCommunity != nil {
+                titleParameter = "\(post.targetCommunity?.displayName ?? "")"
+            } else {
+                titleParameter = "Timeline \(post.displayName)"
+            }
+            
+            let descriptionParameter = post.text.count > 50 ? String(post.text.prefix(50)) + "..." : post.text
             let postId = post.postId
             
             // Get domain URL from ENV
