@@ -146,11 +146,9 @@ class AmityAllTypeMemberPickerChatSecondViewController: AmityPageViewController 
         case 1:
             followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followingVC?.lastSearchKeyword = keyword
-            followingVC?.fetchData()
         case 2:
             followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followerVC?.lastSearchKeyword = keyword
-            followerVC?.fetchData()
         default:
             break
         }
