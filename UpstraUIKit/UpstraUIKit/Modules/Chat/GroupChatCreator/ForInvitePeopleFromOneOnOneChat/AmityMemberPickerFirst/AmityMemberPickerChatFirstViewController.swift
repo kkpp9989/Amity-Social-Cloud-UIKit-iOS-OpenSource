@@ -251,7 +251,7 @@ extension AmityMemberPickerChatFirstViewController: AmityMemberPickerScreenViewM
         // Not ready
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
         // Not ready
     }
     

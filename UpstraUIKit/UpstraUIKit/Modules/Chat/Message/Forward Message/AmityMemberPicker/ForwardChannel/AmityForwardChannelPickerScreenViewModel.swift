@@ -302,6 +302,11 @@ extension AmityForwardChannelPickerScreenViewModel {
             }
         }
     }
+    
+    func clearData() {
+        searchUsers.removeAll()
+        delegate?.screenViewModelClearData()
+    }
 }
 
 extension AmityForwardChannelPickerScreenViewModel: AmityForwardSearchChannelControllerDelegate {

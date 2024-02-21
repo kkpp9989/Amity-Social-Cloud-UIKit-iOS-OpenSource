@@ -56,6 +56,10 @@ struct AmityDateFormatter {
             let dateString = dateFormatter.string(from: date)
             guard let _date = dateFormatter.date(from: dateString) else { return "" }
             
+            if _date.isInYesterday {
+                return "Yesterday"
+            }
+            
             dateFormatter.dateFormat = _date.isToday ? (is24HourFormat ? "HH:mm" : "h:mm a") : "dd/MM/yy"
             return dateFormatter.string(from: _date)
         }
