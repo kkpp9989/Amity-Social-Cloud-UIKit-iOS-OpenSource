@@ -24,9 +24,16 @@ import AmitySDK
 ///    3. Code within `userDidTap` get executed depends on what you write
 ///
 ///
+public enum AmitySaveActivityType:String {
+    case post = "CREATE_POST"
+    case react = "REACTION"
+    case comment = "COMMENT"
+}
+
 public enum AmityContentType {
     case communityProfilePage
     case chat
+    case chat1_1
     case userProfile
 }
 
@@ -292,4 +299,6 @@ open class AmityEventHandler {
     /// show ktb view share qr
     open func gotoKTBShareQR(v:UIViewController, url:String) { }
     open func gotoKTBShareQR(v:UIViewController, type:AmityContentType, id:String, title:String, desc:String) { }
+    /// save coin when post comment react
+    open func saveKTBCoin(v:UIViewController?, type:AmitySaveActivityType, id:String, reactType:String?) { }
 }

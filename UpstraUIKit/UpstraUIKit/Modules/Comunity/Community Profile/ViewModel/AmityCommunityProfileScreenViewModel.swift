@@ -122,6 +122,7 @@ extension AmityCommunityProfileScreenViewModel {
                 /* [Custom for ONE Krungthai] Set is joinging community to false for ask app is joining process end */
                 self?.isJoiningCommunity = false
                 self?.delegate?.screenViewModelFailure()
+#warning("ERROR = Private -> go to PIN")
             } else {
                 self?.retriveCommunity()
             }
