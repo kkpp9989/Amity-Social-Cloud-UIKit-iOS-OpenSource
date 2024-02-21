@@ -40,6 +40,8 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     var pageTitle: String?
     var lastSearchKeyword: String = ""
     private let debouncer = Debouncer(delay: 0.3)
+    
+    private var isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,6 +77,11 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     
     public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
         screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+    }
+    
+    public func fetchData() {
+        AmityEventHandler.shared.showKTBLoading()
+        screenViewModel.action.clearData()
     }
 }
 
@@ -201,7 +208,9 @@ extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
             return
         }
         
+        if !isReady { return }
         screenViewModel.action.searchUser(with: searchText)
+        isReady = false
     }
 }
 
@@ -228,7 +237,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
         if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
             return 0
         } else {
-            return 28
+            return 0
         }
     }
 }
@@ -306,6 +315,7 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        isReady = true
         AmityEventHandler.shared.hideKTBLoading()
     }
     
@@ -353,6 +363,14 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
             tableView.showLoadingIndicator()
         case .initial, .loaded:
             tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        tableView.reloadData()
+        debouncer.run { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.screenViewModel.action.searchUser(with: strongSelf.lastSearchKeyword)
         }
     }
 }
