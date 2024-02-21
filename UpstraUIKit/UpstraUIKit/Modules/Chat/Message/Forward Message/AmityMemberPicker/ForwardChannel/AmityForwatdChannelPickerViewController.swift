@@ -41,7 +41,7 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     var lastSearchKeyword: String = ""
     private let debouncer = Debouncer(delay: 0.3)
     
-    private isReady: Bool = true
+    private var isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
