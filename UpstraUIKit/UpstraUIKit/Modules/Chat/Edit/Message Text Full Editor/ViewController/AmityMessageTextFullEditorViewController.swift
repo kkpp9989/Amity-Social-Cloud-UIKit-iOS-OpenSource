@@ -30,7 +30,8 @@ protocol AmityMessageTextFullEditorViewControllerDelegate: AnyObject {
 public class AmityMessageTextFullEditorViewController: AmityViewController {
     
     enum Constant {
-        static let maximumNumberOfImages: Int = 1
+        static let maximumNumberOfMedias: Int = 1
+        static let maximumNumberOfFiles: Int = 1
     }
     
     // MARK: - Properties
@@ -50,6 +51,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     private let fileView = AmityFileTableView(frame: .zero, style: .plain)
     private let messageMenuView: AmityMessageTextFullEditorMenuView
     private var createButton: UIBarButtonItem!
+    private var textViewHeightZeroConstraint: NSLayoutConstraint!
     private var galleryViewHeightConstraint: NSLayoutConstraint!
     private var fileViewHeightConstraint: NSLayoutConstraint!
     private var messageMenuViewBottomConstraints: NSLayoutConstraint!
@@ -129,6 +131,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
         textView.setupWithoutSuggestions()
+        textView.isEditable = !settings.allowMessageAttachments.contains(.file)
         
         /// It's use for create broadcast message only. if want to use for other message type, will must to improve for its
         let placeholder: String
@@ -162,6 +165,8 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         messageMenuView.delegate = self
         view.addSubview(messageMenuView)
         
+        textViewHeightZeroConstraint = NSLayoutConstraint(item: textView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
+        textViewHeightZeroConstraint.isActive = false
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         messageMenuViewBottomConstraints = NSLayoutConstraint(item: messageMenuView, attribute: .bottom, relatedBy: .equal, toItem: view.layoutMarginsGuide, attribute: .bottom, multiplier: 1, constant: 0)
@@ -186,6 +191,7 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
             textView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             textView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
             textView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            textViewHeightZeroConstraint,
             separaterLine.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
             separaterLine.centerYAnchor.constraint(equalTo: galleryView.topAnchor),
@@ -236,6 +242,8 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     private func updateConstraints() {
         fileViewHeightConstraint.constant = AmityFileTableView.height(for: fileView.files.count, isEdtingMode: true, isExpanded: false)
         galleryViewHeightConstraint.constant = AmityGalleryCollectionView.height(for: galleryView.contentSize.width, numberOfItems: galleryView.medias.count)
+        textViewHeightZeroConstraint.isActive = fileView.files.count > 0 ? true : false
+        scrollView.layoutIfNeeded()
     }
     
     @objc func adjustForKeyboard(notification: Notification) {
@@ -533,9 +541,24 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     }
     
     private func presentMaxNumberReachDialogue() {
+        let title: String
+        let message: String
+        
+        switch currentAttachmentState {
+        case .image:
+            title = "Maximum number of images exceeded"
+            message = "Maximum number of images that can be uploaded is \(Constant.maximumNumberOfMedias). The rest images will be discarded."
+        case .video:
+            title = "Maximum number of videos exceeded"
+            message = "Maximum number of videos that can be uploaded is \(Constant.maximumNumberOfMedias). The rest videos will be discarded."
+        default:
+            title = "Maximum number of files exceeded"
+            message = "Maximum number of files that can be uploaded is \(Constant.maximumNumberOfFiles). The rest files will be discarded."
+        }
+        
         let alertController = UIAlertController(
-            title: "Maximum number of images exceeded",
-            message: "Maximum number of images that can be uploaded is \(Constant.maximumNumberOfImages). The rest images will be discarded.",
+            title: title,
+            message: message,
             preferredStyle: .alert
         )
         let cancelAction = UIAlertAction(
@@ -614,9 +637,9 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         let maxNumberOfSelection: Int
         switch messageMode {
         case .create, .createManyChannel:
-            maxNumberOfSelection = Constant.maximumNumberOfImages
+            maxNumberOfSelection = Constant.maximumNumberOfMedias
         case .edit:
-            maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
+            maxNumberOfSelection = Constant.maximumNumberOfMedias - galleryView.medias.count
         }
         
         let imagePicker = AmityImagePickerController(selectedAssets: [])
@@ -683,9 +706,14 @@ extension AmityMessageTextFullEditorViewController: AmityTextViewDelegate {
 extension AmityMessageTextFullEditorViewController: AmityFilePickerDelegate {
     
     func didPickFiles(files: [AmityFile]) {
+        let totalNumberOfFiles = fileView.files.count + files.count
+        guard totalNumberOfFiles <= Constant.maximumNumberOfFiles else {
+            presentMaxNumberReachDialogue()
+            return
+        }
         fileView.configure(files: files)
         
-        // file and images are not supported posting together
+        // text, file and images are not supported posting together
         galleryView.configure(medias: [])
         updateViewState()
         uploadFiles()
@@ -702,10 +730,12 @@ extension AmityMessageTextFullEditorViewController: AmityFileTableViewDelegate {
     
     func fileTableViewDidDeleteData(_ view: AmityFileTableView, at index: Int) {
         updateViewState()
+        updateConstraints()
     }
     
     func fileTableViewDidUpdateData(_ view: AmityFileTableView) {
         updateViewState()
+        updateConstraints()
     }
     
     func fileTableViewDidTapViewAll(_ view: AmityFileTableView) {
@@ -846,7 +876,7 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorMe
     
     private func addMedias(_ medias: [AmityMedia], type: AmityMediaType) {
         let totalNumberOfMedias = galleryView.medias.count + medias.count
-        guard totalNumberOfMedias <= Constant.maximumNumberOfImages else {
+        guard totalNumberOfMedias <= Constant.maximumNumberOfMedias else {
             presentMaxNumberReachDialogue()
             return
         }

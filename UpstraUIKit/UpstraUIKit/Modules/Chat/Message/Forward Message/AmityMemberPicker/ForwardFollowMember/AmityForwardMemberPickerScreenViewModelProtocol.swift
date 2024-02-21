@@ -17,6 +17,7 @@ protocol AmityForwardMemberPickerScreenViewModelDelegate: AnyObject {
     func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String)
     func screenViewModelLoadingState(for state: AmityLoadingState)
     func screenViewModelCanDone(enable: Bool)
+    func screenViewModelClearData()
 }
 
 protocol AmityForwardMemberPickerScreenViewModelDataSource {
@@ -41,6 +42,7 @@ protocol AmityForwardMemberPickerScreenViewModelAction {
     func setCurrentUsers(users: [AmitySelectMemberModel])
     func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String)
     func updateSelectedUserInfo()
+    func clearData()
 }
 
 protocol AmityForwardMemberPickerScreenViewModelType: AmityForwardMemberPickerScreenViewModelAction, AmityForwardMemberPickerScreenViewModelDataSource {

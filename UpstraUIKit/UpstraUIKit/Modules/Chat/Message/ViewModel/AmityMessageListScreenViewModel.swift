@@ -640,6 +640,10 @@ extension AmityMessageListScreenViewModel {
 		delegate?.screenViewModelDidTapOnMention(with: userId)
 	}
     
+    func tapOnPostIdLink(withPostId postId: String) {
+        delegate?.screenViewModelDidTapOnPostIdLink(with: postId)
+    }
+    
     func updateForwardMessageInList(with message: AmityMessageModel) {
         if let foundedIndex = forwardMessageList.firstIndex(where: { $0.messageId == message.messageId }) {
             forwardMessageList.remove(at: foundedIndex)
@@ -996,11 +1000,14 @@ extension AmityMessageListScreenViewModel {
         // save image to temp directory and send local url path for uploading
         let imageName = fileName ?? "\(UUID().uuidString).jpg"
         
+        
         // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
         let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
         try? data?.write(to: imageUrl)
         
+        print("[Amity Log] cache temp: \(imageUrl)")
+
         // Cached image file for resend message
         if let imageData = data {
             cacheImageFile(imageData: imageData, fileName: imageName)
@@ -1022,6 +1029,7 @@ extension AmityMessageListScreenViewModel {
                 
         print("[Message][Image] Start send image message | imageURL: \(imageURL.lastPathComponent)")
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
+            print("[Amity Log] Image error \(error?.localizedDescription)")
             guard error == nil, let message = message else {
                 print("[Message][Image] Send image message fail with error: \(error?.localizedDescription) | imageURL: \(imageURL.lastPathComponent)")
                 return

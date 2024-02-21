@@ -221,24 +221,6 @@ extension AmityForwardChannelPickerScreenViewModel {
             
             delegate?.screenViewModelDidSelectUser(title: title, isEmpty: true)
         } else {
-            if newSelectedUsers.count == 20 {
-                let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.General.ok,
-                                                                textColor: AmityColorSet.baseInverse,
-                                                                backgroundColor: AmityColorSet.primary)
-                let communityPostModel = AmityDefaultModalModel(image: nil,
-                                                                title: "Unable to select one more chat?",
-                                                                description: "Maximun number of chats that you can forward to is 20.",
-                                                                firstAction: firstAction, secondAction: nil,
-                                                                layout: .horizontal)
-                let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
-                communityPostModalView.firstActionHandler = {
-                    AmityHUD.hide()
-                }
-                
-                AmityHUD.show(.custom(view: communityPostModalView))
-                
-                return
-            }
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
     }
@@ -319,6 +301,11 @@ extension AmityForwardChannelPickerScreenViewModel {
                 delegate?.screenViewModelLoadingState(for: .loaded)
             }
         }
+    }
+    
+    func clearData() {
+        searchUsers.removeAll()
+        delegate?.screenViewModelClearData()
     }
 }
 

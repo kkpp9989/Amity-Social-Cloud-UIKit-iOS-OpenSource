@@ -120,7 +120,6 @@ public class AmitySearchViewController: AmityPageViewController {
         debouncer.run {
 //            print("[Search] textFieldEditingChanged| text: \(sender.text ?? "")")
             self.setButtonBarHidden(hidden: false)
-            self.handleSearch(with: sender.text)
         }
     }
 }
@@ -152,9 +151,11 @@ private extension AmitySearchViewController {
 
 extension AmitySearchViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        print("[Search] textFieldShouldReturn")
         setButtonBarHidden(hidden: false)
         textField.resignFirstResponder()
+        debouncer.run {
+            self.handleSearch(with: textField.text)
+        }
         return true
     }
 }

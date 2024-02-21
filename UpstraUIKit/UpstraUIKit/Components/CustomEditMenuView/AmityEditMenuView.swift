@@ -148,7 +148,7 @@ public class AmityEditMenuView {
                 }
             }))
         } else {
-            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: message.flagCount > 0 ? "Unreport" : "Report", completion: { [weak self] in
+            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconReport, title: message.isFlaggedByMe ? "Unreport" : "Report", completion: { [weak self] in
                 guard let weakSelf = self else { return }
                 
                 // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)

@@ -677,6 +677,8 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
         case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
             break // Nothing happen for hashtag
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: self, postId: postId)
         }
     }
    

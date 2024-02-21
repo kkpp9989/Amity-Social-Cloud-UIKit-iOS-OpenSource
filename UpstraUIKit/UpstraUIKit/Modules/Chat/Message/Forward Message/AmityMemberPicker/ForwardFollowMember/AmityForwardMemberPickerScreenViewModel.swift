@@ -208,4 +208,9 @@ extension AmityForwardMemberPickerScreenViewModel {
             delegate?.screenViewModelLoadingState(for: .loaded)
         }
     }
+    
+    func clearData() {
+        searchUsers.removeAll()
+        delegate?.screenViewModelClearData()
+    }
 }

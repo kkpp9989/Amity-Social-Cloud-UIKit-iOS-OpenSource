@@ -15,7 +15,7 @@ final class AmityHashtagSearchScreenViewModel: AmityHashtagSearchScreenViewModel
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.5)
     private var hashtagsList: [AmityHashtagModel] = []
-    private var fromIndex: Int = 0
+    private var paginateToken: String = ""
     private var size: Int = 20
     private var currentKeyword: String = ""
     private var isEndingResult: Bool = false
@@ -50,7 +50,7 @@ extension AmityHashtagSearchScreenViewModel {
         if currentKeyword != newKeyword {
             hashtagsList = []
             currentKeyword = newKeyword
-            fromIndex = 0
+            paginateToken = ""
             isEndingResult = false
             isLoadingMore = false
         }
@@ -59,18 +59,21 @@ extension AmityHashtagSearchScreenViewModel {
         var serviceRequest = RequestHashtag()
         serviceRequest.keyword = currentKeyword
         serviceRequest.size = size
-        serviceRequest.from = fromIndex
+        serviceRequest.paginateToken = paginateToken
 //        print(#"[Search] Start search hashtag with keyword "\#(currentKeyword)" from \#(fromIndex) size 20"#)
         /* Set static value to true for block new searching in this time */
         serviceRequest.request { [self] result in
             switch result {
             case .success(let dataResponse):
                 let updatedHashtagList = dataResponse.hashtag ?? []
-//                print(#"[Search] Result search hashtag with keyword "\#(currentKeyword)" from \#(fromIndex) size 20 | count: \#(updatedHashtagList.count) | data: \#(updatedHashtagList)"#)
+                
                 /* Check is data not more than size request is mean is ending result */
-                if updatedHashtagList.count < size {
+                if dataResponse.paging?.next == paginateToken {
                     isEndingResult = true
+                    paginateToken = ""
                 }
+                
+                paginateToken = dataResponse.paging?.next ?? ""
                 prepareData(updatedHashtagList: updatedHashtagList)
             case .failure(let error):
                 print(error)
@@ -113,7 +116,6 @@ extension AmityHashtagSearchScreenViewModel {
         /* Get data next section */
         delegate?.screenViewModel(self, loadingState: .loading)
         debouncer.run { [self] in
-            fromIndex += size
             search(withText: currentKeyword)
         }
     }

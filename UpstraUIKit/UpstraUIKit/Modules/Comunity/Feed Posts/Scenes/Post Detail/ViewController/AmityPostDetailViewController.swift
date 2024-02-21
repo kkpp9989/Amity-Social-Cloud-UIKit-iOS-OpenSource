@@ -815,6 +815,9 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
     
     public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
         AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
