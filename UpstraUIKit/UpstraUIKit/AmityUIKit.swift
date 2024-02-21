@@ -262,9 +262,8 @@ public final class AmityUIKitManager {
     public static func stopHeartbeat() {
         client.presence.stopHeartbeat()
     }
-
-    public static func startUnreadCountSync() {
-        client.startUnreadSync()
+    public static func enableUnreadCount() {
+        client.enableUnreadCount()
     }
     
     public static func createChannel(_ source: UIViewController,userId: String) {

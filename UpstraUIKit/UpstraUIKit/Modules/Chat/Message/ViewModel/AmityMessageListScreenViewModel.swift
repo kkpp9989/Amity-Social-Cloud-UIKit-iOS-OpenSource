@@ -253,6 +253,7 @@ extension AmityMessageListScreenViewModel {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
                 strongSelf.syncChannelPresence()
+                strongSelf.startMessageReceiptSync()
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
             strongSelf.getShowSettingButtonAndSendingPermission()
@@ -277,7 +278,7 @@ extension AmityMessageListScreenViewModel {
             if self?.channelType == .conversation || self?.channelType == .broadcast {
                 self?.startRealtimeSubscription()
             }
-            self?.startReading()
+//            self?.startReading()
             self?.subChannelNotificationToken?.invalidate()
         }
     }
@@ -821,6 +822,10 @@ private extension AmityMessageListScreenViewModel {
         
         if isFirstTimeLoaded {
             // If this screen is opened for first time, we want to scroll to bottom.
+            if let latestMessage = messages.last?.last?.object {
+                latestMessage.markRead()
+                print("[Channel] Mark latest message as read success | id: \(latestMessage.messageId) | text: \(latestMessage.data?["text"])")
+            }
             shouldScrollToBottom(force: true)
             isFirstTimeLoaded = false
         } else if isMustToScrollAfterSendMessage {
@@ -1165,6 +1170,30 @@ extension AmityMessageListScreenViewModel {
     func unsyncChannelPresence() {
         AmityUIKitManager.unsyncChannelPresence(channelId)
         isSyncChannelPresence = false
+    }
+    
+    func startMessageReceiptSync() {
+        // Start message receipt sync when user enters chat screen
+        Task {
+            do {
+                try await subChannelRepository.startMessageReceiptSync(subChannelId: channelId)
+                print("[Channel] Start message receipt sync success")
+            } catch {
+                print("[Channel] Start message receipt sync fail with error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func stopMessageReceiptSync() {
+        // Stop message receipt sync when user leaves chat screen
+        Task {
+            do {
+                try await subChannelRepository.stopMessageReceiptSync(subChannelId: channelId)
+                print("[Channel] Stop message receipt sync success")
+            } catch {
+                print("[Channel] Stop message receipt sync fail with error: \(error.localizedDescription)")
+            }
+        }
     }
     
     func stopObserveMessageNotificationToken() {

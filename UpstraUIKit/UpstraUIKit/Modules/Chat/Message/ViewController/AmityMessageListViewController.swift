@@ -168,7 +168,7 @@ public final class AmityMessageListViewController: AmityViewController {
         
         screenViewModel.action.toggleKeyboardVisible(visible: false)
         screenViewModel.action.inputSource(for: .default)
-        screenViewModel.action.stopReading()
+//        screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
         screenViewModel.action.stopUserRealtimeSubscription()
         screenViewModel.action.stopObserve()
@@ -245,11 +245,13 @@ public final class AmityMessageListViewController: AmityViewController {
                                                name: Notification.Name("RefreshChannelPresence"),
                                                object: nil)
         screenViewModel.action.syncChannelPresence()
+        screenViewModel.action.startMessageReceiptSync()
     }
     
     private func stopObserver() {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
         screenViewModel.action.unsyncChannelPresence()
+        screenViewModel.action.stopMessageReceiptSync()
     }
     
     @objc func refreshPresence(notification: Notification) {
