@@ -7,6 +7,7 @@
 
 import Foundation
 import AmitySDK
+import AmityUIKit
 
 extension GoLive {
     
@@ -85,6 +86,8 @@ extension GoLive {
                 finish()
                 return
             }
+            // ktb kk save coin when create LiveStream
+            AmityLiveEventHandler.shared.saveKTBCoin(v: nil, type: .post, id: post.postId, reactType: nil)
             result = .success(post)
             finish()
         }
