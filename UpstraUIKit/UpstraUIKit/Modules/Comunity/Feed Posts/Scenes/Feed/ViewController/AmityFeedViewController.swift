@@ -633,6 +633,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.userDidTap(from: self, userId: comment.userId)
         case .tapLike(let comment):
             if let comment = post.latestComments.first(where: { $0.id == comment.id}) {
+                //ktb kk save coin reaction
+                AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: post.postId , reactType: AmityReactionType.like.rawValue)
                 comment.isLiked ? screenViewModel.action.unlike(id: comment.id, referenceType: .comment) : screenViewModel.action.like(id: comment.id, referenceType: .comment)
             }
         case .tapOption(let comment):

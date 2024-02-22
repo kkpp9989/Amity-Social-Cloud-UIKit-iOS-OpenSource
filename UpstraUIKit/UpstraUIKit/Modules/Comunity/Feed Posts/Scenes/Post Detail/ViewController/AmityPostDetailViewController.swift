@@ -538,6 +538,9 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     // MARK: - Comment
     func screenViewModelDidCreateComment(_ viewModel: AmityPostDetailScreenViewModelType, comment: AmityCommentModel) {
         
+        // ktb kk save coin when comment & reply
+        AmityEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: viewModel.post?.postId ?? "", reactType: nil)
+        
         if comment.parentId == nil {
             // When new parent comment is created, it will not show in query stream.
             // We forcibly fetch a comment list to include new added comments.
@@ -553,6 +556,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     }
     
     func screenViewModelDidLikeComment(_ viewModel: AmityPostDetailScreenViewModelType) {
+        //ktb kk save coin reaction
+        AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: viewModel.post?.postId ?? "" , reactType: AmityReactionType.like.rawValue)
         tableView.feedDelegate?.didPerformActionLikeComment()
     }
     
