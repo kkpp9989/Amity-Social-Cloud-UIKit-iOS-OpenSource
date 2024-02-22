@@ -91,7 +91,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     // MARK: - Properties
     private var channelModel: AmityChannelModel?
     private let channelId: String
-    private let subChannelId: String
+    private var subChannelId: String
     private var isFirstTimeLoaded: Bool = true
     private var isMustToScrollAfterSendMessage: Bool = false
     private var isJumpMessage: Bool = false
@@ -504,6 +504,7 @@ extension AmityMessageListScreenViewModel {
                 print(error)
 #warning("ERROR = Private -> go to PIN")
             } else {
+                self.subChannelId = result?.defaultSubChannelId ?? ""
                 if result?.currentUserMembership == .member {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
                     
