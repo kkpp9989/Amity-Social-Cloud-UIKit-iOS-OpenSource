@@ -821,12 +821,14 @@ private extension AmityMessageListScreenViewModel {
         delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: isScrollUp))
         delegate?.screenViewModelIsRefreshing(false)
         
+        // Mark latest message as read
+        if let latestMessage = messages.last?.last?.object {
+            latestMessage.markRead()
+            print("[Channel] Mark latest message as read success | id: \(latestMessage.messageId) | text: \(latestMessage.data?["text"])")
+        }
+        
         if isFirstTimeLoaded {
             // If this screen is opened for first time, we want to scroll to bottom.
-            if let latestMessage = messages.last?.last?.object {
-                latestMessage.markRead()
-                print("[Channel] Mark latest message as read success | id: \(latestMessage.messageId) | text: \(latestMessage.data?["text"])")
-            }
             shouldScrollToBottom(force: true)
             isFirstTimeLoaded = false
         } else if isMustToScrollAfterSendMessage {
