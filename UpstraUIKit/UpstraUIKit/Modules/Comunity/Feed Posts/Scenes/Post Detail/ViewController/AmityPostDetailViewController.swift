@@ -714,6 +714,9 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             }
             showReactionPicker()
         case .tapShare:
+            // ktb kk v1.21.0 re menu share
+            AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            /*
             let bottomSheet = BottomSheetViewController()
             let contentView = ItemOptionView<TextItemOption>()
             bottomSheet.sheetContentView = contentView
@@ -737,6 +740,7 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             
             contentView.configure(items: options, selectedItem: nil)
             present(bottomSheet, animated: false, completion: nil)
+             */
         }
     }
     
