@@ -82,7 +82,8 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                                   icon: AmityCommunitySettingsItem.inviteViaQRAndLink.icon,
                                                                   title: AmityCommunitySettingsItem.inviteViaQRAndLink.title,
                                                                   description: AmityCommunitySettingsItem.inviteViaQRAndLink.description)
-        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+        // ktb kk hide menu qrcode
+        //settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
         
         
         // MARK: Create notification item
