@@ -30,8 +30,8 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
             // ktb kk custom add menu Invite Via QR And Link
             // MARK: Invite Via QR And Link
             let iteminviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.inviteViaQRAndLink.identifier, icon: AmityUserSettingsItem.inviteViaQRAndLink.icon, title: AmityUserSettingsItem.inviteViaQRAndLink.title, description: nil)
-            
-            settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+            // ktb kk hide menu qrcode
+            //settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
             
             
             // MARK: Create notification item
@@ -71,7 +71,8 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
         // MARK: Invite Via QR And Link
         let iteminviteViaQRAndLinkFriend = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.inviteViaQRAndLinkFriend.identifier, icon: AmityUserSettingsItem.inviteViaQRAndLinkFriend.icon, title: AmityUserSettingsItem.inviteViaQRAndLinkFriend.title, description: nil)
         
-        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLinkFriend))
+        // ktb kk hide menu qrcode
+        //settingsItems.append(.navigationContent(content: iteminviteViaQRAndLinkFriend))
         
         
         settingsItems.append(.separator)

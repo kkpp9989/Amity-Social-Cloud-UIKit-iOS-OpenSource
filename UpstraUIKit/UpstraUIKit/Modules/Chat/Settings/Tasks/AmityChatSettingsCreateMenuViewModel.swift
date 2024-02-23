@@ -76,7 +76,8 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                         icon: AmityChatSettingsItem.inviteViaQRAndLink1_1.icon,
                                                                         title: AmityChatSettingsItem.inviteViaQRAndLink1_1.title,
                                                                         description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink1_1))
+            // ktb kk hide menu qrcode
+            //settingsItems.append(.textContent(content: itemInviteViaQRAndLink1_1))
             
             // MARK: Separator
             //settingsItems.append(.separator)
@@ -123,7 +124,8 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                            icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                       title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                       description: nil)
-                settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+                // ktb kk hide menu qrcode
+                //settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
                 
                 // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles]) // [Mock]
                 let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(isCanEditGroupChannel).identifier,
@@ -169,7 +171,8 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                                                                             icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                             title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                             description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+                // ktb kk hide menu qrcode
+                //settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
 //                settingsItems.append(.separator)
