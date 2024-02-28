@@ -18,6 +18,17 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var pageTitle: String?
     var pageIndex: Int = 0
     
+    var viewArr = [UIView]()
+    var disableRefreshControl = false
+    var rowSetLimit = false
+    var rowSetLimitCount = 20
+    
+    var tableViewHeight: CGFloat {
+        tableView.layoutIfNeeded()
+
+        return tableView.contentSize.height
+    }
+    
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
@@ -151,9 +162,12 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - Setup Views
     private func setupView() {
         setupTableView()
-        setupRefreshControl()
+        if(!disableRefreshControl){
+            setupRefreshControl()
+        }
     }
     
+ 
     private func setupTableView() {
         tableView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         tableView.tableFooterView = UIView()
@@ -226,8 +240,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         }
         return tb.isScrollEnabled = true
     }
- 
-    
 }
 
 // MARK: - ReactionPickerView
@@ -348,6 +360,10 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 // MARK: - AmityPostTableViewDataSource
 extension AmityFeedViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
+        if(rowSetLimit && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
+            return rowSetLimitCount
+        }
+        
         return screenViewModel.dataSource.numberOfPostComponents()
     }
     
@@ -367,6 +383,7 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
     func tableView(_ tableView: AmityPostTableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell: AmityFeedHeaderTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+            viewArr.append(cell.contentView)
             return cell
         }
         
@@ -389,8 +406,10 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             let cell = clientComponent.getComponentCell(tableView, at: indexPath)
             if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
                 headerCell.disableTopPadding()
+                viewArr.append(headerCell.contentView)
                 return headerCell
             } else {
+                viewArr.append(cell.contentView)
                 return cell
             }
         } else {
@@ -399,8 +418,10 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             let cell = singleComponent.getComponentCell(tableView, at: indexPath)
             if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
                 headerCell.disableTopPadding()
+                viewArr.append(headerCell.contentView)
                 return headerCell
             } else {
+                viewArr.append(cell.contentView)
                 return cell
             }
         }

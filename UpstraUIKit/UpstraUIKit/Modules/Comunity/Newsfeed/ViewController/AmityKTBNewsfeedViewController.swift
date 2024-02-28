@@ -158,4 +158,14 @@ extension AmityKTBNewsfeedViewController: AmityPostTabbarViewControllerDelegate 
     public func tableViewEnableScroll(){
         feedViewController.tableViewEnableScroll()
     }
+    
+    public func setupKTBHomeFeed(){
+        feedViewController.disableRefreshControl = true
+        feedViewController.rowSetLimit = true
+        feedViewController.rowSetLimitCount = 20
+    }
+    
+    public func getFeedHeight()->CGFloat{
+        return feedViewController.tableViewHeight
+    }
 }

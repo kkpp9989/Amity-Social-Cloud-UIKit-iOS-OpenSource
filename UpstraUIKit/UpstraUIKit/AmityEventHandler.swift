@@ -95,6 +95,8 @@ open class AmityEventHandler {
         guard !(source is AmityPostDetailViewController) else { return }
         
         let viewController = AmityPostDetailViewController.make(withPostId: postId, withPollAnswers: pollAnswers)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 
