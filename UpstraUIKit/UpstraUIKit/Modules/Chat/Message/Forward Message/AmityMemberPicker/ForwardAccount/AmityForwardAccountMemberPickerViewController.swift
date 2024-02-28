@@ -45,7 +45,13 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
         setupView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getUsers()
+        
+        // Get data
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword -> Get all user
+            screenViewModel.action.getUsers()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -66,7 +72,10 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
     
     public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
         screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
-//        screenViewModel.action.searchUser(with: searchText)
+    }
+    
+    public func fetchData() {
+        screenViewModel.action.clearData()
     }
 }
 
@@ -167,6 +176,16 @@ private extension AmityForwardAccountMemberPickerViewController {
 extension AmityForwardAccountMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
+        
+        if lastSearchKeyword.isEmpty {
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                screenViewModel.action.getUsers()
+            } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
+        }
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -266,7 +285,6 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers() ,screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
     }
     
     func screenViewModelDidSearchUser() {
@@ -316,6 +334,20 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
             tableView.showLoadingIndicator()
         case .initial, .loaded:
             tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        tableView.reloadData()
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user by latest search keyword
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all user -> Get all user (create viewcontroller with searching)
+                screenViewModel.action.getUsers()
+            } else { // Case : Case : Don't have keyword but have current all user data  -> Reload tableview for show current all user
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
         }
     }
 }

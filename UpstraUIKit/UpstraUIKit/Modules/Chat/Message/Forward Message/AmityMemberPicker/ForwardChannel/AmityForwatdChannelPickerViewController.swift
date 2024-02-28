@@ -49,7 +49,13 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
         setupView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getChannels()
+        
+        // Get data
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search channel
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword -> Get all channel
+            screenViewModel.action.getChannels()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -80,7 +86,6 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
     }
     
     public func fetchData() {
-        AmityEventHandler.shared.showKTBLoading()
         screenViewModel.action.clearData()
     }
 }
@@ -201,6 +206,15 @@ extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
         selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
+        
+        if lastSearchKeyword.isEmpty {
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                screenViewModel.action.getChannels()
+            } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
+        }
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -234,11 +248,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Return a custom height for sections with empty string values
-        if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
-            return 0
-        } else {
-            return 0
-        }
+        return 0
     }
 }
 
@@ -367,10 +377,19 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     }
     
     func screenViewModelClearData() {
-        tableView.reloadData()
         debouncer.run { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.screenViewModel.action.searchUser(with: strongSelf.lastSearchKeyword)
+            
+            if !strongSelf.lastSearchKeyword.isEmpty { // Case : Have keyword -> Search channel by latest search keyword
+                strongSelf.screenViewModel.action.searchUser(with: strongSelf.lastSearchKeyword)
+            } else { // Case : Don't have keyword 
+                if strongSelf.screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                    strongSelf.screenViewModel.action.getChannels()
+                } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                    strongSelf.screenViewModel.action.updateSearchingStatus(isSearch: false)
+                    strongSelf.tableView.reloadData()
+                }
+            }
         }
     }
 }

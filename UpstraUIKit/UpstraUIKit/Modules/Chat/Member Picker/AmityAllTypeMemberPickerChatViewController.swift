@@ -46,8 +46,7 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Set color navigation bar by custom theme
-        theme?.setBackgroundNavigationBar()
+        theme?.clearNavigationBarSetting()
     }
     
     public static func make(withCurrentUsers users: [AmitySelectMemberModel] = [],
@@ -130,6 +129,7 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.setBackgroundApp(index: 0)
     }
     
     @objc func doneTap() {
@@ -146,14 +146,17 @@ class AmityAllTypeMemberPickerChatViewController: AmityPageViewController {
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: "")
+            memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             memberVC?.lastSearchKeyword = keyword
+            memberVC?.fetchData()
         case 1:
             followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followingVC?.lastSearchKeyword = keyword
+            followingVC?.fetchData()
         case 2:
             followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followerVC?.lastSearchKeyword = keyword
+            followerVC?.fetchData()
         default:
             break
         }

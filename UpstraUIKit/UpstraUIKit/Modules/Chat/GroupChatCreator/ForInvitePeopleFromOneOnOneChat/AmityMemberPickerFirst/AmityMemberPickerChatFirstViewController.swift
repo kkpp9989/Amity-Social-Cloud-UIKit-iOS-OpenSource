@@ -247,12 +247,16 @@ extension AmityMemberPickerChatFirstViewController: UICollectionViewDelegateFlow
 }
 
 extension AmityMemberPickerChatFirstViewController: AmityMemberPickerScreenViewModelDelegate {
+    func screenViewModelClearData() {
+        // Not use
+    }
+    
     func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
-        // Not ready
+        // Not use
     }
     
     func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
-        // Not ready
+        // Not use
     }
     
 	

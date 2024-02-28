@@ -134,13 +134,16 @@ public final class AmityAllTypeMemberPickerFirstViewController: AmityPageViewCon
         case 0:
             memberVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             memberVC?.lastSearchKeyword = keyword
+            memberVC?.fetchData()
         case 1:
             followingVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followingVC?.lastSearchKeyword = keyword
+            followingVC?.fetchData()
         case 2:
 //            print("--------> [User] Go to tab follower")
             followerVC?.setNewSelectedUsers(users: numberOfSelectedUsers, isFromAnotherTab: true, keyword: keyword)
             followerVC?.lastSearchKeyword = keyword
+            followerVC?.fetchData()
         default:
             break
         }
