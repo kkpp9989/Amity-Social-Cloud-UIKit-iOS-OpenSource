@@ -38,6 +38,7 @@ final class AmityFetchForwardChannelController {
         query.includeDeleted = false
         
         if targetType == .recent {
+            query.types = [AmityChannelQueryType.conversation, AmityChannelQueryType.community]
             collection = repository?.getChannels(with: query)
         } else if targetType == .broadcast {
             query.types = [AmityChannelQueryType.broadcast]

@@ -59,7 +59,7 @@ final class AmityForwardSearchChannelController {
     
     // Search and filter from search channel API
     func searchGroupType(with text: String, newSelectedUsers: [AmitySelectMemberModel], currentUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
-        if currentKeyword != text {
+        if currentKeyword != text || !isLoadingMore {
             paginateToken = ""
             channels = []
             currentKeyword = text
@@ -184,7 +184,7 @@ final class AmityForwardSearchChannelController {
             if isEndingResult || channels.isEmpty { return }
             
             /* Set static value to true for prepare data in loading more case */
-            isLoadingMore = targetType == .group ? true : false
+            isLoadingMore = targetType == .group || targetType == .broadcast ? true : false
         }
         
         /* Get data next section if need */

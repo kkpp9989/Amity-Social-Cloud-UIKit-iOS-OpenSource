@@ -51,6 +51,14 @@ extension AmityForwardChannelPickerScreenViewModel {
         return isSearch ? searchUsers.count : users[section].value.count
     }
     
+    func numberOfAllUsers() -> Int {
+        return users.count
+    }
+    
+    func numberOfSearchUsers() -> Int {
+        return searchUsers.count
+    }
+    
     func numberOfSelectedUsers() -> Int {
         return newSelectedUsers.count
     }
@@ -62,10 +70,18 @@ extension AmityForwardChannelPickerScreenViewModel {
     func user(at indexPath: IndexPath) -> AmitySelectMemberModel? {
         if isSearch {
             guard !searchUsers.isEmpty else { return nil }
-            return searchUsers[indexPath.row]
+            return indexPath.row < searchUsers.count ? searchUsers[indexPath.row] : nil
         } else {
             guard !users.isEmpty else { return nil }
-            return users[indexPath.section].value[indexPath.row]
+            if indexPath.section < users.count {
+                if indexPath.row < users[indexPath.section].value.count {
+                    return users[indexPath.section].value[indexPath.row]
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
         }
     }
     
@@ -92,6 +108,10 @@ extension AmityForwardChannelPickerScreenViewModel {
 
 // MARK: - Action
 extension AmityForwardChannelPickerScreenViewModel {
+    
+    func updateSearchingStatus(isSearch: Bool) {
+        self.isSearch = isSearch
+    }
     
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
         currentUsers = users
@@ -130,6 +150,7 @@ extension AmityForwardChannelPickerScreenViewModel {
     }
     
     func getChannels() {
+        isSearch = false
         fetchChannelController?.newSelectedUsers = newSelectedUsers
         fetchChannelController?.currentUsers = currentUsers
         fetchChannelController?.getChannel(isMustToChangeSomeChannelToUser: true) { (result) in
@@ -243,24 +264,21 @@ extension AmityForwardChannelPickerScreenViewModel {
     }
     
     func updateSelectedUserInfo() {
-        if isSearch {
-            // Edit selected of search user
-            for (index, data) in searchUsers.enumerated() {
-                if newSelectedUsers.contains(where: { $0.userId == data.userId } ) || currentUsers.contains(where: { $0.userId == data.userId } ) {
-                    searchUsers[index].isSelected = true
-                } else {
-                    searchUsers[index].isSelected = false
-                }
+        // Edit selected of search user
+        for (index, data) in searchUsers.enumerated() {
+            if newSelectedUsers.contains(where: { $0.userId == data.userId } ) || currentUsers.contains(where: { $0.userId == data.userId } ) {
+                searchUsers[index].isSelected = true
+            } else {
+                searchUsers[index].isSelected = false
             }
-        } else {
-            // Edit selected of user
-            for (indexGroup, (key, group)) in users.enumerated() {
-                for (indexUser, user) in group.enumerated() {
-                    if newSelectedUsers.contains(where: { $0.userId == user.userId } ) || currentUsers.contains(where: { $0.userId == user.userId } ) {
-                        users[indexGroup].value[indexUser].isSelected = true
-                    } else {
-                        users[indexGroup].value[indexUser].isSelected = false
-                    }
+        }
+        // Edit selected of user
+        for (indexGroup, (key, group)) in users.enumerated() {
+            for (indexUser, user) in group.enumerated() {
+                if newSelectedUsers.contains(where: { $0.userId == user.userId } ) || currentUsers.contains(where: { $0.userId == user.userId } ) {
+                    users[indexGroup].value[indexUser].isSelected = true
+                } else {
+                    users[indexGroup].value[indexUser].isSelected = false
                 }
             }
         }
