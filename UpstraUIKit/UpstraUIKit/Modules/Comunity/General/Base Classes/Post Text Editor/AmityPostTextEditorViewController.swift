@@ -60,6 +60,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
     private var bottomScrollViewInset: CGFloat = 0
+    private var heightConstraintOfMentionHashTagTableView: CGFloat = 0
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -292,11 +293,11 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let keyboardScreenEndFrame = keyboardValue.size
         let comunityPanelHeight = comunityPanelView.isHidden ? 0.0 : AmityComunityPanelView.defaultHeight
         if notification.name == UIResponder.keyboardWillHideNotification {
-            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight
+            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight
+            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
@@ -1113,21 +1114,27 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
             hashtagTableView.isHidden = true
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
-            var heightConstant:CGFloat = 240.0
+            heightConstraintOfMentionHashTagTableView = 240.0
             if keywords.count < 5 {
-                heightConstant = CGFloat(keywords.count) * 65
+                heightConstraintOfMentionHashTagTableView = CGFloat(keywords.count) * 65
             }
-            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
             hashtagTableView.isHidden = false
             hashtagTableView.reloadData()
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstant, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
         }
         
         scrollView.scrollIndicatorInsets = scrollView.contentInset
-        let rect = textView.convert(textView.bounds, to: scrollView)
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
         scrollView.scrollRectToVisible(rect, animated: false)
     }
     
@@ -1139,21 +1146,27 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
     public func didGetUsers(users: [AmityMentionUserModel]) {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
             mentionTableView.isHidden = true
             scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
-            var heightConstant:CGFloat = 240.0
+            heightConstraintOfMentionHashTagTableView = 240.0
             if users.count < 5 {
-                heightConstant = CGFloat(users.count) * 52.0
+                heightConstraintOfMentionHashTagTableView = CGFloat(users.count) * 52.0
             }
-            mentionTableViewHeightConstraint.constant = heightConstant
+            mentionTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
             mentionTableView.isHidden = false
             mentionTableView.reloadData()
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstant, right: 0)
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
         }
         
         scrollView.scrollIndicatorInsets = scrollView.contentInset
-        let rect = textView.convert(textView.bounds, to: scrollView)
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
         scrollView.scrollRectToVisible(rect, animated: false)
     }
     
