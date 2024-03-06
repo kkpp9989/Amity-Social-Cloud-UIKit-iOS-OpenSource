@@ -340,15 +340,15 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == 0 ? 0 : 1.0
-    }
+//    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
+//        return section == 0 ? 0 : 1.0
+//    }
     
-    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
-        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
-        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        return separatorView
-    }
+//    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
+//        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
+//        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+//        return separatorView
+//    }
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {

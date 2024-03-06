@@ -74,6 +74,7 @@ class AmityCommentView: AmityView {
         contentLabel.numberOfLines = 8
         contentLabel.preferredMaxLayoutWidth = footerStackView.frame.width
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
+        separatorLineView.isHidden = true
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
         labelContainerView.layer.cornerRadius = 12
