@@ -74,6 +74,7 @@ class AmityCommentViewWithURLPreview: AmityView {
         contentLabel.font = AmityFontSet.body
         contentLabel.numberOfLines = 8
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
+        separatorLineView.isHidden = true
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
         labelContainerView.layer.cornerRadius = 12
