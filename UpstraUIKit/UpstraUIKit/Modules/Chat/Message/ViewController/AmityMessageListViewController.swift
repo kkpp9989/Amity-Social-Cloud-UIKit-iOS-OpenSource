@@ -352,23 +352,17 @@ private extension AmityMessageListViewController {
     }
     
     func albumTap() {
-        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
-        imagePicker.settings.theme.selectionStyle = .checked
-        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
-        imagePicker.settings.selection.max = 10
-        imagePicker.settings.selection.unselectOnReachingMax = false
-        imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        AmityEventHandler.shared.openImagePicker(from: self) { imagePicker, assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
             let vc = PreviewImagePickerController.make(media: medias,
-                                                       viewModel: (self?.screenViewModel)!,
+                                                       viewModel: (self.screenViewModel)!,
                                                        mediaType: .image,
                                                        title: AmityLocalizedStringSet.General.selectedImages.localizedString,
                                                        asset: assets)
             vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
-            imagePicker.present(vc, animated: false, completion: nil)
-        })
+            self.present(vc, animated: false)
+        }
     }
     
     func videoAlbumTap() {
