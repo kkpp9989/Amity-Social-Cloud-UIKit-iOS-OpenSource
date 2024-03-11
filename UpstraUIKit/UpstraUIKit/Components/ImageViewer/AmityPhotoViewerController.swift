@@ -53,29 +53,38 @@ extension AmityPhotoViewerController {
         URLSession.shared.dataTask(with: url) { data, response, error in
             // Check for errors
             if let error = error {
-                print("Error downloading image: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    print("Error downloading image: \(error.localizedDescription)")
+                }
                 return
             }
             
             // Ensure there is data
             guard let imageData = data else {
-                print("No data received")
+                DispatchQueue.main.async {
+                    print("No data received")
+                }
                 return
             }
             
             // Convert data to UIImage
             guard let image = UIImage(data: imageData) else {
-                print("Unable to create image from data")
+                DispatchQueue.main.async {
+                    print("Unable to create image from data")
+                }
                 return
             }
             
             // Save the image to the photo library
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
             
-            AmityEventHandler.shared.hideKTBLoading()
-            
-            // Notify user about successful save
-            print("Image saved to gallery successfully!")
+            // Switch to the main thread to update the UI
+            DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
+                
+                // Notify user about successful save
+                print("Image saved to gallery successfully!")
+            }
         }.resume()
     }
     
