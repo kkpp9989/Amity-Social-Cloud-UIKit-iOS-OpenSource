@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 /// Global event handler for function overriding
 ///
@@ -295,6 +296,8 @@ open class AmityEventHandler {
     open func showKTBLoading() { }
     open func hideKTBLoading() { }
     
+    open func openImagePicker(from source: AmityViewController, completion: ((UINavigationController, [PHAsset]) -> Void)?) { }
+
     // ktb kk
     /// show ktb view share qr
     open func gotoKTBShareQR(v:UIViewController, url:String) { }
