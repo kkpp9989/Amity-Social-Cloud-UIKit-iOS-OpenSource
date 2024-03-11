@@ -361,7 +361,7 @@ private extension AmityMessageListViewController {
                                                        asset: assets)
             vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
-            self.present(vc, animated: false)
+            imagePicker.present(vc, animated: false)
         }
     }
     
