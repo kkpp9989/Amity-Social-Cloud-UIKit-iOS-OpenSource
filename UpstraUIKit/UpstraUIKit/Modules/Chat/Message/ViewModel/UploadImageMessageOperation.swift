@@ -82,7 +82,7 @@ class UploadImageMessageOperation: AsyncOperation {
         
         // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
-        let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
+        let data = image.jpegData(compressionQuality: 0.8)
         try? data?.write(to: imageUrl)
         
         Log.add("[UIKit][Message][Image] mediaid: \(media.id) | Create temp image success")
