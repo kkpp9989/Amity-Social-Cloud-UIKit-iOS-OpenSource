@@ -25,6 +25,8 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var label: UILabel!
+    @IBOutlet private var emptyView: UIView!
+    @IBOutlet private var emptyLabel: UILabel!
     
     // MARK: - Properties
     private var screenViewModel: AmityMemberPickerScreenViewModelType!
@@ -43,6 +45,7 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
         setupView()
+        setupEmptyView()
         
         screenViewModel.delegate = self
         
@@ -76,6 +79,21 @@ class AmityForwardAccountMemberPickerViewController: AmityViewController {
     
     public func fetchData() {
         screenViewModel.action.clearData()
+    }
+    
+    func setupEmptyView() {
+        emptyLabel.font = AmityFontSet.bodyBold
+        emptyLabel.text = "No user found"
+    }
+    
+    func setEmptyView() {
+        if screenViewModel.isSearching() {
+            // Hide emptyView if there are search results, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfSearchUsers() > 0
+        } else {
+            // Hide emptyView if there are any users, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfAllUsers() > 0
+        }
     }
 }
 
@@ -285,10 +303,12 @@ extension AmityForwardAccountMemberPickerViewController: AmityMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
+        setEmptyView()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        setEmptyView()
     }
     
     func screenViewModelCanDone(enable: Bool) {

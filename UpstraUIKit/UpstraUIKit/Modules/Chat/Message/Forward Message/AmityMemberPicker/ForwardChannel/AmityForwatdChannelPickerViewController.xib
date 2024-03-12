@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,6 +12,8 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityForwatdChannelPickerViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
                 <outlet property="collectionView" destination="z3f-ZV-Kos" id="wDY-Xn-fJP"/>
+                <outlet property="emptyLabel" destination="rmE-kP-M0d" id="68c-bF-Ii9"/>
+                <outlet property="emptyView" destination="r63-m9-mjg" id="5oV-jL-UmP"/>
                 <outlet property="label" destination="rq9-Rh-TJo" id="q93-dz-tr3"/>
                 <outlet property="searchBar" destination="PmG-2i-1uh" id="T0w-Pl-3tK"/>
                 <outlet property="tableView" destination="3ia-U7-YtN" id="ydW-JI-4IW"/>
@@ -64,6 +66,23 @@
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="611"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
+                                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r63-m9-mjg">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="611"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmE-kP-M0d">
+                                            <rect key="frame" x="20" y="20" width="353" height="20.333333333333329"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="rmE-kP-M0d" secondAttribute="trailing" constant="20" symbolic="YES" id="ZSg-5t-9my"/>
+                                        <constraint firstItem="rmE-kP-M0d" firstAttribute="leading" secondItem="r63-m9-mjg" secondAttribute="leading" constant="20" symbolic="YES" id="kaA-YB-dEP"/>
+                                        <constraint firstItem="rmE-kP-M0d" firstAttribute="top" secondItem="r63-m9-mjg" secondAttribute="top" constant="20" symbolic="YES" id="lEf-qC-LEg"/>
+                                    </constraints>
+                                </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rq9-Rh-TJo">
                                     <rect key="frame" x="186.5" y="60" width="41.5" height="20.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -75,9 +94,13 @@
                             <constraints>
                                 <constraint firstItem="rq9-Rh-TJo" firstAttribute="top" secondItem="Duc-Dh-D7G" secondAttribute="top" constant="60" id="2of-yB-aKg"/>
                                 <constraint firstItem="3ia-U7-YtN" firstAttribute="top" secondItem="Duc-Dh-D7G" secondAttribute="top" id="4nt-ze-tqX"/>
+                                <constraint firstItem="r63-m9-mjg" firstAttribute="top" secondItem="Duc-Dh-D7G" secondAttribute="top" id="8e0-z3-Zgm"/>
                                 <constraint firstAttribute="bottom" secondItem="3ia-U7-YtN" secondAttribute="bottom" id="9bb-Ig-H3A"/>
+                                <constraint firstAttribute="bottom" secondItem="r63-m9-mjg" secondAttribute="bottom" id="EcJ-96-hd3"/>
+                                <constraint firstItem="r63-m9-mjg" firstAttribute="leading" secondItem="Duc-Dh-D7G" secondAttribute="leading" id="F8S-tx-rnn"/>
                                 <constraint firstAttribute="trailing" secondItem="3ia-U7-YtN" secondAttribute="trailing" id="Zoc-Qg-ab3"/>
                                 <constraint firstItem="rq9-Rh-TJo" firstAttribute="centerX" secondItem="Duc-Dh-D7G" secondAttribute="centerX" id="mfx-Wf-jRD"/>
+                                <constraint firstAttribute="trailing" secondItem="r63-m9-mjg" secondAttribute="trailing" id="spR-hL-BkG"/>
                                 <constraint firstItem="3ia-U7-YtN" firstAttribute="leading" secondItem="Duc-Dh-D7G" secondAttribute="leading" id="xpW-iO-1iZ"/>
                             </constraints>
                             <variation key="default">
