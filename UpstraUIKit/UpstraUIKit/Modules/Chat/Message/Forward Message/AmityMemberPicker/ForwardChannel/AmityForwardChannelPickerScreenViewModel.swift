@@ -30,6 +30,8 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     private var currentUsers: [AmitySelectMemberModel] = []
     private var currentKeyword: String = ""
     private var isSearch: Bool = false
+    private var isLoadMore: Bool = false
+    
     var targetType: AmityChannelViewType
     
     init(type: AmityChannelViewType) {
@@ -190,17 +192,22 @@ extension AmityForwardChannelPickerScreenViewModel {
         AmityEventHandler.shared.showKTBLoading()
         if targetType == .group || targetType == .broadcast {
             searchUserController?.searchGroupType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] result in
+                guard let strongSelf = self else { return }
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let users):
-                        self?.searchUsers = users
-                        self?.delegate?.screenViewModelDidSearchUser()
+                        if strongSelf.isLoadMore {
+                            strongSelf.searchUsers += users
+                        } else {
+                            strongSelf.searchUsers = users
+                        }
+                        strongSelf.delegate?.screenViewModelDidSearchUser()
                     case .failure(let error):
                         switch error {
                         case .textEmpty:
-                            self?.isSearch = false
-                            self?.updateSelectedUserInfo()
-                            self?.delegate?.screenViewModelDidSearchUser()
+                            strongSelf.isSearch = false
+                            strongSelf.updateSelectedUserInfo()
+                            strongSelf.delegate?.screenViewModelDidSearchUser()
                         case .unknown:
                             break
                         }
@@ -331,6 +338,7 @@ extension AmityForwardChannelPickerScreenViewModel: AmityForwardSearchChannelCon
     func willLoadMore(isLoadingMore: Bool) {
         if isLoadingMore && targetType == .group {
             searchUser(with: currentKeyword)
+            isLoadMore = isLoadingMore
         }
     }
 }
