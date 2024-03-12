@@ -25,6 +25,8 @@ class AmityForwardMemberPickerViewController: AmityViewController {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var label: UILabel!
+    @IBOutlet private var emptyView: UIView!
+    @IBOutlet private var emptyLabel: UILabel!
     
     // MARK: - Properties
     private var screenViewModel: AmityForwardMemberPickerScreenViewModelType!
@@ -39,6 +41,7 @@ class AmityForwardMemberPickerViewController: AmityViewController {
         super.viewDidLoad()
         
         setupView()
+        setupEmptyView()
         
         screenViewModel.delegate = self
         
@@ -95,6 +98,11 @@ private extension AmityForwardMemberPickerViewController {
         setupSearchBar()
         setupTableView()
         setupCollectionView()
+    }
+    
+    func setupEmptyView() {
+        emptyLabel.font = AmityFontSet.bodyBold
+        emptyLabel.text = "No user found"
     }
     
     func setupNavigationBar() {
@@ -164,6 +172,16 @@ private extension AmityForwardMemberPickerViewController {
         collectionView.backgroundColor = AmityColorSet.backgroundColor
         collectionView.delegate = self
         collectionView.dataSource = self
+    }
+    
+    func setEmptyView() {
+        if screenViewModel.isSearching() {
+            // Hide emptyView if there are search results, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfSearchUsers() > 0
+        } else {
+            // Hide emptyView if there are any users, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfAllUsers() > 0
+        }
     }
 }
 
@@ -288,12 +306,14 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
         AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
         isReady = true
         AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelCanDone(enable: Bool) {
