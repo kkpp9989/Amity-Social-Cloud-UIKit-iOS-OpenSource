@@ -352,7 +352,34 @@ private extension AmityMessageListViewController {
     }
     
     func albumTap() {
-        AmityEventHandler.shared.openImagePicker(from: self) { imagePicker, assets in
+        let imagePicker = NewImagePickerController(selectedAssets: [])
+        imagePicker.settings.theme.selectionStyle = .numbered
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+        imagePicker.settings.selection.max = 10
+        imagePicker.settings.selection.unselectOnReachingMax = false
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+                    
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
             let vc = PreviewImagePickerController.make(media: medias,
                                                        viewModel: (self.screenViewModel)!,

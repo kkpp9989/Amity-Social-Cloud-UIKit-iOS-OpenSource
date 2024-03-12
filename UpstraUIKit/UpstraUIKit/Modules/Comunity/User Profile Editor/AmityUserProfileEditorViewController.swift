@@ -225,13 +225,34 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         // Show image picker
         var galleryOption = TextItemOption(title: AmityLocalizedStringSet.General.imageGallery.localizedString)
         galleryOption.completion = { [weak self] in
-            let imagePicker = AmityImagePickerController(selectedAssets: [])
+            let imagePicker = NewImagePickerController(selectedAssets: [])
             imagePicker.settings.theme.selectionStyle = .checked
             imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
             imagePicker.settings.selection.max = 1
             imagePicker.settings.selection.unselectOnReachingMax = true
             
-            self?.presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            let options = imagePicker.settings.fetch.album.options
+            // Fetching user library and other smart albums
+            let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+            let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+            let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+            let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+            let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+            
+            // Fetching regular albums
+            let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+            
+            imagePicker.settings.fetch.album.fetchResults = [
+                userLibraryCollection,
+                favoritesCollection,
+                regularAlbumsCollection,
+                selfPortraitsCollection,
+                panoramasCollection,
+                videosCollection
+            ]
+                        
+            imagePicker.modalPresentationStyle = .overFullScreen
+            self?.presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
                 guard let asset = assets.first else { return }
                 asset.getImage { result in
                     switch result {
@@ -241,7 +262,7 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
                         break
                     }
                 }
-            })
+            }
         }
         
         let bottomSheet = BottomSheetViewController()
