@@ -83,6 +83,7 @@ final class AmityForwardSearchChannelController {
                 if let paginateToken = dataResponse.paging?.next, !paginateToken.isEmpty {
                     strongSelf.paginateToken = paginateToken
                 } else {
+                    strongSelf.paginateToken = ""
                     strongSelf.isEndingResult = true
                 }
                 // Get data from response
