@@ -632,7 +632,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     private func presentMediaPickerAlbum(type: AmityMediaType) {
         
-        let supportedMediaTypes: Set<Settings.Fetch.Assets.MediaTypes>
+        let supportedMediaTypes: Set<NewSettings.NewFetch.NewAssets.MediaTypes>
         
         // The closue to execute when picker finish picking the media.
         let finish: ([PHAsset]) -> Void
@@ -668,12 +668,34 @@ public class AmityPostTextEditorViewController: AmityViewController {
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }
         
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = NewImagePickerController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
         imagePicker.settings.selection.unselectOnReachingMax = false
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+                    
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
         
     }
     
