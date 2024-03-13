@@ -26,7 +26,7 @@ struct RequestSearchingPosts {
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
         requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["hashtagList": keyword, "targetType": "public", "publicSearch": true], "from": from, "size": size, "userId": userId, "apiKey": apiKey]
+        requestMeta.params = ["query": ["hashtagList": keyword, "targetType": "all"], "from": from, "size": size, "userId": userId, "apiKey": apiKey]
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
