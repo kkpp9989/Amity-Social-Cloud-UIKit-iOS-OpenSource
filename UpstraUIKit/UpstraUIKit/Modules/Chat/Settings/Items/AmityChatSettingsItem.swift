@@ -67,7 +67,7 @@ enum AmityChatSettingsItem: Equatable {
         case .inviteViaQRAndLink:
             return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
         case .inviteViaQRAndLink1_1:
-            return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
+            return AmityLocalizedStringSet.UserSettings.itemInviteViaQRAndLinkfriend.localizedString
         }
     }
     
