@@ -136,7 +136,7 @@ public struct AmityURLCustomManager {
             if post.targetCommunity != nil {
                 titleParameter = "\(post.targetCommunity?.displayName ?? "")"
             } else {
-                titleParameter = "Timeline \(post.displayName)"
+                titleParameter = "\(post.displayName)"
             }
             
             let descriptionParameter = post.text.count > 50 ? String(post.text.prefix(50)) + "..." : post.text
