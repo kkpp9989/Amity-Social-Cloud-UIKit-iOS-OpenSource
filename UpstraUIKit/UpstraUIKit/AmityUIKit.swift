@@ -426,7 +426,7 @@ final class AmityUIKitManagerInternal: NSObject {
                 completion?(false, error)
                 return
             }
-            self?.revokeDeviceTokens()
+//            self?.revokeDeviceTokens()
             self?.didUpdateClient()
             
             // [Custom for ONE Krungthai] Add register user token function for request custom API
@@ -457,7 +457,7 @@ final class AmityUIKitManagerInternal: NSObject {
     func registerDeviceForPushNotification(_ deviceToken: String, completion: AmityRequestCompletion? = nil) {
         // It's possible that `deviceToken` can be changed while user is logging in.
         // To prevent user from registering notification twice, we will revoke the current one before register new one.
-        revokeDeviceTokens()
+//        revokeDeviceTokens()
         
         _client?.registerDeviceForPushNotification(withDeviceToken: deviceToken) { [weak self] success, error in
             if success, let currentUserId = self?._client?.currentUserId {
