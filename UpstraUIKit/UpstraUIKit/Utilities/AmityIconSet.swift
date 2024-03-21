@@ -43,6 +43,7 @@ public struct AmityIconSet {
     public static var iconOption = UIImage(named: "icon_option", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconOptionNavigationBar = UIImage(named: "icon_option_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconCreatePost = UIImage(named: "icon_create_post", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconScrollUp = UIImage(named: "icon_scroll_up", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeCheckmark = UIImage(named: "icon_badge_checkmark", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeModerator = UIImage(named: "icon_badge_moderator", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconReply = UIImage(named: "icon_reply", in: AmityUIKitManager.bundle, compatibleWith: nil)
