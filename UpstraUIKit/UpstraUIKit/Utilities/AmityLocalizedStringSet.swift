@@ -95,7 +95,8 @@ public struct AmityLocalizedStringSet {
         static let selectedImages = "general_selected_images"
         static let selectedVideos = "general_selected_videos"
         static let openSettings = "general_open_settings"
-        
+        static let fullImage = "general_full_image"
+        static let compressImage = "general_compress_image"
     }
     
     static let communitySettings = "community_settings"

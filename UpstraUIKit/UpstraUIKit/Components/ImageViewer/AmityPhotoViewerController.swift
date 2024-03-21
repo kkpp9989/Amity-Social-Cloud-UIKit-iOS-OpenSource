@@ -32,19 +32,12 @@ extension AmityPhotoViewerController {
     }
     
     @objc func downloadButtonTapped(_ sender: UIButton) {
-        AmityEventHandler.shared.showKTBLoading()
-        if let imageURLString = imageURL, !imageURLString.isEmpty {
-            downloadImageAndSaveToGallery(from: imageURLString)
-        } else {
-            if let imageToDownload = imageView.image {
-                UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
-            }
-        }
+        handlePostOption()
     }
     
     func downloadImageAndSaveToGallery(from urlString: String) {
         // Create a URL object from the string
-        guard let url = URL(string: urlString + "?size=full") else {
+        guard let url = URL(string: urlString) else {
             print("Invalid URL")
             return
         }
@@ -55,6 +48,7 @@ extension AmityPhotoViewerController {
             if let error = error {
                 DispatchQueue.main.async {
                     print("Error downloading image: \(error.localizedDescription)")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
             }
@@ -63,6 +57,7 @@ extension AmityPhotoViewerController {
             guard let imageData = data else {
                 DispatchQueue.main.async {
                     print("No data received")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
             }
@@ -71,6 +66,7 @@ extension AmityPhotoViewerController {
             guard let image = UIImage(data: imageData) else {
                 DispatchQueue.main.async {
                     print("Unable to create image from data")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
             }
@@ -84,6 +80,7 @@ extension AmityPhotoViewerController {
                 
                 // Notify user about successful save
                 print("Image saved to gallery successfully!")
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
             }
         }.resume()
     }
@@ -153,6 +150,42 @@ extension AmityPhotoViewerController {
         }
     }
 
+    private func handlePostOption() {
+        let bottomSheet = BottomSheetViewController()
+        let contentView = ItemOptionView<TextItemOption>()
+        bottomSheet.isTitleHidden = true
+        bottomSheet.sheetContentView = contentView
+        bottomSheet.modalPresentationStyle = .overFullScreen
+        
+        let fullOption = TextItemOption(title: AmityLocalizedStringSet.General.fullImage.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+            AmityEventHandler.shared.showKTBLoading()
+            if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full")
+            } else {
+                if let imageToDownload = strongSelf.imageView.image {
+                    UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            }
+        }
+        
+        let compressOption = TextItemOption(title: AmityLocalizedStringSet.General.compressImage.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+            AmityEventHandler.shared.showKTBLoading()
+            if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=medium")
+            } else {
+                if let imageToDownload = strongSelf.imageView.image {
+                    UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            }
+        }
+        
+        var items = [fullOption, compressOption]
+        contentView.configure(items: items, selectedItem: nil)
+        
+        self.present(bottomSheet, animated: false, completion: nil)
+    }
 }
 
 
