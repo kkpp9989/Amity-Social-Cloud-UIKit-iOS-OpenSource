@@ -59,7 +59,9 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var dataDidUpdateHandler: ((Int) -> Void)?
     var emptyViewHandler: ((UIView?) -> Void)?
     var pullRefreshHandler: (() -> Void)?
-    
+    var hideScrollUpButtonHandler: (() -> Void)?
+    var showScrollUpButtonHandler: (() -> Void)?
+
     // To determine if the vc is visible or not
     private var isVisible: Bool = true
     
@@ -67,7 +69,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     private var isDataSourceDirty: Bool = false
     
     private let debouncer = Debouncer(delay: 0.3)
-    
+    var timer: Timer?
+
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
     
@@ -213,6 +216,9 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
 //        screenViewModel.action.clearOldPosts()
     }
     
+    func setScrollUp() {
+        tableView.setContentOffset(.zero, animated: true)
+    }
 }
 
 // MARK: - ReactionPickerView
@@ -237,6 +243,39 @@ extension AmityFeedViewController {
         }
     }
 }
+
+// MARK: - AmityPostTableViewDelegate
+extension AmityFeedViewController: UIScrollViewDelegate {
+    
+    // UIScrollViewDelegate Methods
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y > 50 { // Adjust this value as needed
+            showScrollUpButtonHandler?()
+        } else {
+            hideScrollUpButtonHandler?()
+        }
+        
+        // Reset the timer whenever the user scrolls
+        resetTimer()
+    }
+    
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        resetTimer()
+    }
+    
+    // Timer related methods
+    func resetTimer() {
+        timer?.invalidate() // Invalidate the existing timer
+        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else { return }
+            // Hide the button after 2 seconds of inactivity
+            if strongSelf.tableView.isDragging == false && strongSelf.tableView.isDecelerating == false {
+                strongSelf.hideScrollUpButtonHandler?()
+            }
+        }
+    }
+}
+
 
 // MARK: - AmityPostTableViewDelegate
 extension AmityFeedViewController: AmityPostTableViewDelegate {

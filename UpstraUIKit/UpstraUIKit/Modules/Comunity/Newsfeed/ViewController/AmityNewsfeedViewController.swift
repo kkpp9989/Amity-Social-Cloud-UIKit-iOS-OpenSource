@@ -21,7 +21,7 @@ public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProv
     private let emptyView = AmityNewsfeedEmptyView()
     private var postTabHeaderView = AmityPostTabbarViewController.make()
     private var headerView = AmityMyCommunityPreviewViewController.make()
-    private let createPostButton: AmityFloatingButton = AmityFloatingButton()
+    private let scrollUpButton: AmityFloatingButton = AmityFloatingButton()
     private let feedViewController = AmityFeedViewController.make(feedType: .globalFeed)
     
     public override func viewDidLoad() {
@@ -29,9 +29,7 @@ public class AmityNewsfeedViewController: AmityViewController, IndicatorInfoProv
         setupFeedView()
         setupHeaderView()
         setupEmptyView()
-        
-        // [Custom for ONE Krungthai] Disable create post floating button
-//        setupPostButton()
+        setupScrollUpButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -65,6 +63,22 @@ private extension AmityNewsfeedViewController {
         feedViewController.pullRefreshHandler = { [weak self] in
             self?.headerView.retrieveCommunityList()
         }
+        
+        feedViewController.hideScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 0.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = true
+            }
+        }
+        
+        feedViewController.showScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 1.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = false
+            }
+        }
     }
     
     private func setupHeaderView() {
@@ -90,13 +104,14 @@ private extension AmityNewsfeedViewController {
 
     }
     
-    private func setupPostButton() {
+    private func setupScrollUpButton() {
         // setup button
-        createPostButton.add(to: view, position: .bottomRight)
-        createPostButton.image = AmityIconSet.iconCreatePost
-        createPostButton.actionHandler = { [weak self] _ in
+        scrollUpButton.isHidden = true
+        scrollUpButton.add(to: view, position: .bottomRight)
+        scrollUpButton.image = AmityIconSet.iconScrollUp
+        scrollUpButton.actionHandler = { [weak self] _ in
             guard let strongSelf = self else { return }
-            AmityEventHandler.shared.createPostBeingPrepared(from: strongSelf)
+            strongSelf.feedViewController.setScrollUp()
         }
     }
     
