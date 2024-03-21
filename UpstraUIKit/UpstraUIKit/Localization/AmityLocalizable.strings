@@ -83,6 +83,8 @@
 "general_selected_images" = "Selected images";
 "general_selected_videos" = "Selected videos";
 "general_open_settings" = "Open settings";
+"general_full_image" = "Full image";
+"general_compress_image" = "Compress image";
 
 "title_placeholder" = "Title";
 "description_placeholder" = "Description";
