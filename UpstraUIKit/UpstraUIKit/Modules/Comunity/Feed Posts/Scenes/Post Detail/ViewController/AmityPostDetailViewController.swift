@@ -39,6 +39,8 @@ open class AmityPostDetailViewController: AmityViewController {
     
     private var livestreamId: String?
     
+    public var backHandler: (() -> Void)?
+
     private var parentComment: AmityCommentModel? {
         didSet {
             // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
@@ -338,15 +340,15 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == 0 ? 0 : 1.0
-    }
+//    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
+//        return section == 0 ? 0 : 1.0
+//    }
     
-    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
-        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
-        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        return separatorView
-    }
+//    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
+//        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
+//        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+//        return separatorView
+//    }
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {
@@ -605,11 +607,31 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
             if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
                 ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString, in: window)
             }
+        case .noPermission, .noUserAccessPermission:
+            let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.General.ok,
+                                                            textColor: AmityColorSet.baseInverse,
+                                                            backgroundColor: AmityColorSet.primary)
+            let communityPostModel = AmityDefaultModalModel(image: nil,
+                                                            title: "Permission required",
+                                                            description: "You don't have permission to view this post.",
+                                                            firstAction: firstAction, secondAction: nil,
+                                                            layout: .horizontal)
+            let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
+            communityPostModalView.firstActionHandler = {
+                AmityHUD.hide{ [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.navigationController?.popViewController(animated: true)
+                    
+                    // Check if backHandler is not nil, then invoke it
+                    strongSelf.backHandler?()
+                }
+            }
+            
+            AmityHUD.showWithoutRepresenting(.custom(view: communityPostModalView))
         default:
             break
         }
     }
-    
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
@@ -692,7 +714,29 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             }
             showReactionPicker()
         case .tapShare:
-            break
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
+                }
+            }
+            options.append(shareOption)
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
     
@@ -771,6 +815,9 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
     
     public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
         AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
@@ -1056,6 +1103,10 @@ extension AmityPostDetailViewController: UITableViewDelegate {
                 mentionManager?.loadMoreHashtag()
             }
         }
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Do not anything
     }
 }
 

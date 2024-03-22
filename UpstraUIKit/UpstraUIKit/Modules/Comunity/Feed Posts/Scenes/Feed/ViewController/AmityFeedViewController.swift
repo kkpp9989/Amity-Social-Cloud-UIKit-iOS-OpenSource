@@ -647,13 +647,6 @@ extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
             }
             options.append(shareOption)
             
-            /*
-            let moreOption = TextItemOption(title: "More Option") {
-                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
-            }
-            options.append(moreOption)
-             */
-            
             // ktb kk custom qr menu
             let qrOption = TextItemOption(title: "Share content via QR code") {
                 AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
@@ -740,6 +733,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
         case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
             AmityEventHandler.shared.communityDidTap(from: self, communityId: post.targetCommunity?.communityId ?? "")
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: self, postId: postId)
         }
     }
    

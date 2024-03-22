@@ -37,11 +37,12 @@ public struct AmityLocalizedStringSet {
         static let edit = "general_edit"
         public static let done = "general_done"
         static let post = "general_post"
+        static let broadcast = "general_broadcast"
         static let discard = "general_discard"
         static let leave = "general_leave"
-        static let next = "general_next" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-        static let error = "general_error" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
-        static let share = "general_share" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let next = "general_next"
+        static let error = "general_error"
+        static let share = "general_share"
         static let sangsun = "general_sangsun"
         static let satsue = "general_satsue"
         static let samakki = "general_samakki"
@@ -60,6 +61,7 @@ public struct AmityLocalizedStringSet {
         static let on = "general_on"
         static let off = "general_off"
         static let file = "general_file"
+        static let content = "general_content"
         static let location = "general_location"
         static let album = "general_album"
         static let anonymous = "general_anonymous"
@@ -132,6 +134,7 @@ public struct AmityLocalizedStringSet {
 
     static let textMessagePlaceholder = "text_message_placeholder"
     static let textMessagePlaceholderMuted = "text_message_placeholder_muted"
+    static let textBroadcastMessagePlaceholder = "text_broadcast_message_placeholder"
     static let messageReadmore = "message_readmore"
     static let noUserFound = "no_user_found"
     static let searchResults = "search_results"
@@ -429,6 +432,8 @@ public struct AmityLocalizedStringSet {
         static let muted = "hud_muted"
         static let unmuted = "hud_unmuted"
         static let deleted = "hud_deleted"
+        static let hudBroadcastMessageSuccess = "hud_broadcast_message_success"
+        static let hudBroadcastMessageFail = "hud_broadcast_message_fail"
     }
     
     enum PopoverText {
@@ -479,6 +484,7 @@ public struct AmityLocalizedStringSet {
         static let unreportSent = "chat_setting_unreport_sent" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatTitle = "chat_setting_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatMemberRoleGroupChatMessage = "chat_setting_leave_chat_member_role_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatConversationChatMessage = "chat_setting_leave_chat_conversation_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatModeratorRoleWithOneMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let leaveChatModeratorRoleWithManyMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let unableLeaveChatTitle = "chat_setting_unable_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
@@ -609,5 +615,13 @@ public struct AmityLocalizedStringSet {
     public enum Chat {
         public static let chatUnableToChatTitle = "chat_unable_to_chat_title";
         public static let chatUnableToChatDescription = "chat_unable_to_chat_description";
+        public static let messageCreationDiscardMessageTitle = "message_creation_discard_message_title";
+        public static let messageCreationDiscardMessageDescription = "message_creation_discard_message_description";
+        public static let messageUnableToCreateMessageTitle = "message_unable_to_create_message_title";
+        public static let messageUnableToCreateMessageDescription = "message_unable_to_create_message_description";
+        public static let messageCreationUploadIncompleteTitle = "message_creation_file_upload_incomplete_title";
+        public static let messageCreationUploadIncompleteDescription = "message_creation_file_upload_incomplete_description";
+        public static let broadcastMessageCreationTextPlaceholder = "broadcast_message_creation_text_placeholder";
+        public static let broadcastMessageCreationFileTypeOnlyPlaceholder = "broadcast_message_creation_file_type_only_placeholder";
     }
 }

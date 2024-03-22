@@ -85,21 +85,20 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var subChannelNotificationToken: AmityNotificationToken?
     private var channelNotificationToken: AmityNotificationToken?
     private var messagesNotificationToken: AmityNotificationToken?
-    private var createMessageNotificationToken: AmityNotificationToken?
     private var userNotificationToken: AmityNotificationToken?
-    private var getMessagesNotificationToken: AmityNotificationToken?
-
     private var messageAudio: AmityMessageAudioController?
     
     // MARK: - Properties
+    private var channelModel: AmityChannelModel?
     private let channelId: String
-    private let subChannelId: String
+    private var subChannelId: String
     private var isFirstTimeLoaded: Bool = true
-    private var isMustToScrollToLatestMessage: Bool = false
+    private var isMustToScrollAfterSendMessage: Bool = false
     private var isJumpMessage: Bool = false
     private var isScrollUp: Bool = false
     private var isAlreadySub: Bool = false
     private var isSyncChannelPresence: Bool = false
+    private var isShowJumpMessageGroup: Bool = false
     
     private let debouncer = Debouncer(delay: 0.6)
     private var dataSourceHash: Int = -1 // to track if data source changes
@@ -131,6 +130,7 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     private var unsortedMessages: [AmityMessageModel] = []
     private var keyboardEvents: KeyboardInputEvents = .default
     private var keyboardVisible: Bool = false
+    private var isMuted: Bool = false
     private var isLoadMore: Bool = false
     private var text: String = "" {
         didSet {
@@ -174,6 +174,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
         return messages[section].count
     }
     
+    func getChannelModel() -> AmityChannelModel? {
+        return channelModel
+    }
+    
     func getChannelId() -> String {
         return channelId
     }
@@ -197,6 +201,10 @@ final class AmityMessageListScreenViewModel: AmityMessageListScreenViewModelType
     
     func isMessageInForwardMessageList(messageId: String) -> Bool {
         return forwardMessageList.contains(where: { $0.messageId == messageId })
+    }
+    
+    func getNotification() -> Bool {
+        return isMuted
     }
 }
 
@@ -239,18 +247,13 @@ extension AmityMessageListScreenViewModel {
             guard let strongSelf = self else { return }
             guard let object = channel.snapshot else { return }
             let channelModel = AmityChannelModel(object: object)
+            strongSelf.channelModel = channelModel
             strongSelf.channelType = channelModel.channelType
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
-                // [Back up]
-//                AmityUIKitManager.getSyncAllChannelPresence()
-//                AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
-                // [Current]
-                if !strongSelf.isSyncChannelPresence {
-                    AmityUIKitManager.syncChannelPresence(strongSelf.channelId)
-                    strongSelf.isSyncChannelPresence = true
-                }
+                strongSelf.syncChannelPresence()
+                strongSelf.startMessageReceiptSync()
             }
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
             strongSelf.getShowSettingButtonAndSendingPermission()
@@ -272,10 +275,10 @@ extension AmityMessageListScreenViewModel {
         subChannelNotificationToken = subChannelRepository.getSubChannel(withId: subChannelId).observe { [weak self] (subChannel, error) in
             guard let object = subChannel.snapshot else { return }
             self?.subChannel = object
-            if self?.channelType == .conversation {
+            if self?.channelType == .conversation || self?.channelType == .broadcast {
                 self?.startRealtimeSubscription()
             }
-            self?.startReading()
+//            self?.startReading()
             self?.subChannelNotificationToken?.invalidate()
         }
     }
@@ -355,8 +358,8 @@ extension AmityMessageListScreenViewModel {
     }
     
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath) {
-        messageRepository?.deleteMessage(withId: message.messageId, completion: { [weak self] (status, error) in
-            guard error == nil , status else { return }
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.softDeleteMessage(withId:), parameters: message.messageId) { [weak self] isSuccess, error in
+            guard error == nil else { return }
             switch message.messageType {
             case .audio:
                 AmityFileCache.shared.deleteFile(for: .audioDirectory, fileName: message.messageId + ".m4a")
@@ -365,13 +368,12 @@ extension AmityMessageListScreenViewModel {
             }
             self?.delegate?.screenViewModelEvents(for: .didDelete(indexPath: indexPath))
             self?.editor = nil
-        })
+        }
     }
     
-    
     func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool = false) {
-        messageRepository.deleteFailedMessage(messageId) { [weak self] (isSuccess, error) in
-            if isSuccess {
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.softDeleteMessage(withId:), parameters: messageId) { [weak self] isSuccess, error in
+            if let isSuccess = isSuccess, isSuccess {
                 if !isFromResend {
                     self?.delegate?.screenViewModelEvents(for: .didDeleteErrorMessage(indexPath: indexPath))
                 }
@@ -500,7 +502,9 @@ extension AmityMessageListScreenViewModel {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: channelId) {result, error in
             if let error = AmityError(error: error) {
                 print(error)
+#warning("ERROR = Private -> go to PIN")
             } else {
+                self.subChannelId = result?.defaultSubChannelId ?? ""
                 if result?.currentUserMembership == .member {
                     self.delegate?.screenViewModelDidUpdateJoinChannelSuccess()
                     
@@ -556,6 +560,10 @@ extension AmityMessageListScreenViewModel {
             keyboardEvents = .default
         }
         delegate?.screenViewModelKeyboardInputEvents(for: keyboardEvents)
+    }
+    
+    func toggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType) {
+        delegate?.screenViewModelToggleOpenCreateBroadcastMessageEditor(type: type)
     }
     
     func toggleKeyboardVisible(visible: Bool) {
@@ -634,6 +642,10 @@ extension AmityMessageListScreenViewModel {
 		delegate?.screenViewModelDidTapOnMention(with: userId)
 	}
     
+    func tapOnPostIdLink(withPostId postId: String) {
+        delegate?.screenViewModelDidTapOnPostIdLink(with: postId)
+    }
+    
     func updateForwardMessageInList(with message: AmityMessageModel) {
         if let foundedIndex = forwardMessageList.firstIndex(where: { $0.messageId == message.messageId }) {
             forwardMessageList.remove(at: foundedIndex)
@@ -673,13 +685,18 @@ extension AmityMessageListScreenViewModel {
     func scrollToLatestMessage() {
         DispatchQueue.main.async { [weak self] in
             guard let weakSelf = self else { return }
-            weakSelf.isMustToScrollToLatestMessage = true
-            let queryOptions = AmityMessageQueryOptions(subChannelId: weakSelf.channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
-            weakSelf.messagesCollection = weakSelf.messageRepository.getMessages(options: queryOptions)
-            weakSelf.messagesNotificationToken?.invalidate()
-            weakSelf.messagesNotificationToken = weakSelf.messagesCollection?.observe { (liveCollection, change, error) in
-                weakSelf.groupMessages(in: liveCollection, change: change)
+            if weakSelf.isShowJumpMessageGroup { // Case : Show jump message group (From reply message, message search) -> Load latest message before scroll to bottom
+                weakSelf.isShowJumpMessageGroup = false
+                
+                let queryOptions = AmityMessageQueryOptions(subChannelId: weakSelf.channelId, messageParentFilter: .noParent, sortOption: .lastCreated)
+                weakSelf.messagesCollection = weakSelf.messageRepository.getMessages(options: queryOptions)
+                weakSelf.messagesNotificationToken?.invalidate()
+                weakSelf.messagesNotificationToken = weakSelf.messagesCollection?.observe { (liveCollection, change, error) in
+                    weakSelf.groupMessages(in: liveCollection, change: change)
+                }
             }
+            
+            weakSelf.isMustToScrollAfterSendMessage = true
         }
     }
     
@@ -709,7 +726,10 @@ private extension AmityMessageListScreenViewModel {
     func groupMessages(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?) {
         
         // First we get message from the collection
-        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        
+        // Filter duplicate message
+        storedMessages = Array(Set(storedMessages))
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
@@ -748,7 +768,10 @@ private extension AmityMessageListScreenViewModel {
     func groupMessagesAndJumpToTarget(in collection: AmityCollection<AmityMessage>, change: AmityCollectionChange?, messageId: String) {
         
         // First we get message from the collection
-        let storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        var storedMessages: [AmityMessageModel] = collection.allObjects().map(AmityMessageModel.init)
+        
+        // Filter duplicate message
+        storedMessages = Array(Set(storedMessages))
         
         // Ignore performing data if it don't change.
         guard dataSourceHash != storedMessages.hashValue else {
@@ -759,6 +782,7 @@ private extension AmityMessageListScreenViewModel {
         
         dataSourceHash = storedMessages.hashValue
         unsortedMessages = storedMessages
+        isShowJumpMessageGroup = true
                 
         // We use debouncer to prevent data updating too frequently and interupting UI.
         // When data is settled for a particular second, then updating UI in one time.
@@ -797,14 +821,20 @@ private extension AmityMessageListScreenViewModel {
         delegate?.screenViewModelEvents(for: .updateMessages(isScrollUp: isScrollUp))
         delegate?.screenViewModelIsRefreshing(false)
         
+        // Mark latest message as read
+        if let latestMessage = messages.last?.last?.object {
+            latestMessage.markRead()
+            print("[Channel] Mark latest message as read success | id: \(latestMessage.messageId) | text: \(latestMessage.data?["text"])")
+        }
+        
         if isFirstTimeLoaded {
             // If this screen is opened for first time, we want to scroll to bottom.
             shouldScrollToBottom(force: true)
             isFirstTimeLoaded = false
-        } else if isMustToScrollToLatestMessage {
+        } else if isMustToScrollAfterSendMessage {
             // If sending message and must to loading latest message again, we want to scroll to bottom.
             shouldScrollToBottom(force: true)
-            isMustToScrollToLatestMessage = false
+            isMustToScrollAfterSendMessage = false
         } else if let lastMessage = messages.last?.last, lastMessageHash != lastMessage.hashValue {
             // Compare message hash
             // - if it's equal, the last message remains the same -> do nothing
@@ -838,23 +868,22 @@ extension AmityMessageListScreenViewModel {
             deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             break
         case .image:
-            // Get image info and image URL data from path in image info from error message
+            // Get image info and image URL data from path in image info from error message (Cache in local)
             if let imageInfoFromMessage = message.object.getImageInfo(),
                let fileName = URL(string: imageInfoFromMessage.fileURL)?.lastPathComponent,
                let tempImageURLPath = AmityFileCache.shared.getCacheURL(for: .imageDirectory, fileName: fileName)?.path {
                 // Get image
                 let tempImageURL = URL(fileURLWithPath: tempImageURLPath)
-                guard let imageData = try? Data(contentsOf: tempImageURL),
-                      let image = UIImage(data: imageData) else { return }
+                guard let imageData = try? Data(contentsOf: tempImageURL) else { return }
                 // Generate AmityMedia type .image in state .local
-                let media = AmityMedia(state: .image(image), type: .image)
+                let media = AmityMedia(state: .localURL(url: tempImageURL), type: .image)
                 // Send image message again
                 send(withMedias: [media], type: .image)
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
         case .file:
-            // Get file info and file URL data from path in file info from error message
+            // Get file info and file URL data from path in file info from error message (Cache in local)
             if let fileInfoFromMessage = message.object.getFileInfo(),
                let fileName = URL(string: fileInfoFromMessage.fileURL)?.lastPathComponent,
                let tempFileURL = AmityFileCache.shared.getCacheURL(for: .fileDirectory, fileName: fileName) {
@@ -866,11 +895,12 @@ extension AmityMessageListScreenViewModel {
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
         case .audio:
-            // Get file info and file URL data from path in file info from error message
-            if let fileInfoFromMessage = message.object.getFileInfo(),
-               let audioURLData = URL(string: fileInfoFromMessage.fileURL) {
+            // Get audio file info and audio file URL data from path in file info from error message (Cache in local)
+            if let audioFileInfoFromMessage = message.object.getFileInfo(),
+               let audioFileName = URL(string: audioFileInfoFromMessage.fileURL)?.lastPathComponent,
+               let audioFileURL = AmityFileCache.shared.getCacheURL(for: .audioDirectory, fileName: audioFileName) {
                 // Send audio message again
-                sendAudio(tempAudioURL: audioURLData)
+                sendAudio(tempAudioURL: audioFileURL)
                 // remove error message
                 deleteErrorMessage(with: message.messageId, at: indexPath, isFromResend: true)
             }
@@ -895,56 +925,97 @@ extension AmityMessageListScreenViewModel {
 extension AmityMessageListScreenViewModel {
     
     func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
-        for media in medias {
-            // Separate process from state of media
-            if type == .image {
-                switch media.state {
-                case .localAsset(_): // From send image message
-                    media.getImageForUploading { result in
-                        switch result {
-                        case .success(let image):
-                            let imageURL = self.createTempImage(image: image)
-                            self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
-                        case .failure:
-                            print("failure")
-                        }
-                    }
-                case .image(let image): // From resend image message
-                    let imageURL = self.createTempImage(image: image)
-                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
-                default:
-                    print("failure")
-                }
-            } else {
-                // get local video url for uploading
-                media.getLocalURLForUploading { [weak self] url in
-                    guard let url = url else {
-                        media.state = .error
-                        return
-                    }
-                    self?.createVideoMessage(videoURL: url)
-                }
+        let operations: [AsyncOperation]
+        
+        switch type {
+        case .image:
+            operations = medias.map { UploadImageMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository) }
+        case .video:
+            operations = medias.map { UploadVideoMessageOperation(subChannelId: subChannelId, media: $0, repository: messageRepository, fileId: $0.id) }
+        }
+        
+        // Define serial dependency A <- B <- C <- ... <- Z
+        for (left, right) in zip(operations, operations.dropFirst()) {
+            right.addDependency(left)
+        }
+        
+        for operation in operations {
+            operation.completionBlock = { [weak self] in
+                self?.scrollToLatestMessage()
             }
         }
-    }
 
+        queue.addOperations(operations, waitUntilFinished: false)
+    }
+    
+    // [Deprecated] Use queue operation instead
+//    func send(withMedias medias: [AmityMedia], type: AmityMediaType) {
+//        for media in medias {
+//            // Separate process from state of media
+//            if type == .image {
+//                switch media.state {
+//                case .localAsset(_): // From send image message
+//                    media.getImageForUploading { result in
+//                        switch result {
+//                        case .success(let image):
+//                            let imageURL = self.createTempImage(image: image)
+//                            self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                        case .failure:
+//                            print("[Message][Image] Can't get image uploading for send/resend message")
+//                        }
+//                    }
+//                case .image(let image): // From resend image message (Deprecated)
+//                    let imageURL = self.createTempImage(image: image)
+//                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                case .localURL(let imageURL): // From resend image message
+//                    guard let imageData = try? Data(contentsOf: imageURL),
+//                          let image = UIImage(data: imageData) else {
+//                        print("[Message][Image] Can't get image from local url for send/resend message")
+//                        return
+//                    }
+//                    let fileName = imageURL.lastPathComponent
+//                    let imageURL = self.createTempImage(image: image, fileName: fileName)
+//                    self.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+//                default:
+//                    print("[Message][Image] Can't media state of processing invalid for send/resend message")
+//                }
+//            } else {
+//                // get local video url for uploading
+//                media.getLocalURLForUploading { [weak self] url in
+//                    guard let url = url else {
+//                        media.state = .error
+//                        print("[Message][Image] Can't get video uploading for send/resend message")
+//                        return
+//                    }
+//                    self?.createVideoMessage(videoURL: url)
+//                }
+//            }
+//        }
+//    }
+
+    // [Deprecated] Use queue operation instead
     private func cacheImageFile(imageData: Data, fileName: String) {
         AmityFileCache.shared.cacheData(for: .imageDirectory, data: imageData, fileName: fileName, completion: {_ in})
     }
     
+    // [Deprecated] Use queue operation instead
     private func deleteCacheImageFile(fileName: String) {
         AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
     }
     
-    private func createTempImage(image: UIImage) -> URL {
+    // [Deprecated] Use queue operation instead
+    private func createTempImage(image: UIImage, fileName: String? = nil) -> URL {
         // save image to temp directory and send local url path for uploading
-        let imageName = "\(UUID().uuidString).jpg"
+        let imageName = fileName ?? "\(UUID().uuidString).jpg"
+        
         
         // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
         let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
         try? data?.write(to: imageUrl)
         
+        print("[Amity Log] cache temp: \(imageUrl)")
+
         // Cached image file for resend message
         if let imageData = data {
             cacheImageFile(imageData: imageData, fileName: imageName)
@@ -953,6 +1024,7 @@ extension AmityMessageListScreenViewModel {
         return imageUrl
     }
     
+    // [Deprecated] Use queue operation instead
     private func createImageMessage(imageURL: URL, fileURLString: String) {
         self.scrollToLatestMessage() // Scroll to latest message for see send image progressing
         
@@ -963,16 +1035,22 @@ extension AmityMessageListScreenViewModel {
             return
         }
                 
+        print("[Message][Image] Start send image message | imageURL: \(imageURL.lastPathComponent)")
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
+            print("[Amity Log] Image error \(error?.localizedDescription)")
             guard error == nil, let message = message else {
+                print("[Message][Image] Send image message fail with error: \(error?.localizedDescription) | imageURL: \(imageURL.lastPathComponent)")
                 return
             }
+            
+            print("[Message][Image] Send image message success | imageURL: \(imageURL.lastPathComponent)")
             
             // Delete cache if exists
             self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
         }
     }
     
+    // [Deprecated] Use queue operation instead
     private func createVideoMessage(videoURL: URL) {
         self.scrollToLatestMessage() // Scroll to latest message for see send video progressing
         
@@ -1021,24 +1099,40 @@ extension AmityMessageListScreenViewModel {
 // MARK: - Send File
 extension AmityMessageListScreenViewModel {
     func send(withFiles files: [AmityFile]) {
-        self.scrollToLatestMessage() // Scroll to latest message for see send file progressing
-        
         let operations = files.map { UploadFileMessageOperation(subChannelId: subChannelId, file: $0, repository: messageRepository) }
         
         // Define serial dependency A <- B <- C <- ... <- Z
         for (left, right) in zip(operations, operations.dropFirst()) {
             right.addDependency(left)
         }
+        
+        for operation in operations {
+            operation.completionBlock = { [weak self] in
+                self?.scrollToLatestMessage()
+            }
+        }
 
         queue.addOperations(operations, waitUntilFinished: false)
     }
 }
 
-
 // MARK: - Audio Recording
 extension AmityMessageListScreenViewModel {
     func performAudioRecordingEvents(for event: AudioRecordingEvents) {
         delegate?.screenViewModelAudioRecordingEvents(for: event)
+    }
+}
+
+// MARK: - Retrieve Notification
+extension AmityMessageListScreenViewModel {
+    func retrieveNotificationSettings() {
+        let notificationManager = channelRepository.notificationManagerForChannel(withId: channelId)
+        notificationManager.getSettings { [weak self] (settings, error) in
+            guard let strongSelf = self else { return }
+            if let notificationSettings = settings {
+                strongSelf.isMuted = !notificationSettings.isEnabled
+            }
+        }
     }
 }
 
@@ -1070,14 +1164,49 @@ extension AmityMessageListScreenViewModel {
         userSubscription?.unsubscribeTopic(topic) { _, _ in }
     }
     
+    func syncChannelPresence() {
+        if !isSyncChannelPresence {
+            AmityUIKitManager.syncChannelPresence(channelId)
+            isSyncChannelPresence = true
+        }
+    }
+    func unsyncChannelPresence() {
+        AmityUIKitManager.unsyncChannelPresence(channelId)
+        isSyncChannelPresence = false
+    }
+    
+    func startMessageReceiptSync() {
+        // Start message receipt sync when user enters chat screen
+        Task {
+            do {
+                try await subChannelRepository.startMessageReceiptSync(subChannelId: channelId)
+                print("[Channel] Start message receipt sync success")
+            } catch {
+                print("[Channel] Start message receipt sync fail with error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func stopMessageReceiptSync() {
+        // Stop message receipt sync when user leaves chat screen
+        Task {
+            do {
+                try await subChannelRepository.stopMessageReceiptSync(subChannelId: channelId)
+                print("[Channel] Stop message receipt sync success")
+            } catch {
+                print("[Channel] Stop message receipt sync fail with error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func stopObserveMessageNotificationToken() {
+        messagesNotificationToken?.invalidate()
+    }
+    
     func stopObserve() {
         subChannelNotificationToken?.invalidate()
         channelNotificationToken?.invalidate()
-        messagesNotificationToken?.invalidate()
-        createMessageNotificationToken?.invalidate()
         userNotificationToken?.invalidate()
-        getMessagesNotificationToken?.invalidate()
-        AmityUIKitManager.unsyncChannelPresence(channelId)
         topicSubscription = nil
         userSubscription = nil
     }

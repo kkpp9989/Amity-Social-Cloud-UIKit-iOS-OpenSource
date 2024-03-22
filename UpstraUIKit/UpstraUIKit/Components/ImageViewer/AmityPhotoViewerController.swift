@@ -32,10 +32,60 @@ extension AmityPhotoViewerController {
     }
     
     @objc func downloadButtonTapped(_ sender: UIButton) {
-        if let imageToDownload = imageView.image {
-            AmityEventHandler.shared.showKTBLoading()
-            UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        AmityEventHandler.shared.showKTBLoading()
+        if let imageURLString = imageURL, !imageURLString.isEmpty {
+            downloadImageAndSaveToGallery(from: imageURLString)
+        } else {
+            if let imageToDownload = imageView.image {
+                UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+            }
         }
+    }
+    
+    func downloadImageAndSaveToGallery(from urlString: String) {
+        // Create a URL object from the string
+        guard let url = URL(string: urlString + "?size=full") else {
+            print("Invalid URL")
+            return
+        }
+        
+        // Create a data task to download the image
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            // Check for errors
+            if let error = error {
+                DispatchQueue.main.async {
+                    print("Error downloading image: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            // Ensure there is data
+            guard let imageData = data else {
+                DispatchQueue.main.async {
+                    print("No data received")
+                }
+                return
+            }
+            
+            // Convert data to UIImage
+            guard let image = UIImage(data: imageData) else {
+                DispatchQueue.main.async {
+                    print("Unable to create image from data")
+                }
+                return
+            }
+            
+            // Save the image to the photo library
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            
+            // Switch to the main thread to update the UI
+            DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
+                
+                // Notify user about successful save
+                print("Image saved to gallery successfully!")
+            }
+        }.resume()
     }
     
     @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
@@ -254,11 +304,13 @@ public class AmityPhotoViewerController: UIViewController {
     private var _shouldHideStatusBar = false
     private var _shouldUseStatusBarStyle = false
     
+    private var imageURL: String? = ""
+    
     /// Transition animator
     /// Customizable if you wish to provide your own transitions.
     open lazy var animator: AmityPhotoViewerBaseAnimator = AmityPhotoAnimator()
     
-    public init(referencedView: UIView?, image: UIImage?) {
+    public init(referencedView: UIView?, image: UIImage?, imageURL: String?) {
         let flowLayout = AmityPhotoCollectionViewFlowLayout()
         flowLayout.scrollDirection = scrollDirection
         flowLayout.sectionInset = UIEdgeInsets.zero
@@ -289,10 +341,12 @@ public class AmityPhotoViewerController: UIViewController {
         modalPresentationStyle = .overFullScreen
         modalPresentationCapturesStatusBarAppearance = true
         collectionView.contentInsetAdjustmentBehavior = .never
+        
+        self.imageURL = imageURL
     }
     
     public convenience init(referencedView: UIView?, media: AmityMedia) {
-        self.init(referencedView: referencedView, image: nil)
+        self.init(referencedView: referencedView, image: nil, imageURL: nil)
         // Normal size
         media.loadImage(to: imageView)
         // Full size

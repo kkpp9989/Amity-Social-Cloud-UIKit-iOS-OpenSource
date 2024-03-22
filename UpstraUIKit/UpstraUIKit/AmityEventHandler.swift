@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 /// Global event handler for function overriding
 ///
@@ -33,6 +34,7 @@ public enum AmitySaveActivityType:String {
 public enum AmityContentType {
     case communityProfilePage
     case chat
+    case chat1_1
     case userProfile
 }
 

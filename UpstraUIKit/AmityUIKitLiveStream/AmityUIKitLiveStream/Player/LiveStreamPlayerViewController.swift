@@ -68,6 +68,11 @@ public class LiveStreamPlayerViewController: UIViewController {
     @IBOutlet private weak var reactionWidthConstraint: NSLayoutConstraint!
     @IBOutlet private weak var reactionButton: UIButton!
     
+    // MARK: - Stream Pause Container
+    @IBOutlet private weak var streamPauseContainer: UIView!
+    @IBOutlet private weak var streamPauseTitleLabel: UILabel!
+    @IBOutlet private weak var streamPauseDescriptionLabel: UILabel!
+    
     // MARK: - Keyboard Observations
     var keyboardIsHidden = true
     var keyboardHeight: CGFloat = 0
@@ -105,6 +110,7 @@ public class LiveStreamPlayerViewController: UIViewController {
     private var isPostSubscribe: Bool = false
     private var isCommentSubscribe: Bool = false
     private var isDisconnectLivestreamSuccess: Bool = false
+    private var isLive: Bool = true
     
     // Reaction Picker
     private let reactionPickerView = AmityReactionPickerView()
@@ -169,6 +175,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         observeStreamObject()
         setupReactionPicker()
         setBackgroundListener()
+        setupStreamPauseView()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -179,9 +186,12 @@ public class LiveStreamPlayerViewController: UIViewController {
         
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
+            requestGetViewerCount()
+            requestGetLiveStreamStatus()
             requestCreateLiveStreamLog()
             
             viewerCountLabel.text = String(viewerCount)
+            streamPauseContainer.isHidden = isLive
         })
     }
     
@@ -302,7 +312,7 @@ public class LiveStreamPlayerViewController: UIViewController {
             UIBarButtonItem(title: AmityLocalizedStringSet.General.done.localizedString, style: .done, target: self, action: #selector(cancelInput))
         ]
         textViewToolbar.sizeToFit()
-        commentTextView.backgroundColor = UIColor(hex: "#FFFFFF")?.withAlphaComponent(0.1)
+        commentTextView.backgroundColor = UIColor(hex: "#292B32")
         commentTextView.layer.cornerRadius = 4
         commentTextView.font = AmityFontSet.body
         commentTextView.textColor = .white
@@ -351,6 +361,17 @@ public class LiveStreamPlayerViewController: UIViewController {
         } else {
             reactionButton.isSelected = false
         }
+    }
+    
+    private func setupStreamPauseView() {
+        streamPauseContainer.isHidden = true
+        streamPauseTitleLabel.font = AmityFontSet.title
+        streamPauseTitleLabel.textColor = .white
+        streamPauseTitleLabel.text = "LIVE paused"
+        
+        streamPauseDescriptionLabel.font = AmityFontSet.body
+        streamPauseDescriptionLabel.textColor = .white
+        streamPauseDescriptionLabel.text = "The host will be back soon."
     }
     
     @objc private func playerContainerDidTap() {
@@ -428,6 +449,7 @@ public class LiveStreamPlayerViewController: UIViewController {
         switch stream?.status {
         case .ended, .recorded, .idle:
             // Stream has already end, no need to show play and stop button.
+            streamPauseContainer.isHidden = isLive
             playButton.isHidden = true
             stopButton.isHidden = true
         default:
@@ -869,7 +891,7 @@ extension LiveStreamPlayerViewController {
         serviceRequest.sendViewerStatistics(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", isTrack: true, streamId: streamIdToWatch) { result in
             switch result {
             case .success(let dataResponse):
-                self.viewerCount = dataResponse.viewerCount ?? 0
+                self.viewerCount = dataResponse.data?.viewerCount ?? 0
                 break
             case .failure(_):
                 break
@@ -885,10 +907,8 @@ extension LiveStreamPlayerViewController {
                 switch result {
                 case .success(let dataResponse):
                     self.viewerCount = dataResponse.viewerCount ?? 0
-//                    print("[Livestream][Viewer][getViewerCount] Get viewer count success | viewerCount: \(dataResponse.viewerCount ?? 0) | postId: \(self.postID)")
                     break
                 case .failure(let error):
-//                    print("[Livestream][Viewer][getViewerCount] Get viewer count fail with error: \(error.localizedDescription) | postId: \(self.postID)")
                     break
                 }
             }
@@ -901,10 +921,8 @@ extension LiveStreamPlayerViewController {
         serviceRequest.connectLivestream(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", streamId: streamIdToWatch) { result in
             switch result {
             case .success(_):
-//                print("[Livestream][Viewer][connectLiveStream] Request connect live stream success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             case .failure(let error):
-//                print("[Livestream][Viewer][connectLiveStream] Request connect live stream fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             }
         }
@@ -917,30 +935,37 @@ extension LiveStreamPlayerViewController {
             switch result {
             case .success(let isSuccess):
                 self.isDisconnectLivestreamSuccess = isSuccess
-//                print("[Livestream][Viewer][disconnectLiveStream] Request disconnect live stream success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             case .failure(let error):
-//                print("[Livestream][Viewer][disconnectLiveStream] Request disconnect live stream fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             }
         }
     }
     
-    // [Current use][Custom for ONE Krungthai] Request create livestream log to backend by custom API
+    private func requestGetLiveStreamStatus() {
+        DispatchQueue.main.async { [self] in
+            let serviceRequest = RequestViewerStatistics()
+            serviceRequest.getLiveStreamStatus(postId: postID ?? "") { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let isLive):
+                    strongSelf.isLive = isLive
+                case .failure(let error):
+                    break
+                }
+            }
+        }
+    }
+    
     private func requestCreateLiveStreamLog() {
         let serviceRequest = RequestViewerStatistics()
         serviceRequest.createLiveStreamLog(postId: postID ?? "", viewerUserId: viewerUserID ?? "", viewerDisplayName: viewerDisplayName ?? "", streamId: streamIdToWatch) { result in
             switch result {
             case .success(_):
-//                print("[Livestream][Viewer][createLivestreamLog] Request create live stream log success | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             case .failure(let error):
-//                print("[Livestream][Viewer][createLivestreamLog] Request create live stream log fail with error: \(error.localizedDescription) | postId: \(self.postID) | viewerUserId: \(self.viewerUserID) | viewerDisplayName: \(self.viewerDisplayName) | streamId: \(self.streamIdToWatch)")
                 break
             }
-            
-            // Update viewer count after create live stream log process complete
-            self.requestGetViewerCount()
         }
     }
 }

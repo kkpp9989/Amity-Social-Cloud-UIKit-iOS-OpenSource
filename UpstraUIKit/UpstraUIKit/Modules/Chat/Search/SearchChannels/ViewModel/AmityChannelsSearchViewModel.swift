@@ -74,7 +74,7 @@ extension AmityChannelsSearchViewModel {
         serviceRequest.keyword = currentKeyword
         serviceRequest.paginateToken = paginateToken
         /* Set static value to true for block new searching in this time */
-        serviceRequest.requestSearchChannels { [self] result in
+        serviceRequest.requestSearchChannels(types: [.group, .broadcast]) { [self] result in
             switch result {
             case .success(let dataResponse):
                 /* Check is data not more than size request is mean is ending result */

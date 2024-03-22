@@ -38,4 +38,5 @@ enum AmityMessageLabelEvents {
     case willCollapseExpandableLabel(label: AmityExpandableLabel)
     case didCollapseExpandableLabel(label: AmityExpandableLabel)
 	case didTapOnMention(label: AmityExpandableLabel, userId: String)
+    case didTapOnPostIdLink(label: AmityExpandableLabel, postId: String)
 }

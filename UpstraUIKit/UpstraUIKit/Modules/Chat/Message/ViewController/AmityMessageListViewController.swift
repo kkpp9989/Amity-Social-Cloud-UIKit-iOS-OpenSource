@@ -47,9 +47,12 @@ public final class AmityMessageListViewController: AmityViewController {
     public weak var dataSource: AmityMessageListDataSource?
     
     // MARK: - IBOutlet Properties
+    
+    @IBOutlet private var messageSectionView: UIView!
     @IBOutlet private var messageContainerView: UIView!
     @IBOutlet private var composeBarContainerView: UIView!
     @IBOutlet private var bottomConstraint: NSLayoutConstraint!
+    private var overlayView: UIView = UIView()
     
     @IBOutlet weak var connectionStatusBar: UIView!
     @IBOutlet weak var connectionStatusBarTopSpace: NSLayoutConstraint!
@@ -106,11 +109,15 @@ public final class AmityMessageListViewController: AmityViewController {
     public var backHandler: (() -> Void)?
     
     // MARK: - View lifecyle
+    
+    deinit {
+        screenViewModel.action.stopObserveMessageNotificationToken()
+    }
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupConnectionStatusBar()
-        buildViewModel()
         shouldCellOverride()
 		
 		setupMentionTableView()
@@ -129,6 +136,7 @@ public final class AmityMessageListViewController: AmityViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
+        buildViewModel()
 		mentionManager?.delegate = self
 		mentionManager?.setColor(AmityColorSet.base, highlightColor: AmityColorSet.primary)
 		mentionManager?.setFont(AmityFontSet.body, highlightFont: AmityFontSet.bodyBold)
@@ -160,7 +168,7 @@ public final class AmityMessageListViewController: AmityViewController {
         
         screenViewModel.action.toggleKeyboardVisible(visible: false)
         screenViewModel.action.inputSource(for: .default)
-        screenViewModel.action.stopReading()
+//        screenViewModel.action.stopReading()
         screenViewModel.action.stopRealtimeSubscription()
         screenViewModel.action.stopUserRealtimeSubscription()
         screenViewModel.action.stopObserve()
@@ -236,10 +244,14 @@ public final class AmityMessageListViewController: AmityViewController {
                                                selector: #selector(refreshPresence(notification:)),
                                                name: Notification.Name("RefreshChannelPresence"),
                                                object: nil)
+        screenViewModel.action.syncChannelPresence()
+        screenViewModel.action.startMessageReceiptSync()
     }
     
     private func stopObserver() {
         NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+        screenViewModel.action.unsyncChannelPresence()
+        screenViewModel.action.stopMessageReceiptSync()
     }
     
     @objc func refreshPresence(notification: Notification) {
@@ -340,23 +352,44 @@ private extension AmityMessageListViewController {
     }
     
     func albumTap() {
-        let imagePicker = AmityImagePickerPreviewController(selectedAssets: [])
-        imagePicker.settings.theme.selectionStyle = .checked
+        let imagePicker = NewImagePickerController(selectedAssets: [])
+        imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
         imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
-        imagePicker.settings.theme.selectionStyle = .numbered
-        presentAmityUIKitImagePickerPreview(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { [weak self] assets in
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+                    
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
             let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
             let vc = PreviewImagePickerController.make(media: medias,
-                                                       viewModel: (self?.screenViewModel)!,
+                                                       viewModel: (self.screenViewModel)!,
                                                        mediaType: .image,
                                                        title: AmityLocalizedStringSet.General.selectedImages.localizedString,
                                                        asset: assets)
             vc.modalPresentationStyle = .fullScreen
             vc.tabBarController?.tabBar.isHidden = true
-            imagePicker.present(vc, animated: false, completion: nil)
-        })
+            imagePicker.present(vc, animated: false)
+        }
     }
     
     func videoAlbumTap() {
@@ -536,6 +569,12 @@ private extension AmityMessageListViewController {
     func setupMessageContainer() {
         messageViewController = AmityMessageListTableViewController.make(viewModel: screenViewModel)
         addContainerView(messageViewController, to: messageContainerView)
+        
+        overlayView = UIView()
+        overlayView.backgroundColor = AmityColorSet.base.blend(.shade4)
+        overlayView.alpha = 0.5
+        overlayView.isHidden = true
+        messageContainerView.addSubview(overlayView)
     }
     
     func setupComposeBarContainer() {
@@ -642,6 +681,7 @@ extension AmityMessageListViewController {
 private extension AmityMessageListViewController {
     func buildViewModel() {
         screenViewModel.delegate = self
+        screenViewModel.action.retrieveNotificationSettings()
         screenViewModel.action.getChannel()
         screenViewModel.action.getSubChannel()
         screenViewModel.action.getTotalUnreadCount()
@@ -807,7 +847,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelDidGetChannel(channel: AmityChannelModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
-            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline)
+            let isMuted = screenViewModel.dataSource.getNotification()
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, isMuted: isMuted)
         }
         
         if channel.object.currentUserMembership != .member {
@@ -822,6 +863,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             }
         }
         
+        // Update view by channel data
+        composeBar.updateViewDidGetChannel(channel: channel)
+        
         // Update interaction of compose bar view
         if channel.isMuted || channel.isDeleted {
             composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
@@ -833,7 +877,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
     func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             let isOnline = AmityUIKitManager.checkOnlinePresence(channelId: channel.channelId)
-            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user)
+            let isMuted = screenViewModel.dataSource.getNotification()
+            navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, user: user, isMuted: isMuted)
         }
         
         if channel.object.currentUserMembership != .member {
@@ -1026,7 +1071,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: message.object, size: .full, progress: nil) { [weak self] (result) in
                 switch result {
                 case .success(let image):
-                    let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: image)
+                    let imageURL = message.object.getImageInfo()?.fileURL
+                    let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: image, imageURL: imageURL)
                     self?.present(photoViewerVC, animated: true, completion: nil)
                 case .failure:
                     break
@@ -1145,6 +1191,10 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
 		AmityEventHandler.shared.userDidTap(from: self, userId: userId)
 	}
     
+    func screenViewModelDidTapOnPostIdLink(with postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
+    
     func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int) {
         composeBar.updateViewDidSelectForwardMessage(amount: amountForwardMessageList)
     }
@@ -1158,7 +1208,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 
                 if indexPath.section < numberOfSections && indexPath.row < numberOfRows {
                     strongSelf.messageViewController.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-                    strongSelf.shakeCell(at: indexPath)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { strongSelf.shakeCell(at: indexPath) })
                 }
             }
         }
@@ -1168,6 +1218,22 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         composeBar.showJoinMenuButton(show: false)
         setupCustomNavigationBar()
         screenViewModel.action.getMessage()
+    }
+    
+    func screenViewModelToggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType) {
+        // Setup setting attachment
+        let settings: AmityMessageFullTextEditorSettings = AmityMessageFullTextEditorSettings()
+        switch type {
+        case .content:
+            settings.allowMessageAttachments = [.image]
+        case .file:
+            settings.allowMessageAttachments = [.file]
+        }
+        
+        // Push broadcast message creator view controller
+        guard let channel = screenViewModel.dataSource.getChannelModel() else { return }
+        let viewController = AmityBroadcastMessageCreatorViewController(messageTarget: .broadcast(channel: channel), messageMode: .create, settings: settings)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
 
@@ -1220,6 +1286,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 		if users.isEmpty {
 			mentionTableViewHeightConstraint.constant = 0
 			mentionTableView.isHidden = true
+            hideOverlayView()
 		} else {
 			var heightConstant:CGFloat = 240.0
 			if users.count < 5 {
@@ -1228,6 +1295,7 @@ extension AmityMessageListViewController: AmityMentionManagerDelegate {
 			mentionTableViewHeightConstraint.constant = heightConstant
 			mentionTableView.isHidden = false
 			mentionTableView.reloadData()
+            showOverlayView()
 		}
 	}
 	
@@ -1405,6 +1473,18 @@ extension AmityMessageListViewController {
         
         // Apply the animation to the cell's layer
         cell.layer.add(shake, forKey: "cellShakeAnimation")
+    }
+}
+
+// MARK: - Overlay View
+extension AmityMessageListViewController {
+    func showOverlayView() {
+        overlayView.frame = messageSectionView.frame
+        overlayView.isHidden = false
+    }
+    
+    func hideOverlayView() {
+        overlayView.isHidden = true
     }
 }
 

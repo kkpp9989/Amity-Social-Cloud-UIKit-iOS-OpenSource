@@ -70,7 +70,7 @@ final class AmityMessageAudioController {
                     return
                 }
                 let currentFileName = audioURL.lastPathComponent
-                AmityAudioRecorder.shared.updateFilename(from: currentFileName, to: message.messageId)
+                self?.deleteCacheAudioFile(fileName: currentFileName)
                 completion()
             }
         }
@@ -87,6 +87,10 @@ final class AmityMessageAudioController {
         // Return temp audio URL
         let tempAudioURL = AmityAudioRecorder.shared.getAudioFileURL(fileName: tempFileName + ".m4a")
         return tempAudioURL
+    }
+    
+    private func deleteCacheAudioFile(fileName: String) {
+        AmityFileCache.shared.deleteFile(for: .audioDirectory, fileName: fileName)
     }
 }
 

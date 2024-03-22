@@ -119,15 +119,20 @@ extension AmityMessagesSearchScreenViewModel {
 
     private func prepareData(updatedMessageList: [Message]) {
         DispatchQueue.main.async { [self] in
+            // Filter deleted message message out
+            var filteredMessages = updatedMessageList.filter { message in
+                !(message.isDeleted ?? false)
+            }
+            
             /* Check is loading result more from the current keyword or result from a new keyword */
             if isLoadingMore {
                 // Filter out messages that are already in the messageList
-                let filteredMessages = updatedMessageList.filter { message in
+                filteredMessages = filteredMessages.filter { message in
                     !messageList.contains { $0.messageID == message.messageID }
                 }
                 messageList += filteredMessages
             } else {
-                messageList = updatedMessageList
+                messageList = filteredMessages
             }
 
             let filteredChannelIds = messageList.compactMap { $0.channelID }

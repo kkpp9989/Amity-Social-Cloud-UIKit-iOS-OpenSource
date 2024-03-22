@@ -10,7 +10,12 @@ import UIKit
 
 public class AmityChatHomeParentViewController: AmityViewController {
     
+    // MARK: - Properties
     var currentChildViewController: UIViewController?
+    var isHaveCreateBroadcastPermission: Bool = false
+    
+    // MARK: - Screen View Model
+    private var screenViewModel: AmityChatHomeParentScreenViewModel?
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -21,22 +26,28 @@ public class AmityChatHomeParentViewController: AmityViewController {
         super.viewDidLoad()
         title = AmityLocalizedStringSet.chatTitle.localizedString
         
-        setupNavigationBar()
-        
         /* [Custom for ONE Krungthai] Set custom navigation bar theme */
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
         // Set background app for this navigation bar from ONE Krungthai custom theme
         theme?.setBackgroundApp(index: 0)
+        
+        screenViewModel = AmityChatHomeParentScreenViewModel()
+        screenViewModel?.delegate = self
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         theme?.clearNavigationBarSetting()
+        clearNavigationBar()
+        
         setupView()
+        setupNavigationBar()
+        
         AmityUIKitManager.startHeartbeat()
     }
     
+    // MARK: - Setup views
     private func setupView() {
         // Load the initial child view controller
         if !AmityUIKitManagerInternal.shared.currentUserId.isEmpty {
@@ -45,17 +56,33 @@ public class AmityChatHomeParentViewController: AmityViewController {
         }
     }
     
-    // MARK: - Setup views
     private func setupNavigationBar() {
+        screenViewModel?.action.getCreateBroadcastMessagePermission() // Get permission then update navigation bar again
+    }
+    
+    private func clearNavigationBar() {
+        navigationItem.rightBarButtonItem = nil
+    }
+    
+    private func updateNavigationBar() {
         DispatchQueue.main.async { [self] in
             /* Right items */
             // [Improvement] Change set button solution to use custom stack view
             var rightButtonItems: [UIButton] = []
             
+            // Broadcast Button if have permission
+            let broadcastButton: UIButton = UIButton.init(type: .custom)
+            broadcastButton.setImage(AmityIconSet.iconBroadCastNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+            broadcastButton.addTarget(self, action: #selector(broadcastTap), for: .touchUpInside)
+            broadcastButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+            if isHaveCreateBroadcastPermission {
+                rightButtonItems.append(broadcastButton)
+            }
+            
             // Create chat button
             let createChatButton: UIButton = UIButton.init(type: .custom)
             createChatButton.setImage(AmityIconSet.iconCreateGroupChat?.withRenderingMode(.alwaysOriginal), for: .normal)
-            createChatButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+            createChatButton.addTarget(self, action: #selector(createChannelTap), for: .touchUpInside)
             createChatButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
             rightButtonItems.append(createChatButton)
             
@@ -103,8 +130,17 @@ public class AmityChatHomeParentViewController: AmityViewController {
         
         // Add the new child view controller
         addChild(childViewController)
-        childViewController.view.frame = view.bounds
+        childViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(childViewController.view)
+        
+        // Set constraints to the safe area
+        NSLayoutConstraint.activate([
+            childViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            childViewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            childViewController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            childViewController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor)
+        ])
+        
         childViewController.didMove(toParent: self)
         
         // Set the current child view controller
@@ -117,8 +153,11 @@ public class AmityChatHomeParentViewController: AmityViewController {
 }
 
 // MARK: - Action
-
 private extension AmityChatHomeParentViewController {
+    @objc func broadcastTap() {
+        AmityChannelEventHandler.shared.createBroadCastBeingPrepared(from: self, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
+    }
+    
     @objc func searchTap() {
         let searchVC = AmityChatSearchParentViewController.make()
         let nav = UINavigationController(rootViewController: searchVC)
@@ -127,10 +166,26 @@ private extension AmityChatHomeParentViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    @objc func createPostTap() {
+    @objc func createChannelTap() {
         AmityChannelEventHandler.shared.channelCreateNewGroupChat(from: self, selectUsers: []) { [weak self] channelId, subChannelId in
             guard let weakSelf = self else { return }
             AmityChannelEventHandler.shared.channelDidTap(from: weakSelf, channelId: channelId, subChannelId: subChannelId)
         }
+    }
+}
+
+// MARK: - Delegate
+extension AmityChatHomeParentViewController: AmityChatHomeParentScreenViewModelDelegate {
+    func screenViewModelDidGetCreateBroadcastMessagePermission(_ viewModel: AmityChatHomeParentScreenViewModelType, isHavePermission: Bool) {
+        isHaveCreateBroadcastPermission = isHavePermission
+        updateNavigationBar()
+    }
+    
+}
+
+// MARK: - For use open pull down menu
+extension AmityChatHomeParentViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Show the popover on iPhone devices as well
     }
 }

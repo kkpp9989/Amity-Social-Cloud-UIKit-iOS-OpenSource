@@ -79,14 +79,14 @@ private extension AmityMessageListHeaderView {
 
 extension AmityMessageListHeaderView {
     
-    func updateViews(channel: AmityChannelModel, isOnline: Bool, user: AmityUserModel? = nil) {
+    func updateViews(channel: AmityChannelModel, isOnline: Bool, user: AmityUserModel? = nil, isMuted: Bool) {
         avatarView.isHidden = false
         
         switch channel.channelType {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
-            updateChannelName(channelName: channel.displayName, isMuted: channel.isMuted)
+            updateChannelName(channelName: channel.displayName, isMuted: isMuted)
             
             /* [Custom for ONE Krungthai] Show member count and hide status view for group chat */
             memberCount.text = "\(channel.memberCount) \(channel.memberCount > 1 ? "members" : "member")"
@@ -97,14 +97,14 @@ extension AmityMessageListHeaderView {
                 // Set avatar
                 avatarView.setImage(withImageURL: otherMember.getAvatarInfo()?.fileURL, placeholder: AmityIconSet.defaultAvatar)
                 // Set displayName
-                updateChannelName(channelName: otherMember.displayName ?? "", isMuted: channel.isMuted)
+                updateChannelName(channelName: otherMember.displayName ?? "", isMuted: isMuted)
                 // Set user status and show its | [Temp] Mock to Available
                 updateUserStatus(user: otherMember, isOnline: isOnline)
                 // Hide member count because it's 1:1 Chat
                 memberCount.isHidden = true
             }
         case .community, .live, .broadcast:
-            updateChannelName(channelName: channel.displayName, isMuted: channel.isMuted)
+            updateChannelName(channelName: channel.displayName, isMuted: isMuted)
 
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)
             
@@ -147,6 +147,7 @@ extension AmityMessageListHeaderView {
 
     func updateUserStatus(user: AmityUser, isOnline: Bool) {
         let status = user.metadata?["user_presence"] as? String ?? "available"
+//        print("[Status] status of \(user.displayName) is \(user.metadata?["user_presence"] as? String) | isOnline: \(isOnline)")
         switch status {
         case "available":
             if isOnline {

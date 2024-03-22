@@ -20,9 +20,11 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
     private let reactionController: AmityReactionControllerProtocol
     private let pollRepository: AmityPollRepository
     private let repository = AmityPostRepository(client: AmityUIKitManagerInternal.shared.client)
-    
+    private let messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
+
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.3)
+    private let debouncerLoadingMore = Debouncer(delay: 1.0)
     private let feedType: AmityPostFeedType
     private var postComponents = [AmityPostComponent]()
     private(set) var isPrivate: Bool
@@ -32,11 +34,13 @@ class AmityHashtagScreenViewModel: AmityHashtagScreenViewModelType {
             delegate?.screenViewModelLoadingStatusDidChange(self, isLoading: isLoading)
         }
     }
+    private(set) var isLoadingMore: Bool = false
     
     private var keyword: String = ""
     
     private var tokenArray: [AmityNotificationToken?] = []
     private var fromIndex: Int = 0
+    private var requestPostSize: Int = 20
     private let dispatchGroup = DispatchGroup()
     private var postLists: [AmityPostModel] = []
     private var dummyList: AmitySearchPostsModel = AmitySearchPostsModel(postIDS: [])
@@ -98,6 +102,7 @@ extension AmityHashtagScreenViewModel {
             }
         }
         isLoading = false
+        isLoadingMore = false
         delegate?.screenViewModelDidUpdateDataSuccess(self)
     }
     
@@ -115,25 +120,44 @@ extension AmityHashtagScreenViewModel {
         var serviceRequest = RequestSearchingPosts()
         serviceRequest.keyword = keyword
         serviceRequest.from = fromIndex
+        serviceRequest.size = requestPostSize
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//        print(#"[Feed][Hashtag] Start request post with hashtag "\#(keyword)" from index \#(fromIndex) with size \#(requestPostSize)"#)
         serviceRequest.request { result in
             switch result {
             case .success(let data):
+//                print(#"[Feed][Hashtag] Request post with hashtag "\#(keyword)" success with data \#(data.postIDS.count): \#(data.postIDS)"#)
                 self.getPostbyPostIDsList(posts: data)
+                self.fromIndex = data.postIDS.count == 0 ? self.fromIndex - serviceRequest.size : self.fromIndex
             case .failure(let error):
-                print(error)
+//                print(#"[Feed][Hashtag] Request post with hashtag "\#(keyword)" fail with error \#(error.localizedDescription)"#)
+                self.fromIndex = self.fromIndex - serviceRequest.size
             }
+//            print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
         }
     }
     
     func loadMore() {
-        fromIndex += 20
-        fetchPosts(keyword: keyword)
+        debouncerLoadingMore.run { [weak self] in
+            guard let weakSelf = self else { return }
+            if !weakSelf.isLoadingMore && !weakSelf.isLoading && !weakSelf.postLists.isEmpty {
+                weakSelf.isLoadingMore = true
+                weakSelf.fromIndex += weakSelf.requestPostSize
+//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//                print(#"[Feed][Hashtag] Start loading more post with from index \#(weakSelf.fromIndex)"#)
+//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+                weakSelf.fetchPosts(keyword: weakSelf.keyword)
+            }
+        }
     }
     
     func refresh() {
         fromIndex = 0
         dummyList.postIDS = []
         postLists = []
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//        print(#"[Feed][Hashtag] Refresh hashtag feed"#)
+//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
     }
     
     func getPostbyPostIDsList(posts: AmitySearchPostsModel) {
@@ -523,4 +547,65 @@ extension AmityHashtagScreenViewModel {
         }
     }
     
+}
+
+// MARK: - Share to Chat
+extension AmityHashtagScreenViewModel {
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel) {
+        var channelIdList: [String] = []
+        AmityEventHandler.shared.showKTBLoading()
+        for user in selectChannel {
+            dispatchGroup.enter()
+            switch user.type {
+            case .user:
+                let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+                let builder = AmityConversationChannelBuilder()
+                builder.setUserId(user.userId)
+                builder.setDisplayName(user.displayName ?? "")
+                builder.setMetadata(["user_id_member": userIds])
+                
+                let channelRepo = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+                AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [self] channelObject, _ in
+                    if let channel = channelObject {
+                        channelIdList.append(channel.channelId)
+                    }
+                    
+                    dispatchGroup.leave()
+                }
+            case .channel:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            case .community:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.forward(withChannelIdList: channelIdList, post: post)
+        }
+    }
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel) {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        for channelId in channelIdList {
+            dispatchGroup.enter()
+            let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: externalURL)
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                guard let stringSelf = self else { return }
+                stringSelf.dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.MessageList.alertSharedMessageSuccessfully.localizedString))
+        }
+    }
 }

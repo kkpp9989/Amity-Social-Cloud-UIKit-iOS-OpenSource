@@ -40,9 +40,16 @@ struct AmityColorSet {
     static var highlightMessageBoardcast: UIColor {
         return UIColor(hex: "#FFBE16")
     }
+    static var baseSecondaryInverse: UIColor {
+        return UIColor(hex: "#B2EAFF")
+    }
     
     static var backgroundColor: UIColor {
         return UIColor.white
+    }
+    
+    static var chatBackgroundColor: UIColor {
+        return UIColor(hex: "#292B32").blend(.shade4).withAlphaComponent(0.3)
     }
     
     static var dnaSangsun: UIColor {

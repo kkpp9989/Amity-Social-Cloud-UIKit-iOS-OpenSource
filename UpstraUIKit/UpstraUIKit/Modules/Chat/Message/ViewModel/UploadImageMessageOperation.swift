@@ -18,7 +18,7 @@ class UploadImageMessageOperation: AsyncOperation {
     
     private var token: AmityNotificationToken?
     
-    init(subChannelId: String, media: AmityMedia, repository: AmityMessageRepository, isFromResend: Bool = false) {
+    init(subChannelId: String, media: AmityMedia, repository: AmityMessageRepository) {
         self.subChannelId = subChannelId
         self.media = media
         self.repository = repository
@@ -42,13 +42,25 @@ class UploadImageMessageOperation: AsyncOperation {
                         let imageURL = strongSelf.createTempImage(image: image)
                         strongSelf.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
                     case .failure:
+                        Log.add("[UIKit][Message][Image] mediaid: \(strongSelf.media.id) | Can't get image uploading for send/resend message")
                         strongSelf.finish()
                     }
                 }
-            case .image(let image): // From resend image message
+            case .image(let image): // From resend image message (Deprecated)
                 let imageURL = strongSelf.createTempImage(image: image)
                 strongSelf.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
+            case .localURL(let imageURL): // From resend image message
+                guard let imageData = try? Data(contentsOf: imageURL),
+                      let image = UIImage(data: imageData) else {
+                    Log.add("[UIKit][Message][Image] mediaid: \(strongSelf.media.id) | Can't get image from local url for send/resend message")
+                    strongSelf.finish()
+                    return
+                }
+                let fileName = imageURL.lastPathComponent
+                let imageURL = strongSelf.createTempImage(image: image, fileName: fileName)
+                strongSelf.createImageMessage(imageURL: imageURL, fileURLString: imageURL.absoluteString)
             default:
+                Log.add("[UIKit][Message][Image] mediaid: \(strongSelf.media.id) | Media state of processing invalid for send/resend message")
                 strongSelf.finish()
             }
         }
@@ -56,20 +68,24 @@ class UploadImageMessageOperation: AsyncOperation {
     
     private func cacheImageFile(imageData: Data, fileName: String) {
         AmityFileCache.shared.cacheData(for: .imageDirectory, data: imageData, fileName: fileName, completion: {_ in})
+        Log.add("[UIKit][Message][Image] mediaid: \(media.id) | Cache image success")
     }
     
     private func deleteCacheImageFile(fileName: String) {
         AmityFileCache.shared.deleteFile(for: .imageDirectory, fileName: fileName)
+        Log.add("[UIKit][Message][Image] mediaid: \(media.id) | Delete cache image success")
     }
     
-    private func createTempImage(image: UIImage) -> URL {
+    private func createTempImage(image: UIImage, fileName: String? = nil) -> URL {
         // save image to temp directory and send local url path for uploading
-        let imageName = "\(UUID().uuidString).jpg"
+        let imageName = fileName ?? "\(UUID().uuidString).jpg"
         
         // Write image file to temp folder for send message
         let imageUrl = FileManager.default.temporaryDirectory.appendingPathComponent(imageName)
-        let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
+        let data = image.jpegData(compressionQuality: 0.8)
         try? data?.write(to: imageUrl)
+        
+        Log.add("[UIKit][Message][Image] mediaid: \(media.id) | Create temp image success")
         
         // Cached image file for resend message
         if let imageData = data {
@@ -90,35 +106,16 @@ class UploadImageMessageOperation: AsyncOperation {
                 
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
-                Log.add("[UIKit] Create image message (URL: \(imageURL)) fail with error: \(error?.localizedDescription)")
+                Log.add("[UIKit][Message][Image] mediaid: \(self?.media.id) | Create image message (URL: \(imageURL)) fail with error: \(error?.localizedDescription)")
+                self?.finish()
                 return
             }
             
             // Delete cache if exists
+            Log.add("[UIKit][Message][Image] mediaid: \(self?.media.id) | Create image message (URL: \(imageURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
             self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
-            
-            Log.add("[UIKit] Create image message (URL: \(imageURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
-            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
-                guard error == nil, let message = liveObject.snapshot else {
-                    self?.token = nil
-                    self?.finish()
-                    return
-                }
-                Log.add("[UIKit] Sync state image message (URL: \(imageURL)) : \(message.syncState) | type: \(message.messageType)")
-                switch message.syncState {
-                case .syncing, .default:
-                    // We don't cache local file URL as sdk handles itself
-                    break
-                case .synced, .error:
-                    self?.token = nil
-                    self?.finish()
-                @unknown default:
-                    fatalError()
-                }
-            }
+            self?.finish()
         }
-        
     }
-    
 }
 

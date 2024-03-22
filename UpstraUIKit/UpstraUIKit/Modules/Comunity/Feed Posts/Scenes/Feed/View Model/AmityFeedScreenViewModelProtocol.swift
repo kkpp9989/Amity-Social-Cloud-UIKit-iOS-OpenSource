@@ -89,6 +89,7 @@ protocol AmityFeedScreenViewModelAction {
     func pinpost(withpostId postId: String)
     func unpinpost(withpostId postId: String)
     
+    // MARK: Share
     func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
     func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }

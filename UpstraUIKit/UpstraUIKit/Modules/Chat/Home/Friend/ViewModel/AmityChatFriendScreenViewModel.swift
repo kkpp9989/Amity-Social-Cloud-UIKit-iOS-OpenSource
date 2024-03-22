@@ -129,7 +129,7 @@ private extension AmityChatFriendScreenViewModel {
             followersList = followers
             delegate?.screenViewModelDidGetListSuccess()
         default:
-            delegate?.screenViewModelDidGetListSuccess()
+            break // Do not anything
         }
     }
 }

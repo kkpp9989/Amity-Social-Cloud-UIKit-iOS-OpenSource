@@ -33,18 +33,15 @@ class UploadVideoMessageOperation: AsyncOperation {
         // Perform actual task on main queue.
         DispatchQueue.main.async { [weak self] in
             // get local video url for uploading
-            if let fileId = self?.fileId, fileId.isEmpty {
-                self?.media.getLocalURLForUploading { [weak self] url in
-                    guard let url = url else {
-                        self?.media.state = .error
-                        self?.finish()
-                        return
-                    }
-                    
-                    self?.createVideoMessage(videoURL: url)
+            self?.media.getLocalURLForUploading { [weak self] url in
+                guard let url = url else {
+                    Log.add("[UIKit][Message][Video] mediaid: \(self?.media.id) | Can't get video from local URL for send/resend message")
+                    self?.media.state = .error
+                    self?.finish()
+                    return
                 }
-            } else {
-                self?.createVideoMessage(fileId: self?.fileId ?? "")
+                
+                self?.createVideoMessage(videoURL: url)
             }
         }
     }
@@ -60,28 +57,13 @@ class UploadVideoMessageOperation: AsyncOperation {
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createVideoMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
-                Log.add("[UIKit] Create video message (URL: \(videoURL)) fail with error: \(error?.localizedDescription)")
+                Log.add("[UIKit][Message][Video] mediaid: \(self?.media.id) | Create video message (URL: \(videoURL)) fail with error: \(error?.localizedDescription)")
+                self?.finish()
                 return
             }
-            Log.add("[UIKit] Create video message (URL: \(videoURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
-            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
-                guard error == nil, let message = liveObject.snapshot else {
-                    self?.token = nil
-                    self?.finish()
-                    return
-                }
-                Log.add("[UIKit] Sync state video message (URL: \(videoURL)) : \(message.syncState) | type: \(message.messageType)")
-                switch message.syncState {
-                case .syncing, .default:
-                    // We don't cache local file URL as sdk handles itself
-                    break
-                case .synced, .error:
-                    self?.token = nil
-                    self?.finish()
-                @unknown default:
-                    fatalError()
-                }
-            }
+            
+            Log.add("[UIKit][Message][Video] mediaid: \(self?.media.id) | Create video message (URL: \(videoURL)) success with message Id: \(message.messageId) | type: \(message.messageType)")
+            self?.finish()
         }
     }
     
@@ -96,26 +78,13 @@ class UploadVideoMessageOperation: AsyncOperation {
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createVideoMessage(options:), parameters: createOptions) { [weak self] message, error in
             guard error == nil, let message = message else {
+                Log.add("[UIKit][Message][Video] mediaid: \(self?.media.id) | Create video message (fileId: \(fileId)) fail with error: \(error?.localizedDescription)")
+                self?.finish()
                 return
             }
-            self?.token = repository.getMessage(message.messageId).observe { (liveObject, error) in
-                guard error == nil, let message = liveObject.snapshot else {
-                    self?.token = nil
-                    self?.finish()
-                    return
-                }
-                switch message.syncState {
-                case .syncing, .default:
-                    // We don't cache local file URL as sdk handles itself
-                    break
-                case .synced, .error:
-                    self?.token = nil
-                    self?.finish()
-                @unknown default:
-                    fatalError()
-                }
-            }
+            
+            Log.add("[UIKit][Message][Video] mediaid: \(self?.media.id) | Create video message (fileId: \(fileId)) success with message Id: \(message.messageId) | type: \(message.messageType)")
+            self?.finish()
         }
     }
-    
 }

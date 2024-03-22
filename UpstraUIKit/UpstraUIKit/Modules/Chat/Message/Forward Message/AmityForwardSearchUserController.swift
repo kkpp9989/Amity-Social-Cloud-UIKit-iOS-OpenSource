@@ -28,7 +28,7 @@ final class AmityForwardSearchUserController {
     
     func search(with text: String, newSelectedUsers: [AmitySelectMemberModel], currentUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
         users = []
-        searchTask?.cancel()
+//        searchTask?.cancel()
         if text == "" {
             completion(.failure(.textEmpty))
         } else {
@@ -38,8 +38,8 @@ final class AmityForwardSearchUserController {
                 collection = repository?.getMyFollowerList(with: .accepted)
             }
             
-            let request =  DispatchWorkItem { [weak self] in
-                self?.token = self?.collection?.observe { [weak self] (userCollection, change, error) in
+//            let request =  DispatchWorkItem { [weak self] in
+                token = collection?.observe { [weak self] (userCollection, change, error) in
                     guard let strongSelf = self else { return }
                     strongSelf.token?.invalidate()
                     if let error = error {
@@ -99,10 +99,10 @@ final class AmityForwardSearchUserController {
                         }
                     }
                 }
-            }
+//            }
             
-            searchTask = request
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3, execute: request)
+//            searchTask = request
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3, execute: request)
         }
     }
     

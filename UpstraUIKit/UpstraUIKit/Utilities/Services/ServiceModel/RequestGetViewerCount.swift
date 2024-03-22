@@ -51,4 +51,44 @@ struct RequestGetViewerCount {
             }
         }
     }
+    
+    func getViewerCount(postId: String, _ completion: @escaping(Result<ViewersModel,Error>) -> ()) {
+        var domainURL = ""
+        if let envKey = AmityUIKitManager.env["env_key"] as? String {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
+        } else {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
+        }
+
+        requestMeta.method = .get
+        requestMeta.urlRequest = "\(domainURL)/viewerCountRedis?postId=\(postId)"
+        requestMeta.encoding = .urlEncoding
+        requestMeta.header = [
+            ["Authorization": "Bearer \(currentUserToken)"]
+        ]
+        
+        NetworkManager().request(requestMeta) { (data, response, error) in
+            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(.failure(HandleError.notFound))
+                return
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                guard let dataModel = try? JSONDecoder().decode(ViewersModel.self, from: data) else {
+                    completion(.failure(HandleError.JsonDecodeError))
+                    return
+                }
+                completion(.success(dataModel))
+                
+                let responseDataString = String(data: data, encoding: .utf8)
+                print("[Livestream][getViewerCount] Response Data: \(responseDataString ?? "Unable to convert data to string")")
+                
+            case 400...499:
+                completion(.failure(HandleError.notFound))
+            default:
+                completion(.failure(HandleError.connectionError))
+            }
+        }
+    }
 }

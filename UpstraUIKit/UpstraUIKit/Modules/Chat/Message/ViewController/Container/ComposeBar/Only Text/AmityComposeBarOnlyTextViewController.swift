@@ -104,6 +104,10 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+    func updateViewDidGetChannel(channel: AmityChannelModel) {
+        // Intentionally left empty
+    }
+    
     func updateViewDidReplyProcess(isReplying: Bool) {
         // Intentionally left empty
         // This class doesn't support reply message.

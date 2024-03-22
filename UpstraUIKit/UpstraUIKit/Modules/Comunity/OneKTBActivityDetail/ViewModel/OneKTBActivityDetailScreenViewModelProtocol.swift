@@ -74,6 +74,10 @@ protocol OneKTBActivityDetailScreenViewModelAction {
     // MARK: Poll
     func vote(withPollId pollId: String?, answerIds: [String])
     func close(withPollId pollId: String?)
+    
+    // MARK: Share
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }
 
 protocol OneKTBActivityDetailScreenViewModelType: OneKTBActivityDetailScreenViewModelAction, OneKTBActivityDetailScreenViewModelDataSource {

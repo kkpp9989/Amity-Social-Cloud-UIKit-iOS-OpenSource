@@ -22,6 +22,7 @@ public final class AmityMemberPickerViewController: AmityViewController {
     // MARK: - Properties
     private var screenViewModel: AmityMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
+    var lastSearchKeyword: String = ""
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -35,7 +36,13 @@ public final class AmityMemberPickerViewController: AmityViewController {
         setupView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getUsers()
+        
+        // Get data
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword -> Get all user
+            screenViewModel.action.getUsers()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -51,6 +58,14 @@ public final class AmityMemberPickerViewController: AmityViewController {
         let vc = AmityMemberPickerViewController(nibName: AmityMemberPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModeel
         return vc
+    }
+    
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+    }
+    
+    public func fetchData() {
+        screenViewModel.action.clearData()
     }
     
 }
@@ -151,6 +166,24 @@ private extension AmityMemberPickerViewController {
 
 extension AmityMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        lastSearchKeyword = searchText
+        
+        if lastSearchKeyword.isEmpty {
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                screenViewModel.action.getUsers()
+            } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
+        }
+        
+        lastSearchKeyword = searchText
         screenViewModel.action.searchUser(with: searchText)
     }
 }
@@ -259,8 +292,9 @@ extension AmityMemberPickerViewController: AmityMemberPickerScreenViewModelDeleg
         collectionView.reloadData()
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
         self.title = title
+        self.lastSearchKeyword = keyword
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
@@ -277,6 +311,20 @@ extension AmityMemberPickerViewController: AmityMemberPickerScreenViewModelDeleg
             tableView.showLoadingIndicator()
         case .initial, .loaded:
             tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        tableView.reloadData()
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user by latest search keyword
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all user -> Get all user (create viewcontroller with searching)
+                screenViewModel.action.getUsers()
+            } else { // Case : Case : Don't have keyword but have current all user data  -> Reload tableview for show current all user
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
         }
     }
 }

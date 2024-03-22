@@ -19,6 +19,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private let childrenController: AmityCommentChildrenController
     private let pollRepository: AmityPollRepository
     private let reactionRepository: AmityReactionRepository
+    private let messageRepository: AmityMessageRepository
         
     private var postId: String
     private(set) var post: AmityPostModel?
@@ -27,7 +28,8 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private let debouncer = Debouncer(delay: 0.3)
     private(set) var community: AmityCommunity?
     private var viewerCount: Int = 0
-    
+    private let dispatchGroup = DispatchGroup()
+
     private var isReactionLoading: Bool = false
     private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
     
@@ -39,8 +41,6 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     public var reaction: [String: Int] = ["create": 0, "honest": 0, "harmony": 0, "success": 0, "society": 0, "like": 0, "love": 0]
     
     private var tokenArray: [AmityNotificationToken] = []
-
-    private let dispatchGroup = DispatchGroup()
 
     init(withPostId postId: String,
          postController: AmityPostControllerProtocol,
@@ -57,6 +57,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
         self.streamId = streamId
         self.pollAnswers = pollAnswers
     }
@@ -298,21 +299,22 @@ extension AmityPostDetailScreenViewModel {
         func doFetchPost() {
             DispatchQueue.main.async { [self] in
                 postController.getPostForPostId(withPostId: postId) { [weak self] (result) in
+                    guard let strongSelf = self else { return }
                     switch result {
                     case .success(let post):
-                        self?.post = post
-                        self?.post?.viewerCount = self?.viewerCount ?? 0
+                        strongSelf.post = post
+                        strongSelf.post?.viewerCount = strongSelf.viewerCount
                         
                         /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
-                        let isReactionChanging = self?.isReactionChanging ?? false
+                        let isReactionChanging = strongSelf.isReactionChanging
                         if !isReactionChanging {
-                            self?.debouncer.run {
-                                self?.prepareData()
+                            strongSelf.debouncer.run {
+                                strongSelf.prepareData()
                             }
                         }
-                        self?.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
-                    case .failure:
-                        break
+                        strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
+                    case .failure(let error):
+                        strongSelf.delegate?.screenViewModel(strongSelf, didFinishWithError: AmityError(error: error) ?? .unknown)
                     }
                 }
             }
@@ -346,11 +348,12 @@ extension AmityPostDetailScreenViewModel {
     func fetchComments() {
         DispatchQueue.main.async { [self] in
             commentController.getCommentsForPostId(withReferenceId: postId, referenceType: .post, filterByParentId: true, parentId: nil, orderBy: .ascending, includeDeleted: true) { [weak self] (result) in
+                guard let strongSelf = self else { return }
                 switch result {
                 case .success(let comments):
-                    self?.comments = comments
-                    self?.debouncer.run {
-                        self?.prepareData()
+                    strongSelf.comments = comments
+                    strongSelf.debouncer.run {
+                        strongSelf.prepareData()
                     }
                 case .failure:
                     break
@@ -615,4 +618,65 @@ extension AmityPostDetailScreenViewModel {
         }
     }
     
+}
+
+// MARK: - Share to Chat
+extension AmityPostDetailScreenViewModel {
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel) {
+        var channelIdList: [String] = []
+        AmityEventHandler.shared.showKTBLoading()
+        for user in selectChannel {
+            dispatchGroup.enter()
+            switch user.type {
+            case .user:
+                let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+                let builder = AmityConversationChannelBuilder()
+                builder.setUserId(user.userId)
+                builder.setDisplayName(user.displayName ?? "")
+                builder.setMetadata(["user_id_member": userIds])
+                
+                let channelRepo = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+                AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [self] channelObject, _ in
+                    if let channel = channelObject {
+                        channelIdList.append(channel.channelId)
+                    }
+                    
+                    dispatchGroup.leave()
+                }
+            case .channel:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            case .community:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.forward(withChannelIdList: channelIdList, post: post)
+        }
+    }
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel) {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        for channelId in channelIdList {
+            dispatchGroup.enter()
+            let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: externalURL)
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                guard let stringSelf = self else { return }
+                stringSelf.dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.MessageList.alertSharedMessageSuccessfully.localizedString))
+        }
+    }
 }

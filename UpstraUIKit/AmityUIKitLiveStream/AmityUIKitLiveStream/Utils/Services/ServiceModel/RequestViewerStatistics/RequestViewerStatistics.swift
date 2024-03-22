@@ -61,7 +61,7 @@ struct RequestViewerStatistics {
         } else {
             domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
         }
-        
+
         requestMeta.method = .get
         requestMeta.urlRequest = "\(domainURL)/viewerCountRedis?postId=\(postId)"
         requestMeta.encoding = .urlEncoding
@@ -75,9 +75,6 @@ struct RequestViewerStatistics {
                 return
             }
             
-//            print("[Livestream][getViewerCount] currentUserToken: \(currentUserToken)")
-//            print("[Livestream][getViewerCount] Get viewer count result status code: \(httpResponse.statusCode)")
-            
             switch httpResponse.statusCode {
             case 200:
                 guard let dataModel = try? JSONDecoder().decode(ViewersModel.self, from: data) else {
@@ -85,6 +82,10 @@ struct RequestViewerStatistics {
                     return
                 }
                 completion(.success(dataModel))
+                
+                let responseDataString = String(data: data, encoding: .utf8)
+                print("[Livestream][getViewerCount] Response Data: \(responseDataString ?? "Unable to convert data to string")")
+                
             case 400...499:
                 completion(.failure(HandleError.notFound))
             default:
@@ -116,19 +117,8 @@ struct RequestViewerStatistics {
                 completion(.failure(HandleError.notFound))
                 return
             }
-            
-//            print("[Livestream][connectLivestream] currentUserToken: \(currentUserToken)")
-//            print("[Livestream][connectLivestream] Request connect livestream result status code: \(httpResponse.statusCode)")
-            
             switch httpResponse.statusCode {
             case 200:
-                // [Backup]
-//                guard let dataModel = try? JSONDecoder().decode(ViewerStatisticsModel.self, from: data) else {
-//                    completion(.failure(HandleError.JsonDecodeError))
-//                    return
-//                }
-//                completion(.success(dataModel))
-                
                 // [Current] Use boolean instead because reponse is text only and not use in UI
                 completion(.success(true))
             case 400...499:
@@ -162,19 +152,8 @@ struct RequestViewerStatistics {
                 completion(.failure(HandleError.notFound))
                 return
             }
-            
-//            print("[Livestream][disconnectLivestream] currentUserToken: \(currentUserToken)")
-//            print("[Livestream][disconnectLivestream] Request disconnect livestream result status code: \(httpResponse.statusCode)")
-            
             switch httpResponse.statusCode {
             case 200:
-                // [Backup]
-//                guard let dataModel = try? JSONDecoder().decode(ViewerStatisticsModel.self, from: data) else {
-//                    completion(.failure(HandleError.JsonDecodeError))
-//                    return
-//                }
-//                completion(.success(dataModel))
-                
                 // [Current] Use boolean instead because reponse is text only and not use in UI
                 completion(.success(true))
             case 400...499:
@@ -209,8 +188,43 @@ struct RequestViewerStatistics {
                 return
             }
             
-//            print("[Livestream][createLivestreamLog] currentUserToken: \(currentUserToken)")
-//            print("[Livestream][createLivestreamLog] Request create livestream log result status code: \(httpResponse.statusCode)")
+            switch httpResponse.statusCode {
+            case 200:
+                guard let dataModel = try? JSONDecoder().decode(ViewerStatisticsModel.self, from: data) else {
+                    completion(.failure(HandleError.JsonDecodeError))
+                    return
+                }
+                completion(.success(true))
+            case 400...499:
+                completion(.failure(HandleError.notFound))
+            default:
+                completion(.failure(HandleError.connectionError))
+            }
+        }
+    }
+    
+    func liveStreamStatus(postId: String, streamId: String, isLive: Bool, _ completion: @escaping(Result<Bool,Error>) -> ()) {
+        var domainURL = ""
+        if let envKey = AmityUIKitManager.env["env_key"] as? String {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
+        } else {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
+        }
+        
+        requestMeta.method = .post
+        requestMeta.urlRequest = "\(domainURL)/live-status"
+        requestMeta.encoding = .jsonEncoding
+        requestMeta.params = ["postId": postId, "streamId": streamId, "isLive": isLive]
+        requestMeta.header = [
+            ["Content-Type": "application/json"],
+            ["Authorization": "Bearer \(currentUserToken)"]
+        ]
+        
+        NetworkManager().request(requestMeta) { (data, response, error) in
+            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(.failure(HandleError.notFound))
+                return
+            }
             
             switch httpResponse.statusCode {
             case 200:
@@ -226,4 +240,44 @@ struct RequestViewerStatistics {
             }
         }
     }
+    
+    func getLiveStreamStatus(postId: String, _ completion: @escaping(Result<Bool,Error>) -> ()) {
+        var domainURL = ""
+        if let envKey = AmityUIKitManager.env["env_key"] as? String {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: envKey)
+        } else {
+            domainURL = DomainManager.Domain.getDomainURLCustomAPI(env: "") // Go to default (UAT)
+        }
+        
+        requestMeta.method = .get
+        requestMeta.urlRequest = "\(domainURL)/live-status?postId=\(postId)"
+        requestMeta.encoding = .urlEncoding
+        requestMeta.header = [
+            ["Content-Type": "application/json"],
+            ["Authorization": "Bearer \(currentUserToken)"]
+        ]
+        
+        NetworkManager().request(requestMeta) { (data, response, error) in
+            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(.failure(HandleError.notFound))
+                return
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                guard let json = try? JSONSerialization.jsonObject(with: data, options: []),
+                      let jsonDict = json as? [String: Any],
+                      let isLiveResponse = jsonDict["isLive"] as? Bool else {
+                    completion(.failure(HandleError.JsonDecodeError))
+                    return
+                }
+                completion(.success(isLiveResponse))
+            case 400...499:
+                completion(.failure(HandleError.notFound))
+            default:
+                completion(.failure(HandleError.connectionError))
+            }
+        }
+    }
+
 }

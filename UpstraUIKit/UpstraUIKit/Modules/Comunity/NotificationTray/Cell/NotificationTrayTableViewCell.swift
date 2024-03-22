@@ -44,15 +44,18 @@ class NotificationTrayTableViewCell: UITableViewCell, Nibbable {
         }
         
         var action: String = ""
+        let targetType: String = model.getTargetType()?.rawValue ?? NotificationTargetType.post.rawValue
         
         if model.verb == "post" {
             action = "posted in"
         } else if model.verb == "comment" {
-            action = shouldRenderTarget(targetName: model.targetName) ? "commented on your post in" : "commented on your post"
+            action = shouldRenderTarget(targetName: model.targetName) ? "commented on your \(targetType) in" : "commented on your \(targetType)"
         } else if model.verb == "mention" {
-            action = shouldRenderTarget(targetName: model.targetName) ? "mention on your post in" : "mention on your post"
+            action = shouldRenderTarget(targetName: model.targetName) ? "mentioned you in a \(targetType) in" : "mentioned you in a \(targetType)"
+        } else if model.verb == "mentreply" {
+            action = shouldRenderTarget(targetName: model.targetName) ? "replied to your \(targetType) in" : "replied to your \(targetType)"
         } else {
-            action = shouldRenderTarget(targetName: model.targetName) ? "reacted on your post in" : "reacted on your post"
+            action = shouldRenderTarget(targetName: model.targetName) ? "reacted on your \(targetType) in" : "reacted on your \(targetType)"
         }
         
         let targetNames: [String] = model.actors.map { $0.name } + [model.targetName]

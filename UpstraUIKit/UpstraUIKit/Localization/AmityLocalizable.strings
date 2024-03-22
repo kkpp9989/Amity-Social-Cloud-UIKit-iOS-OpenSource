@@ -25,6 +25,7 @@
 "general_done" = "Done";
 "general_ok" = "OK";
 "general_post" = "Post";
+"general_broadcast" = "Broadcast";
 "general_discard" = "Discard";
 "general_leave" = "Leave";
 "general_next" = "Next"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
@@ -50,6 +51,7 @@
 "general_follow" = "Follow";
 "general_camera" = "Camera";
 "general_file" = "File";
+"general_content" = "Content";
 "general_album" = "Album";
 "general_location" = "Location";
 "general_image_gallery" = "Image Gallery";
@@ -131,6 +133,7 @@
 //"text_message_placeholder" = "Type message"; // [Original]
 "text_message_placeholder" = "Write a message";
 "text_message_placeholder_muted" = "Cannot send message";
+"text_broadcast_message_placeholder" = "Write broadcast message...";
 
 "message_delete" = "Message deleted • %@";
 "message_unsent" = "Message unsent • %@";
@@ -140,7 +143,7 @@
 "message_list_alert_microphone_disabled_title" = "Microphone disabled";
 "message_list_alert_microphone_disabled_desc" = "To record, let ONE Krungthai access your microphone in Settings App.\n(Open Settings > Go to ONE Krungthai > Enable Microphone)";
 "message_list_alert_shared_message_successfully" = "Shared\nsuccessfully";
-"message_list_alert_select_image_full" = "you can only select up to 10 media files";
+"message_list_alert_select_image_full" = "You can only select up to %@ media files";
 
 "something_went_wrong_with_try_again"= "Something went wrong. Please try again later.";
 "no_internet_connection" = "No internet connection";
@@ -254,8 +257,8 @@
 "post_creation_text_placeholder" = "What’s going on...";
 "post_creation_discard_post_title" = "Discard Post?";
 "post_creation_discard_post_message" = "Do you want to discard your post?";
-"post_creation_select_image" = "Select image";
-"post_creation_select_video" = "Select video";
+"post_creation_select_image" = "Selected images";
+"post_creation_select_video" = "Selected videos";
 "post_creation_file_upload_icomplete_title" = "Upload incomplete";
 "post_creation_file_upload_icomplete_description" = "Some files could not be uploaded.\nPlease remove and try again";
 "post_craetion_submit_title" = "Post submitted";
@@ -458,6 +461,8 @@
 "hud_report_sent" = "Report sent";
 "hud_unreport_sent" = "Unreport sent";
 "hud_deleted" = "Deleted";
+"hud_broadcast_message_success" = "Broadcast Sent";
+"hud_broadcast_message_fail" = "Broadcast Fail";
 
 
 // MARK: - Popover Text Message
@@ -509,6 +514,7 @@
 "chat_setting_report_sent" = "Report Sent";
 "chat_setting_unreport_sent" = "Unreport Sent"; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_title" = "Leave chat";
+"chat_setting_leave_chat_conversation_chat_message" = "If you leave this conversation, you won't be able to see chat room in the recent chat."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_member_role_group_chat_message" = "If leave this group, you’ll no longer be able to see any messages and files."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" = "As you’re the last moderator and member, leaving will also close this chat. All messages shared in chat will be deleted. This cannot be undone."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
 "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" = "If leave this group, you’ll no longer be able to see any messages and files."; // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
@@ -523,8 +529,8 @@
 "chat_setting_dimiss_to_moderator" = "Dismiss from moderator";
 "chat_setting_remove_from_group_chat" = "Remove from group chat";
 "chat_setting_report" = "Report";
-"chat_setting_member_title" = "Member";
-"chat_setting_moderator_title" = "Moderator";
+"chat_setting_member_title" = "Members";
+"chat_setting_moderator_title" = "Moderators";
 //"chat_setting_member_detail_title" = "Member Details"; // [Original]
 "chat_setting_member_detail_title" = "Members"; // [Custom for ONE Krungthai] Change wording "chat_setting_member_detail_title"
 "chat_setting_remove_member_alert_title" = "Remove user from group chat?";
@@ -623,3 +629,14 @@
 "reaction_empty_state_title" = "Sorry, we couldn't show the content";
 "reaction_empty_state_subtitle" = "Please try again or contact the administrator for more information";
 
+// MARK: - Message Creation
+"message_creation_discard_message_title" = "Discard Message?";
+"message_creation_discard_message_description" = "Do you want to discard your message?";
+"message_unable_to_create_message_title" = "Unable to create message";
+"message_unable_to_create_message_description" = "You have reached maximum 20,000 characters in a message.";
+"message_creation_file_upload_incomplete_title" = "Upload incomplete";
+"message_creation_file_upload_incomplete_description" = "Some files could not be uploaded.\nPlease remove and try again";
+
+// MARK: - Broadcast Message Creation
+"broadcast_message_creation_text_placeholder" = "Write broadcast message...";
+"broadcast_message_creation_file_type_only_placeholder" = "Select file to broadcast";

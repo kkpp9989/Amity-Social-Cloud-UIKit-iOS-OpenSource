@@ -32,4 +32,5 @@ public enum AmityPostPreviewCommentAction {
     case tapOnMention(userId: String)
     case tapOnReactionDetail
     case tapOnHashtag(keyword: String, count: Int)
+    case tapOnPostIdLink(postId: String)
 }

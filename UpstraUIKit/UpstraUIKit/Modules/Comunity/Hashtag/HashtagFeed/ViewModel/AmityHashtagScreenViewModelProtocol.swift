@@ -81,6 +81,10 @@ protocol AmityHashtagScreenViewModelAction {
     
     // MARK: User Settings
     func fetchUserSettings()
+    
+    // MARK: Share
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }
 
 protocol AmityHashtagScreenViewModelType: AmityHashtagScreenViewModelAction, AmityHashtagScreenViewModelDataSource {

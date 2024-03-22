@@ -59,6 +59,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var hashtagTableView: AmityHashtagTableView
     private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
+    private var bottomScrollViewInset: CGFloat = 0
+    private var heightConstraintOfMentionHashTagTableView: CGFloat = 0
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -291,10 +293,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let keyboardScreenEndFrame = keyboardValue.size
         let comunityPanelHeight = comunityPanelView.isHidden ? 0.0 : AmityComunityPanelView.defaultHeight
         if notification.name == UIResponder.keyboardWillHideNotification {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
         scrollView.scrollIndicatorInsets = scrollView.contentInset
@@ -628,7 +632,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     private func presentMediaPickerAlbum(type: AmityMediaType) {
         
-        let supportedMediaTypes: Set<Settings.Fetch.Assets.MediaTypes>
+        let supportedMediaTypes: Set<NewSettings.NewFetch.NewAssets.MediaTypes>
         
         // The closue to execute when picker finish picking the media.
         let finish: ([PHAsset]) -> Void
@@ -664,12 +668,34 @@ public class AmityPostTextEditorViewController: AmityViewController {
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }
         
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = NewImagePickerController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
         imagePicker.settings.selection.unselectOnReachingMax = false
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+                    
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
         
     }
     
@@ -1024,23 +1050,24 @@ extension AmityPostTextEditorViewController {
         guard isValueChanged, !(mentionManager?.isSearchingStarted ?? false) else {
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
-            
-        if let view = gestureRecognizer.view,
-            let directions = (gestureRecognizer as? UIPanGestureRecognizer)?.direction(in: view),
-            directions.contains(.right) {
-            let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
-            let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
-                self?.generalDismiss()
-            }
-            alertController.addAction(cancelAction)
-            alertController.addAction(discardAction)
-            present(alertController, animated: true, completion: nil)
 
-            // prevents swiping back and present confirmation message
-            return false
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let translation = panGestureRecognizer.translation(in: panGestureRecognizer.view)
+            if translation.x > 0 && abs(translation.x) > abs(translation.y) {
+                let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
+                let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
+                    self?.generalDismiss()
+                }
+                alertController.addAction(cancelAction)
+                alertController.addAction(discardAction)
+                present(alertController, animated: true, completion: nil)
+
+                // prevents swiping back and present confirmation message
+                return false
+            }
         }
-        
+
         // falls back to normal behaviour, swipe back to previous page
         return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
@@ -1109,16 +1136,28 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
     public func didGetHashtag(keywords: [AmityHashtagModel]) {
         if keywords.isEmpty {
             hashtagTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
             hashtagTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
-            var heightConstant:CGFloat = 240.0
+            heightConstraintOfMentionHashTagTableView = 240.0
             if keywords.count < 5 {
-                heightConstant = CGFloat(keywords.count) * 65
+                heightConstraintOfMentionHashTagTableView = CGFloat(keywords.count) * 65
             }
-            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
             hashtagTableView.isHidden = false
             hashtagTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
     }
     
     public func didCreateAttributedString(attributedString: NSAttributedString) {
@@ -1129,16 +1168,28 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
     public func didGetUsers(users: [AmityMentionUserModel]) {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
             mentionTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
-            var heightConstant:CGFloat = 240.0
+            heightConstraintOfMentionHashTagTableView = 240.0
             if users.count < 5 {
-                heightConstant = CGFloat(users.count) * 52.0
+                heightConstraintOfMentionHashTagTableView = CGFloat(users.count) * 52.0
             }
-            mentionTableViewHeightConstraint.constant = heightConstant
+            mentionTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
             mentionTableView.isHidden = false
             mentionTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
     }
     
     public func didMentionsReachToMaximumLimit() {
