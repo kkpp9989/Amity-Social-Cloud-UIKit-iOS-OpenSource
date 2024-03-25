@@ -34,7 +34,7 @@ final class AmityForwardSelectUserController {
                                                                 textColor: AmityColorSet.baseInverse,
                                                                 backgroundColor: AmityColorSet.primary)
                 let communityPostModel = AmityDefaultModalModel(image: nil,
-                                                                title: "Unable to select one more chat?",
+                                                                title: "Unable to select one more chat",
                                                                 description: "Maximun number of chats that you can forward to is 20.",
                                                                 firstAction: firstAction, secondAction: nil,
                                                                 layout: .horizontal)
