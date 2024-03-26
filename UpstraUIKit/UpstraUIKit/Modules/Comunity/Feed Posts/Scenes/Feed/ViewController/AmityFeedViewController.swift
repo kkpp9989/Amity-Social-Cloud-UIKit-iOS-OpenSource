@@ -853,19 +853,19 @@ extension AmityFeedViewController: IndicatorInfoProvider {
 extension AmityFeedViewController{
 
     // ktb kk makeK for feed in ktb home
-    public static func makeKTBFeed(feedType: AmityPostFeedType) -> AmityFeedViewController {
+    public static func makeKTBFeed(_ rows: Int = 10) -> AmityFeedViewController {
         
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reaction = AmityReactionController()
-        let viewModel = AmityFeedScreenViewModel(withFeedType: feedType,
+        let viewModel = AmityFeedScreenViewModel(withFeedType: .globalFeed,
                                                       postController: postController,
                                                       commentController: commentController,
                                                       reactionController: reaction)
         let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.isKTBFeed = true
-        vc.rowSetLimitCount = 4
+        vc.rowSetLimitCount = rows + 1
         //vc.tableView.isScrollEnabled = false
         return vc
     }
