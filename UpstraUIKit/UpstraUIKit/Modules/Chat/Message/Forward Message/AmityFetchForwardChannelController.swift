@@ -53,7 +53,7 @@ final class AmityFetchForwardChannelController {
             if let error = error {
                 completion(.failure(error))
             } else {
-                let endIndex = strongSelf.targetType == .recent ? min(10, userCollection.count()) : userCollection.count()
+                let endIndex = userCollection.count() //strongSelf.targetType == .recent ? min(10, userCollection.count()) : userCollection.count()
                 // Dictionary to keep track of whether leave has been called for a specific channelId
                 var channelIdLeaveMap: [String: Bool] = [:]
                 for index in 0..<endIndex {
@@ -142,9 +142,9 @@ final class AmityFetchForwardChannelController {
     
     func loadmore(isSearch: Bool) -> Bool {
         if !isSearch {
-            if targetType == .recent {
-                return false
-            }
+//            if targetType == .recent {
+//                return false
+//            }
 
             guard let collection = collection else { return false }
             switch collection.loadingStatus {
