@@ -18,16 +18,12 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var pageTitle: String?
     var pageIndex: Int = 0
     
+    // keb kk return table height for set up feed in ktb home
     var viewArr = [UIView]()
     var disableRefreshControl = false
     var rowSetLimit = false
-    var rowSetLimitCount = 20
-    
-    var tableViewHeight: CGFloat {
-        tableView.layoutIfNeeded()
-
-        return tableView.contentSize.height
-    }
+    var rowSetLimitCount = 10
+    public var returntableViewHeight: ((_ height:CGFloat) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -136,6 +132,26 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         vc.screenViewModel = viewModel
         return vc
     }
+    
+    
+    // keb kk makeK for feed in ktb home
+    public static func makeKTBFeed(feedType: AmityPostFeedType) -> AmityFeedViewController {
+        
+        let postController = AmityPostController()
+        let commentController = AmityCommentController()
+        let reaction = AmityReactionController()
+        let viewModel = AmityFeedScreenViewModel(withFeedType: feedType,
+                                                      postController: postController,
+                                                      commentController: commentController,
+                                                      reactionController: reaction)
+        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.disableRefreshControl = true
+        vc.rowSetLimit = true
+        vc.rowSetLimitCount = 10
+        //vc.tableView.isScrollEnabled = false
+        return vc
+    }
 
     // MARK: Setup Post Protocol Handler
     private func setupProtocolHandler() {
@@ -179,6 +195,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         tableView.register(AmityEmptyStateHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: AmityEmptyStateHeaderFooterView.identifier)
         tableView.postDataSource = self
         tableView.postDelegate = self
+ 
     }
     
     private func setupRefreshControl() {
@@ -226,20 +243,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         screenViewModel.action.fetchPosts()
 //        screenViewModel.action.clearOldPosts()
     }
-    
-    
-    func tableViewDisableScroll(){
-        guard let tb = tableView else {
-            return
-        }
-        return tb.isScrollEnabled = false
-    }
-    func tableViewEnableScroll(){
-        guard let tb = tableView else {
-            return
-        }
-        return tb.isScrollEnabled = true
-    }
+
 }
 
 // MARK: - ReactionPickerView
@@ -269,6 +273,12 @@ extension AmityFeedViewController {
 extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        // keb kk return table height for set up feed in ktb home
+        if let callback = self.returntableViewHeight {
+            callback(self.tableView.contentSize.height)
+        }
+        
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
             (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: postTabHeaderView?.headerView)
@@ -820,4 +830,15 @@ extension AmityFeedViewController: IndicatorInfoProvider {
         return IndicatorInfo(title: pageTitle ?? "\(pageIndex)")
     }
     
+}
+
+extension AmityFeedViewController{
+    
+
+   public func tbDisableScroll(){
+        guard let tb = tableView else {
+            return
+        }
+        tb.isScrollEnabled = false
+    }
 }
