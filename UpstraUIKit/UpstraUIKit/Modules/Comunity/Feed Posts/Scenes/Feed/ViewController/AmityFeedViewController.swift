@@ -18,10 +18,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var pageTitle: String?
     var pageIndex: Int = 0
     
-    // keb kk return table height for set up feed in ktb home
-    var viewArr = [UIView]()
-    var disableRefreshControl = false
-    var rowSetLimit = false
+    // ktb kk return table height for set up feed in ktb home
+    var isKTBFeed = false
     var rowSetLimitCount = 10
     public var returntableViewHeight: ((_ height:CGFloat) -> Void)?
     
@@ -135,26 +133,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         vc.screenViewModel = viewModel
         return vc
     }
-    
-    
-    // keb kk makeK for feed in ktb home
-    public static func makeKTBFeed(feedType: AmityPostFeedType) -> AmityFeedViewController {
-        
-        let postController = AmityPostController()
-        let commentController = AmityCommentController()
-        let reaction = AmityReactionController()
-        let viewModel = AmityFeedScreenViewModel(withFeedType: feedType,
-                                                      postController: postController,
-                                                      commentController: commentController,
-                                                      reactionController: reaction)
-        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
-        vc.screenViewModel = viewModel
-        vc.disableRefreshControl = true
-        vc.rowSetLimit = true
-        vc.rowSetLimitCount = 10
-        //vc.tableView.isScrollEnabled = false
-        return vc
-    }
 
     // MARK: Setup Post Protocol Handler
     private func setupProtocolHandler() {
@@ -180,7 +158,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - Setup Views
     private func setupView() {
         setupTableView()
-        if(!disableRefreshControl){
+        if(!isKTBFeed){
             setupRefreshControl()
         }
     }
@@ -197,6 +175,10 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         tableView.register(AmityEmptyStateHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: AmityEmptyStateHeaderFooterView.identifier)
         tableView.postDataSource = self
         tableView.postDelegate = self
+        
+        if(isKTBFeed){
+            tableView.isScrollEnabled = false
+        }
  
     }
     
@@ -312,7 +294,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        // keb kk return table height for set up feed in ktb home
+        // ktb kk return table height for set up feed in ktb home
         if let callback = self.returntableViewHeight {
             callback(self.tableView.contentSize.height)
         }
@@ -408,7 +390,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 // MARK: - AmityPostTableViewDataSource
 extension AmityFeedViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
-        if(rowSetLimit && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
+        if(isKTBFeed && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
             return rowSetLimitCount
         }
         
@@ -431,7 +413,6 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
     func tableView(_ tableView: AmityPostTableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell: AmityFeedHeaderTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            viewArr.append(cell.contentView)
             return cell
         }
         
@@ -454,10 +435,8 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             let cell = clientComponent.getComponentCell(tableView, at: indexPath)
             if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
                 headerCell.disableTopPadding()
-                viewArr.append(headerCell.contentView)
                 return headerCell
             } else {
-                viewArr.append(cell.contentView)
                 return cell
             }
         } else {
@@ -466,10 +445,8 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             let cell = singleComponent.getComponentCell(tableView, at: indexPath)
             if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
                 headerCell.disableTopPadding()
-                viewArr.append(headerCell.contentView)
                 return headerCell
             } else {
-                viewArr.append(cell.contentView)
                 return cell
             }
         }
@@ -871,13 +848,30 @@ extension AmityFeedViewController: IndicatorInfoProvider {
     
 }
 
-extension AmityFeedViewController{
-    
 
-   public func tbDisableScroll(){
-        guard let tb = tableView else {
-            return
-        }
-        tb.isScrollEnabled = false
+// ktb kk custom feed for displa on ktb home
+extension AmityFeedViewController{
+
+    // ktb kk makeK for feed in ktb home
+    public static func makeKTBFeed(feedType: AmityPostFeedType) -> AmityFeedViewController {
+        
+        let postController = AmityPostController()
+        let commentController = AmityCommentController()
+        let reaction = AmityReactionController()
+        let viewModel = AmityFeedScreenViewModel(withFeedType: feedType,
+                                                      postController: postController,
+                                                      commentController: commentController,
+                                                      reactionController: reaction)
+        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.isKTBFeed = true
+        vc.rowSetLimitCount = 4
+        //vc.tableView.isScrollEnabled = false
+        return vc
     }
+    
+    public func setKTBFeedHome(){
+        //
+    }
+    
 }
