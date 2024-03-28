@@ -77,6 +77,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     weak var delegate: AmityPostViewControllerDelegate?
     
+    private var mediaAsset: [PHAsset] = []
+    
     init(postTarget: AmityPostTarget, postMode: AmityPostMode, settings: AmityPostEditorSettings) {
         
         self.postTarget = postTarget
@@ -645,6 +647,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
                 let medias: [AmityMedia] = assets.map { asset in
                     AmityMedia(state: .localAsset(asset), type: .image)
                 }
+                
+                strongSelf.mediaAsset = assets
                 strongSelf.addMedias(medias, type: .image)
             }
         case .video:
@@ -656,6 +660,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
                     media.localAsset = asset
                     return media
                 }
+                strongSelf.mediaAsset = assets
                 strongSelf.addMedias(medias, type: .video)
             }
         }
@@ -668,7 +673,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }
         
-        let imagePicker = NewImagePickerController(selectedAssets: [])
+        let imagePicker = NewImagePickerController(selectedAssets: mediaAsset)
         imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
