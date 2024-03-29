@@ -700,7 +700,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         ]
                     
         imagePicker.modalPresentationStyle = .overFullScreen
-        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
+        self.presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
         
     }
     
@@ -711,6 +711,7 @@ extension AmityPostTextEditorViewController: AmityGalleryCollectionViewDelegate 
     func galleryView(_ view: AmityGalleryCollectionView, didRemoveImageAt index: Int) {
         var medias = galleryView.medias
         medias.remove(at: index)
+        mediaAsset = medias.compactMap { $0.localAsset }
         galleryView.configure(medias: medias)
         updateViewState()
     }
