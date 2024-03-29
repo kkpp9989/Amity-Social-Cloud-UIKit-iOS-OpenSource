@@ -357,7 +357,8 @@ private extension AmityMessageListViewController {
         imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
         imagePicker.settings.selection.max = 10
         imagePicker.settings.selection.unselectOnReachingMax = false
-        
+        imagePicker.settings.dismiss.isChat = true
+
         let options = imagePicker.settings.fetch.album.options
         // Fetching user library and other smart albums
         let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)

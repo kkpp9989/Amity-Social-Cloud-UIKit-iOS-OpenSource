@@ -36,6 +36,10 @@ extension NewImagePickerController {
 
     @objc func doneButtonPressed(_ sender: UIBarButtonItem) {
         imagePickerDelegate?.imagePicker(self, didFinishWithAssets: assetStore.assets)
+        
+        if !settings.dismiss.isChat {
+            dismiss(animated: true)
+        }
     }
 
     @objc func cancelButtonPressed(_ sender: UIBarButtonItem) {
