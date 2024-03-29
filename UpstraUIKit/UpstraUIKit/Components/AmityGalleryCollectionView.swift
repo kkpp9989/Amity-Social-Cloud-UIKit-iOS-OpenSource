@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 protocol AmityGalleryCollectionViewDelegate: AnyObject {
     func galleryView(_ view: AmityGalleryCollectionView, didRemoveImageAt index: Int)
@@ -92,7 +93,7 @@ class AmityGalleryCollectionView: UICollectionView {
     }
     
     public func addMedias(_ medias: [AmityMedia]) {
-        self.medias += medias
+        self.medias = medias
         reloadData()
     }
     

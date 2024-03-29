@@ -643,10 +643,10 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
         }
         
         let imagePicker = NewImagePickerController(selectedAssets: [])
-        imagePicker.settings.theme.selectionStyle = .numbered
+        imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
-        imagePicker.settings.selection.unselectOnReachingMax = false
+        imagePicker.settings.selection.unselectOnReachingMax = true
         
         let options = imagePicker.settings.fetch.album.options
         // Fetching user library and other smart albums

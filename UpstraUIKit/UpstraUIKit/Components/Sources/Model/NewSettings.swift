@@ -187,6 +187,9 @@ import Photos
     }
     
     public class NewDismiss : NSObject {
+        /// Checking is use for chat module or not
+        public lazy var isChat = false
+
         /// Should the image picker dismiss when done/cancelled
         public lazy var enabled = true
 
