@@ -37,7 +37,14 @@ final class AmityChannelFetchMemberController: AmityChannelFetchMemberController
                     var members: [AmityChannelMembershipModel] = []
                     for index in 0..<collection.count() {
                         guard let member = collection.object(at: index) else { continue }
-                        members.append(AmityChannelMembershipModel(member: member))
+                        if !(member.user?.isDeleted ?? false) {
+                            if !(member.user?.isGlobalBanned ?? false) {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if member.userId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    members.append(AmityChannelMembershipModel(member: member))
+                                }
+                            }
+                        }
                     }
                     completion(.success(members))
                 }
@@ -56,7 +63,14 @@ final class AmityChannelFetchMemberController: AmityChannelFetchMemberController
                     var members: [AmityChannelMembershipModel] = []
                     for index in 0..<collection.count() {
                         guard let member = collection.object(at: index) else { continue }
-                        members.append(AmityChannelMembershipModel(member: member))
+                        if !(member.user?.isDeleted ?? false) {
+                            if !(member.user?.isGlobalBanned ?? false) {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if member.userId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    members.append(AmityChannelMembershipModel(member: member))
+                                }
+                            }
+                        }
                     }
                     completion(.success(members))
                     self.memberTokenOnce?.invalidate()
