@@ -138,6 +138,7 @@ extension AmityMessageListTableViewController {
         if let selectedIndexPath = indexPath, isEdit { // Add this message to forward list at first if set editing to true after
             // Get message
             guard let message = screenViewModel.dataSource.message(at: selectedIndexPath) else { return }
+            if message.messageType == .custom { return }
             // Add message to forward message in list
             screenViewModel.action.updateForwardMessageInList(with: message)
             // Select this message row at first
