@@ -90,7 +90,7 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
         }
         
         let role = AmityUIKitManagerInternal.shared.client.user?.snapshot?.roles
-        let isModerator = role?.contains("moderator") ?? false
+        let isGlobalModerator = role?.contains("moderator") ?? false
 
         if post.isOwner {
             switch post.dataTypeInternal {
@@ -122,7 +122,7 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.insert(pinpostOption, at: 0)
                     }
                 default:
-                    if isModerator {
+                    if isGlobalModerator {
                         items.insert(pinpostOption, at: 0)
                     }
                 }
@@ -137,7 +137,7 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.insert(pinpostOption, at: 0)
                     }
                 default:
-                    if isModerator {
+                    if isGlobalModerator {
                         items.insert(pinpostOption, at: 0)
                     }
                 }
@@ -151,7 +151,7 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         items.insert(pinpostOption, at: 0)
                     }
                 default:
-                    if isModerator {
+                    if isGlobalModerator {
                         items.insert(pinpostOption, at: 0)
                     }
                 }
@@ -177,12 +177,12 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                             let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                             let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
                             
-                            if isModerator {
+                            if isGlobalModerator || isModerator {
                                 items.insert(pinpostOption, at: 0)
                             }
                         }
                     default:
-                        if isModerator {
+                        if isGlobalModerator {
                             items.insert(pinpostOption, at: 0)
                         }
                     }
@@ -199,12 +199,12 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                         let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
                         let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
                         
-                        if isModerator {
+                        if isGlobalModerator || isModerator {
                             items.insert(pinpostOption, at: 0)
                         }
                     }
                 default:
-                    if isModerator {
+                    if isGlobalModerator {
                         items.insert(pinpostOption, at: 0)
                     }
                 }

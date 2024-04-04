@@ -253,7 +253,6 @@ struct RequestViewerStatistics {
         requestMeta.urlRequest = "\(domainURL)/live-status?postId=\(postId)"
         requestMeta.encoding = .urlEncoding
         requestMeta.header = [
-            ["Content-Type": "application/json"],
             ["Authorization": "Bearer \(currentUserToken)"]
         ]
         
@@ -263,11 +262,14 @@ struct RequestViewerStatistics {
                 return
             }
             
+            logErrorDeCodeData(data: data)
+            
             switch httpResponse.statusCode {
             case 200:
                 guard let json = try? JSONSerialization.jsonObject(with: data, options: []),
                       let jsonDict = json as? [String: Any],
-                      let isLiveResponse = jsonDict["isLive"] as? Bool else {
+                      let dataObject = jsonDict["data"] as? [String: Any],
+                      let isLiveResponse = dataObject["isLive"] as? Bool else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
@@ -277,6 +279,14 @@ struct RequestViewerStatistics {
             default:
                 completion(.failure(HandleError.connectionError))
             }
+        }
+    }
+    
+    func logErrorDeCodeData(data: Data) {
+        do {
+            let _ = try JSONDecoder().decode(Bool.self, from: data)
+        } catch {
+            print("[RequestCustomSettings] Parsing Error : \(String(describing: error))")
         }
     }
 
