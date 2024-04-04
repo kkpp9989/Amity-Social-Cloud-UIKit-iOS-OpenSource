@@ -59,6 +59,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     /// We use this post to start publish live stream, and navigate to post detail page, after the user finish streaming.
     var createdPost: AmityPost?
     
+    var streamId: String?
+    
     /// This is set when this page start live publishing live stream.
     /// We use this state to display live stream timer.
     var startedAt: Date?
@@ -882,7 +884,8 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = createdPost else { return }
             let serviceRequest = RequestViewerStatistics()
-            serviceRequest.liveStreamStatus(postId: currentPost.postId, streamId: currentPost.getLiveStreamInfo()?.streamId ?? "", isLive: true) { [weak self] (result) in
+            print("Amity Log: stremId = \(streamId)")
+            serviceRequest.liveStreamStatus(postId: currentPost.postId, streamId: streamId ?? "", isLive: true) { [weak self] (result) in
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let isLive):
