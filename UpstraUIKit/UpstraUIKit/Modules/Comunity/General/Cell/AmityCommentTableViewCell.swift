@@ -81,6 +81,8 @@ extension AmityCommentTableViewCell: AmityCommentViewDelegate {
             actionDelegate?.commentCellDidTapReply(self)
         case .reactionDetails:
             actionDelegate?.commentCellDidTapReactionDetails(self)
+        case .status:
+            break
         }
     }
     

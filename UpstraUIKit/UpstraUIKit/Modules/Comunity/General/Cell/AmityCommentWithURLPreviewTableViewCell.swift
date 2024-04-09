@@ -81,6 +81,8 @@ extension AmityCommentWithURLPreviewTableViewCell: AmityCommentViewWithURLPrevie
             actionDelegate?.commentCellDidTapReply(self)
         case .reactionDetails:
             actionDelegate?.commentCellDidTapReactionDetails(self)
+        case .status:
+            break
         }
     }
     
