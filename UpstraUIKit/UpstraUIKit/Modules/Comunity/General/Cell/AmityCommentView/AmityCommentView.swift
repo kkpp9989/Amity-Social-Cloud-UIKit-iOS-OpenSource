@@ -48,6 +48,7 @@ class AmityCommentView: AmityView {
     @IBOutlet private var badgeIconImageView: UIImageView!
     @IBOutlet private var badgeLabel: UILabel!
     @IBOutlet private weak var commentStatusButton: UIButton!
+    @IBOutlet private weak var footerStackView: UIStackView! // Use for calculate preferredMaxLayoutWidth of content label because it has max width in comment view
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
@@ -76,6 +77,7 @@ class AmityCommentView: AmityView {
         contentLabel.textColor = AmityColorSet.base
         contentLabel.font = AmityFontSet.body
         contentLabel.numberOfLines = 8
+        contentLabel.preferredMaxLayoutWidth = footerStackView.frame.width
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
@@ -126,6 +128,7 @@ class AmityCommentView: AmityView {
         badgeLabel.font = AmityFontSet.captionBold
         badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
         badgeIconImageView.image = AmityIconSet.iconBadgeModerator
+        badgeIconImageView.isHidden = true
 
         commentStatusButton.isHidden = true
         commentStatusButton.addTarget(self, action: #selector(onStatusButtonTap), for: .touchUpInside)
@@ -167,7 +170,7 @@ class AmityCommentView: AmityView {
         }
         
         if comment.isAuthorGlobalBanned {
-            bannedImageView.isHidden = false
+            bannedImageView.isHidden = true
             bannedImageViewWidthConstraint.constant = 16
             bannedImageView.image = AmityIconSet.CommunitySettings.iconCommunitySettingBanned
         }
