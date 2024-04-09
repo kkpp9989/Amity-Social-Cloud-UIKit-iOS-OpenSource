@@ -48,6 +48,7 @@ class AmityCommentView: AmityView {
     @IBOutlet private var badgeIconImageView: UIImageView!
     @IBOutlet private var badgeLabel: UILabel!
     @IBOutlet private weak var commentStatusButton: UIButton!
+    @IBOutlet private weak var footerStackView: UIStackView! // Use for calculate preferredMaxLayoutWidth of content label because it has max width in comment view
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
@@ -76,6 +77,7 @@ class AmityCommentView: AmityView {
         contentLabel.textColor = AmityColorSet.base
         contentLabel.font = AmityFontSet.body
         contentLabel.numberOfLines = 8
+        contentLabel.preferredMaxLayoutWidth = footerStackView.frame.width
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
