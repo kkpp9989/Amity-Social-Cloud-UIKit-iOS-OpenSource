@@ -16,6 +16,7 @@ enum AmityCommentViewAction {
     case option
     case viewReply
     case reactionDetails
+    case status
 }
 
 protocol AmityCommentViewDelegate: AnyObject {
@@ -43,7 +44,10 @@ class AmityCommentView: AmityView {
     @IBOutlet private weak var reactionDetailLikeIcon: UIImageView!
     @IBOutlet private weak var reactionDetailLabel: UILabel!
     @IBOutlet private weak var reactionDetailButton: UIButton!
-    @IBOutlet private weak var footerStackView: UIStackView! // Use for calculate preferredMaxLayoutWidth of content label because it has max width in comment view
+    @IBOutlet private var badgeStackView: UIStackView!
+    @IBOutlet private var badgeIconImageView: UIImageView!
+    @IBOutlet private var badgeLabel: UILabel!
+    @IBOutlet private weak var commentStatusButton: UIButton!
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
@@ -72,9 +76,7 @@ class AmityCommentView: AmityView {
         contentLabel.textColor = AmityColorSet.base
         contentLabel.font = AmityFontSet.body
         contentLabel.numberOfLines = 8
-        contentLabel.preferredMaxLayoutWidth = footerStackView.frame.width
         separatorLineView.backgroundColor  = AmityColorSet.secondary.blend(.shade4)
-        separatorLineView.isHidden = true
         
         labelContainerView.backgroundColor = AmityColorSet.base.blend(.shade4)
         labelContainerView.layer.cornerRadius = 12
@@ -118,6 +120,15 @@ class AmityCommentView: AmityView {
         viewReplyButton.layer.cornerRadius = 4
         viewReplyButton.setInsets(forContentPadding: UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 16), imageTitlePadding: 8)
         viewReplyButton.addTarget(self, action: #selector(viewReplyButtonTap), for: .touchUpInside)
+        
+        // badge
+        badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
+        badgeLabel.font = AmityFontSet.captionBold
+        badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
+        badgeIconImageView.image = AmityIconSet.iconBadgeModerator
+
+        commentStatusButton.isHidden = true
+        commentStatusButton.addTarget(self, action: #selector(onStatusButtonTap), for: .touchUpInside)
     }
     
     // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
@@ -173,7 +184,6 @@ class AmityCommentView: AmityView {
         likeButton.setTitle(likeButtonTitle, for: .normal)
         
         replyButton.isHidden = layout.type == .reply
-        
         separatorLineView.isHidden = true
         
         if comment.reactionsCount > 0 {
@@ -185,6 +195,8 @@ class AmityCommentView: AmityView {
             reactionDetailContainerView.isHidden = true
         }
         
+        badgeStackView.isHidden = !comment.isModerator
+        
         contentLabel.isExpanded = layout.isExpanded
         
         toggleActionVisibility(comment: comment, layout: layout)
@@ -192,15 +204,13 @@ class AmityCommentView: AmityView {
         viewReplyButton.isHidden = !layout.shouldShowViewReplyButton(for: comment)
         leadingAvatarImageViewConstraint.constant = layout.space.avatarLeading
         topAvatarImageViewConstraint.constant = layout.space.aboveAvatar
+        
+        commentStatusButton.isHidden = comment.syncState != .error
+        commentStatusButton.isEnabled = comment.syncState == .error
     }
     
     func toggleActionVisibility(comment: AmityCommentModel, layout: AmityCommentView.Layout) {
-        var actionButtons = [likeButton, replyButton, optionButton]
-        
-        // [Custom for ONE Krungthai] Hide reply button if comment is reply comment
-        if layout.type == .reply {
-            actionButtons = [likeButton, optionButton]
-        }
+        let actionButtons = [likeButton, replyButton, optionButton]
         
         if layout.shouldShowActions {
             actionButtons.forEach { $0?.isHidden = false }
@@ -214,6 +224,10 @@ class AmityCommentView: AmityView {
                 actionStackView.isHidden = true
             }
         }
+    }
+    
+    @objc private func onStatusButtonTap() {
+        delegate?.commentView(self, didTapAction: .status)
     }
     
     @IBAction func displaynameTap(_ sender: Any) {
@@ -280,6 +294,7 @@ class AmityCommentView: AmityView {
             let bottomStackViewHeight = bottomStackViews.reduce(0, +) + (spaceBetweenElement * numberOfSpaceBetweenElements)
             return bottomStackViewHeight
         } ()
+
         
         return topSpace
         + contentHeight
