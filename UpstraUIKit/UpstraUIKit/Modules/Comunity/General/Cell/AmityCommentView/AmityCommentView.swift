@@ -128,6 +128,7 @@ class AmityCommentView: AmityView {
         badgeLabel.font = AmityFontSet.captionBold
         badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
         badgeIconImageView.image = AmityIconSet.iconBadgeModerator
+        badgeIconImageView.isHidden = true
 
         commentStatusButton.isHidden = true
         commentStatusButton.addTarget(self, action: #selector(onStatusButtonTap), for: .touchUpInside)
@@ -169,7 +170,7 @@ class AmityCommentView: AmityView {
         }
         
         if comment.isAuthorGlobalBanned {
-            bannedImageView.isHidden = false
+            bannedImageView.isHidden = true
             bannedImageViewWidthConstraint.constant = 16
             bannedImageView.image = AmityIconSet.CommunitySettings.iconCommunitySettingBanned
         }
