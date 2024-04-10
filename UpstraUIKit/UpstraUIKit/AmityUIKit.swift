@@ -80,11 +80,8 @@ public final class AmityUIKitManager {
         authToken: String? = nil,
         sessionHandler: SessionHandler,
         completion: AmityRequestCompletion? = nil) {
-            
-        DispatchQueue.main.async {
             AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
         }
-    }
     
     /// Unregisters current user. This removes all data related to current user & terminates conenction with server. This is analogous to "logout" process.
     /// Once this method is called, the only way to re-establish connection would be to call `registerDevice` method again.
@@ -462,6 +459,19 @@ final class AmityUIKitManagerInternal: NSObject {
                 try await client.login(userId: userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler)
                 await revokeDeviceTokens()
                 didUpdateClient()
+
+                // [Custom for ONE Krungthai] Add register user token function for request custom API
+                registerUserToken(userId: userId, authToken: authToken ?? "")
+                
+                // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+                disableLivestreamUserLevelNotification()
+                
+                clearCache(isSkipResendCache: true)
+                
+                cacheDisplayName = ""
+                
+                getCreateBroadcastMessagePermission()
+                
                 completion?(true, nil)
             } catch let error {
                 completion?(false, error)
