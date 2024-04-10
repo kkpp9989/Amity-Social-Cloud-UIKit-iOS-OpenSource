@@ -1155,7 +1155,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         case .openReadViewer(indexPath: let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
             let vc = AmityReadingListViewController.make(message: message)
-            vc.modalPresentationStyle = .pageSheet
+            vc.delegate = self
+            vc.modalPresentationStyle = .overFullScreen
             present(vc, animated: true, completion: nil)
         }
     }
@@ -1500,4 +1501,11 @@ extension AmityMessageListViewController: UIPopoverPresentationControllerDelegat
         NotificationCenter.default.post(name: Notification.Name.View.didDismiss, object: nil)
     }
 
+}
+
+extension AmityMessageListViewController: ReadingListDelegate {
+    func didClose() {
+        self.dismiss(animated: true)
+    }
+    
 }

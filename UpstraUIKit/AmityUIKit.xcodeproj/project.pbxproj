@@ -4887,6 +4887,15 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
+		AAD656372BC692FD00942E9D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DF2633B62B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift */,
+				DF2633BA2B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		B704D13E2578CA420038BA78 /* Animation */ = {
 			isa = PBXGroup;
 			children = (
@@ -5530,9 +5539,8 @@
 			isa = PBXGroup;
 			children = (
 				DF2633B32B47FDCB00C82DF4 /* ViewModel */,
-				DF2633B62B47FDCB00C82DF4 /* AmityReadingTableViewCell.swift */,
+				AAD656372BC692FD00942E9D /* Cell */,
 				DF2633B72B47FDCB00C82DF4 /* ViewController */,
-				DF2633BA2B47FDCB00C82DF4 /* AmityReadingTableViewCell.xib */,
 			);
 			path = ReadingList;
 			sourceTree = "<group>";
