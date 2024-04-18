@@ -57,11 +57,11 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             }
             
             // MARK: Invite user (1:1 Chat)
-            let itemInviteUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteUser.identifier,
+            let itemInviteUserContent = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.inviteUser.identifier,
                                                                   icon: AmityChatSettingsItem.inviteUser.icon,
                                                                   title: AmityChatSettingsItem.inviteUser.title,
                                                                   description: nil)
-            settingsItems.append(.textContent(content: itemInviteUserContent))
+            settingsItems.append(.navigationContent(content: itemInviteUserContent))
             
             // MARK: Report / unreport User (1:1 Chat)
             let itemReportUserContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.report(isReportedUserByMe ?? false).identifier,
@@ -72,11 +72,11 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
             
             
             // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
-            let itemInviteViaQRAndLink1_1 = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink1_1.identifier,
+            let itemInviteViaQRAndLink1_1 = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink1_1.identifier,
                                                                         icon: AmityChatSettingsItem.inviteViaQRAndLink1_1.icon,
                                                                         title: AmityChatSettingsItem.inviteViaQRAndLink1_1.title,
                                                                         description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink1_1))
+                settingsItems.append(.navigationContent(content: itemInviteViaQRAndLink1_1))
             
             // MARK: Separator
             //settingsItems.append(.separator)
@@ -165,11 +165,11 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 }
                 
                 // MARK: Invite via QR / Link (Group chat [Member roles]) [No action]
-                let itemInviteViaQRAndLink = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
+                let itemInviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityChatSettingsItem.inviteViaQRAndLink.identifier,
                                                                             icon: AmityChatSettingsItem.inviteViaQRAndLink.icon,
                                                                             title: AmityChatSettingsItem.inviteViaQRAndLink.title,
                                                                             description: nil)
-                settingsItems.append(.textContent(content: itemInviteViaQRAndLink))
+                settingsItems.append(.navigationContent(content: itemInviteViaQRAndLink))
                 
                 // MARK: Separator
 //                settingsItems.append(.separator)
