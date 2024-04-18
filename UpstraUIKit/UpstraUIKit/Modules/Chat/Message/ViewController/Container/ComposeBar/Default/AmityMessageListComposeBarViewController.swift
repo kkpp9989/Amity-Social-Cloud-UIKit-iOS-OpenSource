@@ -402,9 +402,6 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
             case .broadcast:
                 inputMenuView.isHidden = true
                 openEditorMenuView.isHidden = false
-            case .community:
-                inputMenuView.isHidden = true
-                openEditorMenuView.isHidden = true
             default:
                 inputMenuView.isHidden = false
                 openEditorMenuView.isHidden = true
@@ -442,9 +439,11 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         if show {
             inputMenuView.isHidden = true
             forwardMenuView.isHidden = true
+            inputMenuView.alpha = 0
             joinMenuView.isHidden = false
         } else {
             inputMenuView.isHidden = false
+            inputMenuView.alpha = 1
             forwardMenuView.isHidden = true
             joinMenuView.isHidden = true
         }
