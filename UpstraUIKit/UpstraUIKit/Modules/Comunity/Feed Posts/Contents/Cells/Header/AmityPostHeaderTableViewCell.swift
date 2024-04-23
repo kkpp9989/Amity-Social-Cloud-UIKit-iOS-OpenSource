@@ -105,6 +105,11 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
 
     // MARK: - Setup views
     private func setupView() {
+        // ktb kk set conner radius
+        self.containerView.layer.cornerRadius = 10
+        self.containerView.layer.masksToBounds = true
+        self.containerView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+        
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear

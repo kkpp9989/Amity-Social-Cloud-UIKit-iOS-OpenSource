@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,10 +19,17 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ldZ-XR-Qlt">
-                        <rect key="frame" x="0.0" y="8" width="320" height="90"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="106"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qCY-wg-VFe">
+                                <rect key="frame" x="40" y="0.0" width="240" height="8"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="8" id="HWI-KO-DHv"/>
+                                </constraints>
+                            </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="old-kk-mfA">
-                                <rect key="frame" x="16" y="0.0" width="288" height="81"/>
+                                <rect key="frame" x="16" y="16" width="288" height="81"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MWG-0g-I4O" userLabel="Top Container View">
                                         <rect key="frame" x="0.0" y="0.0" width="288" height="32"/>
@@ -250,15 +257,17 @@
                                         </constraints>
                                     </view>
                                 </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9ua-2n-eX2" userLabel="Separator View">
-                                <rect key="frame" x="0.0" y="89" width="320" height="1"/>
+                                <rect key="frame" x="0.0" y="105" width="320" height="1"/>
                                 <color key="backgroundColor" red="0.89019607840000003" green="0.89411764709999997" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="dzi-jV-RRO"/>
                                 </constraints>
                             </view>
                         </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="9ua-2n-eX2" secondAttribute="trailing" id="DGT-bi-1r3"/>
                             <constraint firstItem="9ua-2n-eX2" firstAttribute="leading" secondItem="ldZ-XR-Qlt" secondAttribute="leading" id="YEC-mT-N0h"/>
@@ -266,19 +275,36 @@
                             <constraint firstItem="old-kk-mfA" firstAttribute="leading" secondItem="ldZ-XR-Qlt" secondAttribute="leading" constant="16" id="qQH-ek-lCk"/>
                         </constraints>
                     </stackView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruT-xJ-AUD">
+                        <rect key="frame" x="0.0" y="106" width="320" height="16"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="YAa-Cn-Vu3"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="ldZ-XR-Qlt" secondAttribute="bottom" id="3AO-JL-IjW"/>
                     <constraint firstAttribute="trailing" secondItem="ldZ-XR-Qlt" secondAttribute="trailing" id="4Re-13-UaM"/>
-                    <constraint firstItem="ldZ-XR-Qlt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="Hab-uH-EZF"/>
+                    <constraint firstItem="ruT-xJ-AUD" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="6AE-Cz-7i9"/>
+                    <constraint firstAttribute="trailing" secondItem="ruT-xJ-AUD" secondAttribute="trailing" id="CEh-uP-Va9"/>
+                    <constraint firstItem="ldZ-XR-Qlt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Hab-uH-EZF"/>
                     <constraint firstItem="ldZ-XR-Qlt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Rfn-3M-cFN"/>
+                    <constraint firstItem="ruT-xJ-AUD" firstAttribute="top" secondItem="ldZ-XR-Qlt" secondAttribute="bottom" id="gVq-qc-ehy"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="ruT-xJ-AUD" secondAttribute="bottom" id="pSQ-WN-Ya7"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="3AO-JL-IjW"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="actionStackView" destination="Ihv-Qg-TsU" id="zWS-nc-jA4"/>
                 <outlet property="commentButton" destination="7rf-c3-yY7" id="hbE-X6-MY3"/>
                 <outlet property="commentLabel" destination="n1w-J0-PS0" id="jkG-JV-Djp"/>
+                <outlet property="connerContainerView" destination="ruT-xJ-AUD" id="nw1-IX-ZcM"/>
                 <outlet property="likeButton" destination="dHB-Qg-NR1" id="MZi-Ve-Np1"/>
                 <outlet property="likeDetailButton" destination="Kov-QA-Z6l" id="yDX-Zc-tww"/>
                 <outlet property="likeLabel" destination="9dt-rK-9df" id="MFL-Fn-iy6"/>

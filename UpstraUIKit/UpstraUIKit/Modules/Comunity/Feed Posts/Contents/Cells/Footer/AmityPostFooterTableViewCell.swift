@@ -14,6 +14,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     public weak var delegate: AmityPostFooterDelegate?
 
     // MARK: - IBOutlet Properties
+    @IBOutlet private var connerContainerView: UIView!
     @IBOutlet private var topContainerView: UIView!
     @IBOutlet private var likeLabel: UILabel!
     @IBOutlet private var commentLabel: UILabel!
@@ -91,9 +92,14 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     
     // MARK: - Setup views
     private func setupView() {
+        // ktb kk set conner radius
+        self.connerContainerView.layer.cornerRadius = 10
+        self.connerContainerView.layer.masksToBounds = true
+        self.connerContainerView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
-        contentView.backgroundColor = AmityColorSet.backgroundColor
+        backgroundColor = .clear //AmityColorSet.backgroundColor
+        contentView.backgroundColor = .clear //AmityColorSet.backgroundColor
         // separator
         separatorView.forEach { $0.backgroundColor = AmityColorSet.secondary.blend(.shade4) }
     }
