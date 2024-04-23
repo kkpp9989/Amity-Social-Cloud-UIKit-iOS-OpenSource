@@ -141,7 +141,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         postPostProtocolHandler?.delegate = self
         postPostProtocolHandler?.viewController = self
         postPostProtocolHandler?.tableView = tableView
-        
     }
     
     // MARK: - Setup ViewModel
@@ -738,6 +737,9 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.communityDidTap(from: self, communityId: post.targetCommunity?.communityId ?? "")
         case .tapOnPostIdLink(postId: let postId):
             AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        case .tapOnCommentImage(let imageView, let fileURL):
+            let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL)
+            self.present(photoViewerVC, animated: true, completion: nil)
         }
     }
    
@@ -811,9 +813,7 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                     self?.present(bottomSheet, animated: false, completion: nil)
                 }
             }
-            
         }
-        
     }
 }
 
