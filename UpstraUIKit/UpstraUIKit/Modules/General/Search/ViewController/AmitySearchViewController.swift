@@ -21,6 +21,7 @@ public class AmitySearchViewController: AmityPageViewController {
     private var communitiesVC = AmityCommunitySearchViewController.make(title: AmityLocalizedStringSet.communities.localizedString)
     private var membersVC = AmityMemberSearchViewController.make(title: AmityLocalizedStringSet.accounts.localizedString)
     private var hashtagVC = AmityHashtagSearchViewController.make(title: AmityLocalizedStringSet.hashtags.localizedString)
+    private var postsVC = AmitySearchPostsViewController.make(title: AmityLocalizedStringSet.posts.localizedString)
 
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -74,7 +75,7 @@ public class AmitySearchViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [communitiesVC, membersVC, hashtagVC]
+        return [communitiesVC, membersVC, hashtagVC, postsVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
@@ -130,6 +131,8 @@ private extension AmitySearchViewController {
             communitiesVC.search(with: key)
         } else if viewControllers[currentIndex] == hashtagVC {
             hashtagVC.search(withText: key)
+        } else if viewControllers[currentIndex] == postsVC {
+            postsVC.fetchPosts(keyword: searchTextField.text ?? "")
         } else {
             membersVC.search(with: key)
         }
@@ -143,6 +146,8 @@ private extension AmitySearchViewController {
             membersVC.search(with: searchTextField.text)
         case 2:
             hashtagVC.search(withText: searchTextField.text)
+        case 3:
+            postsVC.fetchPosts(keyword: searchTextField.text ?? "")
         default:
             break
         }

@@ -145,6 +145,7 @@ public struct AmityLocalizedStringSet {
     static let messages = "messages"
     static let groups = "groups"
     static let recent = "recent"
+    static let posts = "posts"
 
     static let somethingWentWrongWithTryAgain = "something_went_wrong_with_try_again"
     static let noInternetConnection = "no_internet_connection"
