@@ -165,7 +165,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     
  
     private func setupTableView() {
-        tableView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        tableView.backgroundColor = (isKTBFeed) ? .clear : AmityColorSet.secondary.blend(.shade4)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
@@ -447,6 +447,9 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
                 headerCell.disableTopPadding()
                 return headerCell
             } else {
+                cell.contentView.layer.cornerRadius = 10
+                cell.contentView.layer.masksToBounds = false
+                cell.contentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 return cell
             }
         }
