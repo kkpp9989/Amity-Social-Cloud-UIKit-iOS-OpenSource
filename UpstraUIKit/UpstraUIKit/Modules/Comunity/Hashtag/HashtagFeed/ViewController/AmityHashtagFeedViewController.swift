@@ -679,6 +679,8 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
             break // Nothing happen for hashtag
         case .tapOnPostIdLink(postId: let postId):
             AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        case .tapOnCommentImage(imageView: let imageView, fileURL: let fileURL):
+            break
         }
     }
    

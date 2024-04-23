@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 /// A view controller for providing post and relevant comments.
 open class AmityPostDetailViewController: AmityViewController {
@@ -20,6 +21,12 @@ open class AmityPostDetailViewController: AmityViewController {
     @IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var hashtagTableView: AmityHashtagTableView!
     @IBOutlet private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet private var replyContentImageView: UIImageView!
+    @IBOutlet private var replyContainerView: UIView!
+    @IBOutlet private var replySeparatorContainerView: UIView!
+    @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var replyCloseViewButton: UIButton!
     
     private var optionButton: UIBarButtonItem!
     
@@ -36,6 +43,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
     private var pollAnswers: [String: [String]] = [:]
+    private var medias: [AmityMedia]? = []
     
     private var livestreamId: String?
     
@@ -105,6 +113,7 @@ open class AmityPostDetailViewController: AmityViewController {
         setupMentionTableView()
         setupHashtagTableView()
         setupReactionPicker()
+        setupReplyView()
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
@@ -209,6 +218,14 @@ open class AmityPostDetailViewController: AmityViewController {
         view.addGestureRecognizer(tap)
     }
     
+    private func setupReplyView() {
+        replySeparatorContainerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        replyCloseViewButton.setImage(AmityIconSet.iconCloseReply, for: .normal)
+        
+        replyContentImageView.contentMode = .center
+        replyContentImageView.layer.cornerRadius = 4
+    }
+    
     @objc private func optionTap() {
         guard let post = screenViewModel.post else {
             assertionFailure("Post should not be nil")
@@ -294,16 +311,21 @@ open class AmityPostDetailViewController: AmityViewController {
         mentionManager?.delegate = self
     }
     
-    private func createComment(withText text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, parentId: String?) {
-        screenViewModel.action.createComment(withText: text, parentId: parentId, metadata: metadata, mentionees: mentionees)
+    private func createComment(withText text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, parentId: String?, medias: [AmityMedia]) {
+        screenViewModel.action.createComment(withText: text, parentId: parentId, metadata: metadata, mentionees: mentionees, medias: medias)
         parentComment = nil
         commentComposeBarView.resetState()
         mentionManager?.resetState()
+        hideReplyContainerView()
     }
     
     private func showReactionUserList(info: AmityReactionInfo, reactionList: [String: Int]) {
         let controller = AmityReactionPageViewController.make(info: [info], reactionList: reactionList)
         self.navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    @IBAction func closeImageContainerTap(_ sender: UIButton) {
+        hideReplyContainerView()
     }
 }
 
@@ -745,6 +767,56 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
 // MARK: - AmityPostDetailCompostViewDelegate
 extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
     
+    func composeViewDidTapAddImage(_ view: AmityPostDetailCompostView) {
+        let imagePicker = NewImagePickerController(selectedAssets: [])
+        imagePicker.settings.theme.selectionStyle = .checked
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+        imagePicker.settings.selection.max = 1
+        imagePicker.settings.selection.unselectOnReachingMax = true
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+        
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
+            let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
+            self.medias = medias
+            
+            switch medias[0].state {
+            case .image(let image):
+                self.replyContentImageView.image = image
+                self.replyContentImageView.contentMode = .scaleAspectFill
+                self.showReplyContainerView()
+                self.uploadImages()
+            case .localAsset(let asset):
+                self.getAssetThumbnail(asset: asset) { image in
+                    self.replyContentImageView.image = image
+                    self.replyContentImageView.contentMode = .scaleAspectFill
+                    self.showReplyContainerView()
+                    self.uploadImages()
+                }
+            case .downloadableImage, .downloadableVideo, .localURL, .uploadedImage, .uploadedVideo, .none, .uploading, .error: break
+            }
+        }
+    }
+    
     func composeViewDidTapReplyDismiss(_ view: AmityPostDetailCompostView) {
         parentComment = nil
     }
@@ -763,7 +835,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createComment.localizedString
         }
         editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees in
-            self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id)
+            self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id, medias: self?.medias ?? [])
             editTextViewController?.dismiss(animated: true, completion: nil)
         }
         editTextViewController.dismissHandler = { [weak self, weak editTextViewController] in
@@ -786,7 +858,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
     func composeView(_ view: AmityPostDetailCompostView, didPostText text: String) {
         let metadata = mentionManager?.getMetadata()
         let mentionees = mentionManager?.getMentionees()
-        createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: parentComment?.id)
+        createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: parentComment?.id, medias: medias ?? [])
     }
     
     func composeViewDidChangeSelection(_ view: AmityPostDetailCompostView) {
@@ -812,6 +884,87 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
         view.layoutIfNeeded()
     }
     
+}
+
+extension AmityPostDetailViewController {
+    func getAssetThumbnail(asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
+        let manager = PHImageManager.default()
+        let option = PHImageRequestOptions()
+
+        // Request the original dimensions of the asset
+        let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
+
+        option.isSynchronous = false // Make it asynchronous
+        option.deliveryMode = .highQualityFormat
+
+        manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: option, resultHandler: {(result, info) -> Void in
+            completion(result) // Pass the result back via completion handler
+        })
+    }
+    
+    private func showReplyContainerView() {
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 100
+            self.replyContainerView.isHidden = false
+        }
+    }
+    
+    private func hideReplyContainerView() {
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 0
+            self.replyContainerView.isHidden = true
+            self.replyContentImageView.image = UIImage()
+            self.medias = []
+        }
+    }
+    
+    private func uploadImages() {
+        let fileUploadFailedDispatchGroup = DispatchGroup()
+        var isUploadFailed = false
+        guard var medias = medias, !medias.isEmpty else { return }
+        for index in 0..<medias.count {
+            var media = medias[index] // Take a mutable copy of the media object
+            switch media.state {
+            case .localAsset, .image:
+                fileUploadFailedDispatchGroup.enter()
+                // get local image for uploading
+                media.getImageForUploading { [weak self] result in
+                    switch result {
+                    case .success(let img):
+                        AmityUIKitManagerInternal.shared.fileService.uploadImage(image: img, progressHandler: { progress in
+                            Log.add("[UIKit]: Upload Progress \(progress)")
+                        }, completion:  { [weak self] result in
+                            switch result {
+                            case .success(let imageData):
+                                Log.add("[UIKit]: Uploaded image data \(imageData.fileId)")
+                                media.state = .uploadedImage(data: imageData)
+                                // Update the media in the medias array
+                                self?.medias?[index] = media
+                            case .failure:
+                                Log.add("[UIKit]: Image upload failed")
+                                media.state = .error
+                                isUploadFailed = true
+                            }
+                            fileUploadFailedDispatchGroup.leave()
+                        })
+                    case .failure:
+                        media.state = .error
+                        isUploadFailed = true
+                    }
+                }
+            default:
+                Log.add("[UIKit]: Unsupported media state for uploading.")
+                break
+            }
+        }
+        
+        fileUploadFailedDispatchGroup.notify(queue: .main) { [weak self] in
+            if isUploadFailed && self?.presentedViewController == nil {
+                //                self?.showUploadFailureAlert()
+            }
+        }
+    }
+
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
@@ -875,7 +1028,12 @@ extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
     }
 }
 
-extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {    
+extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
+    func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
+        let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
+        self.present(photoViewerVC, animated: true, completion: nil)
+    }
+    
     func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
         // [Custom for ONE Krungthai] Add check condition for tap to community for moderator user in official community action
         if let currentCommunityId = communityId {
