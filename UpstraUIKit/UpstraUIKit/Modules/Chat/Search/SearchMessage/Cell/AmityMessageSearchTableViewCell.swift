@@ -185,10 +185,13 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
     }
     
     func extractContextOfWord(in text: String, keyword: String) -> String? {
-        guard let range = text.range(of: keyword) else { return nil }
+        // Check if the text is empty
+        guard !text.isEmpty else { return text }
+        
+        guard let range = text.range(of: keyword) else { return text }
         
         let startIndex = range.lowerBound
-        var endIndex = text.endIndex
+        let endIndex = text.endIndex
         
         return String(text[startIndex..<endIndex])
     }
