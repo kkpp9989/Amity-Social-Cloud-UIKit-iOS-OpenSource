@@ -906,6 +906,7 @@ extension AmityPostDetailViewController {
         UIView.animate(withDuration: 0.3) {
             self.replyContainerViewHeightConstraint.constant = 100
             self.replyContainerView.isHidden = false
+            self.commentComposeBarView.updatePostButtonState(isEnable: true)
         }
     }
     
@@ -915,6 +916,7 @@ extension AmityPostDetailViewController {
             self.replyContainerView.isHidden = true
             self.replyContentImageView.image = UIImage()
             self.medias = []
+            self.commentComposeBarView.updatePostButtonState(isEnable: false)
         }
     }
     

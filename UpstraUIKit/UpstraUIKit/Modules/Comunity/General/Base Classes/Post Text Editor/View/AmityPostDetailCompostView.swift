@@ -111,6 +111,10 @@ class AmityPostDetailCompostView: UIView {
         textView.resignFirstResponder()
     }
     
+    func updatePostButtonState(isEnable: Bool) {
+        postButton.isEnabled = isEnable
+    }
+    
     func configure(with post: AmityPostModel) {
         // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
         if let community = post.targetCommunity { // Case : Post from community
@@ -291,16 +295,16 @@ extension AmityPostDetailCompostView: AmityTextViewDelegate {
         delegate?.composeViewDidChangeSelection(self)
     }
     
-    func textViewShouldBeginEditing(_ textField: AmityTextView) -> Bool {
-        // Perform your action here
-        print("Cursor is about to enter the text field")
-        avatarView.isHidden = true
-                
-        return true
-    }
-    
-    func textViewDidEndEditing(_ textView: AmityTextView) {
-        // Show the view when editing ends
-        avatarView.isHidden = false
-    }
+//    func textViewShouldBeginEditing(_ textField: AmityTextView) -> Bool {
+//        // Perform your action here
+//        print("Cursor is about to enter the text field")
+//        avatarView.isHidden = true
+//
+//        return true
+//    }
+//
+//    func textViewDidEndEditing(_ textView: AmityTextView) {
+//        // Show the view when editing ends
+//        avatarView.isHidden = false
+//    }
 }
