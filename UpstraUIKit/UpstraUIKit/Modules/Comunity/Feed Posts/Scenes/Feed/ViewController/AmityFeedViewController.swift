@@ -115,6 +115,12 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         refreshControl.endRefreshing()
     }
     
+    public override func viewDidLayoutSubviews() {
+        if(isKTBFeed){
+            tableView.frame.size = tableView.contentSize
+        }
+    }
+    
     private func resetRefreshControlStateIfNeeded() {
         if !refreshControl.isHidden {
             tableView.setContentOffset(.zero, animated: false)
