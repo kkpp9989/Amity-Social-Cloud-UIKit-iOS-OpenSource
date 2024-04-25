@@ -198,7 +198,6 @@ class AmityCommentView: AmityView {
         let likeButtonTitle = comment.isLiked ? AmityLocalizedStringSet.General.liked.localizedString : AmityLocalizedStringSet.General.like.localizedString
         likeButton.setTitle(likeButtonTitle, for: .normal)
         
-        replyButton.isHidden = layout.type == .reply
         separatorLineView.isHidden = true
         
         if comment.reactionsCount > 0 {
@@ -241,6 +240,8 @@ class AmityCommentView: AmityView {
         
         toggleActionVisibility(comment: comment, layout: layout)
         
+        replyButton.isHidden = layout.type == .reply
+
         viewReplyButton.isHidden = !layout.shouldShowViewReplyButton(for: comment)
         leadingAvatarImageViewConstraint.constant = layout.space.avatarLeading
         topAvatarImageViewConstraint.constant = layout.space.aboveAvatar
@@ -303,6 +304,8 @@ class AmityCommentView: AmityView {
     func prepareForReuse() {
         bannedImageView.image = nil
         comment = nil
+        contentContainerView.isHidden = true
+        contentImageView.image = nil
     }
     
     open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat) -> CGFloat {
@@ -341,6 +344,10 @@ class AmityCommentView: AmityView {
             return bottomStackViewHeight
         } ()
 
+        let contentImageHeight: CGFloat = {
+            let contentHeight: CGFloat = !comment.comment.attachments.isEmpty ? 150 : 0
+            return contentHeight
+        }()
         
         return topSpace
         + contentHeight
@@ -348,7 +355,7 @@ class AmityCommentView: AmityView {
         + layout.space.aboveStack
         + bottomStackHeight
         + layout.space.belowStack
-        
+        + contentImageHeight
     }
     
 }

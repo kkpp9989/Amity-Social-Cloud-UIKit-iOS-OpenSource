@@ -52,28 +52,37 @@
                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="4z7-xG-Hf3">
                             <rect key="frame" x="20" y="5" width="374" height="95"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OOf-dh-KKH">
-                                    <rect key="frame" x="0.0" y="0.0" width="100" height="95"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="100" id="YIX-ub-VDK"/>
-                                        <constraint firstAttribute="height" constant="100" id="vU2-sB-6hr"/>
-                                    </constraints>
-                                </imageView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FJc-k0-okw">
-                                    <rect key="frame" x="108" y="22.5" width="228" height="50.5"/>
-                                </view>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="soI-mf-w6E">
-                                    <rect key="frame" x="344" y="32.5" width="30" height="30"/>
+                                    <rect key="frame" x="0.0" y="9" width="374" height="77.5"/>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OOf-dh-KKH">
+                                            <rect key="frame" x="137" y="0.0" width="100" height="100"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="100" id="YIX-ub-VDK"/>
+                                                <constraint firstAttribute="height" constant="100" id="vU2-sB-6hr"/>
+                                            </constraints>
+                                        </imageView>
+                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="soI-mf-w6E">
+                                            <rect key="frame" x="207" y="0.0" width="30" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="30" id="MIr-Ar-4Es"/>
+                                                <constraint firstAttribute="height" constant="30" id="vGT-OD-UTT"/>
+                                            </constraints>
+                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                            <state key="normal" title="Button" image="icon_close_reply"/>
+                                            <connections>
+                                                <action selector="closeImageContainerTap:" destination="-1" eventType="touchUpInside" id="ekG-cn-gnU"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="30" id="MIr-Ar-4Es"/>
-                                        <constraint firstAttribute="height" constant="30" id="vGT-OD-UTT"/>
+                                        <constraint firstAttribute="bottom" secondItem="OOf-dh-KKH" secondAttribute="bottom" id="9ZN-9V-Iqi"/>
+                                        <constraint firstItem="OOf-dh-KKH" firstAttribute="top" secondItem="FJc-k0-okw" secondAttribute="top" id="YkS-7X-2s2"/>
+                                        <constraint firstItem="OOf-dh-KKH" firstAttribute="centerX" secondItem="FJc-k0-okw" secondAttribute="centerX" id="Z90-XQ-nug"/>
+                                        <constraint firstItem="soI-mf-w6E" firstAttribute="top" secondItem="OOf-dh-KKH" secondAttribute="top" id="de3-Sf-Yoc"/>
+                                        <constraint firstItem="soI-mf-w6E" firstAttribute="trailing" secondItem="OOf-dh-KKH" secondAttribute="trailing" id="xTe-Km-sB5"/>
                                     </constraints>
-                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                    <state key="normal" title="Button" image="icon_close_reply"/>
-                                    <connections>
-                                        <action selector="closeImageContainerTap:" destination="-1" eventType="touchUpInside" id="ekG-cn-gnU"/>
-                                    </connections>
-                                </button>
+                                </view>
                             </subviews>
                         </stackView>
                     </subviews>

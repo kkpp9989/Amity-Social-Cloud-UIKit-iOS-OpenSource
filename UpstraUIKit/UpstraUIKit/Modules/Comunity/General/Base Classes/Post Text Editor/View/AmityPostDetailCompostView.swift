@@ -112,7 +112,7 @@ class AmityPostDetailCompostView: UIView {
     }
     
     func updatePostButtonState(isEnable: Bool) {
-        postButton.isEnabled = isEnable
+        postButton.isEnabled = !text.isEmpty ? true : isEnable
     }
     
     func configure(with post: AmityPostModel) {
@@ -162,22 +162,15 @@ class AmityPostDetailCompostView: UIView {
         stackView.addArrangedSubview(separtorLineView)
         
         // Text composer view
-        avatarButtonView.translatesAutoresizingMaskIntoConstraints = false
-        avatarButtonView.translatesAutoresizingMaskIntoConstraints = false
-        avatarButtonView.axis = .vertical
-        avatarButtonView.alignment = .fill
-        avatarButtonView.addSubview(avatarView)
-        avatarButtonView.addSubview(addImageButton)
-        textContainerView.addSubview(avatarButtonView)
-        
         avatarView.translatesAutoresizingMaskIntoConstraints = false
         avatarView.contentMode = .scaleAspectFill
         avatarView.clipsToBounds = true
         avatarView.layer.cornerRadius = 14.0
+        
         addImageButton.translatesAutoresizingMaskIntoConstraints = false
         addImageButton.setImage(AmityIconSet.iconPhoto, for: .normal) // Set your button image here
         addImageButton.addTarget(self, action: #selector(imageButtonTap), for: .touchUpInside)
-//        addImageButton.isHidden = true
+        
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         textView.isScrollEnabled = false
@@ -206,8 +199,7 @@ class AmityPostDetailCompostView: UIView {
         textContainerView.addSubview(textView)
         textContainerView.addSubview(postButton)
         textContainerView.addSubview(expandButton)
-        textContainerView.addSubview(avatarButtonView)
-//        textContainerView.addSubview(avatarView)
+        textContainerView.addSubview(addImageButton)
         stackView.addArrangedSubview(textContainerView)
         
         NSLayoutConstraint.activate([
@@ -226,19 +218,11 @@ class AmityPostDetailCompostView: UIView {
             dismissButton.heightAnchor.constraint(equalToConstant: 16.0),
             
             separtorLineView.heightAnchor.constraint(equalToConstant: 1.0),
-            avatarButtonView.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor, constant: 16.0),
-            avatarButtonView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -12.0),
-            avatarButtonView.widthAnchor.constraint(equalToConstant: 28.0 + 24.0 + 8.0), // Width of avatar view + button + spacing
-            avatarButtonView.heightAnchor.constraint(equalToConstant: 28.0),
-            avatarView.leadingAnchor.constraint(equalTo: avatarButtonView.leadingAnchor),
-            avatarView.topAnchor.constraint(equalTo: avatarButtonView.topAnchor),
-            avatarView.bottomAnchor.constraint(equalTo: avatarButtonView.bottomAnchor),
-            avatarView.widthAnchor.constraint(equalToConstant: 28.0),
-            addImageButton.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 8.0),
-            addImageButton.trailingAnchor.constraint(equalTo: avatarButtonView.trailingAnchor),
-            addImageButton.topAnchor.constraint(equalTo: avatarButtonView.topAnchor),
-            addImageButton.bottomAnchor.constraint(equalTo: avatarButtonView.bottomAnchor),
-            textView.leadingAnchor.constraint(equalTo: avatarButtonView.trailingAnchor, constant: 8.0),
+            addImageButton.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor, constant: 16.0),
+            addImageButton.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -12.0),
+            addImageButton.widthAnchor.constraint(equalToConstant: 28.0),
+            addImageButton.heightAnchor.constraint(equalToConstant: 28.0),
+            textView.leadingAnchor.constraint(equalTo: addImageButton.trailingAnchor, constant: 8.0),
             textView.trailingAnchor.constraint(equalTo: postButton.leadingAnchor, constant: -12.0),
             textView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -8.0),
             textView.topAnchor.constraint(equalTo: textContainerView.topAnchor, constant: 8.0),
@@ -299,6 +283,7 @@ extension AmityPostDetailCompostView: AmityTextViewDelegate {
 //        // Perform your action here
 //        print("Cursor is about to enter the text field")
 //        avatarView.isHidden = true
+//        addImageButton.isHidden = false
 //
 //        return true
 //    }
@@ -306,5 +291,6 @@ extension AmityPostDetailCompostView: AmityTextViewDelegate {
 //    func textViewDidEndEditing(_ textView: AmityTextView) {
 //        // Show the view when editing ends
 //        avatarView.isHidden = false
+//        addImageButton.isHidden = true
 //    }
 }

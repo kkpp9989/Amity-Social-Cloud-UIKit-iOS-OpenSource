@@ -923,9 +923,9 @@ extension AmityPostDetailViewController {
     private func uploadImages() {
         let fileUploadFailedDispatchGroup = DispatchGroup()
         var isUploadFailed = false
-        guard var medias = medias, !medias.isEmpty else { return }
+        guard let medias = medias, !medias.isEmpty else { return }
         for index in 0..<medias.count {
-            var media = medias[index] // Take a mutable copy of the media object
+            let media = medias[index] // Take a mutable copy of the media object
             switch media.state {
             case .localAsset, .image:
                 fileUploadFailedDispatchGroup.enter()
@@ -961,12 +961,18 @@ extension AmityPostDetailViewController {
         }
         
         fileUploadFailedDispatchGroup.notify(queue: .main) { [weak self] in
-            if isUploadFailed && self?.presentedViewController == nil {
-                //                self?.showUploadFailureAlert()
+            if isUploadFailed {
+                self?.showUploadFailureAlert()
             }
         }
     }
-
+    
+    private func showUploadFailureAlert() {
+        let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteDescription.localizedString, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
 }
 
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
