@@ -877,4 +877,10 @@ extension AmityFeedViewController{
         //
     }
     
+    public func getTable()->UITableView?{
+        if let _t = self.tableView {
+            return _t
+        }
+        return nil
+    }
 }
