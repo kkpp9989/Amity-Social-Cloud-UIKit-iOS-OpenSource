@@ -27,6 +27,7 @@ open class AmityPostDetailViewController: AmityViewController {
     @IBOutlet private var replySeparatorContainerView: UIView!
     @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private var replyCloseViewButton: UIButton!
+    @IBOutlet private var progressView: UIProgressView!
     
     private var optionButton: UIBarButtonItem!
     
@@ -220,10 +221,17 @@ open class AmityPostDetailViewController: AmityViewController {
     
     private func setupReplyView() {
         replySeparatorContainerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        replyCloseViewButton.setImage(AmityIconSet.iconCloseReply, for: .normal)
+        replyCloseViewButton.setImage(AmityIconSet.iconCloseWhite, for: .normal)
         
         replyContentImageView.contentMode = .center
         replyContentImageView.layer.cornerRadius = 4
+        
+        progressView.trackTintColor = AmityColorSet.baseInverse
+        progressView.transform = CGAffineTransform(scaleX: 1, y: 2)
+        progressView.layer.cornerRadius = 3
+        progressView.clipsToBounds = true
+        progressView.isHidden = true
+        progressView.progress = 0
     }
     
     @objc private func optionTap() {
@@ -921,6 +929,7 @@ extension AmityPostDetailViewController {
     }
     
     private func uploadImages() {
+        commentComposeBarView.updatePostButtonUploadState(isEnable: false)
         let fileUploadFailedDispatchGroup = DispatchGroup()
         var isUploadFailed = false
         guard let medias = medias, !medias.isEmpty else { return }
@@ -929,11 +938,14 @@ extension AmityPostDetailViewController {
             switch media.state {
             case .localAsset, .image:
                 fileUploadFailedDispatchGroup.enter()
+                self.progressView.isHidden = false
+                self.progressView.setProgress(0, animated: false)
                 // get local image for uploading
                 media.getImageForUploading { [weak self] result in
                     switch result {
                     case .success(let img):
                         AmityUIKitManagerInternal.shared.fileService.uploadImage(image: img, progressHandler: { progress in
+                            self?.progressView.setProgress(Float(progress), animated: true)
                             Log.add("[UIKit]: Upload Progress \(progress)")
                         }, completion:  { [weak self] result in
                             switch result {
@@ -942,16 +954,20 @@ extension AmityPostDetailViewController {
                                 media.state = .uploadedImage(data: imageData)
                                 // Update the media in the medias array
                                 self?.medias?[index] = media
+                                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: true)
+                                self?.progressView.setProgress(1, animated: true)
                             case .failure:
                                 Log.add("[UIKit]: Image upload failed")
                                 media.state = .error
                                 isUploadFailed = true
+                                self?.progressView.setProgress(1, animated: true)
                             }
                             fileUploadFailedDispatchGroup.leave()
                         })
                     case .failure:
                         media.state = .error
                         isUploadFailed = true
+                        self?.progressView.setProgress(1, animated: true)
                     }
                 }
             default:
@@ -961,7 +977,9 @@ extension AmityPostDetailViewController {
         }
         
         fileUploadFailedDispatchGroup.notify(queue: .main) { [weak self] in
+            self?.progressView.isHidden = true
             if isUploadFailed {
+                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
                 self?.showUploadFailureAlert()
             }
         }
