@@ -17,6 +17,7 @@
                 <outlet property="hashtagTableViewHeightConstraint" destination="RQ6-TT-1Yy" id="wkH-bK-Wlp"/>
                 <outlet property="mentionTableView" destination="0s6-hY-oze" id="1WK-3k-nWw"/>
                 <outlet property="mentionTableViewHeightConstraint" destination="Fxt-Kx-jBd" id="lQR-TB-aJD"/>
+                <outlet property="progressView" destination="khi-pg-s3T" id="z7r-QR-1KE"/>
                 <outlet property="replyCloseViewButton" destination="soI-mf-w6E" id="srO-cZ-txZ"/>
                 <outlet property="replyContainerView" destination="kcv-OF-0CP" id="bFF-Vw-DIx"/>
                 <outlet property="replyContainerViewHeightConstraint" destination="6wq-YL-aeO" id="pdh-kZ-lTg"/>
@@ -69,17 +70,23 @@
                                                 <constraint firstAttribute="height" constant="30" id="vGT-OD-UTT"/>
                                             </constraints>
                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                            <state key="normal" title="Button" image="icon_close_reply"/>
+                                            <state key="normal" title="Button" image="icon_close_white"/>
                                             <connections>
                                                 <action selector="closeImageContainerTap:" destination="-1" eventType="touchUpInside" id="ekG-cn-gnU"/>
                                             </connections>
                                         </button>
+                                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="khi-pg-s3T">
+                                            <rect key="frame" x="137" y="48" width="100" height="4"/>
+                                        </progressView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" secondItem="OOf-dh-KKH" secondAttribute="bottom" id="9ZN-9V-Iqi"/>
                                         <constraint firstItem="OOf-dh-KKH" firstAttribute="top" secondItem="FJc-k0-okw" secondAttribute="top" id="YkS-7X-2s2"/>
                                         <constraint firstItem="OOf-dh-KKH" firstAttribute="centerX" secondItem="FJc-k0-okw" secondAttribute="centerX" id="Z90-XQ-nug"/>
+                                        <constraint firstItem="khi-pg-s3T" firstAttribute="trailing" secondItem="OOf-dh-KKH" secondAttribute="trailing" id="agH-0L-JUJ"/>
                                         <constraint firstItem="soI-mf-w6E" firstAttribute="top" secondItem="OOf-dh-KKH" secondAttribute="top" id="de3-Sf-Yoc"/>
+                                        <constraint firstItem="khi-pg-s3T" firstAttribute="centerY" secondItem="OOf-dh-KKH" secondAttribute="centerY" id="mvK-Ei-uN2"/>
+                                        <constraint firstItem="khi-pg-s3T" firstAttribute="leading" secondItem="OOf-dh-KKH" secondAttribute="leading" id="vwD-Gr-SBS"/>
                                         <constraint firstItem="soI-mf-w6E" firstAttribute="trailing" secondItem="OOf-dh-KKH" secondAttribute="trailing" id="xTe-Km-sB5"/>
                                     </constraints>
                                 </view>
@@ -137,7 +144,7 @@
         </view>
     </objects>
     <resources>
-        <image name="icon_close_reply" width="24" height="24"/>
+        <image name="icon_close_white" width="20" height="20"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -64,6 +64,7 @@ public struct AmityIconSet {
     public static var iconFileFill = UIImage(named: "icon_file_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconLocationFill = UIImage(named: "icon_location_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMagicWand = UIImage(named: "icon_magic_wand", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconCloseWhite = UIImage(named: "icon_close_white", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCloseWithBackground = UIImage(named: "icon_close_with_background", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconNext = UIImage(named: "icon_next", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconArrowRight = UIImage(named: "icon_arrow_right", in: AmityUIKitManager.bundle, compatibleWith: nil)

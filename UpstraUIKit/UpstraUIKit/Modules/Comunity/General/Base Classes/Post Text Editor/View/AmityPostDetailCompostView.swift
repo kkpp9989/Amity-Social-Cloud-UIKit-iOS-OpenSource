@@ -115,6 +115,10 @@ class AmityPostDetailCompostView: UIView {
         postButton.isEnabled = !text.isEmpty ? true : isEnable
     }
     
+    func updatePostButtonUploadState(isEnable: Bool) {
+        postButton.isEnabled = isEnable
+    }
+    
     func configure(with post: AmityPostModel) {
         // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
         if let community = post.targetCommunity { // Case : Post from community
