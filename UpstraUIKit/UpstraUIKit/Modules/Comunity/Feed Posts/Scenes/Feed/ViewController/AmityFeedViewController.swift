@@ -118,6 +118,9 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     public override func viewDidLayoutSubviews() {
         if(isKTBFeed){
             tableView.frame.size = tableView.contentSize
+            if let callback = self.returntableViewHeight {
+                callback(self.tableView.contentSize.height)
+            }
         }
     }
     
