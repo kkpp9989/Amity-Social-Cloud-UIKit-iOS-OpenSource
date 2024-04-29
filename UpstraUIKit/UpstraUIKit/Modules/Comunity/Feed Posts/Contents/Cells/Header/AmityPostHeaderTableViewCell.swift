@@ -38,7 +38,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     public override func prepareForReuse() {
         super.prepareForReuse()
         avatarView.placeholder = AmityIconSet.defaultAvatar
-        topPaddingConstraint.constant = 8
+        topPaddingConstraint.constant = 16
     }
     
     public func disableTopPadding() {
@@ -115,7 +115,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         contentView.backgroundColor = .clear
         containerView.backgroundColor = AmityColorSet.backgroundColor
         
-        topPaddingConstraint.constant = 8
+        topPaddingConstraint.constant = 16
         
         // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
         displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUserInOfficialCommunity: false)
