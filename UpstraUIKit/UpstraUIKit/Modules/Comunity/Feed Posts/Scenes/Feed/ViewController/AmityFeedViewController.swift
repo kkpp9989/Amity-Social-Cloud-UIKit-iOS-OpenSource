@@ -22,6 +22,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var isKTBFeed = false
     var rowSetLimitCount = 10
     public var returntableViewHeight: ((_ height:CGFloat) -> Void)?
+    var tableH = 0.0
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -115,13 +116,31 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         refreshControl.endRefreshing()
     }
     
-    public override func viewDidLayoutSubviews() {
-        if(isKTBFeed){
-            tableView.frame.size = tableView.contentSize
-            if let callback = self.returntableViewHeight {
-                callback(self.tableView.contentSize.height)
-            }
+
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        /*
+        private let dispatchGroup = DispatchGroup()
+        dispatchGroup.notify(queue: .main) {
         }
+         */
+            if(isKTBFeed){
+                let _h = self.tableView.contentSize.height
+                if(self.tableH != _h){
+                    //print("kk==kk tableH \(_h)")
+                    tableView.frame.size = tableView.contentSize
+                    if let callback = self.returntableViewHeight {
+                        callback(_h)
+                    }
+                }
+                if tableView.frame.origin.y != 0 {
+                    //print("kk==kk frame.origin.y \(tableView.frame.origin.y)")
+                    tableView.frame = CGRectMake(0, 0, tableView.frame.width, _h)
+                    tableView.frame.size = tableView.contentSize
+                }
+                self.tableH = _h
+            }
+        
     }
     
     private func resetRefreshControlStateIfNeeded() {
