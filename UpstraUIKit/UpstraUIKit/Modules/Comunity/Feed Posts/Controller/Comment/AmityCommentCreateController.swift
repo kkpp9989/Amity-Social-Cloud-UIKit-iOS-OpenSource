@@ -19,7 +19,6 @@ final class AmityCommentCreateController: AmityCommentCreateControllerProtocol {
     
     func createComment(withReferenceId postId: String, referenceType: AmityCommentReferenceType, parentId: String?, text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: ((AmityComment?, Error?) -> Void)?) {
         // [URL Preview] Add get URL metadata for cache in comment metadata to show URL preview
-        var updatedMetadata = metadata ?? [:]
         if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
             // Get URL metadata
             Task { @MainActor in

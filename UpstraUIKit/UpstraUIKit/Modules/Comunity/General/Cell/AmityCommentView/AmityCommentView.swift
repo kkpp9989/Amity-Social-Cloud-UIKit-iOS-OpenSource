@@ -212,6 +212,7 @@ class AmityCommentView: AmityView {
         // Image comment data
         if !comment.isDeleted {
             for attachment in comment.comment.attachments {
+                self.contentContainerView.isHidden = false
                 switch attachment {
                 case .image(fileId: let fileId, data: _):
                     AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
@@ -220,7 +221,7 @@ class AmityCommentView: AmityView {
                             DispatchQueue.main.async {
                                 self.fileURL = imageURL
                                 self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
-                                self.contentContainerView.isHidden = false
+//                                self.contentContainerView.isHidden = false
                             }
                         case .failure(_):
                             DispatchQueue.main.async {
@@ -230,6 +231,7 @@ class AmityCommentView: AmityView {
                     }
                 @unknown default:
                     print("Unknown attatchment")
+                    self.contentContainerView.isHidden = true
                 }
             }
         }

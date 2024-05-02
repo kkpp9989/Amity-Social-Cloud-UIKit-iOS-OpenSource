@@ -222,6 +222,7 @@ open class AmityPostDetailViewController: AmityViewController {
     private func setupReplyView() {
         replySeparatorContainerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         replyCloseViewButton.setImage(AmityIconSet.iconCloseWhite, for: .normal)
+        replyCloseViewButton.setTitle("", for: .normal)
         
         replyContentImageView.contentMode = .center
         replyContentImageView.layer.cornerRadius = 4
