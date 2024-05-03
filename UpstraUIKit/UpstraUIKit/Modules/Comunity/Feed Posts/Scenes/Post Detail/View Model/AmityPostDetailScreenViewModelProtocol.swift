@@ -88,7 +88,7 @@ protocol AmityPostDetailScreenViewModelAction {
     func getPostReportStatus()
     
     // MARK: Comment
-    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia])
     func editComment(with comment: AmityCommentModel, text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func deleteComment(with comment: AmityCommentModel)
     func likeComment(withCommendId commentId: String)

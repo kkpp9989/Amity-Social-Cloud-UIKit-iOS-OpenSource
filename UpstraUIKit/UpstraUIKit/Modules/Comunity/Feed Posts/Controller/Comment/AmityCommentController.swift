@@ -41,8 +41,8 @@ extension AmityCommentController {
 
 // MARK: - Create
 extension AmityCommentController {
-    func createComment(withReferenceId postId: String, referenceType: AmityCommentReferenceType, parentId: String?, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, completion: ((AmityComment?, Error?) -> Void)?) {
-        createController.createComment(withReferenceId: postId, referenceType: referenceType, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees, completion: completion)
+    func createComment(withReferenceId postId: String, referenceType: AmityCommentReferenceType, parentId: String?, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: ((AmityComment?, Error?) -> Void)?) {
+        createController.createComment(withReferenceId: postId, referenceType: referenceType, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees, medias: medias, completion: completion)
     }
 }
 

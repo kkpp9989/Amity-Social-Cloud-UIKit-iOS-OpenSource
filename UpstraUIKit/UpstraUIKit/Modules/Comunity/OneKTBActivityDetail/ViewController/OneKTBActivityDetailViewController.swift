@@ -645,6 +645,8 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
 
 // MARK: - AmityPostDetailCompostViewDelegate
 extension OneKTBActivityDetailViewController: AmityPostDetailCompostViewDelegate {
+    func composeViewDidTapAddImage(_ view: AmityPostDetailCompostView) {
+    }
     
     func composeViewDidTapReplyDismiss(_ view: AmityPostDetailCompostView) {
         parentComment = nil
@@ -777,6 +779,10 @@ extension OneKTBActivityDetailViewController: AmityExpandableLabelDelegate {
 }
 
 extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate {
+    func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
+        
+    }
+    
     func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
         AmityEventHandler.shared.userKTBDidTap(from: self, userId: userId)
     }

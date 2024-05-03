@@ -101,7 +101,7 @@ public class AmityMedia: Equatable, Hashable {
             }
             
         case .uploadedImage(let imageData):
-            imageView.loadImage(with: imageData.fileURL, size: .medium, placeholder: nil)
+            imageView.loadImage(with: imageData.fileURL, size: .full, placeholder: nil)
             
         case .uploadedVideo:
             if let asset = localAsset {

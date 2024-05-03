@@ -376,7 +376,7 @@ extension OneKTBActivityDetailScreenViewModel {
     // MARK: Commend
     
     func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (comment, error) in
+        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees, medias: []) { [weak self] (comment, error) in
             guard let strongSelf = self else { return }
             
             // Need to check SDK implementation.

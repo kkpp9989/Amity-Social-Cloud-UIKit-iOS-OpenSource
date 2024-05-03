@@ -17,6 +17,7 @@ enum AmityCommentViewAction {
     case viewReply
     case reactionDetails
     case status
+    case commentImage(imageView: UIImageView, fileURL: String?)
 }
 
 protocol AmityCommentViewDelegate: AnyObject {
@@ -49,6 +50,8 @@ class AmityCommentView: AmityView {
     @IBOutlet private var badgeLabel: UILabel!
     @IBOutlet private weak var commentStatusButton: UIButton!
     @IBOutlet private weak var footerStackView: UIStackView! // Use for calculate preferredMaxLayoutWidth of content label because it has max width in comment view
+    @IBOutlet private weak var contentImageView: UIImageView!
+    @IBOutlet private weak var contentContainerView: UIView!
     
     weak var delegate: AmityCommentViewDelegate?
     private(set) var comment: AmityCommentModel?
@@ -57,6 +60,8 @@ class AmityCommentView: AmityView {
     public var isModeratorUserInOfficialCommunity: Bool = false
     public var isOfficialCommunity: Bool = false
     public var shouldDidTapAction: Bool = true
+    
+    private var fileURL: String? = ""
     
     override func initial() {
         loadNibContent()
@@ -132,6 +137,13 @@ class AmityCommentView: AmityView {
 
         commentStatusButton.isHidden = true
         commentStatusButton.addTarget(self, action: #selector(onStatusButtonTap), for: .touchUpInside)
+        
+        contentContainerView.isHidden = true
+        contentImageView.contentMode = .scaleAspectFill
+        
+        // Setup tap gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(commentImageViewTap(_:)))
+        contentImageView.addGestureRecognizer(tapGesture)
     }
     
     // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
@@ -186,7 +198,6 @@ class AmityCommentView: AmityView {
         let likeButtonTitle = comment.isLiked ? AmityLocalizedStringSet.General.liked.localizedString : AmityLocalizedStringSet.General.like.localizedString
         likeButton.setTitle(likeButtonTitle, for: .normal)
         
-        replyButton.isHidden = layout.type == .reply
         separatorLineView.isHidden = true
         
         if comment.reactionsCount > 0 {
@@ -198,18 +209,49 @@ class AmityCommentView: AmityView {
             reactionDetailContainerView.isHidden = true
         }
         
+        // Image comment data
+        if !comment.isDeleted {
+            for attachment in comment.comment.attachments {
+                self.contentContainerView.isHidden = false
+                switch attachment {
+                case .image(fileId: let fileId, data: _):
+                    AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
+                        switch resultImageURL {
+                        case .success(let imageURL):
+                            DispatchQueue.main.async {
+                                self.fileURL = imageURL
+                                self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
+//                                self.contentContainerView.isHidden = false
+                            }
+                        case .failure(_):
+                            DispatchQueue.main.async {
+                                self.contentContainerView.isHidden = true
+                            }
+                        }
+                    }
+                @unknown default:
+                    print("Unknown attatchment")
+                    self.contentContainerView.isHidden = true
+                }
+            }
+        }
+        
         badgeStackView.isHidden = !comment.isModerator
         
         contentLabel.isExpanded = layout.isExpanded
         
         toggleActionVisibility(comment: comment, layout: layout)
         
+        replyButton.isHidden = layout.type == .reply
+
         viewReplyButton.isHidden = !layout.shouldShowViewReplyButton(for: comment)
         leadingAvatarImageViewConstraint.constant = layout.space.avatarLeading
         topAvatarImageViewConstraint.constant = layout.space.aboveAvatar
         
         commentStatusButton.isHidden = comment.syncState != .error
         commentStatusButton.isEnabled = comment.syncState == .error
+        
+        labelContainerView.isHidden = comment.text.isEmpty
     }
     
     func toggleActionVisibility(comment: AmityCommentModel, layout: AmityCommentView.Layout) {
@@ -257,9 +299,15 @@ class AmityCommentView: AmityView {
         delegate?.commentView(self, didTapAction: .reactionDetails)
     }
     
+    @objc private func commentImageViewTap(_ sender: UITapGestureRecognizer) {
+        delegate?.commentView(self, didTapAction: .commentImage(imageView: contentImageView, fileURL: fileURL))
+    }
+    
     func prepareForReuse() {
         bannedImageView.image = nil
         comment = nil
+        contentContainerView.isHidden = true
+        contentImageView.image = nil
     }
     
     open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat) -> CGFloat {
@@ -298,6 +346,10 @@ class AmityCommentView: AmityView {
             return bottomStackViewHeight
         } ()
 
+        let contentImageHeight: CGFloat = {
+            let contentHeight: CGFloat = !comment.comment.attachments.isEmpty ? 150 : 0
+            return contentHeight
+        }()
         
         return topSpace
         + contentHeight
@@ -305,7 +357,7 @@ class AmityCommentView: AmityView {
         + layout.space.aboveStack
         + bottomStackHeight
         + layout.space.belowStack
-        
+        + contentImageHeight
     }
     
 }
