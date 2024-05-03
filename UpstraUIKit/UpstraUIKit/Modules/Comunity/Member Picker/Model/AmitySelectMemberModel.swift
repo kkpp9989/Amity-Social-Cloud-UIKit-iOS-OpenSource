@@ -30,6 +30,7 @@ public final class AmitySelectMemberModel: Equatable {
         return userId == AmityUIKitManagerInternal.shared.client.currentUserId
     }
     public var object: AmityChannel? = nil
+    public var originalId: String?
     
     init(object: AmityUser) {
         self.userId = object.userId
