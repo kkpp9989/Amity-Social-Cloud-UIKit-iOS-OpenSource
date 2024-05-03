@@ -25,7 +25,7 @@ final class AmityFetchForwardChannelController {
     
     private let dispatchGroup = DispatchGroup()
     private var tokenArray: [AmityNotificationToken] = []
-    private let debouncer = Debouncer(delay: 0.3)
+    private let debouncer = Debouncer(delay: 0.6)
     
     init(repository: AmityChannelRepository?, type: AmityChannelViewType) {
         self.repository = repository
@@ -48,51 +48,61 @@ final class AmityFetchForwardChannelController {
             collection = repository?.getChannels(with: query)
         }
         
-        token = collection?.observeOnce { [weak self] (userCollection, change, error) in
+        token = collection?.observe { [weak self] (userCollection, change, error) in
             guard let strongSelf = self else { return }
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                let endIndex = userCollection.count() //strongSelf.targetType == .recent ? min(10, userCollection.count()) : userCollection.count()
-                // Dictionary to keep track of whether leave has been called for a specific channelId
-                var channelIdLeaveMap: [String: Bool] = [:]
-                for index in 0..<endIndex {
-                    strongSelf.dispatchGroup.enter()
-                    channelIdLeaveMap[String(index)] = false
-                    guard let object = userCollection.object(at: index) else { continue }
-                    let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.channelId } || strongSelf.currentUsers.contains { $0.userId == object.channelId }
-                    if !strongSelf.channel.contains(where: { $0.userId == object.channelId }) {
-                        if !object.isDeleted {
-                            if object.channelType == .conversation && isMustToChangeSomeChannelToUser {
-                                let otherUserId = AmityChannelModel(object: object).getOtherUserId()
-                                let userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
-                                let tempToken = userRepository.getUser(otherUserId).observeOnce({ liveObject, error in
-                                    if let userObject = liveObject.snapshot {
-                                        let userModel = AmitySelectMemberModel(object: userObject)
-                                        strongSelf.channel.append(userModel)
-                                    } else {
-                                        strongSelf.channel.append(model)
+            strongSelf.debouncer.run { // Add debouncer for prevent duplicate data by pull data many time
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    let endIndex = userCollection.count() //strongSelf.targetType == .recent ? min(10, userCollection.count()) : userCollection.count()
+                    // Dictionary to keep track of whether leave has been called for a specific channelId
+                    var channelIdLeaveMap: [String: Bool] = [:]
+                    for index in 0..<endIndex {
+                        strongSelf.dispatchGroup.enter()
+                        channelIdLeaveMap[String(index)] = false
+                        guard let object = userCollection.object(at: index) else { continue }
+                        let model = AmitySelectMemberModel(object: object)
+                        model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.channelId } || strongSelf.currentUsers.contains { $0.userId == object.channelId }
+                        if !strongSelf.channel.contains(where: { $0.userId == object.channelId }),
+                           !strongSelf.channel.contains(where: { $0.originalId == object.channelId })
+                        {
+                            if !object.isDeleted {
+                                if object.channelType == .conversation && isMustToChangeSomeChannelToUser {
+                                    let otherUserId = AmityChannelModel(object: object).getOtherUserId()
+                                    let userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
+                                    let tempToken = userRepository.getUser(otherUserId).observeOnce({ liveObject, error in
+                                        if let userObject = liveObject.snapshot {
+                                            let userModel = AmitySelectMemberModel(object: userObject)
+                                            userModel.originalId = object.channelId
+                                            strongSelf.channel.append(userModel)
+                                        } else {
+                                            strongSelf.channel.append(model)
+                                        }
+                                        if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                            channelIdLeaveMap[String(index)] = true
+                                            strongSelf.dispatchGroup.leave()
+                                        }
+                                    })
+                                    strongSelf.tokenArray.append(tempToken)
+                                } else if object.channelType == .broadcast {
+                                    let userController = AmityChatUserController(channelId: model.userId)
+                                    userController.getEditGroupChannelPermission { isHavePermission in
+                                        if isHavePermission {
+                                            strongSelf.channel.append(model)
+                                        }
+                                        if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                            channelIdLeaveMap[String(index)] = true
+                                            strongSelf.dispatchGroup.leave()
+                                        }
                                     }
-                                    if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
-                                        channelIdLeaveMap[String(index)] = true
-                                        strongSelf.dispatchGroup.leave()
-                                    }
-                                })
-                                strongSelf.tokenArray.append(tempToken)
-                            } else if object.channelType == .broadcast {
-                                let userController = AmityChatUserController(channelId: model.userId)
-                                userController.getEditGroupChannelPermission { isHavePermission in
-                                    if isHavePermission {
-                                        strongSelf.channel.append(model)
-                                    }
+                                } else {
+                                    strongSelf.channel.append(model)
                                     if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                                         channelIdLeaveMap[String(index)] = true
                                         strongSelf.dispatchGroup.leave()
                                     }
                                 }
                             } else {
-                                strongSelf.channel.append(model)
                                 if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
                                     channelIdLeaveMap[String(index)] = true
                                     strongSelf.dispatchGroup.leave()
@@ -104,37 +114,32 @@ final class AmityFetchForwardChannelController {
                                 strongSelf.dispatchGroup.leave()
                             }
                         }
-                    } else {
-                        if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
-                            channelIdLeaveMap[String(index)] = true
-                            strongSelf.dispatchGroup.leave()
-                        }
-                    }
-                }
-                
-                strongSelf.dispatchGroup.notify(queue: .main) {
-                    strongSelf.tokenArray.removeAll()
-                    let predicate: (AmitySelectMemberModel) -> (String) = { user in
-                        guard let displayName = user.displayName else { return "#" }
-                        let c = String(displayName.prefix(1)).uppercased()
-                        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                        
-                        if alphabet.contains(c) {
-                            return c
-                        } else {
-                            return "#"
-                        }
                     }
                     
-                    var groupUsers: AmityFetchForwardChannelController.GroupUser
-                    if strongSelf.targetType == .group || strongSelf.targetType == .broadcast {
-                        groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: predicate).sorted { $0.0 < $1.0 }
-                    } else {
-                        groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: { _ in "" }).sorted { $0.0 < $1.0 }
+                    strongSelf.dispatchGroup.notify(queue: .main) {
+                        strongSelf.tokenArray.removeAll()
+                        let predicate: (AmitySelectMemberModel) -> (String) = { user in
+                            guard let displayName = user.displayName else { return "#" }
+                            let c = String(displayName.prefix(1)).uppercased()
+                            let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            
+                            if alphabet.contains(c) {
+                                return c
+                            } else {
+                                return "#"
+                            }
+                        }
+                        
+                        var groupUsers: AmityFetchForwardChannelController.GroupUser
+                        if strongSelf.targetType == .group || strongSelf.targetType == .broadcast {
+                            groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: predicate).sorted { $0.0 < $1.0 }
+                        } else {
+                            groupUsers = Dictionary<String, [AmitySelectMemberModel]>(grouping: strongSelf.channel, by: { _ in "" }).sorted { $0.0 < $1.0 }
+                        }
+
+                        completion(.success(groupUsers))
+
                     }
-
-                    completion(.success(groupUsers))
-
                 }
             }
         }
