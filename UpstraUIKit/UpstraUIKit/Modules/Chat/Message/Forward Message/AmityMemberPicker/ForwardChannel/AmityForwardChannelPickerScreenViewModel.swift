@@ -153,6 +153,7 @@ extension AmityForwardChannelPickerScreenViewModel {
     
     func getChannels() {
         isSearch = false
+        AmityEventHandler.shared.showKTBLoading()
         fetchChannelController?.newSelectedUsers = newSelectedUsers
         fetchChannelController?.currentUsers = currentUsers
         fetchChannelController?.getChannel(isMustToChangeSomeChannelToUser: true) { (result) in

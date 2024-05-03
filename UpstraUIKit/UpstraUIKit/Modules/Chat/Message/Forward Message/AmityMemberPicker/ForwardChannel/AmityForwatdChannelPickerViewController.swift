@@ -390,9 +390,11 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     func screenViewModelLoadingState(for state: AmityLoadingState) {
         switch state {
         case .loading:
-            tableView.showLoadingIndicator()
+            AmityEventHandler.shared.showKTBLoading()
+//            tableView.showLoadingIndicator()
         case .initial, .loaded:
-            tableView.tableFooterView = UIView()
+            AmityEventHandler.shared.hideKTBLoading()
+//            tableView.tableFooterView = UIView()
         }
     }
     
