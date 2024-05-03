@@ -191,7 +191,16 @@ public class LiveStreamPlayerViewController: UIViewController {
             requestCreateLiveStreamLog()
             
             viewerCountLabel.text = String(viewerCount)
+            
+            /// Handle live status
+            // Handle stream pause container and control container
             streamPauseContainer.isHidden = isLive
+            controlContainer.isHidden = !streamPauseContainer.isHidden
+            // Auto play when live comback and player stopped
+            if isLive && player.mediaState == .stopped {
+                playStream()
+            }
+            
         })
     }
     
@@ -449,7 +458,8 @@ public class LiveStreamPlayerViewController: UIViewController {
         switch stream?.status {
         case .ended, .recorded, .idle:
             // Stream has already end, no need to show play and stop button.
-            streamPauseContainer.isHidden = isLive
+            streamPauseContainer.isHidden = true
+            controlContainer.isHidden = false
             playButton.isHidden = true
             stopButton.isHidden = true
         default:

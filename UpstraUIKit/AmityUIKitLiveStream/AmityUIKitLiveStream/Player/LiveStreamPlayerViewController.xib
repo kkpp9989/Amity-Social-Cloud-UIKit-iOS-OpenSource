@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -238,9 +238,16 @@ to watch shortly.</string>
                         <constraint firstItem="GsN-Z4-b5d" firstAttribute="width" secondItem="eMx-8g-uCW" secondAttribute="width" multiplier="1.19481" id="qMF-sM-EBX"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ayj-jf-hBT">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ayj-jf-hBT" userLabel="Stream Pause Container">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ma3-o4-phG" userLabel="Close Button">
+                            <rect key="frame" x="352" y="56" width="32" height="32"/>
+                            <state key="normal" image="close_icon"/>
+                            <connections>
+                                <action selector="closeButtonDidTouch" destination="-1" eventType="touchUpInside" id="C0r-Oz-2zX"/>
+                            </connections>
+                        </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F3y-Ej-zMK">
                             <rect key="frame" x="20" y="421" width="374" height="20.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -256,11 +263,13 @@ to watch shortly.</string>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
+                        <constraint firstItem="Ma3-o4-phG" firstAttribute="top" secondItem="Ayj-jf-hBT" secondAttribute="topMargin" id="FbH-eM-G6X"/>
                         <constraint firstItem="s1j-Ty-dPq" firstAttribute="leading" secondItem="Ayj-jf-hBT" secondAttribute="leading" constant="20" symbolic="YES" id="IYb-cM-Mbe"/>
                         <constraint firstItem="F3y-Ej-zMK" firstAttribute="centerY" secondItem="Ayj-jf-hBT" secondAttribute="centerY" constant="-16.75" id="ab5-WI-s9k"/>
                         <constraint firstAttribute="trailing" secondItem="s1j-Ty-dPq" secondAttribute="trailing" constant="20" symbolic="YES" id="cCW-gy-dax"/>
                         <constraint firstItem="F3y-Ej-zMK" firstAttribute="leading" secondItem="Ayj-jf-hBT" secondAttribute="leading" constant="20" symbolic="YES" id="fUr-K0-Vb9"/>
                         <constraint firstAttribute="trailing" secondItem="F3y-Ej-zMK" secondAttribute="trailing" constant="20" symbolic="YES" id="iEs-xt-HkC"/>
+                        <constraint firstAttribute="trailing" secondItem="Ma3-o4-phG" secondAttribute="trailing" constant="30" id="rzp-qS-CgQ"/>
                         <constraint firstItem="s1j-Ty-dPq" firstAttribute="top" secondItem="F3y-Ej-zMK" secondAttribute="bottom" constant="12.5" id="xWo-c6-a76"/>
                     </constraints>
                 </view>
