@@ -21,8 +21,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // ktb kk return table height for set up feed in ktb home
     var isKTBFeed = false
     var rowSetLimitCount = 10
-    public var returntableViewHeight: ((_ height:CGFloat) -> Void)?
-    var tableH = 0.0
+    public var returntableContent: ((_ tb:UITableView) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -119,28 +118,14 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
 
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        /*
-        private let dispatchGroup = DispatchGroup()
-        dispatchGroup.notify(queue: .main) {
-        }
-         */
-            if(isKTBFeed){
-                let _h = self.tableView.contentSize.height
-                if(self.tableH != _h){
-                    //print("kk==kk tableH \(_h)")
-                    tableView.frame.size = tableView.contentSize
-                    if let callback = self.returntableViewHeight {
-                        callback(_h)
-                    }
+        // ktb kk update table layout for ktb feed home
+        if(isKTBFeed){
+            if let _t = self.tableView {
+                if let callback = self.returntableContent {
+                    callback(_t)
                 }
-                if tableView.frame.origin.y != 0 {
-                    //print("kk==kk frame.origin.y \(tableView.frame.origin.y)")
-                    tableView.frame = CGRectMake(0, 0, tableView.frame.width, _h)
-                    tableView.frame.size = tableView.contentSize
-                }
-                self.tableH = _h
             }
-        
+        }
     }
     
     private func resetRefreshControlStateIfNeeded() {
@@ -322,11 +307,6 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        // ktb kk return table height for set up feed in ktb home
-        if let callback = self.returntableViewHeight {
-            callback(self.tableView.contentSize.height)
-        }
-        
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
             (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: postTabHeaderView?.headerView)
@@ -356,6 +336,14 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     }
     
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        // ktb kk update table layout for ktb feed home
+        if(isKTBFeed){
+            if let callback = self.returntableContent {
+                callback(tableView)
+            }
+        }
+        
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
         }
