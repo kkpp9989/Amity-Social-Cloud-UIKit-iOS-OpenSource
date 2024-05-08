@@ -337,13 +337,6 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
-        // ktb kk update table layout for ktb feed home
-        if(isKTBFeed){
-            if let callback = self.returntableContent {
-                callback(tableView)
-            }
-        }
-        
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
         }
@@ -409,7 +402,7 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
         if(isKTBFeed && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
             return rowSetLimitCount
         }
-        
+        //self.rowSetLimitCount = screenViewModel.dataSource.numberOfPostComponents()
         return screenViewModel.dataSource.numberOfPostComponents()
     }
     
@@ -492,7 +485,16 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
-        dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        
+        if isKTBFeed {
+            dataDidUpdateHandler?(rowSetLimitCount)
+            // ktb kk update table layout for ktb feed home
+            if let callback = self.returntableContent {
+                callback(tableView)
+            }
+        }else{
+            dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        }
         refreshControl.endRefreshing()
     }
     
@@ -885,6 +887,7 @@ extension AmityFeedViewController{
         vc.screenViewModel = viewModel
         vc.isKTBFeed = true
         vc.rowSetLimitCount = rows + 1
+        viewModel.isKTBFeed = true
         //vc.tableView.isScrollEnabled = false
         return vc
     }
