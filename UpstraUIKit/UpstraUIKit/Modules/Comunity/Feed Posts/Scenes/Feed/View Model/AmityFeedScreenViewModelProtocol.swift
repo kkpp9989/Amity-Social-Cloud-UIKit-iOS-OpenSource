@@ -35,6 +35,7 @@ protocol AmityFeedScreenViewModelDelegate: AnyObject {
     
     // MARK: Pin Post
     func screenViewModelDidUpdatePinSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String)
+    func screenViewModelDidUpdatePinUnsuccess(_ viewModel: AmityFeedScreenViewModelType, message: String)
 }
 
 protocol AmityFeedScreenViewModelDataSource {
