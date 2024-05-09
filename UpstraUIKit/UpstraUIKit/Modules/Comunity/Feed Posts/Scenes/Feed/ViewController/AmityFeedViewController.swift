@@ -21,8 +21,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // ktb kk return table height for set up feed in ktb home
     var isKTBFeed = false
     var rowSetLimitCount = 10
-    public var returntableContent: ((_ tb:UITableView) -> Void)?
-    var returnModelResult: ((_ ss:Bool) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -115,19 +113,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         isVisible = false
         refreshControl.endRefreshing()
     }
-    
-
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        // ktb kk update table layout for ktb feed home
-        if(isKTBFeed){
-            if let _t = self.tableView {
-                if let callback = self.returntableContent {
-                    callback(_t)
-                }
-            }
-        }
-    }
+ 
     
     private func resetRefreshControlStateIfNeeded() {
         if !refreshControl.isHidden {
