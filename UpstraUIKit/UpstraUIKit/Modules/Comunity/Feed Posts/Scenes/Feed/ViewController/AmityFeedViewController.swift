@@ -116,6 +116,19 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         refreshControl.endRefreshing()
     }
     
+
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        // ktb kk update table layout for ktb feed home
+        if(isKTBFeed){
+            if let _t = self.tableView {
+                if let callback = self.returntableContent {
+                    callback(_t)
+                }
+            }
+        }
+    }
+    
     private func resetRefreshControlStateIfNeeded() {
         if !refreshControl.isHidden {
             tableView.setContentOffset(.zero, animated: false)
