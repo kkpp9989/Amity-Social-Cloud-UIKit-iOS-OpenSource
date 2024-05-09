@@ -33,4 +33,5 @@ public enum AmityPostPreviewCommentAction {
     case tapOnReactionDetail
     case tapOnHashtag(keyword: String, count: Int)
     case tapOnPostIdLink(postId: String)
+    case tapOnCommentImage(imageView: UIImageView, fileURL: String)
 }

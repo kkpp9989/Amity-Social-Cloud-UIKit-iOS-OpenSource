@@ -1,14 +1,19 @@
 //
-//  AmityHashtagFeedViewController.swift
+//  AmitySearchPostsViewController.swift
 //  AmityUIKit
 //
-//  Created by GuIDe'MacbookAmityHQ on 19/7/2566 BE.
-//  Copyright © 2566 BE Amity. All rights reserved.
+//  Created by GuIDe'MacbookAmityHQ on 12/4/2567 BE.
+//  Copyright © 2567 BE Amity. All rights reserved.
 //
 
 import UIKit
+import AmitySDK
 
-class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
+class AmitySearchPostsViewController: AmityViewController, AmityRefreshable, IndicatorInfoProvider {
+    
+    func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
+        return IndicatorInfo(title: pageTitle)
+    }
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -16,9 +21,10 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     private var pollAnswers: [String: [String]] = [:]
     
     // MARK: - Properties
-    private var screenViewModel: AmityHashtagScreenViewModelType!
+    private var screenViewModel: AmitySearchPostsScreenViewModelType!
     private var keyword: String = ""
     private var count: Int = 0
+    private var pageTitle: String = ""
 
     // MARK: - Post Protocol Handler
     private var postHeaderProtocolHandler: AmityPostHeaderProtocolHandler?
@@ -69,8 +75,6 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
         setupProtocolHandler()
         setupScreenViewModel()
         setupReactionPicker()
-        setupNavigationBar()
-        setupPostCountTitle()
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
@@ -104,19 +108,17 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
         }
     }
     
-    public static func make(feedType: AmityPostFeedType, keyword: String, count: Int) -> AmityHashtagFeedViewController {
+    public static func make(title: String) -> AmitySearchPostsViewController {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reaction = AmityReactionController()
-        let viewModel = AmityHashtagScreenViewModel(withFeedType: feedType,
+        let viewModel = AmitySearchPostsScreenViewModel(withFeedType: .globalFeed,
                                                     postController: postController,
                                                     commentController: commentController,
-                                                    reactionController: reaction,
-                                                    keyword: keyword)
-        let vc = AmityHashtagFeedViewController(nibName: AmityHashtagFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+                                                    reactionController: reaction)
+        let vc = AmitySearchPostsViewController(nibName: AmitySearchPostsViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
-        vc.keyword = keyword
-        vc.count = count
+        vc.pageTitle = title
         return vc
     }
 
@@ -178,39 +180,6 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
         view.addGestureRecognizer(tap)
     }
     
-    private func setupNavigationBar() {
-        // Create a label for the navigation title
-        let titleLabel = UILabel()
-        titleLabel.numberOfLines = 2
-        titleLabel.textAlignment = .center
-        
-        let postCountString = "\n\(count.formatUsingAbbrevation()) posts"
-        
-        // Create attributed string with the desired formatting
-        let attributedString = NSMutableAttributedString(string: keyword)
-        
-        // Set the attributes for the first line (bold font)
-        attributedString.setAttributes([NSAttributedString.Key.font: AmityFontSet.bodyBold], range: NSMakeRange(0, keyword.utf16.count))
-        
-        let attributedStringExtented = NSMutableAttributedString(string: postCountString)
-        attributedStringExtented.setAttributes([NSAttributedString.Key.font: AmityFontSet.caption, NSAttributedString.Key.foregroundColor: AmityColorSet.base.blend(.shade3)], range: NSMakeRange(0, postCountString.utf16.count))
-
-        // Set the attributes for the second line (caption font)
-        attributedString.append(attributedStringExtented)
-        
-        // Assign the attributed string to the label
-        titleLabel.attributedText = attributedString
-        
-        // Assign the label to the navigation item's title view
-        navigationItem.titleView = titleLabel
-    }
-    
-    func setupPostCountTitle() {
-        if count == 0 {
-            screenViewModel.action.fetchHashtagData(keyword: keyword)
-        }
-    }
-    
     // MARK: SrollToTop
     private func scrollToTop() {
         guard tableView.numberOfRows(inSection: 0) > 0 else { return }
@@ -243,8 +212,87 @@ class AmityHashtagFeedViewController: AmityViewController, AmityRefreshable {
     
 }
 
+extension AmitySearchPostsViewController: AmitySearchPostsScreenViewModelAction {
+    func fetchPosts(keyword: String) {
+        screenViewModel.action.fetchPosts(keyword: keyword)
+    }
+    
+    func loadMore() {
+        screenViewModel.action.loadMore()
+    }
+    
+    func fetchHashtagData(keyword: String) {
+    }
+    
+    func refresh() {
+    }
+    
+    func like(id: String, referenceType: AmitySDK.AmityReactionReferenceType) {
+    }
+    
+    func unlike(id: String, referenceType: AmitySDK.AmityReactionReferenceType) {
+    }
+    
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmitySDK.AmityReactionReferenceType) {
+    }
+    
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmitySDK.AmityReactionReferenceType) {
+    }
+    
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmitySDK.AmityReactionReferenceType, reactionSelect: AmityReactionType) {
+    }
+    
+    func delete(withPostId postId: String) {
+    }
+    
+    func report(withPostId postId: String) {
+    }
+    
+    func unreport(withPostId postId: String) {
+    }
+    
+    func getReportStatus(withPostId postId: String) {
+    }
+    
+    func delete(withCommentId commentId: String) {
+    }
+    
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmitySDK.AmityMentioneesBuilder?) {
+    }
+    
+    func report(withCommentId commentId: String) {
+    }
+    
+    func unreport(withCommentId commentId: String) {
+    }
+    
+    func getReportStatus(withCommendId commendId: String, completion: ((Bool) -> Void)?) {
+    }
+    
+    func vote(withPollId pollId: String?, answerIds: [String]) {
+    }
+    
+    func close(withPollId pollId: String?) {
+    }
+    
+    func startObserveFeedUpdate() {
+    }
+    
+    func stopObserveFeedUpdate() {
+    }
+    
+    func fetchUserSettings() {
+    }
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel) {
+    }
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel) {
+    }
+}
+
 // MARK: - ReactionPickerView
-extension AmityHashtagFeedViewController {
+extension AmitySearchPostsViewController {
     
     @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
         let location = sender.location(in: view)
@@ -267,7 +315,7 @@ extension AmityHashtagFeedViewController {
 }
 
 // MARK: - AmityPostTableViewDelegate
-extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
+extension AmitySearchPostsViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         switch cell.self {
@@ -345,24 +393,24 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
             return bottomView
         }
         
-        if let emptyView = emptyView {
-            bottomView.setLayout(layout: .custom(emptyView))
-        } else {
-            switch screenViewModel.dataSource.getFeedType() {
-            case .userFeed:
-                if screenViewModel.dataSource.isPrivate {
-                    bottomView.setLayout(layout: .custom(AmityPrivateAccountView(frame: .zero)))
-                } else {
-                    bottomView.setLayout(layout: .label(title: AmityLocalizedStringSet.emptyTitleNoPosts.localizedString, subtitle: nil, image: AmityIconSet.emptyNoPosts))
-                }
-            default:
-                bottomView.setLayout(layout: .label(title: AmityLocalizedStringSet.emptyNewsfeedTitle.localizedString,
-                                                    subtitle: AmityLocalizedStringSet.emptyNewsfeedStartYourFirstPost.localizedString,
-                                                    image: nil))
-                emptyViewHandler?(bottomView)
-                return bottomView
-            }
-        }
+//        if let emptyView = emptyView {
+//            bottomView.setLayout(layout: .custom(emptyView))
+//        } else {
+//            switch screenViewModel.dataSource.getFeedType() {
+//            case .userFeed:
+//                if screenViewModel.dataSource.isPrivate {
+//                    bottomView.setLayout(layout: .custom(AmityPrivateAccountView(frame: .zero)))
+//                } else {
+//                    bottomView.setLayout(layout: .label(title: AmityLocalizedStringSet.emptyTitleNoPosts.localizedString, subtitle: nil, image: AmityIconSet.emptyNoPosts))
+//                }
+//            default:
+//                bottomView.setLayout(layout: .label(title: AmityLocalizedStringSet.emptyNewsfeedTitle.localizedString,
+//                                                    subtitle: AmityLocalizedStringSet.emptyNewsfeedStartYourFirstPost.localizedString,
+//                                                    image: nil))
+//                emptyViewHandler?(bottomView)
+//                return bottomView
+//            }
+//        }
         emptyViewHandler?(bottomView)
         return bottomView
     }
@@ -373,7 +421,7 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
 }
 
 // MARK: - AmityPostTableViewDataSource
-extension AmityHashtagFeedViewController: AmityPostTableViewDataSource {
+extension AmitySearchPostsViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
         return screenViewModel.dataSource.numberOfPostComponents()
     }
@@ -410,15 +458,9 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDataSource {
 }
 
 // MARK: - AmityHashtagScreenViewModelDelegate
-extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
-    func screenViewModelDidUpdateHashtagDataSuccess(_ viewModel: AmityHashtagScreenViewModelType, postCount: Int) {
-        count = postCount == 0 ? screenViewModel.dataSource.numberOfPostComponents() : postCount
-        DispatchQueue.main.async { [self] in
-            setupNavigationBar()
-        }
-    }
+extension AmitySearchPostsViewController: AmitySearchPostsScreenViewModelDelegate {
     
-    func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidUpdateDataSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         // When view is invisible but data source request updates, mark it as a dirty data source.
         // Then after view already appear, reload table view for refreshing data.
         guard isVisible else {
@@ -432,7 +474,7 @@ extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
         refreshControl.endRefreshing()
     }
     
-    func screenViewModelLoadingState(_ viewModel: AmityHashtagScreenViewModelType, for loadingState: AmityLoadingState) {
+    func screenViewModelLoadingState(_ viewModel: AmitySearchPostsScreenViewModelType, for loadingState: AmityLoadingState) {
         switch loadingState {
         case .loading:
             tableView.showLoadingIndicator()
@@ -443,15 +485,15 @@ extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
         }
     }
     
-    func screenViewModelScrollToTop(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelScrollToTop(_ viewModel: AmitySearchPostsScreenViewModelType) {
         scrollToTop()
     }
     
-    func screenViewModelDidSuccess(_ viewModel: AmityHashtagScreenViewModelType, message: String) {
+    func screenViewModelDidSuccess(_ viewModel: AmitySearchPostsScreenViewModelType, message: String) {
         AmityHUD.show(.success(message: message.localizedString))
     }
     
-    func screenViewModelDidFail(_ viewModel: AmityHashtagScreenViewModelType, failure error: AmityError) {
+    func screenViewModelDidFail(_ viewModel: AmitySearchPostsScreenViewModelType, failure error: AmityError) {
         switch error {
         case .unknown:
             AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
@@ -465,11 +507,11 @@ extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
     }
     
     // MARK: - Post
-    func screenViewModelDidLikePostSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidLikePostSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionLikePost()
     }
     
-    func screenViewModelDidUnLikePostSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidUnLikePostSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionUnLikePost()
     }
     
@@ -478,36 +520,36 @@ extension AmityHashtagFeedViewController: AmityHashtagScreenViewModelDelegate {
     }
     
     // MARK: - Comment
-    func screenViewModelDidLikeCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidLikeCommentSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionLikeComment()
     }
     
-    func screenViewModelDidUnLikeCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidUnLikeCommentSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         tableView.feedDelegate?.didPerformActionUnLikeComment()
     }
     
-    func screenViewModelDidDeleteCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidDeleteCommentSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         // Do something with success
     }
     
-    func screenViewModelDidEditCommentSuccess(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidEditCommentSuccess(_ viewModel: AmitySearchPostsScreenViewModelType) {
         // Do something with success
     }
     
-    func screenViewModelDidGetUserSettings(_ viewModel: AmityHashtagScreenViewModelType) {
+    func screenViewModelDidGetUserSettings(_ viewModel: AmitySearchPostsScreenViewModelType) {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
     }
     
-    func screenViewModelLoadingStatusDidChange(_ viewModel: AmityHashtagScreenViewModelType, isLoading: Bool) {
+    func screenViewModelLoadingStatusDidChange(_ viewModel: AmitySearchPostsScreenViewModelType, isLoading: Bool) {
         tableView.reloadData()
     }
     
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
-extension AmityHashtagFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
+extension AmitySearchPostsViewController: AmityPostHeaderProtocolHandlerDelegate {
     func headerProtocolHandlerDidPerformAction(_ handler: AmityPostHeaderProtocolHandler, action: AmityPostProtocolHeaderHandlerAction, withPost post: AmityPostModel) {
         let postId: String = post.postId
         switch action {
@@ -533,7 +575,7 @@ extension AmityHashtagFeedViewController: AmityPostHeaderProtocolHandlerDelegate
 }
 
 // MARK: - AmityPostProtocolHandlerDelegate
-extension AmityHashtagFeedViewController: AmityPostProtocolHandlerDelegate {
+extension AmitySearchPostsViewController: AmityPostProtocolHandlerDelegate {
     func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
         self.pollAnswers = pollAnswers
     }
@@ -546,7 +588,7 @@ extension AmityHashtagFeedViewController: AmityPostProtocolHandlerDelegate {
 }
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
-extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate {
+extension AmitySearchPostsViewController: AmityPostFooterProtocolHandlerDelegate {
     
     func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
         let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
@@ -606,7 +648,7 @@ extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate
 }
 
 // MARK: AmityPostPreviewCommentDelegate
-extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
+extension AmitySearchPostsViewController: AmityPostPreviewCommentDelegate {
     
     public func didPerformAction(_ cell: AmityPostPreviewCommentProtocol, action: AmityPostPreviewCommentAction) {
         guard let post = cell.post else { return }

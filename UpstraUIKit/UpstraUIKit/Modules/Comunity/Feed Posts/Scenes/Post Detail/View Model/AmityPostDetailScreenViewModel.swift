@@ -20,7 +20,7 @@ final class AmityPostDetailScreenViewModel: AmityPostDetailScreenViewModelType {
     private let pollRepository: AmityPollRepository
     private let reactionRepository: AmityReactionRepository
     private let messageRepository: AmityMessageRepository
-        
+
     private var postId: String
     private(set) var post: AmityPostModel?
     private var comments: [AmityCommentModel] = []
@@ -304,7 +304,7 @@ extension AmityPostDetailScreenViewModel {
                     case .success(let post):
                         strongSelf.post = post
                         strongSelf.post?.viewerCount = strongSelf.viewerCount
-                        
+                        strongSelf.subscribeComments()
                         /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
                         let isReactionChanging = strongSelf.isReactionChanging
                         if !isReactionChanging {
@@ -357,6 +357,20 @@ extension AmityPostDetailScreenViewModel {
                     }
                 case .failure:
                     break
+                }
+            }
+        }
+    }
+    
+    func subscribeComments() {
+        DispatchQueue.main.async { [self] in
+            commentController.subscribeCommentsForPostId(withReferencePost: post?.post) { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let isSuccess):
+                    print(isSuccess)
+                case .failure(let error):
+                    print(error.localizedDescription)
                 }
             }
         }
@@ -477,8 +491,8 @@ extension AmityPostDetailScreenViewModel {
     
     // MARK: Commend
     
-    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (comment, error) in
+    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia]) {
+        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees, medias: medias) { [weak self] (comment, error) in
             guard let strongSelf = self else { return }
             
             // Need to check SDK implementation.

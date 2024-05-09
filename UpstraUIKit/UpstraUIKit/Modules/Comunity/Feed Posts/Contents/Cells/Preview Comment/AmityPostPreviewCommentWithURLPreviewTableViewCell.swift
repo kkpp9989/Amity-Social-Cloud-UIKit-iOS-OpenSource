@@ -120,6 +120,10 @@ extension AmityPostPreviewCommentWithURLPreviewTableViewCell: AmityCommentViewWi
             performAction(action: .tapReply(comment: comment))
         case .reactionDetails:
             performAction(action: .tapOnReactionDetail)
+        case .status:
+            break
+        case .commentImage(imageView: let imageView, fileURL: let fileURL):
+            break
         }
     }
     

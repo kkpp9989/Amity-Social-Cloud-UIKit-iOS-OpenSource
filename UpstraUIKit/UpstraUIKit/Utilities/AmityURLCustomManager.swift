@@ -151,7 +151,7 @@ public struct AmityURLCustomManager {
             }
             
             // Encode URL and return URL
-            let originalURL = "\(domainURL)/?title=\(titleParameter)&desc=\(descriptionParameter)&postId=\(postId)"
+            let originalURL = "\(domainURL)?title=\(titleParameter)&desc=\(descriptionParameter)&postId=\(postId)"
 //            print("[URL] original: \(originalURL)")
             if let encodeURL = originalURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
 //                print("[URL] encode: \(encodeURL)")

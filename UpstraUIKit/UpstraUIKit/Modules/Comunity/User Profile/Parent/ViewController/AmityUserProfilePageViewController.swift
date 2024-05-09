@@ -23,6 +23,7 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     private var header: AmityUserProfileHeaderViewController!
     private var bottom: AmityUserProfileBottomViewController!
     private let postButton: AmityFloatingButton = AmityFloatingButton()
+    private let scrollUpButton: AmityFloatingButton = AmityFloatingButton()
     private var screenViewModel: AmityUserProfileScreenViewModelType!
     
     // MARK: - Custom Theme Properties [Additional]
@@ -50,6 +51,7 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
         
         setupNavigationItem()
         setupViewModel()
+        setupScrollUpButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +75,33 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
             AmityEventHandler.shared.createPostBeingPrepared(from: strongSelf, postTarget: .myFeed)
         }
         postButton.isHidden = !screenViewModel.isCurrentUser
+    }
+    
+    private func setupScrollUpButton() {
+        // setup button
+        scrollUpButton.isHidden = true
+        scrollUpButton.add(to: view, position: .bottomRight)
+        scrollUpButton.image = AmityIconSet.iconScrollUp
+        scrollUpButton.actionHandler = { [weak self] _ in
+            guard let strongSelf = self else { return }
+            strongSelf.bottom.timelineVC?.setScrollUp()
+        }
+        
+        bottom.timelineVC?.hideScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 0.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = true
+            }
+        }
+        
+        bottom.timelineVC?.showScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 1.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = false
+            }
+        }
     }
     
     private func setupNavigationItem() {

@@ -8,13 +8,26 @@
 
 import UIKit
 
+protocol ReadingListDelegate: AnyObject {
+    func didClose()
+}
+
 class AmityReadingListViewController: AmityViewController {
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var readCountLabel: UILabel!
+    
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
 
+    @IBOutlet weak var butCloseModal: UIButton! {
+        didSet {
+            butCloseModal.addTarget(self, action: #selector(butActionCloseModal), for: .touchDown)
+        }
+    }
+    
     // MARK: - Properties
+    weak var delegate: ReadingListDelegate?
     private var screenViewModel: AmityReadingListScreenViewModelType!
     private var emptyView = AmitySearchEmptyView()
     
@@ -44,6 +57,14 @@ class AmityReadingListViewController: AmityViewController {
         
         readCountLabel.text = "Read by 0 people"
         readCountLabel.font = AmityFontSet.bodyBold
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(butActionCloseModal))
+        view.isUserInteractionEnabled = true
+        view.addGestureRecognizer(tapGesture)
+        
+        bottomConstraint.constant = -386
+        self.view.layoutIfNeeded()
+        fadeIn()
     }
     
     private func setupTableView() {
@@ -54,6 +75,65 @@ class AmityReadingListViewController: AmityViewController {
         tableView.delegate = self
         tableView.dataSource = self
     }
+    
+    func removeView() {
+        downStatusView()
+    }
+}
+
+// MARK: - Button Action
+extension AmityReadingListViewController {
+    
+   @objc private func butActionCloseModal() {
+       removeView()
+    }
+    
+}
+
+// MARK: - Animation Control
+extension AmityReadingListViewController {
+    
+    func fadeIn() {
+        UIView.animate(withDuration: 0.2) {
+            self.view.alpha = 1
+            self.view.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            self?.upStatusView()
+        }
+    }
+    
+    func fadeOut() {
+        UIView.animate(withDuration: 0.2) {
+            self.view.alpha = 0
+            self.view.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            self?.delegate?.didClose()
+        }
+    }
+    
+    func upStatusView() {
+        UIView.animate(withDuration: 0.2) {
+            self.bottomConstraint.constant = 0
+        } completion: { [weak self] _ in
+            self?.fadeInView()
+        }
+    }
+    
+    func downStatusView() {
+        UIView.animate(withDuration: 0.2) {
+            self.bottomConstraint.constant = -386
+            self.view.layoutIfNeeded()
+        } completion: { [weak self] _ in
+            self?.fadeOut()
+        }
+    }
+    
+    func fadeInView() {
+        UIView.animate(withDuration: 1.0) {
+            self.view.backgroundColor = .black.withAlphaComponent(0.5)
+        }
+    }
+    
 }
 
 // MARK: - UITableView Delegate

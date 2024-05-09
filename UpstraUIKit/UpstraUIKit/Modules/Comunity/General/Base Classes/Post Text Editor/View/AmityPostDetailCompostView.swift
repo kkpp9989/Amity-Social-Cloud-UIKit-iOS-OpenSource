@@ -8,6 +8,7 @@
 
 import AmitySDK
 import UIKit
+import Photos
 
 protocol AmityPostDetailCompostViewDelegate: AnyObject {
     func composeView(_ view: AmityPostDetailCompostView, didPostText text: String)
@@ -15,6 +16,7 @@ protocol AmityPostDetailCompostViewDelegate: AnyObject {
     func composeViewDidTapReplyDismiss(_ view: AmityPostDetailCompostView)
     func composeView(_ view: AmityPostDetailCompostView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
     func composeViewDidChangeSelection(_ view: AmityPostDetailCompostView)
+    func composeViewDidTapAddImage(_ view: AmityPostDetailCompostView)
 }
 
 class AmityPostDetailCompostView: UIView {
@@ -38,13 +40,17 @@ class AmityPostDetailCompostView: UIView {
     private let stackView = UIStackView(frame: .zero)
     private let replyLabel = UILabel(frame: .zero)
     private let dismissButton = UIButton(frame: .zero)
-    private let avatarView = AmityAvatarView(frame: .zero)
+//    private let avatarView = AmityAvatarView(frame: .zero)
     let textView = AmityTextView(frame: .zero)
     private let postButton = UIButton(frame: .zero)
     private let expandButton = UIButton(frame: .zero)
     private let replyContainerView = UIView(frame: .zero)
     private let separtorLineView = UIView(frame: .zero)
     private let textContainerView = UIView(frame: .zero)
+    
+    private let avatarButtonView = UIStackView(frame: .zero)
+    private let avatarView = AmityAvatarView(frame: .zero)
+    private let addImageButton = UIButton(frame: .zero)
     
     private enum Constant {
         static let defaultTextViewHeight: CGFloat = 40.0
@@ -105,6 +111,14 @@ class AmityPostDetailCompostView: UIView {
         textView.resignFirstResponder()
     }
     
+    func updatePostButtonState(isEnable: Bool) {
+        postButton.isEnabled = !text.isEmpty ? true : isEnable
+    }
+    
+    func updatePostButtonUploadState(isEnable: Bool) {
+        postButton.isEnabled = isEnable
+    }
+    
     func configure(with post: AmityPostModel) {
         // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
         if let community = post.targetCommunity { // Case : Post from community
@@ -156,6 +170,11 @@ class AmityPostDetailCompostView: UIView {
         avatarView.contentMode = .scaleAspectFill
         avatarView.clipsToBounds = true
         avatarView.layer.cornerRadius = 14.0
+        
+        addImageButton.translatesAutoresizingMaskIntoConstraints = false
+        addImageButton.setImage(AmityIconSet.iconPhoto, for: .normal) // Set your button image here
+        addImageButton.addTarget(self, action: #selector(imageButtonTap), for: .touchUpInside)
+        
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         textView.isScrollEnabled = false
@@ -184,7 +203,7 @@ class AmityPostDetailCompostView: UIView {
         textContainerView.addSubview(textView)
         textContainerView.addSubview(postButton)
         textContainerView.addSubview(expandButton)
-        textContainerView.addSubview(avatarView)
+        textContainerView.addSubview(addImageButton)
         stackView.addArrangedSubview(textContainerView)
         
         NSLayoutConstraint.activate([
@@ -203,11 +222,11 @@ class AmityPostDetailCompostView: UIView {
             dismissButton.heightAnchor.constraint(equalToConstant: 16.0),
             
             separtorLineView.heightAnchor.constraint(equalToConstant: 1.0),
-            avatarView.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor, constant: 16.0),
-            avatarView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -12.0),
-            avatarView.widthAnchor.constraint(equalToConstant: 28.0),
-            avatarView.heightAnchor.constraint(equalToConstant: 28.0),
-            textView.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 8.0),
+            addImageButton.leadingAnchor.constraint(equalTo: textContainerView.leadingAnchor, constant: 16.0),
+            addImageButton.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -12.0),
+            addImageButton.widthAnchor.constraint(equalToConstant: 28.0),
+            addImageButton.heightAnchor.constraint(equalToConstant: 28.0),
+            textView.leadingAnchor.constraint(equalTo: addImageButton.trailingAnchor, constant: 8.0),
             textView.trailingAnchor.constraint(equalTo: postButton.leadingAnchor, constant: -12.0),
             textView.bottomAnchor.constraint(equalTo: textContainerView.bottomAnchor, constant: -8.0),
             textView.topAnchor.constraint(equalTo: textContainerView.topAnchor, constant: 8.0),
@@ -234,6 +253,9 @@ class AmityPostDetailCompostView: UIView {
         delegate?.composeViewDidTapExpand(self)
     }
     
+    @objc private func imageButtonTap() {
+        delegate?.composeViewDidTapAddImage(self)
+    }
 }
 
 extension AmityPostDetailCompostView: AmityTextViewDelegate {
@@ -260,4 +282,19 @@ extension AmityPostDetailCompostView: AmityTextViewDelegate {
     func textViewDidChangeSelection(_ textView: AmityTextView) {
         delegate?.composeViewDidChangeSelection(self)
     }
+    
+//    func textViewShouldBeginEditing(_ textField: AmityTextView) -> Bool {
+//        // Perform your action here
+//        print("Cursor is about to enter the text field")
+//        avatarView.isHidden = true
+//        addImageButton.isHidden = false
+//
+//        return true
+//    }
+//
+//    func textViewDidEndEditing(_ textView: AmityTextView) {
+//        // Show the view when editing ends
+//        avatarView.isHidden = false
+//        addImageButton.isHidden = true
+//    }
 }

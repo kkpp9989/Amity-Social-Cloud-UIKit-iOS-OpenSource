@@ -11,8 +11,8 @@ import UIKit
 final public class AmityCommunityFeedViewController: AmityProfileBottomViewController {
     
     // MARK: - Properties
-    private var timelineVC: AmityFeedViewController?
-    private var galleryVC: AmityPostGalleryViewController?
+    var timelineVC: AmityFeedViewController?
+    var galleryVC: AmityPostGalleryViewController?
     
     private var communityId: String = ""
     
