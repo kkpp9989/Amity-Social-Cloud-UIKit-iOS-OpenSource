@@ -22,6 +22,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var isKTBFeed = false
     var rowSetLimitCount = 10
     public var returntableContent: ((_ tb:UITableView) -> Void)?
+    var returnModelResult: ((_ ss:Bool) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -113,19 +114,6 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         super.viewDidDisappear(animated)
         isVisible = false
         refreshControl.endRefreshing()
-    }
-    
-
-    public override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        // ktb kk update table layout for ktb feed home
-        if(isKTBFeed){
-            if let _t = self.tableView {
-                if let callback = self.returntableContent {
-                    callback(_t)
-                }
-            }
-        }
     }
     
     private func resetRefreshControlStateIfNeeded() {
@@ -488,10 +476,6 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         
         if isKTBFeed {
             dataDidUpdateHandler?(rowSetLimitCount)
-            // ktb kk update table layout for ktb feed home
-            if let callback = self.returntableContent {
-                callback(tableView)
-            }
         }else{
             dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
         }
@@ -544,6 +528,10 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()
+            }
+        case .userNotFound :
+            debouncer.run { [weak self] in
+                self?.screenViewModel.action.fetchPosts()
             }
         default:
             break

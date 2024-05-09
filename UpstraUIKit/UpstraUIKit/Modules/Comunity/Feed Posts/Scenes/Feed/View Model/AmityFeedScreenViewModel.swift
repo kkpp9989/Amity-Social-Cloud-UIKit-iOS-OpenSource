@@ -224,7 +224,9 @@ extension AmityFeedScreenViewModel {
                             strongSelf.prepareComponents(posts: posts)
                         }
                     case .failure(let error):
+                        print("kk==kk cc error ========== \(error)")
                         strongSelf.debouncer.run {
+                            // ktb kk for feed home check userNotFound
                             if let isKTBFeed = self?.isKTBFeed, !isKTBFeed{
                                 strongSelf.prepareComponents(posts: [])
                             }
