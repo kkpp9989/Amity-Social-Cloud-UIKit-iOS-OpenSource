@@ -84,7 +84,7 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
         scrollUpButton.image = AmityIconSet.iconScrollUp
         scrollUpButton.actionHandler = { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.bottom.timelineVC?.setScrollUp()
+            NotificationCenter.default.post(name: Notification.Name("ScrollToTop"), object: nil)
         }
         
         bottom.timelineVC?.hideScrollUpButtonHandler = { [weak self] in
