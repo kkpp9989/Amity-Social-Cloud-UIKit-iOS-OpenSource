@@ -541,36 +541,18 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     }
     
     private func presentMaxNumberReachDialogue() {
-        let title: String
-        let message: String
-        
-        switch currentAttachmentState {
-        case .image:
-            title = "Maximum number of images exceeded"
-            message = "Maximum number of images that can be uploaded is \(Constant.maximumNumberOfMedias). The rest images will be discarded."
-        case .video:
-            title = "Maximum number of videos exceeded"
-            message = "Maximum number of videos that can be uploaded is \(Constant.maximumNumberOfMedias). The rest videos will be discarded."
-        default:
-            title = "Maximum number of files exceeded"
-            message = "Maximum number of files that can be uploaded is \(Constant.maximumNumberOfFiles). The rest files will be discarded."
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+            let message = "Reached max selection limit"
+            ToastView.shared.showToast(message: message, in: window)
         }
-        
-        let alertController = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-        let cancelAction = UIAlertAction(
-            title: AmityLocalizedStringSet.General.ok.localizedString,
-            style: .cancel,
-            handler: nil
-        )
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
     }
     
     private func presentMediaPickerCamera() {
+        let totalNumberOfMedias = galleryView.medias.count
+        if totalNumberOfMedias == Constant.maximumNumberOfMedias {
+            presentMaxNumberReachDialogue()
+            return
+        }
         
         let cameraPicker = UIImagePickerController()
         cameraPicker.sourceType = .camera
@@ -605,6 +587,11 @@ public class AmityMessageTextFullEditorViewController: AmityViewController {
     }
     
     private func presentMediaPickerAlbum(type: AmityMediaType) {
+        let totalNumberOfMedias = galleryView.medias.count
+        if totalNumberOfMedias == Constant.maximumNumberOfMedias {
+            presentMaxNumberReachDialogue()
+            return
+        }
         
         let supportedMediaTypes: Set<NewSettings.NewFetch.NewAssets.MediaTypes>
         
@@ -896,11 +883,6 @@ extension AmityMessageTextFullEditorViewController: AmityMessageTextFullEditorMe
     }
     
     private func addMedias(_ medias: [AmityMedia], type: AmityMediaType) {
-        let totalNumberOfMedias = galleryView.medias.count + medias.count
-        guard totalNumberOfMedias <= Constant.maximumNumberOfMedias else {
-            presentMaxNumberReachDialogue()
-            return
-        }
         galleryView.addMedias(medias)
         fileView.configure(files: [])
         // start uploading
