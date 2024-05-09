@@ -211,29 +211,35 @@ class AmityCommentView: AmityView {
         
         // Image comment data
         if !comment.isDeleted {
-            for attachment in comment.comment.attachments {
-                self.contentContainerView.isHidden = false
-                switch attachment {
-                case .image(fileId: let fileId, data: _):
-                    AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
-                        switch resultImageURL {
-                        case .success(let imageURL):
-                            DispatchQueue.main.async {
-                                self.fileURL = imageURL
-                                self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
-//                                self.contentContainerView.isHidden = false
-                            }
-                        case .failure(_):
-                            DispatchQueue.main.async {
-                                self.contentContainerView.isHidden = true
+            if !comment.comment.attachments.isEmpty {
+                for attachment in comment.comment.attachments {
+                    self.contentContainerView.isHidden = false
+                    switch attachment {
+                    case .image(fileId: let fileId, data: _):
+                        AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
+                            switch resultImageURL {
+                            case .success(let imageURL):
+                                DispatchQueue.main.async {
+                                    self.fileURL = imageURL
+                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
+                                }
+                            case .failure(_):
+                                DispatchQueue.main.async {
+                                    self.contentContainerView.isHidden = true
+                                }
                             }
                         }
+                    @unknown default:
+                        print("Unknown attachment")
+                        self.contentContainerView.isHidden = true
                     }
-                @unknown default:
-                    print("Unknown attatchment")
-                    self.contentContainerView.isHidden = true
                 }
+            } else {
+                // Handle case when attachments are empty
+                self.contentContainerView.isHidden = true
             }
+        } else {
+            self.contentContainerView.isHidden = true
         }
         
         badgeStackView.isHidden = !comment.isModerator
