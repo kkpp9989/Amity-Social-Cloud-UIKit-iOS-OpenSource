@@ -43,6 +43,8 @@ class AmityProfileContainerViewController : UIViewController, UIScrollViewDelega
                 scrollView.removeObserver(self, forKeyPath: #keyPath(UIScrollView.contentSize))
             }
         })
+        
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func loadView() {
@@ -104,6 +106,15 @@ class AmityProfileContainerViewController : UIViewController, UIScrollViewDelega
         
         ///let know others scroll view configuration is done
         delegate?.scrollViewDidLoad(overlayScrollView)
+        observeNotifications()
+    }
+    
+    private func observeNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: Notification.Name("ScrollToTop"), object: nil)
+    }
+    
+    @objc func handleNotification(_ notification: Notification) {
+        overlayScrollView.setContentOffset(CGPoint(x: 0, y: -overlayScrollView.contentInset.top), animated: true)
     }
     
     private func updateOverlayScrollContentSize(with bottomView: UIView){
