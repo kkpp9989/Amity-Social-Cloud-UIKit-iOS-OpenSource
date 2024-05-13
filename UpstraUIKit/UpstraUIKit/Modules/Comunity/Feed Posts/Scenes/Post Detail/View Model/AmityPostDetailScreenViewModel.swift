@@ -368,9 +368,9 @@ extension AmityPostDetailScreenViewModel {
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let isSuccess):
-                    print(isSuccess)
+                    print("Amit Log: subscribeComments \(isSuccess)")
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    print("Amit Log: subscribeComments error \(error.localizedDescription)")
                 }
             }
         }
