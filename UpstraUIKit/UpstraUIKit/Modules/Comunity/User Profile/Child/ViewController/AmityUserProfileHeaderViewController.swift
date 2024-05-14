@@ -293,7 +293,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     }
     
     private func updateView(with user: AmityUserModel) {
-        avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        avatarView.setImage(withImageURL: user.avatarURL, size: .large, placeholder: AmityIconSet.defaultAvatar)
         displayNameLabel.text = user.displayName
         titleNameLabel.text = user.displayName
         descriptionLabel.text = user.about
