@@ -75,7 +75,7 @@ public class AmitySearchViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [communitiesVC, membersVC, hashtagVC, postsVC]
+        return [postsVC, communitiesVC, membersVC, hashtagVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
@@ -141,13 +141,13 @@ private extension AmitySearchViewController {
     func viewControllerWillMove(newIndex: Int) {
         switch newIndex {
         case 0:
-            communitiesVC.search(with: searchTextField.text)
-        case 1:
-            membersVC.search(with: searchTextField.text)
-        case 2:
-            hashtagVC.search(withText: searchTextField.text)
-        case 3:
             postsVC.fetchPosts(keyword: searchTextField.text ?? "")
+        case 1:
+            communitiesVC.search(with: searchTextField.text)
+        case 2:
+            membersVC.search(with: searchTextField.text)
+        case 3:
+            hashtagVC.search(withText: searchTextField.text)
         default:
             break
         }
