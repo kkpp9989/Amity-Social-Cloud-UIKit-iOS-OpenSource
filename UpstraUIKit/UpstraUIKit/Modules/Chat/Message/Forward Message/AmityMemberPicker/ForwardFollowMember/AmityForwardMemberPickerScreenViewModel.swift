@@ -135,6 +135,7 @@ extension AmityForwardMemberPickerScreenViewModel {
     
     func getUsers() {
         isSearch = false
+        AmityEventHandler.shared.showKTBLoading()
         fetchUserController?.newSelectedUsers = newSelectedUsers
         fetchUserController?.currentUsers = currentUsers
         fetchUserController?.getUser { (result) in

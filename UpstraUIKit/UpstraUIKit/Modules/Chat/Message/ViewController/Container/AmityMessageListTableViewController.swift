@@ -332,7 +332,11 @@ extension AmityMessageListTableViewController {
                 if screenViewModel.dataSource.getChannelType() == .broadcast {
                     return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
                 } else {
-                    return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                    if !(message.text?.isEmpty ?? false) {
+                        return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                    } else {
+                        return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                    }
                 }
             case .audio:
                 return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
