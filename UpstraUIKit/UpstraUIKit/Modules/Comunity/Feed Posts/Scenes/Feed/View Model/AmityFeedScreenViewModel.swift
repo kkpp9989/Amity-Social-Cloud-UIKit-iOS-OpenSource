@@ -11,6 +11,10 @@ import AmitySDK
 
 final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     
+    // MARK: - KTB FOR FEED HOME
+    /// for check userNotFound and screen empty
+    var isKTBFeed = false
+    
     // MARK: - Delegate
     weak var delegate: AmityFeedScreenViewModelDelegate?
     
@@ -221,7 +225,10 @@ extension AmityFeedScreenViewModel {
                         }
                     case .failure(let error):
                         strongSelf.debouncer.run {
-                            strongSelf.prepareComponents(posts: [])
+                            // ktb kk for feed home check userNotFound
+                            if let isKTBFeed = self?.isKTBFeed, !isKTBFeed{
+                                strongSelf.prepareComponents(posts: [])
+                            }
                         }
                         if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
                             switch strongSelf.feedType {

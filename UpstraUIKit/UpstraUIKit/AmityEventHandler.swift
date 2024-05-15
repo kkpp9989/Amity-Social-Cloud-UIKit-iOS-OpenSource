@@ -61,6 +61,8 @@ open class AmityEventHandler {
     /// A default behavior is navigating to `AmityCommunityProfilePageViewController`
     open func communityDidTap(from source: AmityViewController, communityId: String) {
         let viewController = AmityCommunityProfilePageViewController.make(withCommunityId: communityId)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -97,6 +99,8 @@ open class AmityEventHandler {
         guard !(source is AmityPostDetailViewController) else { return }
         
         let viewController = AmityPostDetailViewController.make(withPostId: postId, withPollAnswers: pollAnswers)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 

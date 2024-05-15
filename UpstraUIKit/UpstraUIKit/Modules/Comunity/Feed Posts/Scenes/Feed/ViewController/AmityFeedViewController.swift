@@ -18,6 +18,10 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var pageTitle: String?
     var pageIndex: Int = 0
     
+    // ktb kk return table height for set up feed in ktb home
+    var isKTBFeed = false
+    var rowSetLimitCount = 10
+    
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
@@ -109,6 +113,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         isVisible = false
         refreshControl.endRefreshing()
     }
+ 
     
     private func resetRefreshControlStateIfNeeded() {
         if !refreshControl.isHidden {
@@ -153,11 +158,14 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - Setup Views
     private func setupView() {
         setupTableView()
-        setupRefreshControl()
+        if(!isKTBFeed){
+            setupRefreshControl()
+        }
     }
     
+ 
     private func setupTableView() {
-        tableView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        tableView.backgroundColor = (isKTBFeed) ? .clear : AmityColorSet.secondary.blend(.shade4)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
@@ -167,6 +175,11 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         tableView.register(AmityEmptyStateHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: AmityEmptyStateHeaderFooterView.identifier)
         tableView.postDataSource = self
         tableView.postDelegate = self
+        
+        if(isKTBFeed){
+            tableView.isScrollEnabled = false
+        }
+ 
     }
     
     private func setupRefreshControl() {
@@ -280,6 +293,7 @@ extension AmityFeedViewController: UIScrollViewDelegate {
 extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
             (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: postTabHeaderView?.headerView)
@@ -309,6 +323,7 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
     }
     
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
         }
@@ -371,6 +386,10 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 // MARK: - AmityPostTableViewDataSource
 extension AmityFeedViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
+        if(isKTBFeed && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
+            return rowSetLimitCount
+        }
+        //self.rowSetLimitCount = screenViewModel.dataSource.numberOfPostComponents()
         return screenViewModel.dataSource.numberOfPostComponents()
     }
     
@@ -424,6 +443,9 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
                 headerCell.disableTopPadding()
                 return headerCell
             } else {
+                cell.contentView.layer.cornerRadius = 10
+                cell.contentView.layer.masksToBounds = false
+                cell.contentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
                 return cell
             }
         }
@@ -450,7 +472,12 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
-        dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        
+        if isKTBFeed {
+            dataDidUpdateHandler?(rowSetLimitCount)
+        }else{
+            dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        }
         refreshControl.endRefreshing()
     }
     
@@ -500,6 +527,12 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()
+            }
+        case .userNotFound :
+            if(isKTBFeed){
+                debouncer.run { [weak self] in
+                    self?.screenViewModel.action.fetchPosts()
+                }
             }
         default:
             break
@@ -830,4 +863,39 @@ extension AmityFeedViewController: IndicatorInfoProvider {
         return IndicatorInfo(title: pageTitle ?? "\(pageIndex)")
     }
     
+}
+
+
+// ktb kk custom feed for displa on ktb home
+extension AmityFeedViewController{
+
+    // ktb kk makeK for feed in ktb home
+    public static func makeKTBFeed(_ rows: Int = 10) -> AmityFeedViewController {
+        
+        let postController = AmityPostController()
+        let commentController = AmityCommentController()
+        let reaction = AmityReactionController()
+        let viewModel = AmityFeedScreenViewModel(withFeedType: .globalFeed,
+                                                      postController: postController,
+                                                      commentController: commentController,
+                                                      reactionController: reaction)
+        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.isKTBFeed = true
+        vc.rowSetLimitCount = rows + 1
+        viewModel.isKTBFeed = true
+        //vc.tableView.isScrollEnabled = false
+        return vc
+    }
+    
+    public func setKTBFeedHome(){
+        //
+    }
+    
+    public func getTable()->UITableView?{
+        if let _t = self.tableView {
+            return _t
+        }
+        return nil
+    }
 }

@@ -47,8 +47,17 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
     }
 
     private func setupView() {
+        
+        // ktb kk set conner radius
+        commentView.layer.cornerRadius = 10
+        commentView.layer.masksToBounds = true
+        commentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        separatorView.layer.cornerRadius = 10
+        separatorView.layer.masksToBounds = true
+        separatorView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
+        backgroundColor = .clear //AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
         separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         commentView.backgroundColor = AmityColorSet.backgroundColor
