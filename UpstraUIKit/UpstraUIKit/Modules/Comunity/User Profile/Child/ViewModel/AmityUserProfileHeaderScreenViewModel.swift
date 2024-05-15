@@ -46,7 +46,7 @@ extension AmityUserProfileHeaderScreenViewModel {
             // So, this is a workaround to execute code specifically for fresh data status.
             switch object.dataStatus {
             case .fresh:
-                if let user = object.object {
+                if let user = object.snapshot {
                     strongSelf.prepareUserData(user: user)
                 }
                 strongSelf.userToken?.invalidate()
@@ -54,7 +54,7 @@ extension AmityUserProfileHeaderScreenViewModel {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
                 strongSelf.userToken?.invalidate()
             case .local:
-                if let user = object.object {
+                if let user = object.snapshot {
                     strongSelf.prepareUserData(user: user)
                 }
             case .notExist:
@@ -73,7 +73,7 @@ extension AmityUserProfileHeaderScreenViewModel {
             followToken = userRepository.getMyFollowInfo().observe { [weak self] liveObject, error in
                 guard let strongSelf = self else { return }
                 
-                if let object = liveObject.object {
+                if let object = liveObject.snapshot {
                     strongSelf.handleFollowInfo(followInfo: AmityFollowInfo(followInfo: object))
                 } else {
                     strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
@@ -89,7 +89,7 @@ extension AmityUserProfileHeaderScreenViewModel {
             
             print("[followInfo] userId: \(strongSelf.userId)")
             
-            if let result = liveObject.object {
+            if let result = liveObject.snapshot {
                 print("[followInfo] result: \(result.model)")
                 strongSelf.handleFollowInfo(followInfo: AmityFollowInfo(followInfo: result))
             } else {
