@@ -614,8 +614,8 @@ extension AmityFeedScreenViewModel {
             switch result {
             case .success():
                 strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send success")
-            case .failure(_):
-                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send failed")
+            case .failure(let error):
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: error as! HandleError == HandleError.anotherError ? "Maximum limit has been reached" : "Pin send failed")
             }
         }
     }
@@ -628,7 +628,7 @@ extension AmityFeedScreenViewModel {
             case .success():
                 strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send success")
             case .failure(_):
-                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send failed")
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: "Unpin send failed")
             }
         }
     }

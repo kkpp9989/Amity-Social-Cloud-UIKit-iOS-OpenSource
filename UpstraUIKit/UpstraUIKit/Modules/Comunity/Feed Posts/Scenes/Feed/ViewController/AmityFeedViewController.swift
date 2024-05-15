@@ -593,6 +593,13 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         }
     }
 
+    func screenViewModelDidUpdatePinUnsuccess(_ viewModel: AmityFeedScreenViewModelType, message: String) {
+        debouncer.run { [weak self] in
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: message, in: window)
+            }
+        }
+    }
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate

@@ -35,7 +35,7 @@ extension AmityPhotoViewerController {
         handlePostOption()
     }
     
-    func downloadImageAndSaveToGallery(from urlString: String) {
+    func downloadImageAndSaveToGallery(from urlString: String, compressImage: Bool) {
         // Create a URL object from the string
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -71,8 +71,34 @@ extension AmityPhotoViewerController {
                 return
             }
             
+            var finalImage: UIImage
+            
+            if compressImage {
+                // Compress image
+                guard let compressedImageData = image.jpegData(compressionQuality: 0.7) else {
+                    DispatchQueue.main.async {
+                        print("Unable to compress image")
+                        AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                    }
+                    return
+                }
+                
+                // Convert compressed data back to UIImage
+                guard let compressedImage = UIImage(data: compressedImageData) else {
+                    DispatchQueue.main.async {
+                        print("Unable to create image from compressed data")
+                        AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                    }
+                    return
+                }
+                
+                finalImage = compressedImage
+            } else {
+                finalImage = image
+            }
+            
             // Save the image to the photo library
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
             
             // Switch to the main thread to update the UI
             DispatchQueue.main.async {
@@ -161,7 +187,7 @@ extension AmityPhotoViewerController {
             guard let strongSelf = self else { return }
             AmityEventHandler.shared.showKTBLoading()
             if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
-                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full")
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full", compressImage: false)
             } else {
                 if let imageToDownload = strongSelf.imageView.image {
                     UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)
@@ -173,7 +199,7 @@ extension AmityPhotoViewerController {
             guard let strongSelf = self else { return }
             AmityEventHandler.shared.showKTBLoading()
             if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
-                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=medium")
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full", compressImage: true)
             } else {
                 if let imageToDownload = strongSelf.imageView.image {
                     UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)

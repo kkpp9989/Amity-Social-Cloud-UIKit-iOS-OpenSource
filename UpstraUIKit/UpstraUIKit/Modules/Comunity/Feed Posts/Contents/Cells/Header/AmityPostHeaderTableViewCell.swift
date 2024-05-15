@@ -38,7 +38,9 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     public override func prepareForReuse() {
         super.prepareForReuse()
         avatarView.placeholder = AmityIconSet.defaultAvatar
-        topPaddingConstraint.constant = 16
+        topPaddingConstraint.constant = 8
+        isModeratorUserInOfficialCommunity = false
+        isOfficialCommunity = false
     }
     
     public func disableTopPadding() {

@@ -82,9 +82,9 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
         scrollUpButton.isHidden = true
         scrollUpButton.add(to: view, position: .bottomRight)
         scrollUpButton.image = AmityIconSet.iconScrollUp
-        scrollUpButton.actionHandler = { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.bottom.timelineVC?.setScrollUp()
+        scrollUpButton.actionHandler = { _ in
+            //  Use notification center for trigger overlayScrollView on parent view
+            NotificationCenter.default.post(name: Notification.Name("ScrollToTop"), object: nil)
         }
         
         bottom.timelineVC?.hideScrollUpButtonHandler = { [weak self] in

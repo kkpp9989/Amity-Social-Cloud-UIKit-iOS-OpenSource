@@ -63,9 +63,7 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
             settingsItems.append(.textContent(content: unfollowItem))
         }
         
-        let report = isReported ? AmityUserSettingsItem.unreport : AmityUserSettingsItem.report
-        let reportItem = AmitySettingsItem.TextContent(identifier: report.identifier, icon: report.icon, title: report.title, description: nil)
-        settingsItems.append(.textContent(content: reportItem))
+        
         
         // ktb kk custom add menu Invite Via QR And Link Friend
         // MARK: Invite Via QR And Link
@@ -73,6 +71,9 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
         
         settingsItems.append(.navigationContent(content: iteminviteViaQRAndLinkFriend))
         
+        let report = isReported ? AmityUserSettingsItem.unreport : AmityUserSettingsItem.report
+        let reportItem = AmitySettingsItem.TextContent(identifier: report.identifier, icon: report.icon, title: report.title, description: nil)
+        settingsItems.append(.textContent(content: reportItem))
         
         settingsItems.append(.separator)
         completion?(settingsItems)

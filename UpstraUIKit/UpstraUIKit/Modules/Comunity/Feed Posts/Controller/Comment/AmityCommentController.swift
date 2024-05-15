@@ -34,6 +34,10 @@ extension AmityCommentController {
         fetchCommentPostController.getCommentsForPostId(withReferenceId: postId, referenceType: referenceType, filterByParentId: isParent, parentId: parentId, orderBy: orderBy, includeDeleted: includeDeleted, completion: completion)
     }
     
+    func subscribeCommentsForPostId(withReferencePost post: AmityPost?, completion: ((Result<Bool, AmityError>) -> Void)?) {
+        fetchCommentPostController.subscribeCommentsForPostId(withReferencePost: post, completion: completion)
+    }
+    
     func loadMoreComments() {
         fetchCommentPostController.loadMoreComments()
     }

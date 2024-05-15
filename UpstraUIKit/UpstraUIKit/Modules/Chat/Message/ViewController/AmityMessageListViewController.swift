@@ -425,6 +425,7 @@ private extension AmityMessageListViewController {
     }
     
     func fileTap() {
+        AmityUIKitManager.getCustomLimitFileSizeSetting()
         filePicker?.present(from: UIView(), files: [])
     }
     
@@ -454,6 +455,7 @@ private extension AmityMessageListViewController {
 // MARK: - Setup File picker
 private extension AmityMessageListViewController {
     func setupFilePicker() {
+        AmityUIKitManager.getCustomLimitFileSizeSetting()
         filePicker = AmityFilePicker(presentationController: self, delegate: self)
     }
 }

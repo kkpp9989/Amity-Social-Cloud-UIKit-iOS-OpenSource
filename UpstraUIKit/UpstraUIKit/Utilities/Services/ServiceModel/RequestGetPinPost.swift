@@ -105,6 +105,8 @@ struct RequestGetPinPost {
             switch httpResponse.statusCode {
             case 200:
                 completion(.success(()))
+            case 422:
+                completion(.failure(HandleError.anotherError))
             case 400...499:
                 completion(.failure(HandleError.notFound))
             default:

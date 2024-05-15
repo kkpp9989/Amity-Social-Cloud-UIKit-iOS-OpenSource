@@ -322,6 +322,10 @@ public final class AmityUIKitManager {
         let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
         return externalURL
     }
+    
+    public static func getCustomLimitFileSizeSetting() {
+        AmityUIKitManagerInternal.shared.getCustomLimitFileSizeSetting()
+    }
 
 }
 
