@@ -529,8 +529,10 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
                 self?.tableView.reloadData()
             }
         case .userNotFound :
-            debouncer.run { [weak self] in
-                self?.screenViewModel.action.fetchPosts()
+            if(isKTBFeed){
+                debouncer.run { [weak self] in
+                    self?.screenViewModel.action.fetchPosts()
+                }
             }
         default:
             break
