@@ -31,6 +31,7 @@ public final class AmityMessageModel {
     public let parentId: String?
     public var parentMessageObjc: AmityMessage?
     public var readCount: Int?
+    public var isFlaggedByMe: Bool = false
 	
     /**
      * The post appearance settings
@@ -69,10 +70,19 @@ public final class AmityMessageModel {
             self.parentMessageObjc = result
             self.messageToken?.invalidate()
         }
+        self.getFlaggedData()
     }
     
     public var text: String? {
         return data?["text"] as? String
+    }
+    
+    public var imageCaption: String? {
+        if let caption = data?["caption"] as? String, caption != "" {
+            return caption
+        } else {
+            return nil
+        }
     }
 }
 
@@ -141,6 +151,17 @@ extension AmityMessageModel {
                 } else {
                     completion(nil)
                 }
+            }
+        }
+    }
+    
+    private func getFlaggedData() {
+        Task { @MainActor in
+            do {
+                let isFlaggedByMe = try await messageRepository.isMessageFlaggedByMe(withId: self.messageId)
+                self.isFlaggedByMe = isFlaggedByMe
+            } catch {
+                self.isFlaggedByMe = false
             }
         }
     }

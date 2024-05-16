@@ -78,7 +78,10 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         
         var text = data.messageObjc.data?.text ?? "No message"
         text = text.replacingOccurrences(of: "\n", with: " ") // Replace line break with space character
-        let highlightText = highlightKeyword(in: text, keyword: keyword, highlightColor: AmityColorSet.primary)
+        
+        let context = extractContextOfWord(in: text, keyword: keyword) ?? ""
+        
+        let highlightText = highlightKeyword(in: context, keyword: keyword, highlightColor: AmityColorSet.primary)
         previewMessageLabel.attributedText = highlightText
         
         switch data.channelObjc.channelType {
@@ -179,6 +182,18 @@ class AmityMessageSearchTableViewCell: UITableViewCell, Nibbable {
         }
         
         return attributedText
+    }
+    
+    func extractContextOfWord(in text: String, keyword: String) -> String? {
+        // Check if the text is empty
+        guard !text.isEmpty else { return text }
+        
+        guard let range = text.range(of: keyword) else { return text }
+        
+        let startIndex = range.lowerBound
+        let endIndex = text.endIndex
+        
+        return String(text[startIndex..<endIndex])
     }
     
     func getOtherUser(channel: AmityChannelModel, completion: @escaping (_ user: AmityUser?) -> Void) {

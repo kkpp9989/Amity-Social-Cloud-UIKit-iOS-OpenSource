@@ -18,28 +18,39 @@ extension AmityForwardMemberPickerViewController: IndicatorInfoProvider {
 class AmityForwardMemberPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String, _ keyword: String) -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var label: UILabel!
+    @IBOutlet private var emptyView: UIView!
+    @IBOutlet private var emptyLabel: UILabel!
     
     // MARK: - Properties
     private var screenViewModel: AmityForwardMemberPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
-    private var lastSearchKeyword: String = ""
+    var lastSearchKeyword: String = ""
     
     var pageTitle: String?
+    
+    var isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupView()
+        setupEmptyView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getUsers()
+        
+        // Get data
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword -> Get all user
+            screenViewModel.action.getUsers()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -55,8 +66,12 @@ class AmityForwardMemberPickerViewController: AmityViewController {
         return vc
     }
     
-    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+    }
+    
+    public func fetchData() {
+        screenViewModel.action.clearData()
     }
 }
 
@@ -83,6 +98,11 @@ private extension AmityForwardMemberPickerViewController {
         setupSearchBar()
         setupTableView()
         setupCollectionView()
+    }
+    
+    func setupEmptyView() {
+        emptyLabel.font = AmityFontSet.bodyBold
+        emptyLabel.text = "No user found"
     }
     
     func setupNavigationBar() {
@@ -133,6 +153,7 @@ private extension AmityForwardMemberPickerViewController {
         searchBar.returnKeyType = .done
         (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
         ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
+        searchBar.text = lastSearchKeyword
     }
     
     func setupTableView() {
@@ -152,12 +173,43 @@ private extension AmityForwardMemberPickerViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
     }
+    
+    func setEmptyView() {
+        if screenViewModel.isSearching() {
+            // Hide emptyView if there are search results, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfSearchUsers() > 0
+        } else {
+            // Hide emptyView if there are any users, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfAllUsers() > 0
+        }
+    }
 }
 
 extension AmityForwardMemberPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         lastSearchKeyword = searchText
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
+        
+        if lastSearchKeyword.isEmpty {
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all user -> Get all channel
+                screenViewModel.action.getUsers()
+            } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
+        }
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
+        }
+        
+        lastSearchKeyword = searchText
+        
+        if !isReady { return }
         screenViewModel.action.searchUser(with: searchText)
+        isReady = false
     }
 }
 
@@ -177,6 +229,11 @@ extension AmityForwardMemberPickerViewController: UITableViewDelegate {
             headerView.text = screenViewModel.dataSource.alphabetOfHeader(in: section)
         }
         return headerView
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // Return a custom height for sections with empty string values
+        return 0
     }
 }
 
@@ -248,11 +305,15 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString)
+        AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        isReady = true
+        AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelCanDone(enable: Bool) {
@@ -264,16 +325,20 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
     }
     
     func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
         tableView.reloadData()
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
         // Set title if need
         self.title = title
+        
+        // Set keyword if need
+        lastSearchKeyword = keyword
+        searchBar.text = keyword
         
         // Update collection view
         collectionView.isHidden = isEmpty
@@ -286,15 +351,30 @@ extension AmityForwardMemberPickerViewController: AmityForwardMemberPickerScreen
         tableView.reloadData()
 
         // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)        
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
         switch state {
         case .loading:
-            tableView.showLoadingIndicator()
+            AmityEventHandler.shared.showKTBLoading()
+//            tableView.showLoadingIndicator()
         case .initial, .loaded:
-            tableView.tableFooterView = UIView()
+            AmityEventHandler.shared.hideKTBLoading()
+//            tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search user by latest search keyword
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all user -> Get all user (create viewcontroller with searching)
+                screenViewModel.action.getUsers()
+            } else { // Case : Case : Don't have keyword but have current all user data  -> Reload tableview for show current all user
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
         }
     }
 }

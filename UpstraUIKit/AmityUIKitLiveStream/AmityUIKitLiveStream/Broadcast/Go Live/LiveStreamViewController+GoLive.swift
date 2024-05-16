@@ -115,6 +115,7 @@ extension LiveStreamBroadcastViewController {
                 return
             }
             createdPost = post
+            streamId = streamObject.streamId
             broadcaster?.startPublish(existingStreamId: streamObject.streamId)
             startLiveDurationTimer()
             switchToUIState(.streaming)

@@ -112,25 +112,12 @@ final class AmityChatSettingsViewController: AmityViewController {
                         })],
                         from: self)
                 }
-            case "delete": // (1:1 Chat, Group Chat [Moderator role])
-                
-                // Disable for 
-                /*
-                let alertTitle = AmityLocalizedStringSet.ChatSettings.deleteChatTitle.localizedString
-
-                if channel.channelType == .conversation {
-                    description = AmityLocalizedStringSet.ChatSettings.deleteConversationChatMessage.localizedString
-                } else {
-                    description = AmityLocalizedStringSet.ChatSettings.deleteGroupChatMessage.localizedString
-                }
-                */
-                
+            case "delete": // (1:1 Chat)
                 var description: String
 
                 let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
-                description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+                description = AmityLocalizedStringSet.ChatSettings.leaveChatConversationChatMessage.localizedString
 
-                
                 AmityAlertController.present(
                     title: alertTitle,
                     message: description,
@@ -159,6 +146,11 @@ final class AmityChatSettingsViewController: AmityViewController {
                 // ktb kk goto share qr from Community setting
                 //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
                 AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
+                break
+            case "inviteViaQRAndLink1_1":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat1_1, id: channel.getOtherUserId(), title: channel.displayName, desc: channel.displayName)
                 break
             default:
                 break
@@ -190,6 +182,11 @@ final class AmityChatSettingsViewController: AmityViewController {
                 // ktb kk goto share qr from Community setting
                 //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
                 AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
+                break
+            case "inviteViaQRAndLink1_1":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat1_1, id: channel.getOtherUserId(), title: channel.displayName, desc: channel.displayName)
                 break
             default:
                 break

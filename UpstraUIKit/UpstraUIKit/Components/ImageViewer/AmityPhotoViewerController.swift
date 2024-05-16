@@ -32,10 +32,83 @@ extension AmityPhotoViewerController {
     }
     
     @objc func downloadButtonTapped(_ sender: UIButton) {
-        if let imageToDownload = imageView.image {
-            AmityEventHandler.shared.showKTBLoading()
-            UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        handlePostOption()
+    }
+    
+    func downloadImageAndSaveToGallery(from urlString: String, compressImage: Bool) {
+        // Create a URL object from the string
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL")
+            return
         }
+        
+        // Create a data task to download the image
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            // Check for errors
+            if let error = error {
+                DispatchQueue.main.async {
+                    print("Error downloading image: \(error.localizedDescription)")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                }
+                return
+            }
+            
+            // Ensure there is data
+            guard let imageData = data else {
+                DispatchQueue.main.async {
+                    print("No data received")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                }
+                return
+            }
+            
+            // Convert data to UIImage
+            guard let image = UIImage(data: imageData) else {
+                DispatchQueue.main.async {
+                    print("Unable to create image from data")
+                    AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                }
+                return
+            }
+            
+            var finalImage: UIImage
+            
+            if compressImage {
+                // Compress image
+                guard let compressedImageData = image.jpegData(compressionQuality: 0.7) else {
+                    DispatchQueue.main.async {
+                        print("Unable to compress image")
+                        AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                    }
+                    return
+                }
+                
+                // Convert compressed data back to UIImage
+                guard let compressedImage = UIImage(data: compressedImageData) else {
+                    DispatchQueue.main.async {
+                        print("Unable to create image from compressed data")
+                        AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
+                    }
+                    return
+                }
+                
+                finalImage = compressedImage
+            } else {
+                finalImage = image
+            }
+            
+            // Save the image to the photo library
+            UIImageWriteToSavedPhotosAlbum(finalImage, nil, nil, nil)
+            
+            // Switch to the main thread to update the UI
+            DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
+                
+                // Notify user about successful save
+                print("Image saved to gallery successfully!")
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
+            }
+        }.resume()
     }
     
     @objc func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: UnsafeRawPointer) {
@@ -103,6 +176,42 @@ extension AmityPhotoViewerController {
         }
     }
 
+    private func handlePostOption() {
+        let bottomSheet = BottomSheetViewController()
+        let contentView = ItemOptionView<TextItemOption>()
+        bottomSheet.isTitleHidden = true
+        bottomSheet.sheetContentView = contentView
+        bottomSheet.modalPresentationStyle = .overFullScreen
+        
+        let fullOption = TextItemOption(title: AmityLocalizedStringSet.General.fullImage.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+            AmityEventHandler.shared.showKTBLoading()
+            if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full", compressImage: false)
+            } else {
+                if let imageToDownload = strongSelf.imageView.image {
+                    UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            }
+        }
+        
+        let compressOption = TextItemOption(title: AmityLocalizedStringSet.General.compressImage.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+            AmityEventHandler.shared.showKTBLoading()
+            if let imageURLString = strongSelf.imageURL, !imageURLString.isEmpty {
+                strongSelf.downloadImageAndSaveToGallery(from: imageURLString + "?size=full", compressImage: true)
+            } else {
+                if let imageToDownload = strongSelf.imageView.image {
+                    UIImageWriteToSavedPhotosAlbum(imageToDownload, self, #selector(strongSelf.image(_:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            }
+        }
+        
+        var items = [fullOption, compressOption]
+        contentView.configure(items: items, selectedItem: nil)
+        
+        self.present(bottomSheet, animated: false, completion: nil)
+    }
 }
 
 
@@ -254,11 +363,13 @@ public class AmityPhotoViewerController: UIViewController {
     private var _shouldHideStatusBar = false
     private var _shouldUseStatusBarStyle = false
     
+    private var imageURL: String? = ""
+    
     /// Transition animator
     /// Customizable if you wish to provide your own transitions.
     open lazy var animator: AmityPhotoViewerBaseAnimator = AmityPhotoAnimator()
     
-    public init(referencedView: UIView?, image: UIImage?) {
+    public init(referencedView: UIView?, image: UIImage?, imageURL: String?) {
         let flowLayout = AmityPhotoCollectionViewFlowLayout()
         flowLayout.scrollDirection = scrollDirection
         flowLayout.sectionInset = UIEdgeInsets.zero
@@ -289,10 +400,12 @@ public class AmityPhotoViewerController: UIViewController {
         modalPresentationStyle = .overFullScreen
         modalPresentationCapturesStatusBarAppearance = true
         collectionView.contentInsetAdjustmentBehavior = .never
+        
+        self.imageURL = imageURL
     }
     
     public convenience init(referencedView: UIView?, media: AmityMedia) {
-        self.init(referencedView: referencedView, image: nil)
+        self.init(referencedView: referencedView, image: nil, imageURL: nil)
         // Normal size
         media.loadImage(to: imageView)
         // Full size

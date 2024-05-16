@@ -10,7 +10,7 @@ import UIKit
 import AmitySDK
 
 public enum AmityChannelViewType {
-    case recent, group
+    case recent, group, broadcast
 }
 
 extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
@@ -22,28 +22,43 @@ extension AmityForwatdChannelPickerViewController: IndicatorInfoProvider {
 class AmityForwatdChannelPickerViewController: AmityViewController {
     
     // MARK: - Callback
-    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String) -> Void)?
-    
+    public var selectUsersHandler: ((_ newSelectedUsers: [AmitySelectMemberModel], _ storeUsers: [AmitySelectMemberModel],_ title: String, _ keyword: String) -> Void)?
+
     // MARK: - IBOutlet Properties
     @IBOutlet private var searchBar: UISearchBar!
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var label: UILabel!
+    @IBOutlet private var emptyView: UIView!
+    @IBOutlet private var emptyLabel: UILabel!
     
     // MARK: - Properties
     private var screenViewModel: AmityForwardChannelPickerScreenViewModelType!
     private var doneButton: UIBarButtonItem?
     
+    // MARK: - Optional Properties (Keep data from previous viewcontroller for send next viewcontroller)
+    private var broadcastMessage: AmityBroadcastMessageCreatorModel?
+    
     var pageTitle: String?
+    var lastSearchKeyword: String = ""
     private let debouncer = Debouncer(delay: 0.3)
+    
+    private var isReady: Bool = true
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         
         setupView()
+        setupEmptyView()
         
         screenViewModel.delegate = self
-        screenViewModel.action.getChannels()
+        
+        // Get data
+        if !lastSearchKeyword.isEmpty { // Case : Have keyword -> Search channel
+            screenViewModel.action.searchUser(with: lastSearchKeyword)
+        } else { // Case : Don't have keyword -> Get all channel
+            screenViewModel.action.getChannels()
+        }
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -59,16 +74,52 @@ class AmityForwatdChannelPickerViewController: AmityViewController {
         return vc
     }
     
-    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
-        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab)
+    public static func make(pageTitle: String, users: [AmitySelectMemberModel] = [], type: AmityChannelViewType, broadcastMessage: AmityBroadcastMessageCreatorModel) -> AmityForwatdChannelPickerViewController {
+        let viewModel: AmityForwardChannelPickerScreenViewModelType = AmityForwardChannelPickerScreenViewModel(type: type)
+        viewModel.setCurrentUsers(users: users)
+        let vc = AmityForwatdChannelPickerViewController(nibName: AmityForwatdChannelPickerViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.pageTitle = pageTitle
+        vc.broadcastMessage = broadcastMessage
+        return vc
+    }
+    
+    public func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
+        screenViewModel.setNewSelectedUsers(users: users, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+    }
+    
+    public func fetchData() {
+        screenViewModel.action.clearData()
+    }
+    
+    func setupEmptyView() {
+        emptyLabel.font = AmityFontSet.bodyBold
+        emptyLabel.text = "No channel found"
+    }
+    
+    func setEmptyView() {
+        if screenViewModel.isSearching() {
+            // Hide emptyView if there are search results, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfSearchUsers() > 0
+        } else {
+            // Hide emptyView if there are any users, show otherwise.
+            emptyView.isHidden = screenViewModel.dataSource.numberOfAllUsers() > 0
+        }
     }
 }
 
 private extension AmityForwatdChannelPickerViewController {
     @objc func doneTap() {
-        dismiss(animated: true) { [weak self] in
-            guard let strongSelf = self else { return }
-//            strongSelf.selectUsersHandler?(strongSelf.screenViewModel.dataSource.getStoreUsers())
+        if isLastViewController { // Case : Is last viewcontroller -> Dismiss viewcontroller
+            dismiss(animated: true)
+        } else {
+            if screenViewModel.dataSource.targetType == .broadcast, let broadcastMessage = broadcastMessage { // Case : Isn't last viewcontroller and target type is broadcast -> Push preview select channel viewcontroller
+                let previewSelectedViewController = AmityPreviewSelectedFromPickerViewController.make(pageTitle: "Broadcast to", selectedData: screenViewModel.dataSource.getStoreUsers(), broadcastMessage: broadcastMessage)
+                previewSelectedViewController.isLastViewController = true
+                navigationController?.pushViewController(previewSelectedViewController, animated: true)
+            } else { // Case : Isn't last viewcontroller but other target type -> Dismiss viewcontroller
+                dismiss(animated: true)
+            }
         }
     }
     
@@ -90,7 +141,6 @@ private extension AmityForwatdChannelPickerViewController {
     }
     
     func setupNavigationBar() {
-        navigationBarType = .custom
         view.backgroundColor = AmityColorSet.backgroundColor
         
         let customView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
@@ -104,13 +154,17 @@ private extension AmityForwatdChannelPickerViewController {
         navigationItem.titleView = customView
         let numberOfSelectedUseres = screenViewModel.dataSource.numberOfSelectedUsers()
         if numberOfSelectedUseres == 0 {
-            title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            switch screenViewModel.dataSource.targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
         } else {
-            
             title = String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(numberOfSelectedUseres)")
         }
         
-        doneButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.done.localizedString, style: .plain, target: self, action: #selector(doneTap))
+        doneButton = UIBarButtonItem(title: isLastViewController ? AmityLocalizedStringSet.General.done.localizedString : AmityLocalizedStringSet.General.next.localizedString, style: .plain, target: self, action: #selector(doneTap))
         doneButton?.tintColor = AmityColorSet.primary
         doneButton?.isEnabled = !(numberOfSelectedUseres == 0)
         // [Improvement] Add set font style to label of done button
@@ -118,14 +172,21 @@ private extension AmityForwatdChannelPickerViewController {
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
         doneButton?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
         
-        let cancelButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .plain, target: self, action: #selector(cancelTap))
-        cancelButton.tintColor = AmityColorSet.base
-        // [Improvement] Add set font style to label of cancel button
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
-        cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        if self.navigationController == nil {
+            navigationBarType = .custom
+            
+            let cancelButton = UIBarButtonItem(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .plain, target: self, action: #selector(cancelTap))
+            cancelButton.tintColor = AmityColorSet.base
+            // [Improvement] Add set font style to label of cancel button
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+            cancelButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+            
+            navigationItem.leftBarButtonItem = cancelButton
+        } else {
+            navigationBarType = .push
+        }
         
-        navigationItem.leftBarButtonItem = cancelButton
         navigationItem.rightBarButtonItem = doneButton
     }
     
@@ -137,6 +198,7 @@ private extension AmityForwatdChannelPickerViewController {
         searchBar.returnKeyType = .done
         (searchBar.value(forKey: "searchField") as? UITextField)?.textColor = AmityColorSet.base
         ((searchBar.value(forKey: "searchField") as? UITextField)?.leftView as? UIImageView)?.tintColor = AmityColorSet.base.blend(.shade2)
+        searchBar.text = lastSearchKeyword
     }
     
     func setupTableView() {
@@ -160,9 +222,27 @@ private extension AmityForwatdChannelPickerViewController {
 
 extension AmityForwatdChannelPickerViewController: UISearchBarDelegate {
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        debouncer.run { [weak self] in
-            self?.screenViewModel.action.searchUser(with: searchText)
+        lastSearchKeyword = searchText
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), AmityLocalizedStringSet.selectMemberListTitle.localizedString, lastSearchKeyword)
+        
+        if lastSearchKeyword.isEmpty {
+            if screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                screenViewModel.action.getChannels()
+            } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                screenViewModel.action.updateSearchingStatus(isSearch: false)
+                tableView.reloadData()
+            }
         }
+    }
+    
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else {
+            return
+        }
+        
+        if !isReady { return }
+        screenViewModel.action.searchUser(with: searchText)
+        isReady = false
     }
 }
 
@@ -186,11 +266,7 @@ extension AmityForwatdChannelPickerViewController: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         // Return a custom height for sections with empty string values
-        if screenViewModel.dataSource.alphabetOfHeader(in: section).isEmpty {
-            return 0
-        } else {
-            return 28
-        }
+        return 0
     }
 }
 
@@ -262,10 +338,15 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
     
     func screenViewModelDidFetchUser() {
         tableView.reloadData()
+        AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelDidSearchUser() {
         tableView.reloadData()
+        isReady = true
+        AmityEventHandler.shared.hideKTBLoading()
+        setEmptyView()
     }
     
     func screenViewModelCanDone(enable: Bool) {
@@ -277,16 +358,20 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         collectionView.isHidden = isEmpty
         tableView.reloadData()
         collectionView.reloadData()
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
     }
     
     func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool) {
         tableView.reloadData()
     }
     
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool) {
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String) {
         // Set title if need
         self.title = title
+        
+        // Set keyword if need
+        lastSearchKeyword = keyword
+        searchBar.text = keyword
         
         // Update collection view
         collectionView.isHidden = isEmpty
@@ -299,15 +384,34 @@ extension AmityForwatdChannelPickerViewController: AmityForwardChannelPickerScre
         tableView.reloadData()
 
         // Send new selected user & latest store user (new selected user + current user) to handler of parent view controller
-        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title)
+        selectUsersHandler?(screenViewModel.dataSource.getNewSelectedUsers(), screenViewModel.dataSource.getStoreUsers(), title, lastSearchKeyword)
     }
     
     func screenViewModelLoadingState(for state: AmityLoadingState) {
         switch state {
         case .loading:
-            tableView.showLoadingIndicator()
+            AmityEventHandler.shared.showKTBLoading()
+//            tableView.showLoadingIndicator()
         case .initial, .loaded:
-            tableView.tableFooterView = UIView()
+            AmityEventHandler.shared.hideKTBLoading()
+//            tableView.tableFooterView = UIView()
+        }
+    }
+    
+    func screenViewModelClearData() {
+        debouncer.run { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            if !strongSelf.lastSearchKeyword.isEmpty { // Case : Have keyword -> Search channel by latest search keyword
+                strongSelf.screenViewModel.action.searchUser(with: strongSelf.lastSearchKeyword)
+            } else { // Case : Don't have keyword 
+                if strongSelf.screenViewModel.dataSource.numberOfAllUsers() == 0 { // Case : Don't have keyword and didn't have all channel -> Get all channel
+                    strongSelf.screenViewModel.action.getChannels()
+                } else { // Case : Don't have keyword but have current all channel data -> Reload tableview for show current all channel
+                    strongSelf.screenViewModel.action.updateSearchingStatus(isSearch: false)
+                    strongSelf.tableView.reloadData()
+                }
+            }
         }
     }
 }

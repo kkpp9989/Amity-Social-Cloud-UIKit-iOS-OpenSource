@@ -13,6 +13,8 @@ public enum AmityMessageTypes: CaseIterable {
     case textOutgoing
     case imageIncoming
     case imageOutgoing
+    case imageWithCaptionIncoming
+    case imageWithCaptionOutgoing
     case audioIncoming
     case audioOutgoing
     case videoIncoming
@@ -29,6 +31,8 @@ public enum AmityMessageTypes: CaseIterable {
         case .textOutgoing: return "textOutgoing"
         case .imageIncoming: return "imageIncoming"
         case .imageOutgoing: return "imageOutgoing"
+        case .imageWithCaptionIncoming: return "imageWithCaptionIncoming"
+        case .imageWithCaptionOutgoing: return "imageWithCaptionOutgoing"
         case .audioIncoming: return "audioIncoming"
         case .audioOutgoing: return "audioOutgoing"
         case .videoIncoming: return "videoIncoming"
@@ -51,6 +55,10 @@ public enum AmityMessageTypes: CaseIterable {
             return UINib(nibName: "AmityMessageImageIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .imageOutgoing:
             return UINib(nibName: "AmityMessageImageOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .imageWithCaptionIncoming:
+            return UINib(nibName: "AmityMessageImageWithCaptionIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .imageWithCaptionOutgoing:
+            return UINib(nibName: "AmityMessageImageWithCaptionOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .audioIncoming:
             return UINib(nibName: "AmityMessageAudioIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .audioOutgoing:
@@ -80,6 +88,10 @@ public enum AmityMessageTypes: CaseIterable {
             return AmityMessageImageIncomingTableViewCell.self
         case .imageOutgoing:
             return AmityMessageImageOutgoingTableViewCell.self
+        case .imageWithCaptionIncoming:
+            return AmityMessageImageWithCaptionIncomingTableViewCell.self
+        case .imageWithCaptionOutgoing:
+            return AmityMessageImageWithCaptionOutgoingTableViewCell.self
         case .audioIncoming, .audioOutgoing:
             return AmityMessageAudioTableViewCell.self
         case .videoIncoming:

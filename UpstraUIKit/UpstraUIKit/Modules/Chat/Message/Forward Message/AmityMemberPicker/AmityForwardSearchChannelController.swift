@@ -59,7 +59,7 @@ final class AmityForwardSearchChannelController {
     
     // Search and filter from search channel API
     func searchGroupType(with text: String, newSelectedUsers: [AmitySelectMemberModel], currentUsers: [AmitySelectMemberModel], _ completion: @escaping (Result<[AmitySelectMemberModel], AmitySearchUserControllerError>) -> Void) {
-        if currentKeyword != text {
+        if currentKeyword != text || !isLoadingMore {
             paginateToken = ""
             channels = []
             currentKeyword = text
@@ -75,7 +75,7 @@ final class AmityForwardSearchChannelController {
         request.keyword = currentKeyword
         request.isMemberOnly = true
         request.paginateToken = paginateToken
-        request.requestSearchChannels { [weak self] result in
+        request.requestSearchChannels(types: [targetType]) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let dataResponse):
@@ -83,6 +83,7 @@ final class AmityForwardSearchChannelController {
                 if let paginateToken = dataResponse.paging?.next, !paginateToken.isEmpty {
                     strongSelf.paginateToken = paginateToken
                 } else {
+                    strongSelf.paginateToken = ""
                     strongSelf.isEndingResult = true
                 }
                 // Get data from response
@@ -90,33 +91,79 @@ final class AmityForwardSearchChannelController {
                 let dummyChannelIdList = resultChannels.compactMap({ $0.channelId }) // Use for sort response
 //                print("[Search][Channel][Group] Amount latest result search : \(resultChannels.count) | paginateToken: \(strongSelf.paginateToken)")
                 let endIndex = resultChannels.count
+                // Dictionary to keep track of whether leave has been called for a specific channelId
+                var channelIdLeaveMap: [String: Bool] = [:]
                 // Process data
                 for index in 0..<endIndex {
                     strongSelf.dispatchGroup.enter()
-                    
-                    // Get each channel data and create model
-                    let object: Channel = resultChannels[index]
-//                    print("[Search][Channel][Group] Group name: \(object.displayName ?? "") | id: \(object.channelId ?? "")")
-                    // Get image URL
-                    AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: object.avatarFileId ?? "") { resultImageURL in
-                        var model: AmitySelectMemberModel
-                        switch resultImageURL {
-                        case .success(let imageURL):
-                            model = AmitySelectMemberModel(object: object, avatarURL: imageURL)
-                        case .failure(_):
-                            model = AmitySelectMemberModel(object: object, avatarURL: nil)
+                    channelIdLeaveMap[String(index)] = false
+                    // Filter channels
+                    if strongSelf.targetType == .broadcast, let channelId = resultChannels[index].channelId { // Case : Broadcast type
+                        // Get channels that have broadcasting permission only
+                        let object = resultChannels[index]
+                        DispatchQueue.main.async {
+                            let userController = AmityChatUserController(channelId: channelId)
+                            userController.getEditGroupChannelPermission { isHavePermission in
+                                if isHavePermission {
+                                    AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: object.avatarFileId ?? "") { resultImageURL in
+                                        var model: AmitySelectMemberModel
+                                        switch resultImageURL {
+                                        case .success(let imageURL):
+                                            model = AmitySelectMemberModel(object: object, avatarURL: imageURL)
+                                        case .failure(_):
+                                            model = AmitySelectMemberModel(object: object, avatarURL: nil)
+                                        }
+                                        
+                                        // Set selected of channel
+                                        model.isSelected = newSelectedUsers.contains { $0.userId == object.channelId } || currentUsers.contains { $0.userId == object.channelId }
+                                        // Add channel to list with condition
+                                        if let isDeleted = object.isDeleted, !isDeleted,
+                                           !strongSelf.channels.contains(where: { $0.userId == model.userId }) // [Workaround] Filter duplicate data
+                                        {
+                                            strongSelf.channels.append(model)
+                                        }
+                                        
+                                        if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                            channelIdLeaveMap[String(index)] = true
+                                            strongSelf.dispatchGroup.leave()
+                                        }
+                                    }
+                                } else {
+                                    if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                        channelIdLeaveMap[String(index)] = true
+                                        strongSelf.dispatchGroup.leave()
+                                    }
+                                }
+                            }
                         }
-                        
-                        // Set selected of channel
-                        model.isSelected = newSelectedUsers.contains { $0.userId == object.channelId } || currentUsers.contains { $0.userId == object.channelId }
-                        // Add channel to list with condition
-                        if let isDeleted = object.isDeleted, !isDeleted,
-                           !strongSelf.channels.contains(where: { $0.userId == model.userId }) // [Workaround] Filter duplicate data
-                        {
-                            strongSelf.channels.append(model)
+                    } else { // Case : Other type
+                        // Get each channel data and create model
+                        let object: Channel = resultChannels[index]
+    //                    print("[Search][Channel][Group] Group name: \(object.displayName ?? "") | id: \(object.channelId ?? "")")
+                        // Get image URL
+                        AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: object.avatarFileId ?? "") { resultImageURL in
+                            var model: AmitySelectMemberModel
+                            switch resultImageURL {
+                            case .success(let imageURL):
+                                model = AmitySelectMemberModel(object: object, avatarURL: imageURL)
+                            case .failure(_):
+                                model = AmitySelectMemberModel(object: object, avatarURL: nil)
+                            }
+                            
+                            // Set selected of channel
+                            model.isSelected = newSelectedUsers.contains { $0.userId == object.channelId } || currentUsers.contains { $0.userId == object.channelId }
+                            // Add channel to list with condition
+                            if let isDeleted = object.isDeleted, !isDeleted,
+                               !strongSelf.channels.contains(where: { $0.userId == model.userId }) // [Workaround] Filter duplicate data
+                            {
+                                strongSelf.channels.append(model)
+                            }
+                            
+                            if let leaveCalled = channelIdLeaveMap[String(index)], !leaveCalled {
+                                channelIdLeaveMap[String(index)] = true
+                                strongSelf.dispatchGroup.leave()
+                            }
                         }
-                        
-                        strongSelf.dispatchGroup.leave()
                     }
                 }
                 
@@ -138,7 +185,7 @@ final class AmityForwardSearchChannelController {
             if isEndingResult || channels.isEmpty { return }
             
             /* Set static value to true for prepare data in loading more case */
-            isLoadingMore = targetType == .group ? true : false
+            isLoadingMore = targetType == .group || targetType == .broadcast ? true : false
         }
         
         /* Get data next section if need */
@@ -164,7 +211,6 @@ final class AmityForwardSearchChannelController {
 
         return sortedArray
     }
-
 }
 
 

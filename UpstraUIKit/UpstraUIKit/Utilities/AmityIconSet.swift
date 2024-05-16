@@ -43,6 +43,7 @@ public struct AmityIconSet {
     public static var iconOption = UIImage(named: "icon_option", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconOptionNavigationBar = UIImage(named: "icon_option_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil) // [Custom for ONE Krungthai] Add custom icon theme
     public static var iconCreatePost = UIImage(named: "icon_create_post", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconScrollUp = UIImage(named: "icon_scroll_up", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeCheckmark = UIImage(named: "icon_badge_checkmark", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeModerator = UIImage(named: "icon_badge_moderator", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconReply = UIImage(named: "icon_reply", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -63,6 +64,7 @@ public struct AmityIconSet {
     public static var iconFileFill = UIImage(named: "icon_file_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconLocationFill = UIImage(named: "icon_location_fill", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMagicWand = UIImage(named: "icon_magic_wand", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconCloseWhite = UIImage(named: "icon_close_white", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCloseWithBackground = UIImage(named: "icon_close_with_background", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconNext = UIImage(named: "icon_next", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconArrowRight = UIImage(named: "icon_arrow_right", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -81,6 +83,8 @@ public struct AmityIconSet {
     public static var iconContactProfile = UIImage(named: "icon_contact_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconMessageProfile = UIImage(named: "icon_message_profile", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconCreateGroupChat = UIImage(named: "icon_create_group_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconBroadCastNavigationBar = UIImage(named: "icon_broadcast_navigation", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var iconContent = UIImage(named: "icon_content", in: AmityUIKitManager.bundle, compatibleWith: nil)
 
     public static var iconBadgeDNALike = UIImage(named: "icon_badge_dna_like", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconBadgeDNALove = UIImage(named: "icon_badge_dna_love", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -186,6 +190,7 @@ public struct AmityIconSet {
         public static var iconStatusWorkFromHome = UIImage(named: "icon_status_work_from_home", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconOfflineIndicator = UIImage(named: "icon_offline_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconOnlineIndicator = UIImage(named: "icon_online_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconMessageUnsent = UIImage(named: "icon_unsend_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
         
         // Broadcast
         public static var iconBroadcast = UIImage(named: "icon_broadcast", in: AmityUIKitManager.bundle, compatibleWith: nil)

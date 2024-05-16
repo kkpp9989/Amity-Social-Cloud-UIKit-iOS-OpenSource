@@ -191,6 +191,9 @@ extension AmityPostGalleryTableViewCell: AmityPhotoViewerControllerDataSource {
 }
 
 extension AmityPostGalleryTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        performAction(action: .tapOnPostIdLink(postId: postId))
+    }
     
     public func willExpandLabel(_ label: AmityExpandableLabel) {
         performAction(action: .willExpandExpandableLabel(label: label))

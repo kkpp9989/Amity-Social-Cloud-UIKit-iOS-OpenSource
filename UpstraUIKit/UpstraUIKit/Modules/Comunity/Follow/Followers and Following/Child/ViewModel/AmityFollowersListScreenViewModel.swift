@@ -143,7 +143,14 @@ private extension AmityFollowersListScreenViewModel {
             var followers: [AmityFollowRelationship] = []
             for i in 0..<collection.count() {
                 guard let follow = collection.object(at: i) else { continue }
-                followers.append(follow)
+                if !(follow.targetUser?.isDeleted ?? false) {
+                    if !(follow.targetUser?.isGlobalBanned ?? false) {
+                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                        if follow.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                            followers.append(follow)
+                        }
+                    }
+                }
             }
             
             followersList = followers

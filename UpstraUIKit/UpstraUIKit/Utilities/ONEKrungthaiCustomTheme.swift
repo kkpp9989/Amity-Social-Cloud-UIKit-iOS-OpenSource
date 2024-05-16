@@ -89,6 +89,24 @@ class ONEKrungthaiCustomTheme {
         }
     }
     
+//    private func getGradientImageForBackgroundApp() -> UIImage? {
+//        let gradientLayer = CAGradientLayer()
+//        // Customize the colors as per your preference
+//        gradientLayer.colors = [
+//            UIColor(red: CGFloat(179.0/255.0), green: CGFloat(234.0/255.0), blue: CGFloat(255.0/255.0), alpha: 0.3).cgColor, // #B2EAFF with alpha 30%
+//            UIColor(red: CGFloat(128.0/255.0), green: CGFloat(220.0/255.0), blue: CGFloat(255.0/255.0), alpha: 0.7).cgColor] // #80DCFF with alpha 70%
+//        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+//        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+//        gradientLayer.frame = viewController?.view.bounds ?? CGRect.zero
+//        gradientLayer.locations = [0.1, 1.0]
+//
+//        // Adjust the frame to extend beyond the navigation bar by 50 pixels
+//        gradientLayer.frame = CGRect(x: 0, y: -fullScreenHeight, width: fullScreenWidth, height: fullScreenHeight)
+//
+//        // Create image
+//        return gradientLayer.createImage()
+//    }
+    
     private func getGradientImageForBackgroundApp() -> UIImage? {
         let gradientLayer = CAGradientLayer()
         // Customize the colors as per your preference
@@ -97,10 +115,12 @@ class ONEKrungthaiCustomTheme {
             UIColor(red: CGFloat(128.0/255.0), green: CGFloat(220.0/255.0), blue: CGFloat(255.0/255.0), alpha: 0.7).cgColor] // #80DCFF with alpha 70%
         gradientLayer.startPoint = CGPoint(x: 0, y: 0)
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
-        gradientLayer.frame = viewController?.view.bounds ?? CGRect.zero
         gradientLayer.locations = [0.1, 1.0]
 
         // Adjust the frame to extend beyond the navigation bar by 50 pixels
+        let fullScreenBounds = viewController?.view.bounds ?? CGRect.zero
+        let fullScreenWidth = fullScreenBounds.width
+        let fullScreenHeight = fullScreenBounds.height
         gradientLayer.frame = CGRect(x: 0, y: -fullScreenHeight, width: fullScreenWidth, height: fullScreenHeight)
         
         // Create image

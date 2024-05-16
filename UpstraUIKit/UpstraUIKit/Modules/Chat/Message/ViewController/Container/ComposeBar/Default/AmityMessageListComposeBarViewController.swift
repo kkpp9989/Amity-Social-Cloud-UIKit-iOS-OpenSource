@@ -27,16 +27,22 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet private var showDefaultKeyboardButton: UIButton!
     @IBOutlet var recordButton: AmityRecordingButton!
     @IBOutlet private var trailingStackView: UIStackView!
-    @IBOutlet var separatorView: UIView! // [Custom for ONE Krungthai] Add separator view for set color
-    
-    // [Custom for ONE Krungthai] Add input menu view, forward menu view and forward button for handle in forward message function
+    @IBOutlet var separatorView: UIView!
     @IBOutlet var inputMenuView: UIStackView!
+    
+    // Forward menu view
     @IBOutlet var forwardMenuView: UIStackView!
     @IBOutlet private var cancelForwardButton: UIButton!
     @IBOutlet private var forwardButton: UIButton!
     
+    // Join menu view
     @IBOutlet var joinMenuView: UIStackView!
     @IBOutlet private var joinButton: UIButton!
+    
+    // Open editor view
+    @IBOutlet var openEditorMenuView: UIStackView!
+    @IBOutlet var textTypeActionButton: UIButton!
+    @IBOutlet private var otherTypeActionButton: UIButton!
     
     // MARK: - Properties
 	weak var delegate: AmityMessageListComposeBarDelegate?
@@ -44,6 +50,7 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     let composeBarView = AmityKeyboardComposeBarViewController.make()
     var amountForwardMessage: Int = 0
     var isReplying: Bool = false
+    var isGetChannelSuccess: Bool = false
     
     // MARK: - Settings
     private var setting = AmityMessageListViewController.Settings()
@@ -105,6 +112,26 @@ private extension AmityMessageListComposeBarViewController {
         screenViewModel.action.toggleShowDefaultKeyboardAndAudioKeyboard(sender)
     }
     
+    @IBAction func textTypeActionButtonTap() {
+        let channelType = screenViewModel.dataSource.getChannelType()
+        switch channelType {
+        case .broadcast:
+            screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .content)
+        default:
+            break
+        }
+    }
+    
+    @IBAction func otherTypeActionButtonTap() {
+        let channelType = screenViewModel.dataSource.getChannelType()
+        switch channelType {
+        case .broadcast:
+            screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .file)
+        default:
+            break
+        }
+    }
+    
     // MARK: - Audio Recording
     @IBAction func touchDown(sender: AmityRecordingButton) {
         AmityAudioRecorder.shared.checkPermission { [weak self] isAllowed, error in
@@ -129,6 +156,7 @@ private extension AmityMessageListComposeBarViewController {
         setupRecordButton()
         setupForwardMenuView()
         setupJoinChannelButton()
+        setupOpenEditorMenuView()
     }
     
     func setupTextComposeBarView() {
@@ -152,6 +180,28 @@ private extension AmityMessageListComposeBarViewController {
         
         /* [Custom for ONE Krungthai] Set separator color refer to ONE KTB figma */
         separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+    }
+    
+    func setupOpenEditorMenuView() {
+        /** Setup view **/
+        openEditorMenuView.isHidden = false
+        
+        /** Setup text type action button **/
+        textTypeActionButton.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        textTypeActionButton.layer.borderWidth = 1
+        textTypeActionButton.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
+        textTypeActionButton.layer.cornerRadius = textTypeActionButton.frame.height / 2
+        textTypeActionButton.contentHorizontalAlignment = .left
+        textTypeActionButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.textBroadcastMessagePlaceholder.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.secondary.blend(.shade3),
+            .font: AmityFontSet.body
+        ]), for: .normal)
+        
+        /** Setup other type action button **/
+        otherTypeActionButton.setTitle(nil, for: .normal)
+        otherTypeActionButton.setImage(AmityIconSet.iconAttach, for: .normal)
+        otherTypeActionButton.tintColor = AmityColorSet.base.blend(.shade1)
+        otherTypeActionButton.isHidden = false
     }
     
     func setupForwardMenuView() {
@@ -302,9 +352,11 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
     func showForwardMenuButton(show: Bool) {
         if show {
             inputMenuView.isHidden = true
+            openEditorMenuView.isHidden = true
             forwardMenuView.isHidden = false
         } else {
-            inputMenuView.isHidden = false
+            inputMenuView.isHidden = screenViewModel.dataSource.getChannelType() == .broadcast
+            openEditorMenuView.isHidden = !(screenViewModel.dataSource.getChannelType() == .broadcast)
             forwardMenuView.isHidden = true
         }
     }
@@ -343,6 +395,22 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         }
     }
     
+    func updateViewDidGetChannel(channel: AmityChannelModel) {
+        if !isGetChannelSuccess {
+            let channelType = screenViewModel.dataSource.getChannelType()
+            switch channelType {
+            case .broadcast:
+                inputMenuView.isHidden = true
+                openEditorMenuView.isHidden = false
+            default:
+                inputMenuView.isHidden = false
+                openEditorMenuView.isHidden = true
+            }
+            
+            isGetChannelSuccess = true
+        }
+    }
+    
     func showRecordButton(show: Bool) {
         if show {
             trailingStackView.isHidden = true
@@ -371,9 +439,11 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         if show {
             inputMenuView.isHidden = true
             forwardMenuView.isHidden = true
+            inputMenuView.alpha = 0
             joinMenuView.isHidden = false
         } else {
             inputMenuView.isHidden = false
+            inputMenuView.alpha = 1
             forwardMenuView.isHidden = true
             joinMenuView.isHidden = true
         }

@@ -30,7 +30,9 @@ class AmityForwardChannelPickerScreenViewModel: AmityForwardChannelPickerScreenV
     private var currentUsers: [AmitySelectMemberModel] = []
     private var currentKeyword: String = ""
     private var isSearch: Bool = false
-    private var targetType: AmityChannelViewType
+    private var isLoadMore: Bool = false
+    
+    var targetType: AmityChannelViewType
     
     init(type: AmityChannelViewType) {
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
@@ -51,6 +53,14 @@ extension AmityForwardChannelPickerScreenViewModel {
         return isSearch ? searchUsers.count : users[section].value.count
     }
     
+    func numberOfAllUsers() -> Int {
+        return users.count
+    }
+    
+    func numberOfSearchUsers() -> Int {
+        return searchUsers.count
+    }
+    
     func numberOfSelectedUsers() -> Int {
         return newSelectedUsers.count
     }
@@ -62,10 +72,18 @@ extension AmityForwardChannelPickerScreenViewModel {
     func user(at indexPath: IndexPath) -> AmitySelectMemberModel? {
         if isSearch {
             guard !searchUsers.isEmpty else { return nil }
-            return searchUsers[indexPath.row]
+            return indexPath.row < searchUsers.count ? searchUsers[indexPath.row] : nil
         } else {
             guard !users.isEmpty else { return nil }
-            return users[indexPath.section].value[indexPath.row]
+            if indexPath.section < users.count {
+                if indexPath.row < users[indexPath.section].value.count {
+                    return users[indexPath.section].value[indexPath.row]
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
         }
     }
     
@@ -82,7 +100,7 @@ extension AmityForwardChannelPickerScreenViewModel {
     }
     
     func getStoreUsers() -> [AmitySelectMemberModel] {
-        return newSelectedUsers + currentUsers
+        return currentUsers + newSelectedUsers
     }
     
     func getNewSelectedUsers() -> [AmitySelectMemberModel] {
@@ -93,27 +111,49 @@ extension AmityForwardChannelPickerScreenViewModel {
 // MARK: - Action
 extension AmityForwardChannelPickerScreenViewModel {
     
+    func updateSearchingStatus(isSearch: Bool) {
+        self.isSearch = isSearch
+    }
+    
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
         currentUsers = users
         
         if currentUsers.count == 0 {
-            delegate?.screenViewModelDidSetCurrentUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSetCurrentUsers(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSetCurrentUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
     }
     
-    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool) {
+    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
         newSelectedUsers = users
         
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSetNewSelectedUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: title, isEmpty: true, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
         } else {
-            delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab)
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
         }
     }
     
     func getChannels() {
+        isSearch = false
+        AmityEventHandler.shared.showKTBLoading()
         fetchChannelController?.newSelectedUsers = newSelectedUsers
         fetchChannelController?.currentUsers = currentUsers
         fetchChannelController?.getChannel(isMustToChangeSomeChannelToUser: true) { (result) in
@@ -150,19 +190,25 @@ extension AmityForwardChannelPickerScreenViewModel {
         searchUserController?.delegate = self
         isSearch = true
         currentKeyword = text
-        if targetType == .group {
+        AmityEventHandler.shared.showKTBLoading()
+        if targetType == .group || targetType == .broadcast {
             searchUserController?.searchGroupType(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] result in
+                guard let strongSelf = self else { return }
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let users):
-                        self?.searchUsers = users
-                        self?.delegate?.screenViewModelDidSearchUser()
+                        if strongSelf.isLoadMore {
+                            strongSelf.searchUsers += users
+                        } else {
+                            strongSelf.searchUsers = users
+                        }
+                        strongSelf.delegate?.screenViewModelDidSearchUser()
                     case .failure(let error):
                         switch error {
                         case .textEmpty:
-                            self?.isSearch = false
-                            self?.updateSelectedUserInfo()
-                            self?.delegate?.screenViewModelDidSearchUser()
+                            strongSelf.isSearch = false
+                            strongSelf.updateSelectedUserInfo()
+                            strongSelf.delegate?.screenViewModelDidSearchUser()
                         case .unknown:
                             break
                         }
@@ -194,7 +240,15 @@ extension AmityForwardChannelPickerScreenViewModel {
     func selectUser(at indexPath: IndexPath) {
         selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath, isSearch: isSearch)
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSelectUser(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
@@ -203,31 +257,36 @@ extension AmityForwardChannelPickerScreenViewModel {
     func deselectUser(at indexPath: IndexPath) {
         selectUserContrller?.deselect(searchUsers: &searchUsers, users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath)
         if newSelectedUsers.count == 0 {
-            delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+            let title: String
+            switch targetType {
+            case .broadcast, .group:
+                title = "Select group"
+            default:
+                title = AmityLocalizedStringSet.selectMemberListTitle.localizedString
+            }
+            
+            delegate?.screenViewModelDidSelectUser(title: title, isEmpty: true)
         } else {
             delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
     }
     
     func updateSelectedUserInfo() {
-        if isSearch {
-            // Edit selected of search user
-            for (index, data) in searchUsers.enumerated() {
-                if newSelectedUsers.contains(where: { $0.userId == data.userId } ) || currentUsers.contains(where: { $0.userId == data.userId } ) {
-                    searchUsers[index].isSelected = true
-                } else {
-                    searchUsers[index].isSelected = false
-                }
+        // Edit selected of search user
+        for (index, data) in searchUsers.enumerated() {
+            if newSelectedUsers.contains(where: { $0.userId == data.userId } ) || currentUsers.contains(where: { $0.userId == data.userId } ) {
+                searchUsers[index].isSelected = true
+            } else {
+                searchUsers[index].isSelected = false
             }
-        } else {
-            // Edit selected of user
-            for (indexGroup, (key, group)) in users.enumerated() {
-                for (indexUser, user) in group.enumerated() {
-                    if newSelectedUsers.contains(where: { $0.userId == user.userId } ) || currentUsers.contains(where: { $0.userId == user.userId } ) {
-                        users[indexGroup].value[indexUser].isSelected = true
-                    } else {
-                        users[indexGroup].value[indexUser].isSelected = false
-                    }
+        }
+        // Edit selected of user
+        for (indexGroup, (key, group)) in users.enumerated() {
+            for (indexUser, user) in group.enumerated() {
+                if newSelectedUsers.contains(where: { $0.userId == user.userId } ) || currentUsers.contains(where: { $0.userId == user.userId } ) {
+                    users[indexGroup].value[indexUser].isSelected = true
+                } else {
+                    users[indexGroup].value[indexUser].isSelected = false
                 }
             }
         }
@@ -269,12 +328,18 @@ extension AmityForwardChannelPickerScreenViewModel {
             }
         }
     }
+    
+    func clearData() {
+        searchUsers.removeAll()
+        delegate?.screenViewModelClearData()
+    }
 }
 
 extension AmityForwardChannelPickerScreenViewModel: AmityForwardSearchChannelControllerDelegate {
     func willLoadMore(isLoadingMore: Bool) {
         if isLoadingMore && targetType == .group {
             searchUser(with: currentKeyword)
+            isLoadMore = isLoadingMore
         }
     }
 }

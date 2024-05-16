@@ -60,6 +60,8 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
     }
     
     override func display(message: AmityMessageModel) {
+        super.display(message: message)
+        
         if !message.isDeleted {
             let indexPath = self.indexPath
             // Get file
@@ -75,7 +77,14 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
                 }
             }
         }
-        super.display(message: message)
+        
+        // Set boardcast message bubble style if channel type is boardcast
+        if channelType == .broadcast {
+            containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+            // Change text color
+            fileName.textColor = AmityColorSet.baseInverse
+            fileSize.textColor = AmityColorSet.baseSecondaryInverse
+        }
     }
 }
 

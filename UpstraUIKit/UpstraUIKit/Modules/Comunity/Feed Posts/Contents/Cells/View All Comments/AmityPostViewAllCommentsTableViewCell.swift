@@ -15,6 +15,10 @@ public class AmityPostViewAllCommentsTableViewCell: UITableViewCell, Nibbable, A
     public override func awakeFromNib() {
         super.awakeFromNib()
         
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
+        layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
         backgroundColor = AmityColorSet.backgroundColor
         titleLabel.text = AmityLocalizedStringSet.viewAllCommentsTitle.localizedString

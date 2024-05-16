@@ -19,6 +19,7 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
     private let childrenController: AmityCommentChildrenController
     private let pollRepository: AmityPollRepository
     private let reactionRepository: AmityReactionRepository
+    private let messageRepository: AmityMessageRepository
 
     private var postId: String
     private(set) var post: AmityPostModel?
@@ -52,6 +53,7 @@ final class OneKTBActivityDetailScreenViewModel: OneKTBActivityDetailScreenViewM
         self.childrenController = childrenController
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
         self.isComment = isComment
     }
     
@@ -374,7 +376,7 @@ extension OneKTBActivityDetailScreenViewModel {
     // MARK: Commend
     
     func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (comment, error) in
+        commentController.createComment(withReferenceId: postId, referenceType: .post, parentId: parentId, text: text, metadata: metadata, mentionees: mentionees, medias: []) { [weak self] (comment, error) in
             guard let strongSelf = self else { return }
             
             // Need to check SDK implementation.
@@ -519,4 +521,65 @@ extension OneKTBActivityDetailScreenViewModel {
         }
     }
     
+}
+
+// MARK: - Share to Chat
+extension OneKTBActivityDetailScreenViewModel {
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel) {
+        var channelIdList: [String] = []
+        AmityEventHandler.shared.showKTBLoading()
+        for user in selectChannel {
+            dispatchGroup.enter()
+            switch user.type {
+            case .user:
+                let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+                let builder = AmityConversationChannelBuilder()
+                builder.setUserId(user.userId)
+                builder.setDisplayName(user.displayName ?? "")
+                builder.setMetadata(["user_id_member": userIds])
+                
+                let channelRepo = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+                AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [self] channelObject, _ in
+                    if let channel = channelObject {
+                        channelIdList.append(channel.channelId)
+                    }
+                    
+                    dispatchGroup.leave()
+                }
+            case .channel:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            case .community:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.forward(withChannelIdList: channelIdList, post: post)
+        }
+    }
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel) {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        for channelId in channelIdList {
+            dispatchGroup.enter()
+            let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: externalURL)
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                guard let stringSelf = self else { return }
+                stringSelf.dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.MessageList.alertSharedMessageSuccessfully.localizedString))
+        }
+    }
 }

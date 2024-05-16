@@ -11,5 +11,4 @@ import Foundation
 // MARK: - AmityPinPostDataModel
 struct AmityPinPostModel: Codable {
     let pinposts: [String]
-    let nextPage: JSONNull?
 }

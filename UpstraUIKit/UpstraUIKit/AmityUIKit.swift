@@ -80,12 +80,8 @@ public final class AmityUIKitManager {
         authToken: String? = nil,
         sessionHandler: SessionHandler,
         completion: AmityRequestCompletion? = nil) {
-            
-        unregisterDevice()
-            DispatchQueue.main.async {
-                AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
-            }
-    }
+            AmityUIKitManagerInternal.shared.registerDevice(userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler, completion: completion)
+        }
     
     /// Unregisters current user. This removes all data related to current user & terminates conenction with server. This is analogous to "logout" process.
     /// Once this method is called, the only way to re-establish connection would be to call `registerDevice` method again.
@@ -96,6 +92,9 @@ public final class AmityUIKitManager {
         AmityUIKitManagerInternal.shared.unregisterDevice()
     }
     
+    public static func clearCache(isSkipResendCache: Bool = false) {
+        AmityUIKitManagerInternal.shared.clearCache(isSkipResendCache: isSkipResendCache)
+    }
     
     /// Registers this device for receiving apple push notification
     /// - Parameter deviceToken: Correct apple push notificatoin token received from the app.
@@ -106,7 +105,14 @@ public final class AmityUIKitManager {
     /// Unregisters this device for receiving push notification related to AmitySDK.
     public static func unregisterDevicePushNotification(completion: AmityRequestCompletion? = nil) {
         let currentUserId = AmityUIKitManagerInternal.shared.currentUserId
-        AmityUIKitManagerInternal.shared.unregisterDevicePushNotification(for: currentUserId, completion: completion)
+        Task { @MainActor in
+            do {
+                let success = try await AmityUIKitManagerInternal.shared.unregisterDevicePushNotification(for: currentUserId)
+                completion?(success, nil)
+            } catch let error {
+                completion?(false, error)
+            }
+        }
     }
     
     public static func setEnvironment(_ env: [String: Any]) {
@@ -153,6 +159,10 @@ public final class AmityUIKitManager {
     
     public static var avatarURL: String {
         return AmityUIKitManagerInternal.shared.avatarURL
+    }
+    
+    public static var isHaveCreateBroadcastPermission: Bool {
+        return AmityUIKitManagerInternal.shared.isHaveCreateBroadcastPermission
     }
     
     // [Custom for ONE Krungthai] Add env property for get env for use some function
@@ -256,9 +266,8 @@ public final class AmityUIKitManager {
     public static func stopHeartbeat() {
         client.presence.stopHeartbeat()
     }
-
-    public static func startUnreadCountSync() {
-        client.startUnreadSync()
+    public static func enableUnreadCount() {
+        client.enableUnreadCount()
     }
     
     public static func createChannel(_ source: UIViewController,userId: String) {
@@ -313,6 +322,10 @@ public final class AmityUIKitManager {
         let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
         return externalURL
     }
+    
+    public static func getCustomLimitFileSizeSetting() {
+        AmityUIKitManagerInternal.shared.getCustomLimitFileSizeSetting()
+    }
 
 }
 
@@ -332,7 +345,15 @@ final class AmityUIKitManagerInternal: NSObject {
     private(set) var channelPresenceRepo: AmityChannelPresenceRepository?
 
     var currentUserId: String { return client.currentUserId ?? "" }
-    var displayName: String { return client.user?.snapshot?.displayName ?? "" }
+    var displayName: String {
+        if let displayName = client.user?.snapshot?.displayName {
+            cacheDisplayName = displayName
+            return displayName
+        } else {
+            return cacheDisplayName
+        }
+    }
+    private var cacheDisplayName: String = ""
     var avatarURL: String { return client.user?.snapshot?.getAvatarInfo()?.fileURL ?? "" }
     var userStatus: AmityUserStatus.StatusType = .AVAILABLE
     var currentStatus: String { return client.user?.snapshot?.metadata?["user_presence"] as? String ?? "available" }
@@ -342,13 +363,17 @@ final class AmityUIKitManagerInternal: NSObject {
     
     private var userCollectionToken: AmityNotificationToken?
     private var channelCollectionToken: AmityNotificationToken?
+    private var broadcastChannelCollectionToken: AmityNotificationToken?
     private var disposeBag: Set<AnyCancellable> = []
     private var postIdCannotGetSnapshotList: [String] = []
     
     var totalUnreadCount: Int = 0
+    var isSyncingAllChannelPresence: Bool = false
     var onlinePresences: [AmityChannelPresence] = []
     var onlinePresencesDataHash: Int = -1
     var limitFileSize: Double? // .mb
+    var isHaveCreateBroadcastPermission: Bool = false
+    private let dispatchGroup = DispatchGroup()
 
     var client: AmityClient {
         guard let client = _client else {
@@ -398,27 +423,63 @@ final class AmityUIKitManagerInternal: NSObject {
     
     func isInitialClient() -> Bool { _client != nil }
     
+//    func registerDevice(_ userId: String,
+//                        displayName: String?,
+//                        authToken: String?,
+//                        sessionHandler: SessionHandler,
+//                        completion: AmityRequestCompletion?) {
+//
+//        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: client.login, parameters: (userId: userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler)) { [weak self] success, error in
+//            if let error = error {
+//                completion?(false, error)
+//                return
+//            }
+////            self?.revokeDeviceTokens()
+//            self?.didUpdateClient()
+//
+//            // [Custom for ONE Krungthai] Add register user token function for request custom API
+//            self?.registerUserToken(userId: userId, authToken: authToken ?? "")
+//
+//            // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+//            self?.disableLivestreamUserLevelNotification()
+//
+//            self?.clearCache(isSkipResendCache: true)
+//
+//            self?.cacheDisplayName = ""
+//
+//            self?.getCreateBroadcastMessagePermission()
+//
+//            completion?(true, error)
+//        }
+//    }
+    
     func registerDevice(_ userId: String,
                         displayName: String?,
                         authToken: String?,
                         sessionHandler: SessionHandler,
                         completion: AmityRequestCompletion?) {
-        
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: client.login, parameters: (userId: userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler)) { [weak self] success, error in
-            if let error = error {
+        Task { @MainActor in
+            do {
+                try await client.login(userId: userId, displayName: displayName, authToken: authToken, sessionHandler: sessionHandler)
+                await revokeDeviceTokens()
+                didUpdateClient()
+
+                // [Custom for ONE Krungthai] Add register user token function for request custom API
+                registerUserToken(userId: userId, authToken: authToken ?? "")
+                
+                // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
+                disableLivestreamUserLevelNotification()
+                
+                clearCache(isSkipResendCache: true)
+                
+                cacheDisplayName = ""
+                
+                getCreateBroadcastMessagePermission()
+                
+                completion?(true, nil)
+            } catch let error {
                 completion?(false, error)
-                return
             }
-            self?.revokeDeviceTokens()
-            self?.didUpdateClient()
-            
-            // [Custom for ONE Krungthai] Add register user token function for request custom API
-            self?.registerUserToken(userId: userId, authToken: authToken ?? "")
-            
-            // [Custom for ONE Krungthai] [Temp] Disable livestream user level notification
-            self?.disableLivestreamUserLevelNotification()
-            
-            completion?(true, error)
         }
     }
     
@@ -427,27 +488,44 @@ final class AmityUIKitManagerInternal: NSObject {
         self._client?.logout()
     }
     
+    func clearCache(isSkipResendCache: Bool = false) {
+        AmityFileCache.shared.clearCache(isSkipResendCache: isSkipResendCache)
+    }
+    
     func registerDeviceForPushNotification(_ deviceToken: String, completion: AmityRequestCompletion? = nil) {
         // It's possible that `deviceToken` can be changed while user is logging in.
         // To prevent user from registering notification twice, we will revoke the current one before register new one.
-        revokeDeviceTokens()
-        
-        _client?.registerDeviceForPushNotification(withDeviceToken: deviceToken) { [weak self] success, error in
-            if success, let currentUserId = self?._client?.currentUserId {
-                // if register device successfully, binds device token to user id.
-                self?.notificationTokenMap[currentUserId] = deviceToken
+        Task { @MainActor in
+            do {
+                await revokeDeviceTokens()
+                
+                let success = try await client.registerPushNotification(withDeviceToken: deviceToken)
+                
+                if success, let currentUserId = _client?.currentUserId {
+                    // if register device successfully, binds device token to user id.
+                    notificationTokenMap[currentUserId] = deviceToken
+                }
+                completion?(success, nil)
+            } catch let error {
+                completion?(false, error)
             }
-            completion?(success, error)
+
         }
     }
     
-    func unregisterDevicePushNotification(for userId: String, completion: AmityRequestCompletion? = nil) {
-        client.unregisterDeviceForPushNotification(forUserId: userId) { [weak self] success, error in
-            if success, let currentUserId = self?._client?.currentUserId {
+    @MainActor
+    func unregisterDevicePushNotification(for userId: String) async throws -> Bool {
+        
+        do {
+            let success = try await client.unregisterPushNotification(forUserId: userId)
+            if success, let currentUserId = self._client?.currentUserId {
                 // if unregister device successfully, remove device token belonging to the user id.
-                self?.notificationTokenMap[currentUserId] = nil
+                self.notificationTokenMap[currentUserId] = nil
             }
-            completion?(success, error)
+            return success
+
+        } catch {
+            return false
         }
     }
     
@@ -460,7 +538,7 @@ final class AmityUIKitManagerInternal: NSObject {
                 
                 // [Custom for ONE Krungthai] Get custom limit file size setting after register user token
                 getCustomLimitFileSizeSetting()
-            } catch let error {
+            } catch let _ {
             }
         }
     }
@@ -517,6 +595,34 @@ final class AmityUIKitManagerInternal: NSObject {
         }
     }
     
+    func getCreateBroadcastMessagePermission() {
+        // Set default value back to false before get new one
+        isHaveCreateBroadcastPermission = false
+        
+        // Query broadcast channels
+        guard let channelRepo = channelRepository, let client = _client else { return }
+        let query = AmityChannelQuery()
+        query.filter = .userIsMember
+        query.includeDeleted = false
+        query.types = [AmityChannelQueryType.broadcast]
+        let channelsCollection = channelRepo.getChannels(with: query)
+        
+        // Check each group that have channel-moderator role
+        broadcastChannelCollectionToken = channelsCollection.observe { [weak self] (collection, change, error) in
+            guard let strongSelf = self else { return }
+            
+            // Get permission each channel
+            let channelModels = collection.allObjects().map( { AmityChannelModel(object: $0) } )
+            for channel in channelModels {
+                client.hasPermission(.editChannel, forChannel: channel.channelId) { isHavePermission in
+                    if isHavePermission {
+                        self?.isHaveCreateBroadcastPermission = true
+                    }
+                }
+            }
+        }
+    }
+    
     public func getUser(_ source: UIViewController, userId: String) {
         AmityEventHandler.shared.showKTBLoading()
         guard let userRepo = userRepository else { return }
@@ -556,10 +662,17 @@ final class AmityUIKitManagerInternal: NSObject {
     
     // MARK: - Helpers
     
-    private func revokeDeviceTokens() {
-        for (userId, _) in notificationTokenMap {
-            unregisterDevicePushNotification(for: userId, completion: nil)
-        }
+    @MainActor
+    private func revokeDeviceTokens() async {
+        
+        await withThrowingTaskGroup(of: Bool.self, body: { group in
+            for (userId, _) in notificationTokenMap {
+                group.addTask {
+                    try await self.unregisterDevicePushNotification(for: userId)
+                }
+            }
+        })
+            
     }
     
     func didUpdateClient() {
@@ -572,37 +685,51 @@ final class AmityUIKitManagerInternal: NSObject {
     }
     
     func getSyncAllChannelPresence() {
-        channelPresenceRepo?.getSyncingChannelPresence().sink { completion in
-            // Handle completion
-            switch completion {
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            default:
-                print("[Amity SDK] getSyncingChannelPresence finish")
-            }
-        } receiveValue: { presences in
-            /// Channel presences where any other member is online
-            let onlinePresences = presences.filter { $0.isAnyMemberOnline }
-            
-            /// Check different of new and current onlinePresences data for prevent refresh channel presence too frequently
-            if self.onlinePresencesDataHash != onlinePresences.hashValue {
-                self.onlinePresencesDataHash = onlinePresences.hashValue
-                self.onlinePresences = onlinePresences
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
-            }
-        }.store(in: &disposeBag)
+        if !isSyncingAllChannelPresence {
+            isSyncingAllChannelPresence = true
+            channelPresenceRepo?.getSyncingChannelPresence().sink { completion in
+                // Handle completion
+                switch completion {
+                case .failure(let error):
+//                    print("-------------------> [Status] Start getSyncAllChannelPresence fail with error: \(error.localizedDescription)")
+                    print("\(error.localizedDescription)")
+                default:
+//                    print("-------------------> [Status] Start getSyncAllChannelPresence success")
+                    print("[Amity SDK] getSyncingChannelPresence finish")
+                }
+            } receiveValue: { presences in
+                /// Channel presences where any other member is online
+                let onlinePresences = presences.filter { $0.isAnyMemberOnline }
+//                print("-------------------> [Status] Receive new onlinePresences")
+//                for user in onlinePresences {
+//                    print("[Status] \(user.channelId) is online")
+//                }
+                /// Check different of new and current onlinePresences data for prevent refresh channel presence too frequently
+                if self.onlinePresencesDataHash != onlinePresences.hashValue {
+//                    print("[Status] have any update onlinePresences -> update online presences")
+                    self.onlinePresencesDataHash = onlinePresences.hashValue
+                    self.onlinePresences = onlinePresences
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshChannelPresence"), object: nil)
+                }
+//                print("-------------------- [Status] -------------------------->")
+            }.store(in: &disposeBag)
+        }
     }
     
     func syncChannelPresence(_ channelId: String) {
         channelPresenceRepo?.syncChannelPresence(id: channelId)
+//        print("-------------------> [Status] Start syncChannelPresence id \(channelId) success")
     }
     
     func unsyncChannelPresence(_ channelId: String) {
         channelPresenceRepo?.unsyncChannelPresence(id: channelId)
+//        print("-------------------> [Status] Start unsyncChannelPresence id \(channelId) success")
     }
     
     func unsyncAllChannelPresence() {
+        isSyncingAllChannelPresence = false
         channelPresenceRepo?.unsyncAllChannelPresence()
+//        print("-------------------> [Status] Start unsyncAllChannelPresence success")
     }
 }
 

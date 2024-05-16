@@ -16,6 +16,7 @@ struct RequestSearchingPosts {
     let apiKey = AmityUIKitManagerInternal.shared.apiKey
     var keyword: String = ""
     var from: Int = 0
+    var size: Int = 20
 
     func request(_ completion: @escaping(Result<AmitySearchPostsModel,Error>) -> ()) {
         let domainURL = "https://beta.amity.services"
@@ -25,7 +26,7 @@ struct RequestSearchingPosts {
                                "Authorization": "Bearer \(currentUserToken)"]]
         requestMeta.method = .post
         requestMeta.encoding = .jsonEncoding
-        requestMeta.params = ["query": ["hashtagList": keyword, "targetType": "public", "publicSearch": true], "from": from, "size": 20, "userId": userId, "apiKey": apiKey]
+        requestMeta.params = ["query": ["hashtagList": keyword, "targetType": "all"], "from": from, "size": size, "userId": userId, "apiKey": apiKey]
         NetworkManager().request(requestMeta) { (data, response, error) in
             guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
                 completion(.failure(HandleError.notFound))
@@ -47,4 +48,33 @@ struct RequestSearchingPosts {
         
     }
     
+    func requestPost(_ completion: @escaping(Result<AmitySearchPostsModel,Error>) -> ()) {
+        let domainURL = "https://beta.amity.services"
+        requestMeta.urlRequest = "\(domainURL)/search/v2/posts"
+        requestMeta.header = [["Content-Type": "application/json",
+                               "Accept": "application/json",
+                               "Authorization": "Bearer \(currentUserToken)"]]
+        requestMeta.method = .post
+        requestMeta.encoding = .jsonEncoding
+        requestMeta.params = ["query": ["text": keyword, "targetType": "public"], "from": from, "size": size, "userId": userId, "apiKey": apiKey]
+        NetworkManager().request(requestMeta) { (data, response, error) in
+            guard let data = data, let httpResponse = response as? HTTPURLResponse, error == nil else {
+                completion(.failure(HandleError.notFound))
+                return
+            }
+            switch httpResponse.statusCode {
+            case 200:
+                guard let dataResponse = try? JSONDecoder().decode(AmitySearchPostsModel.self, from: data) else {
+                    completion(.failure(HandleError.JsonDecodeError))
+                    return
+                }
+                completion(.success(dataResponse))
+            case 400...499:
+                completion(.failure(HandleError.notFound))
+            default:
+                completion(.failure(HandleError.connectionError))
+            }
+        }
+        
+    }
 }

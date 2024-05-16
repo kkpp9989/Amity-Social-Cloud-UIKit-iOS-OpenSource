@@ -615,7 +615,29 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
             }
             showReactionPicker()
         case .tapShare:
-            break
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
+                }
+            }
+            options.append(shareOption)
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
     
@@ -623,6 +645,8 @@ extension OneKTBActivityDetailViewController: AmityPostFooterProtocolHandlerDele
 
 // MARK: - AmityPostDetailCompostViewDelegate
 extension OneKTBActivityDetailViewController: AmityPostDetailCompostViewDelegate {
+    func composeViewDidTapAddImage(_ view: AmityPostDetailCompostView) {
+    }
     
     func composeViewDidTapReplyDismiss(_ view: AmityPostDetailCompostView) {
         parentComment = nil
@@ -694,6 +718,10 @@ extension OneKTBActivityDetailViewController: AmityKeyboardServiceDelegate {
 }
 
 extension OneKTBActivityDetailViewController: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
+    
     public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
         AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
     }
@@ -751,6 +779,10 @@ extension OneKTBActivityDetailViewController: AmityExpandableLabelDelegate {
 }
 
 extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate {
+    func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
+        
+    }
+    
     func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
         AmityEventHandler.shared.userKTBDidTap(from: self, userId: userId)
     }
@@ -924,6 +956,10 @@ extension OneKTBActivityDetailViewController: UITableViewDelegate {
                 mentionManager?.loadMoreHashtag()
             }
         }
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Do not anything
     }
 }
 

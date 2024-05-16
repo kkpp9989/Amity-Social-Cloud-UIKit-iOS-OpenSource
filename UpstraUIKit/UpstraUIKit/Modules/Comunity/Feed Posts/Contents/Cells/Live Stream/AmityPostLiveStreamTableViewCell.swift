@@ -145,14 +145,12 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
                 break
             }
         }
-        
-        
     }
     
     func getViewerCount(withpostId postId: String, completion: @escaping (Int) -> Void) {
         // Simulate your API request using a service object or Alamofire, etc.
         let serviceRequest = RequestGetViewerCount()
-        serviceRequest.request(postId: postId, viewerUserId: AmityUIKitManager.currentUserToken, viewerDisplayName: AmityUIKitManager.displayName, isTrack: false, streamId: ""){ result in
+        serviceRequest.getViewerCount(postId: postId) { result in
             switch result {
             case .success(let dataResponse):
                 let viwerCount = dataResponse.viewerCount ?? 0

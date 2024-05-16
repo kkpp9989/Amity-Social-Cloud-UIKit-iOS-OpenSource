@@ -32,7 +32,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     override func prepareForReuse() {
         textMessageView.text = ""
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 0
         containerView.layer.masksToBounds = true
     }
     
@@ -41,7 +41,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         contentView.backgroundColor = .clear
         
         containerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        containerView.layer.cornerRadius = contentView.frame.height / 3
+        containerView.layer.cornerRadius = 0
         containerView.layer.masksToBounds = true
         isUserInteractionEnabled = false
         
@@ -58,8 +58,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         self.message = message
         guard let text = message.text else { return }
         textMessageView.text = text
-        containerView.layer.cornerRadius = contentView.frame.height / 3
-        containerView.layer.masksToBounds = true
+        containerView.layer.cornerRadius = cornerRadius(for: text, boundingWidth: tableBoundingWidth ?? 0.0)
     }
     
     func displaySelected(isSelected: Bool) {
@@ -70,9 +69,15 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
         self.channelType = channelType
     }
     
+    private func cornerRadius(for text: String, boundingWidth: CGFloat) -> CGFloat {
+        let boundingWidthWithMargin = boundingWidth - 24 - 24 // Delete left & right margin
+        let numberOfLines = text.numberOfLines(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
+        return (19.0 * CGFloat(numberOfLines)) / 2.0 // 19 = is Average of text height one line with caption font of amity | * if change font, it will must to calculate again *
+    }
+    
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
         guard let text = message.text else { return UITableView.automaticDimension }
-        let boundingWidthWithMargin = boundingWidth - 16 - 16 // Delete left & right margin
+        let boundingWidthWithMargin = boundingWidth - 24 - 24 // Delete left & right margin
         let numberOfLines = text.numberOfLines(withConstrainedWidth: boundingWidthWithMargin, font: AmityFontSet.caption)
 
         if numberOfLines > 1 {

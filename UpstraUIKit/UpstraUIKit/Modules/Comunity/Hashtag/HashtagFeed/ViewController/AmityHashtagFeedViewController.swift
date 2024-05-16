@@ -294,8 +294,26 @@ extension AmityHashtagFeedViewController: AmityPostTableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if tableView.isBottomReached {
+    // [Deprecated]
+//    func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if tableView.isBottomReached {
+//            screenViewModel.action.loadMore()
+//        }
+//    }
+    
+//    /* [Fix-defect] Change check is bottom reached of table view by scrollViewDidScroll in UITableViewDelegate instead */
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Calculate the current scroll position and content height
+        let currentOffset = scrollView.contentOffset.y
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+
+        // Check if the user has scrolled to the bottom
+        if maximumOffset - currentOffset <= 0 {
+            // User has reached the bottom of the table view
+            // You can load more data or perform any action you need
+//            print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
+//            print(#"[Feed][Hashtag] Scroll to bottom"#)
+//            print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
             screenViewModel.action.loadMore()
         }
     }
@@ -560,7 +578,29 @@ extension AmityHashtagFeedViewController: AmityPostFooterProtocolHandlerDelegate
             }
             showReactionPicker()
         case .tapShare:
-            break
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
+                }
+            }
+            options.append(shareOption)
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
 }
@@ -637,6 +677,11 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
         case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
             break // Nothing happen for hashtag
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        case .tapOnCommentImage(imageView: let imageView, fileURL: let fileURL):
+            let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL)
+            self.present(photoViewerVC, animated: true, completion: nil)
         }
     }
    
@@ -710,8 +755,6 @@ extension AmityHashtagFeedViewController: AmityPostPreviewCommentDelegate {
                     self?.present(bottomSheet, animated: false, completion: nil)
                 }
             }
-            
         }
-        
     }
 }

@@ -90,7 +90,7 @@ final class AmityDefaultModalView: AmityView {
         containerView.layer.cornerRadius = 8
         containerView.backgroundColor = AmityColorSet.backgroundColor
         
-        titleLabel.font = AmityFontSet.headerLine
+        titleLabel.font = AmityFontSet.headerLine.withSize(18)
         titleLabel.textColor = AmityColorSet.base
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
@@ -105,6 +105,7 @@ final class AmityDefaultModalView: AmityView {
     }
     
     private func updateContent() {
+        if imageView.image == nil { imageView.isHidden = true }
         imageView.image = content?.image
         titleLabel.text = content?.title?.localizedString
         descriptionLabel.text = content?.description?.localizedString

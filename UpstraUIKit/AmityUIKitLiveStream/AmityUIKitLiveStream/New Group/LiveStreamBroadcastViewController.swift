@@ -59,6 +59,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
     /// We use this post to start publish live stream, and navigate to post detail page, after the user finish streaming.
     var createdPost: AmityPost?
     
+    var streamId: String?
+    
     /// This is set when this page start live publishing live stream.
     /// We use this state to display live stream timer.
     var startedAt: Date?
@@ -141,7 +143,8 @@ final public class LiveStreamBroadcastViewController: UIViewController {
 
     private var isPostSubscribe: Bool = false
     private var isCommentSubscribe: Bool = false
-    
+    private var isLive: Bool = true
+
     private var postObject: AmityObject<AmityPost>?
     private var postToken: AmityNotificationToken?
     
@@ -240,6 +243,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true, block: { [self] timerobj in
             startRealTimeEventSubscribe()
             requestGetViewerCount()
+            requestLiveStreamStatus()
             
             viewerCountLabel.text = String(viewerCount)
         })
@@ -354,7 +358,7 @@ final public class LiveStreamBroadcastViewController: UIViewController {
             UIBarButtonItem(title: AmityLocalizedStringSet.General.done.localizedString, style: .done, target: self, action: #selector(cancelInput))
         ]
         textViewToolbar.sizeToFit()
-        commentTextView.backgroundColor = UIColor(hex: "#FFFFFF")?.withAlphaComponent(0.1)
+        commentTextView.backgroundColor = UIColor(hex: "#292B32")
         commentTextView.layer.cornerRadius = 4
         commentTextView.font = AmityFontSet.body
         commentTextView.textColor = .white
@@ -850,7 +854,7 @@ extension LiveStreamBroadcastViewController {
             serviceRequest.sendViewerStatistics(postId: currentPost.postId, viewerUserId: client.currentUserId ?? "", viewerDisplayName: client.user?.object?.displayName ?? "", isTrack: false, streamId: "") { result in
                 switch result {
                 case .success(let dataResponse):
-                    self.viewerCount = dataResponse.viewerCount ?? 0
+                    self.viewerCount = dataResponse.data?.viewerCount ?? 0
                     break
                 case .failure(_):
                     break
@@ -868,10 +872,25 @@ extension LiveStreamBroadcastViewController {
                 switch result {
                 case .success(let dataResponse):
                     self.viewerCount = dataResponse.viewerCount ?? 0
-//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count success | viewerCount: \(dataResponse.viewerCount ?? 0) | postId: \(currentPost.postId)")
                     break
                 case .failure(let error):
-//                    print("[Livestream][Broadcaster][getViewerCount] Get viewer count fail with error: \(error.localizedDescription) | postId: \(currentPost.postId)")
+                    break
+                }
+            }
+        }
+    }
+    
+    private func requestLiveStreamStatus() {
+        DispatchQueue.main.async { [self] in
+            guard let currentPost = createdPost else { return }
+            let serviceRequest = RequestViewerStatistics()
+            print("Amity Log: stremId = \(streamId)")
+            serviceRequest.liveStreamStatus(postId: currentPost.postId, streamId: streamId ?? "", isLive: true) { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let isLive):
+                    break
+                case .failure(let error):
                     break
                 }
             }

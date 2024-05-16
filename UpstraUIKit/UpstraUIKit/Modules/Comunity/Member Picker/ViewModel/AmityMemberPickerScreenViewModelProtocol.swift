@@ -14,14 +14,17 @@ protocol AmityMemberPickerScreenViewModelDelegate: AnyObject {
     func screenViewModelDidSearchUser()
     func screenViewModelDidSelectUser(title: String, isEmpty: Bool)
     func screenViewModelDidSetCurrentUsers(title: String, isEmpty: Bool)
-    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool)
+    func screenViewModelDidSetNewSelectedUsers(title: String, isEmpty: Bool, isFromAnotherTab: Bool, keyword: String)
     func screenViewModelLoadingState(for state: AmityLoadingState)
     func screenViewModelCanDone(enable: Bool)
+    func screenViewModelClearData()
 }
 
 protocol AmityMemberPickerScreenViewModelDataSource {
     func numberOfAlphabet() -> Int
     func numberOfUsers(in section: Int) -> Int
+    func numberOfAllUsers() -> Int
+    func numberOfSearchUsers() -> Int
     func numberOfSelectedUsers() -> Int
     func alphabetOfHeader(in section: Int) -> String
     func user(at indexPath: IndexPath) -> AmitySelectMemberModel?
@@ -39,8 +42,10 @@ protocol AmityMemberPickerScreenViewModelAction {
     func deselectUser(at indexPath: IndexPath)
     func loadmore()
     func setCurrentUsers(users: [AmitySelectMemberModel])
-    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool)
+    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String)
     func updateSelectedUserInfo()
+    func clearData()
+    func updateSearchingStatus(isSearch: Bool)
 }
 
 protocol AmityMemberPickerScreenViewModelType: AmityMemberPickerScreenViewModelAction, AmityMemberPickerScreenViewModelDataSource {

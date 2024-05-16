@@ -122,7 +122,6 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         if message.isOwner {
             
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
-            
             switch message.messageType {
             case .text, .audio, .file:
                 containerView.backgroundColor = AmityColorSet.messageBubble
@@ -153,7 +152,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             readCountLabel?.isHidden = true
         }
         
-        containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: false, isReported: message.flagCount > 0, shouldShowTypingTab: shouldShowTypingTab)
+        containerView.menuItems = editMessageMenuView.generateMenuItems(message: message, indexPath: indexPath, shouldShowTypingTab: shouldShowTypingTab)
         
         setMetadata(message: message)
     }
@@ -169,7 +168,15 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         if message.isDeleted {
             readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
-            statusMetadataImageView.isHidden = false
+            statusMetadataImageView.isHidden = true // Use unsent icon that attached in string instead
+            
+            // Add your image to the attributed string
+            let attachment = NSTextAttachment()
+            attachment.bounds = CGRect(x: -3, y: -3, width: 15, height: 15)
+            attachment.image = AmityIconSet.Chat.iconMessageUnsent
+            let imageString = NSAttributedString(attachment: attachment)
+            fullString.append(imageString)
+            
             let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.unsentMessage.localizedString, message.time)
             fullString.append(NSAttributedString(string: deleteMessage, attributes: style))
             statusMetadataImageView.image = AmityIconSet.iconDeleteMessage
@@ -183,7 +190,6 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                     errorButton.isHidden = false
                     readCountLabel?.isHidden = true
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
-                    containerView.menuItems = editMessageMenuView.generateMenuItems(messageType: message.messageType, indexPath: indexPath, text: message.text, isOwner: message.isOwner, isErrorMessage: true, isReported: message.flagCount > 0, shouldShowTypingTab: shouldShowTypingTab)
                 case .syncing:
                     fullString.append(NSAttributedString(string: AmityLocalizedStringSet.MessageList.sending.localizedString, attributes: style))
                     readCountLabel?.isHidden = true
@@ -224,7 +230,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         readCountLabel.font =  AmityFontSet.caption
         readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
         
-        contentView.backgroundColor = AmityColorSet.backgroundColor
+        contentView.superview?.backgroundColor = .clear
         
         reportIconImageView?.image = AmityIconSet.Chat.iconReport
         isSelected = false

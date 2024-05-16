@@ -11,6 +11,10 @@ import AmitySDK
 
 final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     
+    // MARK: - KTB FOR FEED HOME
+    /// for check userNotFound and screen empty
+    var isKTBFeed = false
+    
     // MARK: - Delegate
     weak var delegate: AmityFeedScreenViewModelDelegate?
     
@@ -221,7 +225,10 @@ extension AmityFeedScreenViewModel {
                         }
                     case .failure(let error):
                         strongSelf.debouncer.run {
-                            strongSelf.prepareComponents(posts: [])
+                            // ktb kk for feed home check userNotFound
+                            if let isKTBFeed = self?.isKTBFeed, !isKTBFeed{
+                                strongSelf.prepareComponents(posts: [])
+                            }
                         }
                         if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
                             switch strongSelf.feedType {
@@ -607,8 +614,8 @@ extension AmityFeedScreenViewModel {
             switch result {
             case .success():
                 strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send success")
-            case .failure(_):
-                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send failed")
+            case .failure(let error):
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: error as! HandleError == HandleError.anotherError ? "Maximum limit has been reached" : "Pin send failed")
             }
         }
     }
@@ -621,7 +628,7 @@ extension AmityFeedScreenViewModel {
             case .success():
                 strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send success")
             case .failure(_):
-                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send failed")
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: "Unpin send failed")
             }
         }
     }

@@ -142,6 +142,12 @@ public class AmityHUD {
         }
     }
     
+    public static func showWithoutRepresenting(_ content: HUDContentType) {
+        if !sharedHUD.isPresenting {
+            sharedHUD.show(content)
+        }
+    }
+    
     public static func hide(_ completion: (() -> Void)? = nil) {
         sharedHUD.hide(completion)
     }

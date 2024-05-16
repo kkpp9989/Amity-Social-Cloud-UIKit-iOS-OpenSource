@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 /// Global event handler for function overriding
 ///
@@ -33,6 +34,7 @@ public enum AmitySaveActivityType:String {
 public enum AmityContentType {
     case communityProfilePage
     case chat
+    case chat1_1
     case userProfile
 }
 
@@ -59,6 +61,8 @@ open class AmityEventHandler {
     /// A default behavior is navigating to `AmityCommunityProfilePageViewController`
     open func communityDidTap(from source: AmityViewController, communityId: String) {
         let viewController = AmityCommunityProfilePageViewController.make(withCommunityId: communityId)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
         source.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -95,6 +99,8 @@ open class AmityEventHandler {
         guard !(source is AmityPostDetailViewController) else { return }
         
         let viewController = AmityPostDetailViewController.make(withPostId: postId, withPollAnswers: pollAnswers)
+        viewController.hidesBottomBarWhenPushed = true
+        source.navigationController?.isNavigationBarHidden = false
         source.navigationController?.pushViewController(viewController, animated: true)
     }
 

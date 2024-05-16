@@ -81,6 +81,10 @@ extension AmityCommentWithURLPreviewTableViewCell: AmityCommentViewWithURLPrevie
             actionDelegate?.commentCellDidTapReply(self)
         case .reactionDetails:
             actionDelegate?.commentCellDidTapReactionDetails(self)
+        case .status:
+            break
+        case .commentImage(let imageView, let fileURL):
+            break
         }
     }
     

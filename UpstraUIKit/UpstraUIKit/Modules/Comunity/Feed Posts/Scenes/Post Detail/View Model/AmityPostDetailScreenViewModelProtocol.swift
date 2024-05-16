@@ -46,7 +46,7 @@ protocol AmityPostDetailScreenViewModelDelegate: AnyObject {
     func screenViewModelDidLikePost(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModelDidUnLikePost(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModel(_ viewModel: AmityPostDetailScreenViewModelType, didReceiveReportStatus isReported: Bool)
-    
+
     // MARK: - Comment
     func screenViewModelDidDeleteComment(_ viewModel: AmityPostDetailScreenViewModelType)
     func screenViewModelDidEditComment(_ viewModel: AmityPostDetailScreenViewModelType)
@@ -88,7 +88,7 @@ protocol AmityPostDetailScreenViewModelAction {
     func getPostReportStatus()
     
     // MARK: Comment
-    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func createComment(withText text: String, parentId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia])
     func editComment(with comment: AmityCommentModel, text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func deleteComment(with comment: AmityCommentModel)
     func likeComment(withCommendId commentId: String)
@@ -101,6 +101,10 @@ protocol AmityPostDetailScreenViewModelAction {
     // MARK: Poll
     func vote(withPollId pollId: String?, answerIds: [String])
     func close(withPollId pollId: String?)
+    
+    // MARK: Share
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }
 
 protocol AmityPostDetailScreenViewModelType: AmityPostDetailScreenViewModelAction, AmityPostDetailScreenViewModelDataSource {

@@ -17,6 +17,7 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
     private var header: AmityCommunityProfileHeaderViewController!
     private var bottom: AmityCommunityFeedViewController!
     private var postButton: AmityFloatingButton = AmityFloatingButton()
+    private let scrollUpButton: AmityFloatingButton = AmityFloatingButton()
     
     private var screenViewModel: AmityCommunityProfileScreenViewModelType!
     
@@ -31,6 +32,7 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
         setupFeed()
+        setupScrollUpButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -98,11 +100,39 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
             self?.header.updatePostsCount()
         }
     }
+    
     private func setupPostButton() {
         postButton.image = AmityIconSet.iconCreatePost
         postButton.add(to: view, position: .bottomRight)
         postButton.actionHandler = { [weak self] button in
             self?.postAction()
+        }
+    }
+    
+    private func setupScrollUpButton() {
+        // setup button
+        scrollUpButton.isHidden = true
+        scrollUpButton.add(to: view, position: .bottomRight)
+        scrollUpButton.image = AmityIconSet.iconScrollUp
+        scrollUpButton.actionHandler = { _ in
+            //  Use notification center for trigger overlayScrollView on parent view
+            NotificationCenter.default.post(name: Notification.Name("ScrollToTop"), object: nil)
+        }
+        
+        bottom.timelineVC?.hideScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 0.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = true
+            }
+        }
+        
+        bottom.timelineVC?.showScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 1.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = false
+            }
         }
     }
     

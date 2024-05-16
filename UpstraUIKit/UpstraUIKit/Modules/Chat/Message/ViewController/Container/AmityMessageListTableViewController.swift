@@ -67,7 +67,7 @@ extension AmityMessageListTableViewController {
         tableView.tableFooterView = UIView()
         tableView.keyboardDismissMode = .onDrag
         tableView.estimatedRowHeight = 0
-        tableView.backgroundColor = AmityColorSet.backgroundColor
+        tableView.backgroundColor = AmityColorSet.chatBackgroundColor
         screenViewModel.dataSource.allCellNibs.forEach {
             tableView.register($0.value, forCellReuseIdentifier: $0.key)
         }
@@ -138,6 +138,7 @@ extension AmityMessageListTableViewController {
         if let selectedIndexPath = indexPath, isEdit { // Add this message to forward list at first if set editing to true after
             // Get message
             guard let message = screenViewModel.dataSource.message(at: selectedIndexPath) else { return }
+            if message.messageType == .custom { return }
             // Add message to forward message in list
             screenViewModel.action.updateForwardMessageInList(with: message)
             // Select this message row at first
@@ -215,9 +216,9 @@ extension AmityMessageListTableViewController {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
-                cell.setIndexPath(with: indexPath)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
@@ -228,9 +229,9 @@ extension AmityMessageListTableViewController {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
                 cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
-                cell.setIndexPath(with: indexPath)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
@@ -252,6 +253,15 @@ extension AmityMessageListTableViewController {
         if !cell.isSelected && isForwardMessageSelected { // Select row again if tableview cell selected status is false but is forward message selected in list
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard let message = screenViewModel.dataSource.message(at: indexPath) else { return false }
+        if message.messageType == .custom {
+            return false
+        }
+        
+        return true
     }
 }
 
@@ -280,6 +290,8 @@ extension AmityMessageListTableViewController: AmityMessageCellDelegate {
             tableView.endUpdates()
 		case .didTapOnMention(_, let userId):
 			screenViewModel.action.tapOnMention(withUserId: userId)
+        case .didTapOnPostIdLink(label: let label, postId: let postId):
+            screenViewModel.action.tapOnPostIdLink(withPostId: postId)
         }
     }
     
@@ -312,7 +324,7 @@ extension AmityMessageListTableViewController {
             cell.setIndexPath(with: indexPath)
             cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
         }
-        if let _ = cell as? AmityMessageTextTableViewCell, expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
+        if expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
             message.appearance.isExpanding = true
         }
         let channelType = screenViewModel.dataSource.getChannelType()
@@ -326,7 +338,15 @@ extension AmityMessageListTableViewController {
             case .text:
                 return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
             case .image :
-                return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                if screenViewModel.dataSource.getChannelType() == .broadcast {
+                    return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                } else {
+                    if !(message.text?.isEmpty ?? false) {
+                        return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                    } else {
+                        return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                    }
+                }
             case .audio:
                 return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
             case .video:

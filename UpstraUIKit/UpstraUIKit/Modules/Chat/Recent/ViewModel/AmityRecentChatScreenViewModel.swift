@@ -33,7 +33,7 @@ public class AmityChannelModel {
         self.avatarURL = object.getAvatarInfo()?.fileURL ?? ""
         self.displayName = (object.displayName ?? "") == "" ? AmityLocalizedStringSet.General.anonymous.localizedString : object.displayName!
         self.memberCount = object.memberCount
-        self.unreadCount = object.unreadCount
+        self.unreadCount = object.subChannelsUnreadCount
         self.lastActivity = object.lastActivity ?? Date()
         self.participation = object.participation
         self.channelType = object.channelType
@@ -328,7 +328,9 @@ private extension AmityRecentChatScreenViewModel {
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
-            _channels.append(model)
+            if !(model.channelType == .conversation && model.previewMessage == nil) {
+                _channels.append(model)
+            }
         }
         channels = _channels
         delegate?.screenViewModelLoadingState(for: .loaded)

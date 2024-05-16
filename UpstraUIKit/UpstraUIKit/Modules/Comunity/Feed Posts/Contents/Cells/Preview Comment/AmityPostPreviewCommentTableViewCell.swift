@@ -47,8 +47,17 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
     }
 
     private func setupView() {
+        
+        // ktb kk set conner radius
+        commentView.layer.cornerRadius = 10
+        commentView.layer.masksToBounds = true
+        commentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        separatorView.layer.cornerRadius = 10
+        separatorView.layer.masksToBounds = true
+        separatorView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
+        backgroundColor = .clear //AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
         separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         commentView.backgroundColor = AmityColorSet.backgroundColor
@@ -64,6 +73,10 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
 
 // MARK: AmityExpandableLabelDelegate
 extension AmityPostPreviewCommentTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        performAction(action: .tapOnPostIdLink(postId: postId))
+    }
+    
     public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
         performAction(action: .tapOnHashtag(keyword: keyword, count: count))
     }
@@ -116,6 +129,10 @@ extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
             performAction(action: .tapReply(comment: comment))
         case .reactionDetails:
             performAction(action: .tapOnReactionDetail)
+        case .status:
+            break
+        case .commentImage(let imageView, let fileURL):
+            performAction(action: .tapOnCommentImage(imageView: imageView, fileURL: fileURL ?? ""))
         }
     }
     
