@@ -58,17 +58,18 @@ extension UIViewController {
     }
     
     func showToastWithCompletion(message: String, duration: TimeInterval = 4.0, delay: TimeInterval = 0.1, completion: (() -> Void)? = nil) {
-        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 75, y: self.view.frame.size.height-100, width: 150, height: 35))
+        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 120, y: self.view.frame.size.height-100, width: 250, height: 35))
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         toastLabel.textColor = UIColor.white
         toastLabel.font = UIFont.systemFont(ofSize: 14) // Replace Font.kfLight14 with a default font
         toastLabel.textAlignment = .center
         toastLabel.text = message
+        toastLabel.numberOfLines = 0
         toastLabel.alpha = 1.0
         toastLabel.layer.cornerRadius = 10
         toastLabel.clipsToBounds = true
         self.view.addSubview(toastLabel)
-        
+
         UIView.animate(withDuration: duration, delay: delay, options: .curveEaseOut, animations: {
             toastLabel.alpha = 0.0
         }, completion: { [weak self] (isCompleted) in

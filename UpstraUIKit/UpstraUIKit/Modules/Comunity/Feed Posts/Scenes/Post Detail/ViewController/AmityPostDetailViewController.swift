@@ -632,8 +632,12 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
                 
             }*/
             self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
-                self.dismiss(animated: true, completion: nil)
-                self.backHandler?()
+                self.dismiss(animated: true)
+                
+                self.backHandler = {
+                    AmityEventHandler.shared.gotoChatTab(v: self)
+                }
+                
             }
         case .bannedWord:
 //            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString)) // [Back up]
