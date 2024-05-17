@@ -533,26 +533,45 @@ private extension AmityMentionManager {
         delegate?.didGetHashtag(keywords: keywords)
     }
     
+//    func removeMention(at range: NSRange) {
+//        // Find the mention and remove
+//        let theMentionToRemove = mentions.filter { mention in
+//            mention.index <= range.location && mention.index + mention.length >= range.location
+//        }
+//
+//        if theMentionToRemove.count > 0 {
+//            let mentionToRemove = theMentionToRemove[0]
+//            mentions.removeAll { mention in
+//                mention.index == mentionToRemove.index
+//            }
+//
+//            for i in 0..<mentions.count {
+//                if mentions[i].index > mentionToRemove.index {
+//                    // There is a space after every mention, range.length + 1 to count total length included the space
+//                    mentions[i].index = mentions[i].index - (range.length + 1)
+//                }
+//            }
+//        }
+//
+//        delegate?.didRemoveAttributedString()
+//    }
+    
     func removeMention(at range: NSRange) {
-        // Find the mention and remove
-        let theMentionToRemove = mentions.filter { mention in
-            mention.index <= range.location && mention.index + mention.length >= range.location
+        // Find the mention to remove
+        guard let mentionIndexToRemove = mentions.firstIndex(where: { $0.index <= range.location && $0.index + $0.length >= range.location }) else {
+            // Mention not found at the given range
+            return
         }
         
-        if theMentionToRemove.count > 0 {
-            let mentionToRemove = theMentionToRemove[0]
-            mentions.removeAll { mention in
-                mention.index == mentionToRemove.index
-            }
-            
-            for i in 0..<mentions.count {
-                if mentions[i].index > mentionToRemove.index {
-                    // There is a space after every mention, range.length + 1 to count total length included the space
-                    mentions[i].index = mentions[i].index - (range.length + 1)
-                }
-            }
+        // Remove the mention from the array
+        let mentionToRemove = mentions.remove(at: mentionIndexToRemove)
+        
+        // Update the index of mentions that come after the removed mention
+        for i in mentionIndexToRemove..<mentions.count {
+            mentions[i].index -= (range.length + 1)
         }
         
+        // Notify the delegate
         delegate?.didRemoveAttributedString()
     }
     

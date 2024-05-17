@@ -52,7 +52,7 @@ extension AmityCommunitySearchScreenViewModel {
         }
 
         delegate?.screenViewModel(self, loadingState: .loading)
-        communityListRepositoryManager.search(withText: text, filter: .all) { [weak self] (updatedCommunityList) in
+        communityListRepositoryManager.search(withText: text, filter: .userIsMember) { [weak self] (updatedCommunityList) in
             /* Set is ending result static value to true if result is not more than 20 */
             guard let strongSelf = self else { return }
             if updatedCommunityList.count < strongSelf.size {
