@@ -624,9 +624,16 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModel(_ viewModel: AmityPostDetailScreenViewModelType, didFinishWithError error: AmityError) {
         switch error {
         case .unknown:
-//            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString)) // [Back up]
+            //AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                // [Back up]
+            /*
             if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
-                ToastView.shared.showToast(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString, in: window)
+                ToastView.shared.showToast(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString, duration: 0.3, in: window)
+                
+            }*/
+            self.showToastWithCompletion(message: "is private", duration: 4.0, delay: 0.1) {
+                self.dismiss(animated: true, completion: nil)
+                self.backHandler?()
             }
         case .bannedWord:
 //            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString)) // [Back up]

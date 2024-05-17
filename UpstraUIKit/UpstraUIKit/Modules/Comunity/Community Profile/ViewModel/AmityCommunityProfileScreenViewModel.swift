@@ -123,6 +123,7 @@ extension AmityCommunityProfileScreenViewModel {
                 self?.isJoiningCommunity = false
                 self?.delegate?.screenViewModelFailure()
 #warning("ERROR = Private -> go to PIN")
+                
             } else {
                 self?.retriveCommunity()
             }
