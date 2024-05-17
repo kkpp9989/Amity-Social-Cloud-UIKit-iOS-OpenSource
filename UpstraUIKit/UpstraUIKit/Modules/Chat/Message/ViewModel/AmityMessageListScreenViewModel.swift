@@ -503,6 +503,7 @@ extension AmityMessageListScreenViewModel {
             if let error = AmityError(error: error) {
                 print(error)
 #warning("ERROR = Private -> go to PIN")
+                
             } else {
                 self.subChannelId = result?.defaultSubChannelId ?? ""
                 if result?.currentUserMembership == .member {
