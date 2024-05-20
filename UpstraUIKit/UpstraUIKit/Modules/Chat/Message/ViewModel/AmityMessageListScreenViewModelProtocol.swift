@@ -13,6 +13,7 @@ import AmitySDK
 protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelRoute(route: AmityMessageListScreenViewModel.Route)
+    func screenViewModelToastPrivate()
     func screenViewModelDidGetChannel(channel: AmityChannelModel)
     func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool)
     func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel)
