@@ -254,6 +254,15 @@ extension AmityMessageListTableViewController {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
     }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard let message = screenViewModel.dataSource.message(at: indexPath) else { return false }
+        if message.messageType == .custom || message.isDeleted{
+            return false
+        }
+        
+        return true
+    }
 }
 
 extension AmityMessageListTableViewController: AmityMessageCellDelegate {
