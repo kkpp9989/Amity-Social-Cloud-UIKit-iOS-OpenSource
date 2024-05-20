@@ -626,17 +626,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
         case .unknown:
             //AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 // [Back up]
-            /*
             if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
                 ToastView.shared.showToast(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString, duration: 0.3, in: window)
-                
-            }*/
-            self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
-                self.dismiss(animated: true)
-                
-                self.backHandler = {
-                    AmityEventHandler.shared.gotoChatTab(v: self)
-                }
                 
             }
         case .bannedWord:
