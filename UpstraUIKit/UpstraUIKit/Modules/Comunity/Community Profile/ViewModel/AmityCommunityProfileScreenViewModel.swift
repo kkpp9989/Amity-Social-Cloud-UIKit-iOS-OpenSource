@@ -107,7 +107,12 @@ extension AmityCommunityProfileScreenViewModel {
             if model.isJoined {
                 strongSelf.memberStatusCommunity = hasPermission ? .admin : .member
             } else {
-                strongSelf.memberStatusCommunity = .guest
+                if model.isPublic {
+                    strongSelf.memberStatusCommunity = .guest
+                } else {
+                    strongSelf.memberStatusCommunity = .guest
+                    strongSelf.delegate?.screenViewModelToastPrivate()
+                }
             }
 
             strongSelf.delegate?.screenViewModelDidGetCommunity(with: model)
@@ -115,15 +120,13 @@ extension AmityCommunityProfileScreenViewModel {
     }
     
     func joinCommunity() {
-        /* [Custom for ONE Krungthai] Set is joinging community to true for ask app is joining process start */
+        /* [Custom for ONE Krungthai] Set is joining community to true for ask app is joining process start */
         isJoiningCommunity = true
         communityRepositoryManager.join { [weak self] (error) in
             if let error = error {
                 /* [Custom for ONE Krungthai] Set is joinging community to false for ask app is joining process end */
                 self?.isJoiningCommunity = false
                 self?.delegate?.screenViewModelFailure()
-#warning("ERROR = Private -> go to PIN")
-                
             } else {
                 self?.retriveCommunity()
             }

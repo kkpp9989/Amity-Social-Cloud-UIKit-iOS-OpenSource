@@ -90,6 +90,12 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         screenViewModel.action.retriveCommunity()
     }
     
+    func screenViewModelToastPrivate() {
+        self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
+           self.navigationController?.popViewController(animated: true)
+        }
+    }
+
     // MARK: - Setup views
     private func setupFeed() {
         header.didUpdatePostBanner = { [weak self] in

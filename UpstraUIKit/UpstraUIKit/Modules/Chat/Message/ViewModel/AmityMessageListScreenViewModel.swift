@@ -249,12 +249,20 @@ extension AmityMessageListScreenViewModel {
             let channelModel = AmityChannelModel(object: object)
             strongSelf.channelModel = channelModel
             strongSelf.channelType = channelModel.channelType
+            
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
                 strongSelf.getUserInfo(userId: userId, channel: channelModel)
                 strongSelf.syncChannelPresence()
                 strongSelf.startMessageReceiptSync()
+            } else if channelModel.channelType == .community {
+                if !channelModel.object.isPublic {
+                    if channelModel.object.currentUserMembership  != .member {
+                        self?.delegate?.screenViewModelToastPrivate()
+                    }
+                }
             }
+            
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
             strongSelf.getShowSettingButtonAndSendingPermission()
         }
@@ -502,8 +510,6 @@ extension AmityMessageListScreenViewModel {
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.joinChannel(channelId:), parameters: channelId) {result, error in
             if let error = AmityError(error: error) {
                 print(error)
-#warning("ERROR = Private -> go to PIN")
-                
             } else {
                 self.subChannelId = result?.defaultSubChannelId ?? ""
                 if result?.currentUserMembership == .member {

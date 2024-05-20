@@ -843,6 +843,12 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
     }
     
+    func screenViewModelToastPrivate() {
+        self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
+            self.backHandler?()
+        }
+    }
+    
     func screenViewModelShouldUpdateScrollPosition(to indexPath: IndexPath) {
         messageViewController.updateScrollPosition(to: indexPath)
     }
@@ -855,14 +861,18 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         }
         
         if channel.object.currentUserMembership != .member {
-            composeBar.showJoinMenuButton(show: true)
-            
-            if #available(iOS 16.0, *) {
-                // iOS 16.0 and newer
-                navigationItem.rightBarButtonItem?.isHidden = true
+            if channel.object.isPublic {
+                composeBar.showJoinMenuButton(show: true)
+                
+                if #available(iOS 16.0, *) {
+                    // iOS 16.0 and newer
+                    navigationItem.rightBarButtonItem?.isHidden = true
+                } else {
+                    // iOS version prior to 16.0
+                    navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+                }
             } else {
-                // iOS version prior to 16.0
-                navigationItem.rightBarButtonItem = nil // Hide the right bar button item
+                composeBar.showJoinMenuButton(show: false)
             }
         }
         
