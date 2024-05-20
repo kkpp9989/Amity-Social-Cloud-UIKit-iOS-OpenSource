@@ -138,13 +138,16 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
             backButton.tintColor = AmityColorSet.base
             leftBarButtons = backButton
             
+            /* back up
             if self.navigationController?.viewControllers.first != self {
                 // Add all component to left navigation items
                 navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)] // Back button, Title of naviagation bar
             } else {
                 // This controller is the root view controller, so you don't need to set a back button
                 navigationItem.leftBarButtonItem = UIBarButtonItem(customView: title) // Title of navigation bar
-            }
+            }*/
+            
+            navigationItem.leftBarButtonItems = [backButton, UIBarButtonItem(customView: title)]
         }
     }
     
