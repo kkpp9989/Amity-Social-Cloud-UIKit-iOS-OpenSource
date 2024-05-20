@@ -257,7 +257,9 @@ extension AmityMessageListScreenViewModel {
                 strongSelf.startMessageReceiptSync()
             } else if channelModel.channelType == .community {
                 if !channelModel.object.isPublic {
-                    self?.delegate?.screenViewModelToastPrivate()
+                    if channelModel.object.currentUserMembership  != .member {
+                        self?.delegate?.screenViewModelToastPrivate()
+                    }
                 }
             }
             

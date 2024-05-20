@@ -403,13 +403,21 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
                 inputMenuView.isHidden = true
                 openEditorMenuView.isHidden = false
             case .community:
+                    //is member
                     let isPublic = screenViewModel.dataSource.getChannelModel()?.object.isPublic ?? true
+                    let isMember = channel.object.currentUserMembership == .member
                     if isPublic {
                         inputMenuView.isHidden = false
                         openEditorMenuView.isHidden = true
                     } else {
-                        inputMenuView.isHidden = true
-                        openEditorMenuView.isHidden = true
+                        if isMember {
+                            inputMenuView.isHidden = false
+                            openEditorMenuView.isHidden = true
+                        } else {
+                            inputMenuView.isHidden = true
+                            openEditorMenuView.isHidden = true
+                        }
+
                     }
             default:
                 inputMenuView.isHidden = false
