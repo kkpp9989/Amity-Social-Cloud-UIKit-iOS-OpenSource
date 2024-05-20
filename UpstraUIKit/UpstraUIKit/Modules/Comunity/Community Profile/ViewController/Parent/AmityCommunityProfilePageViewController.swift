@@ -90,6 +90,30 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         screenViewModel.action.retriveCommunity()
     }
     
+    var shouldPushNewViewController = false
+
+    func screenViewModelToastPrivate() {
+        self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
+            
+            self.shouldPushNewViewController = true
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.isMovingFromParent {
+            // The view is being popped
+            if shouldPushNewViewController {
+                let vc = AmityCommunityHomePageViewController.make()
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.setNavigationBarHidden(false, animated: true)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+    
     // MARK: - Setup views
     private func setupFeed() {
         header.didUpdatePostBanner = { [weak self] in

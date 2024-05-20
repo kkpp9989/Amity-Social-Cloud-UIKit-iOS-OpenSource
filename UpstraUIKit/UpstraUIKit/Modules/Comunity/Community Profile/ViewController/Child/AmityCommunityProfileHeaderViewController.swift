@@ -203,7 +203,8 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
             actionButton.backgroundColor = AmityColorSet.primary
             actionButton.layer.cornerRadius = 4
             actionButton.tag = 0
-            actionButton.isHidden = false
+            let isPublic = screenViewModel.dataSource.community?.isPublic ?? false
+            actionButton.isHidden = !isPublic
         case .member:
             actionButton.setTitle(AmityLocalizedStringSet.communityDetailMessageButton.localizedString, for: .normal)
             actionButton.setImage(AmityIconSet.iconChat, position: .left)
