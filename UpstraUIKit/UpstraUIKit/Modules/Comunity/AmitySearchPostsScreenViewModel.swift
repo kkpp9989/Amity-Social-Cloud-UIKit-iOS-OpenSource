@@ -115,7 +115,11 @@ extension AmitySearchPostsScreenViewModel {
     
     func fetchPosts(keyword: String) {
         if keyword.isEmpty { return }
+        if !isLoadingMore {
+            refresh()
+        }
         
+        AmityEventHandler.shared.showKTBLoading()
         isLoading = true
         var serviceRequest = RequestSearchingPosts()
         serviceRequest.keyword = keyword
@@ -128,6 +132,7 @@ extension AmitySearchPostsScreenViewModel {
                 self.fromIndex = data.postIDS.count == 0 ? self.fromIndex - serviceRequest.size : self.fromIndex
             case .failure(let error):
                 self.fromIndex = self.fromIndex - serviceRequest.size
+                AmityEventHandler.shared.hideKTBLoading()
             }
         }
     }
@@ -147,6 +152,8 @@ extension AmitySearchPostsScreenViewModel {
         fromIndex = 0
         dummyList.postIDS = []
         postLists = []
+        postComponents = []
+        delegate?.screenViewModelDidUpdateDataSuccess(self)
     }
     
     func getPostbyPostIDsList(posts: AmitySearchPostsModel) {
@@ -177,11 +184,13 @@ extension AmitySearchPostsScreenViewModel {
                 let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
                 self.prepareComponents(posts: sortedArray)
                 self.tokenArray.removeAll()
+                AmityEventHandler.shared.hideKTBLoading()
             }
             
             if dummyList.postIDS.isEmpty {
                 let sortedArray = self.sortArrayPositions(array1: self.dummyList.postIDS, array2: self.postLists)
                 prepareComponents(posts: sortedArray)
+                AmityEventHandler.shared.hideKTBLoading()
             }
         }
     }
