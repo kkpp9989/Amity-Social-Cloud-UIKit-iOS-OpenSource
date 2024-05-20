@@ -90,8 +90,6 @@ public final class AmityCommunityProfilePageViewController: AmityProfileViewCont
         screenViewModel.action.retriveCommunity()
     }
     
-    var shouldPushNewViewController = false
-
     func screenViewModelToastPrivate() {
         self.showToastWithCompletion(message: "Access without permission is prohibited", duration: 4.0, delay: 0.1) {
            self.navigationController?.popViewController(animated: true)
