@@ -152,7 +152,7 @@ extension AmitySearchPostsScreenViewModel {
         fromIndex = 0
         dummyList.postIDS = []
         postLists = []
-        postComponents = []
+//        postComponents = []
         delegate?.screenViewModelDidUpdateDataSuccess(self)
     }
     
