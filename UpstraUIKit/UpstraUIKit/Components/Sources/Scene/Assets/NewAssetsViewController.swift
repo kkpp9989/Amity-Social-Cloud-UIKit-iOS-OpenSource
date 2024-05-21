@@ -111,6 +111,8 @@ class NewAssetsViewController: UIViewController {
         for asset in assets {
             let index = fetchResult.index(of: asset)
             guard index != NSNotFound else { continue }
+            guard index >= 0 && index < collectionView.numberOfItems(inSection: 0) else { continue }
+            
             let indexPath = IndexPath(item: index, section: 0)
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
             updateSelectionIndexForCell(at: indexPath)
