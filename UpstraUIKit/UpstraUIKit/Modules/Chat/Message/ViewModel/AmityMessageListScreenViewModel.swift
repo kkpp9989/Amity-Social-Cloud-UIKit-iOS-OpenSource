@@ -249,6 +249,7 @@ extension AmityMessageListScreenViewModel {
             let channelModel = AmityChannelModel(object: object)
             strongSelf.channelModel = channelModel
             strongSelf.channelType = channelModel.channelType
+            strongSelf.channelMarkAsRead()
             
             if channelModel.channelType == .conversation {
                 let userId = channelModel.getOtherUserId()
@@ -265,6 +266,21 @@ extension AmityMessageListScreenViewModel {
             
             strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
             strongSelf.getShowSettingButtonAndSendingPermission()
+        }
+    }
+    
+    func channelMarkAsRead() {
+        Task {
+            if let channelObject = channelModel?.object {
+                do {
+                    try await channelObject.markAsRead()
+                } catch {
+                    // Handle the error here, e.g., log it or show an alert
+                    print("Failed to mark the channel as read: \(error.localizedDescription)")
+                }
+            } else {
+                print("Channel model or object is nil")
+            }
         }
     }
     
@@ -708,10 +724,11 @@ extension AmityMessageListScreenViewModel {
     }
     
     func getTotalUnreadCount() {
-        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
-            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
-        }).store(in: &disposeBag)
+        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
+//            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
+//            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
+//        }).store(in: &disposeBag)
     }
 }
 
@@ -831,7 +848,11 @@ private extension AmityMessageListScreenViewModel {
         // Mark latest message as read
         if let latestMessage = messages.last?.last?.object {
             latestMessage.markRead()
-            print("[Channel] Mark latest message as read success | id: \(latestMessage.messageId) | text: \(latestMessage.data?["text"])")
+            print("Amity Log: latestMessage1: \(latestMessage.messageId) markRead")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                latestMessage.markRead()
+                print("Amity Log: latestMessage2: \(latestMessage.messageId) markRead")
+            }
         }
         
         if isFirstTimeLoaded {
@@ -851,6 +872,13 @@ private extension AmityMessageListScreenViewModel {
                 shouldScrollToBottom(force: false)
             }
             lastMessageHash = lastMessage.hashValue
+            
+            lastMessage.object.markRead()
+            print("Amity Log: latestMessage1: \(lastMessage.messageId) markRead")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                lastMessage.object.markRead()
+                print("Amity Log: latestMessage2: \(lastMessage.messageId) markRead")
+            }
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

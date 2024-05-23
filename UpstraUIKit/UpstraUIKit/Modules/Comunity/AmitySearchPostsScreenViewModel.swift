@@ -130,6 +130,7 @@ extension AmitySearchPostsScreenViewModel {
             case .success(let data):
                 self.getPostbyPostIDsList(posts: data)
                 self.fromIndex = data.postIDS.count == 0 ? self.fromIndex - serviceRequest.size : self.fromIndex
+                self.keyword = keyword
             case .failure(let error):
                 self.fromIndex = self.fromIndex - serviceRequest.size
                 AmityEventHandler.shared.hideKTBLoading()
