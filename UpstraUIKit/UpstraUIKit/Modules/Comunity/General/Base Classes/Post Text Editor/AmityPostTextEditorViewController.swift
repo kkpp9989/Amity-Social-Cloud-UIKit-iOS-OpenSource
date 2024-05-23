@@ -971,7 +971,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
     }
     
     private func addMedias(_ medias: [AmityMedia], type: AmityMediaType) {
-        let totalNumberOfMedias = galleryView.medias.count + medias.count
+        let totalNumberOfMedias = medias.count
         guard totalNumberOfMedias <= Constant.maximumNumberOfImages else {
             presentMaxNumberReachDialogue()
             return

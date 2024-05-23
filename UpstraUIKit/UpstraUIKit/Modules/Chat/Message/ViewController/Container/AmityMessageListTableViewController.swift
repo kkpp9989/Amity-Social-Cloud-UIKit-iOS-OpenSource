@@ -257,7 +257,7 @@ extension AmityMessageListTableViewController {
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         guard let message = screenViewModel.dataSource.message(at: indexPath) else { return false }
-        if message.messageType == .custom {
+        if message.messageType == .custom || message.isDeleted{
             return false
         }
         
