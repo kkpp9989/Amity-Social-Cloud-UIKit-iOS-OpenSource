@@ -226,10 +226,11 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     }
     
     func getTotalUnreadCount() {
-        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
-            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
-        }).store(in: &disposeBag)
+        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
+//            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
+//            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
+//        }).store(in: &disposeBag)
     }
 }
 
