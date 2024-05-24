@@ -245,27 +245,31 @@ extension AmityMessageListScreenViewModel {
         channelNotificationToken?.invalidate()
         channelNotificationToken = channelRepository.getChannel(channelId).observeOnce { [weak self] (channel, error) in
             guard let strongSelf = self else { return }
-            guard let object = channel.snapshot else { return }
-            let channelModel = AmityChannelModel(object: object)
-            strongSelf.channelModel = channelModel
-            strongSelf.channelType = channelModel.channelType
-            strongSelf.channelMarkAsRead()
-            
-            if channelModel.channelType == .conversation {
-                let userId = channelModel.getOtherUserId()
-                strongSelf.getUserInfo(userId: userId, channel: channelModel)
-                strongSelf.syncChannelPresence()
-                strongSelf.startMessageReceiptSync()
-            } else if channelModel.channelType == .community {
-                if !channelModel.object.isPublic {
-                    if channelModel.object.currentUserMembership  != .member {
-                        self?.delegate?.screenViewModelToastPrivate()
+            if error != nil {
+                self?.delegate?.screenViewModelToastPrivate()
+            } else {
+                guard let object = channel.snapshot else { return }
+                let channelModel = AmityChannelModel(object: object)
+                strongSelf.channelModel = channelModel
+                strongSelf.channelType = channelModel.channelType
+                strongSelf.channelMarkAsRead()
+                
+                if channelModel.channelType == .conversation {
+                    let userId = channelModel.getOtherUserId()
+                    strongSelf.getUserInfo(userId: userId, channel: channelModel)
+                    strongSelf.syncChannelPresence()
+                    strongSelf.startMessageReceiptSync()
+                } else if channelModel.channelType == .community {
+                    if !channelModel.object.isPublic {
+                        if channelModel.object.currentUserMembership  != .member {
+                            self?.delegate?.screenViewModelToastPrivate()
+                        }
                     }
                 }
+                
+                strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
+                strongSelf.getShowSettingButtonAndSendingPermission()
             }
-            
-            strongSelf.delegate?.screenViewModelDidGetChannel(channel: channelModel)
-            strongSelf.getShowSettingButtonAndSendingPermission()
         }
     }
     
