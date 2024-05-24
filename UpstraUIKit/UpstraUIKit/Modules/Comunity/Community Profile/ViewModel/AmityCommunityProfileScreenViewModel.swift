@@ -92,7 +92,7 @@ extension AmityCommunityProfileScreenViewModel {
                     print("[Notification] Is not joining community -> Skip check or set disable community notification")
                 }
             case .failure:
-                break
+                self?.delegate?.screenViewModelToastPrivate()
             }
             
             /* [Custom for ONE Krungthai] Set is joinging community to false for ask app is joining process end */
