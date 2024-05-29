@@ -126,15 +126,15 @@ final class AmityChatSettingsCreateMenuViewModel: AmityChatSettingsCreateMenuVie
                 settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
                 
                 // MARK: Delete chat (1:1 Chat & Group chat [Moderator roles]) // [Mock]
-                let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(isCanEditGroupChannel).identifier,
-                                                                          icon: AmityChatSettingsItem.delete(isCanEditGroupChannel).icon,
-                                                                          title: AmityChatSettingsItem.delete(isCanEditGroupChannel).title,
-                                                                          description: AmityChatSettingsItem.delete(isCanEditGroupChannel).description,
-                                                                          titleTextColor: AmityColorSet.alert)
-                settingsItems.append(.textContent(content: itemDeleteChatContent))
-                
-                // MARK: Separator
-                settingsItems.append(.separator)
+//                let itemDeleteChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.delete(isCanEditGroupChannel).identifier,
+//                                                                          icon: AmityChatSettingsItem.delete(isCanEditGroupChannel).icon,
+//                                                                          title: AmityChatSettingsItem.delete(isCanEditGroupChannel).title,
+//                                                                          description: AmityChatSettingsItem.delete(isCanEditGroupChannel).description,
+//                                                                          titleTextColor: AmityColorSet.alert)
+//                settingsItems.append(.textContent(content: itemDeleteChatContent))
+//
+//                // MARK: Separator
+//                settingsItems.append(.separator)
                 
                 // MARK: Leave chat (Group Chat)
                 let itemLeaveChatContent = AmitySettingsItem.TextContent(identifier: AmityChatSettingsItem.leave.identifier,
