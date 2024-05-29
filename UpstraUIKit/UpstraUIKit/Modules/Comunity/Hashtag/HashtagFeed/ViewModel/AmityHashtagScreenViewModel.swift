@@ -121,8 +121,6 @@ extension AmityHashtagScreenViewModel {
         serviceRequest.keyword = keyword
         serviceRequest.from = fromIndex
         serviceRequest.size = requestPostSize
-//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
-//        print(#"[Feed][Hashtag] Start request post with hashtag "\#(keyword)" from index \#(fromIndex) with size \#(requestPostSize)"#)
         serviceRequest.request { result in
             switch result {
             case .success(let data):
@@ -130,10 +128,8 @@ extension AmityHashtagScreenViewModel {
                 self.getPostbyPostIDsList(posts: data)
                 self.fromIndex = data.postIDS.count == 0 ? self.fromIndex - serviceRequest.size : self.fromIndex
             case .failure(let error):
-//                print(#"[Feed][Hashtag] Request post with hashtag "\#(keyword)" fail with error \#(error.localizedDescription)"#)
                 self.fromIndex = self.fromIndex - serviceRequest.size
             }
-//            print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
         }
     }
     
@@ -143,9 +139,6 @@ extension AmityHashtagScreenViewModel {
             if !weakSelf.isLoadingMore && !weakSelf.isLoading && !weakSelf.postLists.isEmpty {
                 weakSelf.isLoadingMore = true
                 weakSelf.fromIndex += weakSelf.requestPostSize
-//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
-//                print(#"[Feed][Hashtag] Start loading more post with from index \#(weakSelf.fromIndex)"#)
-//                print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
                 weakSelf.fetchPosts(keyword: weakSelf.keyword)
             }
         }
@@ -155,9 +148,6 @@ extension AmityHashtagScreenViewModel {
         fromIndex = 0
         dummyList.postIDS = []
         postLists = []
-//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
-//        print(#"[Feed][Hashtag] Refresh hashtag feed"#)
-//        print(#"[Feed][Hashtag] --------------------------------------------------------------------------------->"#)
     }
     
     func getPostbyPostIDsList(posts: AmitySearchPostsModel) {
@@ -198,7 +188,7 @@ extension AmityHashtagScreenViewModel {
     }
     
     private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
-        guard let _post = amityObject.object else { return nil }
+        guard let _post = amityObject.snapshot else { return nil }
         let post = AmityPostModel(post: _post)
         if let communityId = post.targetCommunity?.communityId {
             let participation = AmityCommunityParticipation(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
@@ -245,14 +235,16 @@ extension AmityHashtagScreenViewModel {
                 if let data = data.hashtag, !data.isEmpty {
                     if let index = data.firstIndex(where: { $0.text == keyword.replacingOccurrences(of: "#", with: "") }) {
                         // Index of the matching hashtag
-                        print("Matching hashtag found at index: \(index): \(data[index].count)")
                         self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data[index].count ?? 0)
+                    } else {
+                        self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: data[0].count ?? 0)
                     }
                 } else {
                     self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: 0)
                 }
             case .failure(let error):
                 print(error)
+                self.delegate?.screenViewModelDidUpdateHashtagDataSuccess(self, postCount: 0)
             }
         }
     }
