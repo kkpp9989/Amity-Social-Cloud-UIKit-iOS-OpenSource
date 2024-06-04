@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -530,6 +530,12 @@
 		AA0C65972BA0081F006595EF /* NewZoomTransitionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C656D2BA0081F006595EF /* NewZoomTransitionDelegate.swift */; };
 		AA0C65982BA0081F006595EF /* NewZoomInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C656E2BA0081F006595EF /* NewZoomInteractionController.swift */; };
 		AA0C65992BA0081F006595EF /* NewZoomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C656F2BA0081F006595EF /* NewZoomAnimator.swift */; };
+		AA1309FC2C082F3100F80ADF /* AmityGoogleMapsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1309FA2C082F3100F80ADF /* AmityGoogleMapsViewController.swift */; };
+		AA1309FD2C082F3100F80ADF /* AmityGoogleMapsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA1309FB2C082F3100F80ADF /* AmityGoogleMapsViewController.xib */; };
+		AA130A0A2C089D9200F80ADF /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = AA130A092C089D9200F80ADF /* GoogleMaps */; };
+		AA130A0D2C089DBE00F80ADF /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = AA130A0C2C089DBD00F80ADF /* GooglePlaces */; };
+		AA130A6C2C09CBBC00F80ADF /* AmityGooglePlacesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA130A6A2C09CBBC00F80ADF /* AmityGooglePlacesTableViewCell.swift */; };
+		AA130A702C0A161F00F80ADF /* AmityGooglePlacesTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA130A6F2C0A161F00F80ADF /* AmityGooglePlacesTableViewCell.xib */; };
 		AA14A0412ACAADC800DAD2E0 /* AmityChatFriendPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0402ACAADC800DAD2E0 /* AmityChatFriendPageViewController.swift */; };
 		AA14A0442ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0432ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift */; };
 		AA14A0462ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14A0452ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift */; };
@@ -1445,6 +1451,10 @@
 		AA0C656D2BA0081F006595EF /* NewZoomTransitionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewZoomTransitionDelegate.swift; sourceTree = "<group>"; };
 		AA0C656E2BA0081F006595EF /* NewZoomInteractionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewZoomInteractionController.swift; sourceTree = "<group>"; };
 		AA0C656F2BA0081F006595EF /* NewZoomAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewZoomAnimator.swift; sourceTree = "<group>"; };
+		AA1309FA2C082F3100F80ADF /* AmityGoogleMapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityGoogleMapsViewController.swift; sourceTree = "<group>"; };
+		AA1309FB2C082F3100F80ADF /* AmityGoogleMapsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityGoogleMapsViewController.xib; sourceTree = "<group>"; };
+		AA130A6A2C09CBBC00F80ADF /* AmityGooglePlacesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityGooglePlacesTableViewCell.swift; sourceTree = "<group>"; };
+		AA130A6F2C0A161F00F80ADF /* AmityGooglePlacesTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AmityGooglePlacesTableViewCell.xib; sourceTree = "<group>"; };
 		AA14A0402ACAADC800DAD2E0 /* AmityChatFriendPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatFriendPageViewController.swift; sourceTree = "<group>"; };
 		AA14A0432ACAAFE800DAD2E0 /* AmityChatFriendScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatFriendScreenViewModel.swift; sourceTree = "<group>"; };
 		AA14A0452ACAB01700DAD2E0 /* AmityChatFriendScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmityChatFriendScreenViewModelProtocol.swift; sourceTree = "<group>"; };
@@ -1827,6 +1837,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA130A0D2C089DBE00F80ADF /* GooglePlaces in Frameworks */,
+				AA130A0A2C089D9200F80ADF /* GoogleMaps in Frameworks */,
 				FA6276CF2A53B7C2003DFE4E /* AmitySDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3106,6 +3118,7 @@
 				975F14CE2696C4A3009C94C7 /* User Settings */,
 				AAD6563C2BC91CD300942E9D /* Search Posts */,
 				AA3A247F2A6B9C49004CEEA0 /* OneKTBActivityDetail */,
+				AA1309FE2C082F3B00F80ADF /* Google Maps  */,
 			);
 			path = Comunity;
 			sourceTree = "<group>";
@@ -4478,6 +4491,25 @@
 				AA0C656F2BA0081F006595EF /* NewZoomAnimator.swift */,
 			);
 			path = Zoom;
+			sourceTree = "<group>";
+		};
+		AA1309FE2C082F3B00F80ADF /* Google Maps  */ = {
+			isa = PBXGroup;
+			children = (
+				AA1309FA2C082F3100F80ADF /* AmityGoogleMapsViewController.swift */,
+				AA1309FB2C082F3100F80ADF /* AmityGoogleMapsViewController.xib */,
+				AA130A6E2C09CBC500F80ADF /* Cell */,
+			);
+			path = "Google Maps ";
+			sourceTree = "<group>";
+		};
+		AA130A6E2C09CBC500F80ADF /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				AA130A6A2C09CBBC00F80ADF /* AmityGooglePlacesTableViewCell.swift */,
+				AA130A6F2C0A161F00F80ADF /* AmityGooglePlacesTableViewCell.xib */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		AA14A0422ACAAF7700DAD2E0 /* Friend */ = {
@@ -6030,6 +6062,8 @@
 			name = AmityUIKit;
 			packageProductDependencies = (
 				FA6276CE2A53B7C2003DFE4E /* AmitySDK */,
+				AA130A092C089D9200F80ADF /* GoogleMaps */,
+				AA130A0C2C089DBD00F80ADF /* GooglePlaces */,
 			);
 			productName = UpstraUIKit;
 			productReference = 72A3503024EA811500DA9D46 /* AmityUIKit.framework */;
@@ -6082,6 +6116,8 @@
 			mainGroup = 72A3502624EA811500DA9D46;
 			packageReferences = (
 				FA6276CD2A53B7C2003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */,
+				AA130A082C089D9200F80ADF /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+				AA130A0B2C089DBD00F80ADF /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			productRefGroup = 72A3503124EA811500DA9D46 /* Products */;
 			projectDirPath = "";
@@ -6137,6 +6173,7 @@
 				AACEF1B72AA9B1D1001D7020 /* AmityCategoryCommunityListViewController.xib in Resources */,
 				727A2CEE26CD18740061E7C7 /* AmityImageView.xib in Resources */,
 				F097F3AD2AE8C2F9001ABADE /* EmptyFollowerView.xib in Resources */,
+				AA1309FD2C082F3100F80ADF /* AmityGoogleMapsViewController.xib in Resources */,
 				0D44378F25CCFEBD00C03616 /* AmityPostFooterTableViewCell.xib in Resources */,
 				97D723982695ADC3000735F5 /* AmitySearchCommunityTableViewCell.xib in Resources */,
 				DFB48B3B2B18B4830069E915 /* AmityEditMenuCollectionViewCell.xib in Resources */,
@@ -6228,6 +6265,7 @@
 				B729BF6F2519163F00FC1A98 /* AmityMyCommunityTableViewCell.xib in Resources */,
 				A0B68B6126E7238E007D7B5B /* AmityPostLiveStreamTableViewCell.xib in Resources */,
 				975F14DD2696C4A3009C94C7 /* AmityUserSettingsViewController.xib in Resources */,
+				AA130A702C0A161F00F80ADF /* AmityGooglePlacesTableViewCell.xib in Resources */,
 				AAD6564B2BD76BD200942E9D /* PreviewImagePickerPostController.xib in Resources */,
 				A0A903AD26BA6E86002949B2 /* PostGallerySegmentedControlCell.xib in Resources */,
 				DFC231D42B6B851C00F07DA6 /* AmityPreviewSelectedFromPickerViewController.xib in Resources */,
@@ -6471,6 +6509,7 @@
 				72A3517124EA820800DA9D46 /* AmityImagePickerImageView.swift in Sources */,
 				AA0C65822BA0081F006595EF /* NewPreviewTitleBuilder.swift in Sources */,
 				B7B31C61250F4ACF000AC6E4 /* PagerTabStripBehaviour.swift in Sources */,
+				AA1309FC2C082F3100F80ADF /* AmityGoogleMapsViewController.swift in Sources */,
 				72A3513C24EA820800DA9D46 /* UIViewController+Extension.swift in Sources */,
 				DFC231DA2B6B933000F07DA6 /* AmityPreviewSelectedFromPickerScreenViewModel.swift in Sources */,
 				72A3517B24EA820800DA9D46 /* CheckmarkView.swift in Sources */,
@@ -6686,6 +6725,7 @@
 				97D723DB2695B133000735F5 /* AmityUserFollowersScreenViewModelProtocol.swift in Sources */,
 				721C8C87262D1EA100BA576C /* AmityCommentEditorViewController.swift.swift in Sources */,
 				AA61D1882AD2F1C700CD217B /* GroupChatCreatorFirstViewController.swift in Sources */,
+				AA130A6C2C09CBBC00F80ADF /* AmityGooglePlacesTableViewCell.swift in Sources */,
 				72A3514124EA820800DA9D46 /* AmityComunity.swift in Sources */,
 				B788B935252D8B71002F4F12 /* AmityTrendingCommunityScreenViewModelProtocol.swift in Sources */,
 				F097F38D2AE835E5001ABADE /* AmityMemberPickerChatFirstViewController.swift in Sources */,
@@ -7086,6 +7126,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -7143,6 +7184,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -7316,6 +7358,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -7434,6 +7477,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -7535,6 +7579,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		AA130A082C089D9200F80ADF /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 9.0.0;
+			};
+		};
+		AA130A0B2C089DBD00F80ADF /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 9.0.0;
+			};
+		};
 		FA6276CD2A53B7C2003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kkpp9989/amityuikit-frameworks-package.git";
@@ -7546,6 +7606,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AA130A092C089D9200F80ADF /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA130A082C089D9200F80ADF /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+		AA130A0C2C089DBD00F80ADF /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA130A0B2C089DBD00F80ADF /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
 		FA6276CE2A53B7C2003DFE4E /* AmitySDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FA6276CD2A53B7C2003DFE4E /* XCRemoteSwiftPackageReference "amityuikit-frameworks-package" */;

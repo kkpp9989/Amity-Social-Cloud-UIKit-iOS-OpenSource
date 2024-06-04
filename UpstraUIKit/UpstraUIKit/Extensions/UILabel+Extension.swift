@@ -101,4 +101,31 @@ extension UILabel {
         return textSize.height > bounds.size.height
     }
     
+    func setMetadata(_ metadata: [[String: Any]], forKeys keys: [String]) {
+        let formattedMetadata = formatMetadata(metadata: metadata, forKeys: keys)
+        self.text = formattedMetadata
+    }
+    
+    private func formatMetadata(metadata: [[String: Any]], forKeys keys: [String]) -> String {
+        var result = ""
+        
+        for item in metadata {
+            if let key = item["key"] as? String, keys.contains(key),
+               let values = item["value"] as? [[String: Any]] {
+                result += "\(key):\n"
+                
+                for value in values {
+                    if let subKey = value["key"] as? String {
+                        if let subValue = value["value"] as? NSAttributedString {
+                            result += "  \(subKey): \(subValue.string)\n"
+                        } else if let subValue = value["value"] {
+                            result += "  \(subKey): \(subValue)\n"
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result
+    }
 }

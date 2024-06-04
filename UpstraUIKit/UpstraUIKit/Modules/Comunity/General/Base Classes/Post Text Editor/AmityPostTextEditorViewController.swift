@@ -45,6 +45,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private let comunityPanelView = AmityComunityPanelView(frame: .zero)
     private let scrollView = UIScrollView(frame: .zero)
     private let textView = AmityTextView(frame: .zero)
+    private let locationView = UILabel(frame: .zero)
     private let separaterLine = UIView(frame: .zero)
     private let galleryView = AmityGalleryCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let fileView = AmityFileTableView(frame: .zero, style: .plain)
@@ -78,6 +79,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     weak var delegate: AmityPostViewControllerDelegate?
     
     private var mediaAsset: [PHAsset] = []
+    private var locationMetadata: [String: Any] = [:]
     
     init(postTarget: AmityPostTarget, postMode: AmityPostMode, settings: AmityPostEditorSettings) {
         
@@ -143,6 +145,18 @@ public class AmityPostTextEditorViewController: AmityViewController {
         textView.setupWithoutSuggestions()
         textView.placeholder = AmityLocalizedStringSet.postCreationTextPlaceholder.localizedString
         scrollView.addSubview(textView)
+        
+        // Add tap gesture recognizer to the locationView
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapOnLabel))
+        locationView.addGestureRecognizer(tapGesture)
+        locationView.isUserInteractionEnabled = true
+        
+        locationView.translatesAutoresizingMaskIntoConstraints = false
+        locationView.font = AmityFontSet.body
+        locationView.textColor = AmityColorSet.highlight
+        locationView.numberOfLines = 0
+        locationView.isHidden = true
+        scrollView.addSubview(locationView)
         
         separaterLine.translatesAutoresizingMaskIntoConstraints = false
         separaterLine.backgroundColor = AmityColorSet.secondary.blend(.shade4)
@@ -211,7 +225,11 @@ public class AmityPostTextEditorViewController: AmityViewController {
             separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
             separaterLine.centerYAnchor.constraint(equalTo: galleryView.topAnchor),
             separaterLine.heightAnchor.constraint(equalToConstant: 1),
-            galleryView.topAnchor.constraint(equalTo: textView.bottomAnchor),
+            locationView.topAnchor.constraint(equalTo: textView.bottomAnchor),
+            locationView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            locationView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
+            locationView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 16),
+            galleryView.topAnchor.constraint(equalTo: locationView.bottomAnchor),
             galleryView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             galleryView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             galleryView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
@@ -323,6 +341,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         view.endEditing(true)
         postButton.isEnabled = false
         let metadata = mentionManager?.getMetadata()
+        let location = locationMetadata
         let mentionees = mentionManager?.getMentionees()
         if let post = currentPost {
             // update post
@@ -333,7 +352,30 @@ public class AmityPostTextEditorViewController: AmityViewController {
             if case .community(let community) = postTarget {
                 communityId = community.communityId
             }
-            screenViewModel.createPost(text: text, medias: medias, files: files, communityId: communityId, metadata: metadata, mentionees: mentionees)
+            screenViewModel.createPost(text: text, medias: medias, files: files, communityId: communityId, metadata: metadata, mentionees: mentionees, location: location)
+        }
+    }
+    
+    @objc func handleTapOnLabel(gesture: UITapGestureRecognizer) {
+        // Get the location of the tap relative to the label
+        let location = gesture.location(in: locationView)
+        
+        // Determine if the tap occurred within the bounds of the image attachment
+        if let attributedString = locationView.attributedText {
+            let textContainer = NSTextContainer(size: CGSize(width: locationView.bounds.width, height: CGFloat.greatestFiniteMagnitude))
+            let layoutManager = NSLayoutManager()
+            let textStorage = NSTextStorage(attributedString: attributedString)
+            textStorage.addLayoutManager(layoutManager)
+            layoutManager.addTextContainer(textContainer)
+            
+            let characterIndex = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+            
+            if let attachment = attributedString.attribute(.attachment, at: characterIndex, effectiveRange: nil) as? NSTextAttachment {
+                // Handle the tap on the image attachment here
+                self.locationView.text = nil
+                self.locationView.isHidden = true
+                self.locationMetadata = [:]
+            }
         }
     }
     
@@ -875,8 +917,51 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             filePicker.present(from: view, files: fileView.files)
         case .expand:
             presentBottomSheetMenus()
+        case .maps:
+            presentMapsView()
         }
         
+    }
+    
+    private func presentMapsView() {
+        let vc = AmityGoogleMapsViewController.make()
+        vc.tapDoneButton = { metadata in
+            self.locationMetadata = metadata
+            self.updateLocationView(with: metadata)
+        }
+        
+        let navVc = UINavigationController(rootViewController: vc)
+        navVc.modalPresentationStyle = .fullScreen
+        present(navVc, animated: true, completion: nil)
+    }
+    
+    func updateLocationView(with metadata: [String: Any]) {
+        if let location = metadata["location"] as? [String: Any] {
+            let name = location["name"] as? String ?? ""
+            let address = location["address"] as? String ?? ""
+            let lat = location["lat"] as? Double ?? 0.0
+            let long = location["long"] as? Double ?? 0.0
+            
+            self.locationView.isHidden = false
+            var text = "- at \(name) \(address) "
+            if name.isEmpty || address.isEmpty {
+                text = "- \(lat), \(long) "
+            }
+            
+            // Create an attributed string with the text
+            let attributedString = NSMutableAttributedString(string: text)
+                        
+            let imageRightAttachment = NSTextAttachment()
+            imageRightAttachment.image = AmityIconSet.iconDeleteLocation
+            imageRightAttachment.bounds = CGRect(x: 0, y: 0, width: locationView.bounds.height, height: locationView.bounds.height)
+            let attachmentRightString = NSAttributedString(attachment: imageRightAttachment)
+            attributedString.append(attachmentRightString)
+            
+            self.locationView.attributedText = attributedString
+        } else {
+            // Handle the case where meta["location"] is not the expected type
+            self.locationView.isHidden = true
+        }
     }
     
     private func presentBottomSheetMenus() {

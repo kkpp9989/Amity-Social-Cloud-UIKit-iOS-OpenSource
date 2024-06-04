@@ -103,6 +103,20 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         
         displayNameLabel.delegate = self
         datetimeLabel.text = post.subtitle
+        
+        if let metadata = post.metadata, let location = metadata["location"] as? [String: Any] {
+            let name = location["name"] as? String ?? ""
+            let address = location["address"] as? String ?? ""
+            let lat = location["lat"] as? Double ?? 0.0
+            let long = location["long"] as? Double ?? 0.0
+            
+            var text = "- at \(name) \(address)"
+            if name.isEmpty || address.isEmpty {
+                text = "- \(lat), \(long)"
+            }
+            
+            datetimeLabel.text = "\(datetimeLabel.text ?? "") \(text)"
+        }
     }
 
     // MARK: - Setup views
@@ -132,6 +146,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         datetimeLabel.font = AmityFontSet.caption
         datetimeLabel.textColor = AmityColorSet.base.blend(.shade1)
         datetimeLabel.text = "45 mins"
+        datetimeLabel.numberOfLines = 0
         
         // option
         optionButton.tintColor = AmityColorSet.base
