@@ -28,7 +28,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     }
     
     // MARK: - Action
-    func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any]) {
         AmityEventHandler.shared.showKTBLoading()
         // [URL Preview] Add get URL metadata for cache in post metadata to show URL preview
         if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
@@ -44,6 +44,9 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     updatedMetadata["url_preview_cache_url"] = ""
                     updatedMetadata["is_show_url_preview"] = false
                 }
+                if let updateLocation = location["location"] {
+                    updatedMetadata["location"] = updateLocation
+                }
                 doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
             }
         } else {
@@ -51,6 +54,10 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             updatedMetadata["url_preview_cache_title"] = ""
             updatedMetadata["url_preview_cache_url"] = ""
             updatedMetadata["is_show_url_preview"] = false
+            
+            if let updateLocation = location["location"] {
+                updatedMetadata["location"] = updateLocation
+            }
             doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
         }
     }

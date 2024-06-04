@@ -102,6 +102,8 @@ public struct AmityIconSet {
     public static var iconDNASatsue = UIImage(named: "icon_dna_satsue", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconDNASumrej = UIImage(named: "icon_dna_sumrej", in: AmityUIKitManager.bundle, compatibleWith: nil)
     
+    public static var iconDeleteLocation = UIImage(named: "icon_delete_location", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    
     public struct File {
         public static var iconFileAudio = UIImage(named: "icon_file_audio", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconFileAVI = UIImage(named: "icon_file_avi", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -191,6 +193,7 @@ public struct AmityIconSet {
         public static var iconOfflineIndicator = UIImage(named: "icon_offline_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconOnlineIndicator = UIImage(named: "icon_online_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMessageUnsent = UIImage(named: "icon_unsend_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconShareLocation = UIImage(named: "icon_share_location", in: AmityUIKitManager.bundle, compatibleWith: nil)
         
         // Broadcast
         public static var iconBroadcast = UIImage(named: "icon_broadcast", in: AmityUIKitManager.bundle, compatibleWith: nil)
@@ -244,6 +247,7 @@ public struct AmityIconSet {
     enum CreatePost {
         public static var iconPost = UIImage(named: "icon_post", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconPoll = UIImage(named: "icon_poll", in: AmityUIKitManager.bundle, compatibleWith: nil)
+        public static var iconLocation = UIImage(named: "icon_location", in: AmityUIKitManager.bundle, compatibleWith: nil)
     }
     
     enum EditMessesgeMenu {

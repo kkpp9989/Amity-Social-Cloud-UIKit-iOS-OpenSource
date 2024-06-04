@@ -18,6 +18,7 @@ enum AmityPostMenuActionType {
     case video
     case file
     case expand
+    case maps
 }
 
 public enum AmityPostAttachmentType: CaseIterable {
@@ -39,6 +40,7 @@ class AmityPostTextEditorMenuView: UIView {
     private let videoButton = AmityButton(frame: .zero)
     private let fileButton = AmityButton(frame: .zero)
     private let expandButton = AmityButton(frame: .zero)
+    private let mapsButton = AmityButton(frame: .zero)
     
     var currentAttachmentState: AmityPostAttachmentType? {
         didSet {
@@ -85,12 +87,14 @@ class AmityPostTextEditorMenuView: UIView {
         videoButton.addTarget(self, action: #selector(tapVideo), for: .touchUpInside)
         fileButton.setImage(AmityIconSet.iconAttach, for: .normal)
         fileButton.addTarget(self, action: #selector(tapFile), for: .touchUpInside)
+        mapsButton.setImage(AmityIconSet.CreatePost.iconLocation, for: .normal)
+        mapsButton.addTarget(self, action: #selector(tapMaps), for: .touchUpInside)
         expandButton.setImage(AmityIconSet.iconDownChevron, for: .normal)
         expandButton.addTarget(self, action: #selector(tapExpand), for: .touchUpInside)
         
         // Setup arrangedSubview in stackview
         
-        let buttonsToAdd = [cameraButton, albumButton, videoButton, fileButton, expandButton]
+        let buttonsToAdd = [cameraButton, albumButton, videoButton, fileButton, mapsButton, expandButton]
         for button in buttonsToAdd {
             button.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
@@ -110,7 +114,8 @@ class AmityPostTextEditorMenuView: UIView {
         albumButton.isHidden = allowPostAttachments.isDisjoint(with: [.image])
         videoButton.isHidden = allowPostAttachments.isDisjoint(with: [.video])
         fileButton.isHidden = allowPostAttachments.isDisjoint(with: [.file])
-        
+        mapsButton.isHidden = false
+
         // At empty view, at beginning, and the end of the stackview.
         // This logic works together with stackView.distribution = .equalCentering
         // To create buttons position arrangment, and also create negative space at left and right side.
@@ -183,4 +188,7 @@ class AmityPostTextEditorMenuView: UIView {
         delegate?.postMenuView(self, didTap: .expand)
     }
 
+    @objc private func tapMaps() {
+        delegate?.postMenuView(self, didTap: .maps)
+    }
 }
