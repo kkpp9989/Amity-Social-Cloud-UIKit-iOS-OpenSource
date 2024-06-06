@@ -50,9 +50,6 @@
                                                     <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="yVO-wK-aFP" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="461" width="449" height="132"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="132" id="jyB-45-Dcl"/>
-                                                        </constraints>
                                                     </view>
                                                 </subviews>
                                             </stackView>

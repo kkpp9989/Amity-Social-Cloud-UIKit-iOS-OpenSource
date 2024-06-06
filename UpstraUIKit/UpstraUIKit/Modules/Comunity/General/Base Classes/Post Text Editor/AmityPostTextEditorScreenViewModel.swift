@@ -149,6 +149,10 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     updatedMetadata["url_preview_cache_url"] = ""
                     updatedMetadata["is_show_url_preview"] = false
                 }
+                
+                if let updateLocation = oldPost.metadata?["location"] {
+                    updatedMetadata["location"] = updateLocation
+                }
                 doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
             }
         } else {
@@ -156,6 +160,10 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             updatedMetadata["url_preview_cache_title"] = ""
             updatedMetadata["url_preview_cache_url"] = ""
             updatedMetadata["is_show_url_preview"] = false
+            
+            if let updateLocation = oldPost.metadata?["location"] {
+                updatedMetadata["location"] = updateLocation
+            }
             doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
         }
     }
