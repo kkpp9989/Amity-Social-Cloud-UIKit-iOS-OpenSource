@@ -430,7 +430,15 @@ private extension AmityMessageListViewController {
     }
     
     func locationTap() {
+        let vc = AmityGoogleMapsViewController.make()
+        vc.tapDoneButton = { [weak self] (metadata) in
+            guard let strongSelf = self else { return }
+            strongSelf.screenViewModel.action.send(withMetadata: metadata)
+        }
         
+        let navVc = UINavigationController(rootViewController: vc)
+        navVc.modalPresentationStyle = .fullScreen
+        present(navVc, animated: true, completion: nil)
     }
     
     @IBAction func closeReplyContainerTap(_ sender: UIButton) {

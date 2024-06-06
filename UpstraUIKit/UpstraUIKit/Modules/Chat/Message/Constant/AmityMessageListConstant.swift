@@ -24,6 +24,8 @@ public enum AmityMessageTypes: CaseIterable {
     case replyIncoming
     case replyOutgoing
     case operation
+    case locationIncomming
+    case locationOutgoing
     
     var identifier: String {
         switch self {
@@ -42,6 +44,8 @@ public enum AmityMessageTypes: CaseIterable {
         case .replyIncoming: return "replyIncoming"
         case .replyOutgoing: return "replyOutgoing"
         case .operation: return "operation"
+        case .locationIncomming: return "locationIncomming"
+        case .locationOutgoing: return "locationOutgoing"
         }
     }
     
@@ -77,6 +81,10 @@ public enum AmityMessageTypes: CaseIterable {
             return UINib(nibName: "AmityMessageReplyOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .operation:
             return UINib(nibName: "AmityOperationChatTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .locationIncomming:
+            return UINib(nibName: "AmityLocationIncommingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .locationOutgoing:
+            return UINib(nibName: "AmityLocationOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         }
     }
     
@@ -106,6 +114,10 @@ public enum AmityMessageTypes: CaseIterable {
             return AmityMessageReplyTableViewCell.self
         case .operation:
             return AmityOperationChatTableViewCell.self
+        case .locationIncomming:
+            return AmityLocationIncommingTableViewCell.self
+        case .locationOutgoing:
+            return AmityLocationOutgoingTableViewCell.self
         }
     }
     
