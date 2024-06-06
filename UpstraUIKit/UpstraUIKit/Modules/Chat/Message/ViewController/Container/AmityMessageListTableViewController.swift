@@ -354,7 +354,11 @@ extension AmityMessageListTableViewController {
             case .file:
                 return message.isOwner ? AmityMessageTypes.fileOutgoing.identifier : AmityMessageTypes.fileIncoming.identifier
             case .custom:
-                return AmityMessageTypes.operation.identifier
+                if message.metadata?["location"] != nil || message.data?["location"] != nil {
+                    return message.isOwner ? AmityMessageTypes.locationOutgoing.identifier : AmityMessageTypes.locationIncomming.identifier
+                } else {
+                    return AmityMessageTypes.operation.identifier
+                }
             default:
                 return nil
             }

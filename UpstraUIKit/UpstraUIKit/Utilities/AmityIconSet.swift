@@ -194,7 +194,8 @@ public struct AmityIconSet {
         public static var iconOnlineIndicator = UIImage(named: "icon_online_indicator", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconMessageUnsent = UIImage(named: "icon_unsend_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
         public static var iconShareLocation = UIImage(named: "icon_share_location", in: AmityUIKitManager.bundle, compatibleWith: nil)
-        
+        public static var iconLocationPlaceholder = UIImage(named: "icon_location_placeholder", in: AmityUIKitManager.bundle, compatibleWith: nil)
+
         // Broadcast
         public static var iconBroadcast = UIImage(named: "icon_broadcast", in: AmityUIKitManager.bundle, compatibleWith: nil)
         

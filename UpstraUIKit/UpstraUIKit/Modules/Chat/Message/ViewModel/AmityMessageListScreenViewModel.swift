@@ -367,6 +367,24 @@ extension AmityMessageListScreenViewModel {
         }
     }
     
+    func send(withMetadata metadata: [String: Any]?) {
+        self.scrollToLatestMessage() // Scroll to latest message for see send text progressing
+        
+        guard let metadata = metadata else { return }
+
+        // Send location
+        let options = AmityCustomMessageCreateOptions(subChannelId: channelId, data: metadata, metadata: metadata)
+        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createCustomMessage, parameters: options) { [weak self] (message, error) in
+            guard error == nil, let _ = message else {
+                if let error = error {
+                    self?.delegate?.screenViewModelEvents(for: .didSendTextError(error: error))
+                }
+                return
+            }
+            self?.delegate?.screenViewModelEvents(for: .didSendText)
+        }
+    }
+    
     func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?){
         let textMessage = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !textMessage.isEmpty else { return }

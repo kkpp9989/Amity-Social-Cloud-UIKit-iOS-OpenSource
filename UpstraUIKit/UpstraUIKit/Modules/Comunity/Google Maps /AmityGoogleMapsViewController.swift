@@ -202,12 +202,11 @@ class AmityGoogleMapsViewController: AmityViewController {
     
     func fetchPlaceDetail(placeID: String, placeData: GMSAutocompleteSuggestion) {
         // Specify the place data types to return.
-        let myProperties: [String] = ["name", "coordinate"]
-
-        // Create the GMSFetchPlaceRequest object.
-        let fetchPlaceRequest = GMSFetchPlaceRequest(placeID: placeID, placeProperties: myProperties, sessionToken: token)
+        let myProperties: [String] = ["geometry/location", "name", "formatted_address"]
         
-        placesClient.fetchPlace(with: fetchPlaceRequest, callback: { [weak self] (place: GMSPlace?, error: Error?) in
+        // Create the GMSFetchPlaceRequest object.
+        let fetchPlaceRequest: GMSFetchPlaceRequest = GMSFetchPlaceRequest(placeID: placeID, placeProperties: myProperties, sessionToken: token)
+        placesClient.fetchPlace(with: fetchPlaceRequest) { [weak self] place, error in
             guard let strongSelf = self else { return }
             guard let place, error == nil else { return }
             
@@ -215,8 +214,8 @@ class AmityGoogleMapsViewController: AmityViewController {
             strongSelf.metadata["location"] = [
                 "lat": place.coordinate.latitude,
                 "long": place.coordinate.longitude,
-                "name": placeData.placeSuggestion?.attributedPrimaryText.string,
-                "address": placeData.placeSuggestion?.attributedSecondaryText?.string,
+                "name": place.name ?? placeData.placeSuggestion?.attributedPrimaryText.string ?? "",
+                "address": place.formattedAddress ?? placeData.placeSuggestion?.attributedSecondaryText?.string ?? "",
                 "googlemap_place_id": placeID
             ]
             
@@ -225,7 +224,7 @@ class AmityGoogleMapsViewController: AmityViewController {
             // call the tapDoneButton closure if it's set
             strongSelf.tapDoneButton?(strongSelf.metadata)
             strongSelf.generalDismiss()
-        })
+        }
     }
     
     func updateTableViewHeight(isShow: Bool) {

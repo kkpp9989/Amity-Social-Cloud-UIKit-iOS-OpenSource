@@ -23,8 +23,8 @@ struct AmityKeyboardComposeBarModel {
             AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
             AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
             AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file)
-//            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
+            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
+            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
         ]
     }
 }
