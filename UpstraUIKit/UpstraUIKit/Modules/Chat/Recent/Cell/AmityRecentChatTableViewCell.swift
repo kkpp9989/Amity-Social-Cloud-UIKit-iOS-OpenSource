@@ -152,10 +152,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         if let previewMessage = channel.previewMessage {
             //  You can access data of preview message in same way as AmityMessage
             let text = previewMessage.data?["text"] as? String ?? "No message yet"
+            let location = previewMessage.data?["location"] as? [String:Any]
             let type = previewMessage.dataType
 
             var displayName: String = ""
-            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId, type != .custom {
+            if let previewUserID = previewMessage.user?.userId, previewUserID == AmityUIKitManager.client.currentUserId {
                 displayName = "You: "
             }
             
@@ -163,7 +164,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             case .text:
                 displayName += text
             case .custom:
-                displayName += text
+                if let _ = location {
+                    displayName += "Sent a location"
+                } else {
+                    displayName = "No message yet"
+                }
             case .file:
                 displayName += "Sent a file"
             case .video:

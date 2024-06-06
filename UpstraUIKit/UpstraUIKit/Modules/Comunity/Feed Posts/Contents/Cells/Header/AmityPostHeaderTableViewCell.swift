@@ -95,28 +95,60 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             optionButton.isHidden = !(post.appearance.shouldShowOption && post.isCommentable)
         }
         
-        if post.isModerator {
-            badgeStackView.isHidden = post.postAsModerator
-        } else {
-            badgeStackView.isHidden = true
-        }
+//        if post.isModerator {
+//            badgeStackView.isHidden = post.postAsModerator
+//        } else {
+//            badgeStackView.isHidden = true
+//        }
         
-        displayNameLabel.delegate = self
-        datetimeLabel.text = post.subtitle
-        
+        //        datetimeLabel.text = post.subtitle
+                
+        var locationText = ""
         if let metadata = post.metadata, let location = metadata["location"] as? [String: Any] {
             let name = location["name"] as? String ?? ""
             let address = location["address"] as? String ?? ""
             let lat = location["lat"] as? Double ?? 0.0
             let long = location["long"] as? Double ?? 0.0
             
-            var text = "- at \(name) \(address)"
+            locationText = "- at \(name) \(address) "
             if name.isEmpty || address.isEmpty {
-                text = "- \(lat), \(long)"
+                locationText = "- \(lat), \(long)"
             }
-            
-            datetimeLabel.text = "\(datetimeLabel.text ?? "") \(text)"
         }
+        
+        let attributedString = NSMutableAttributedString()
+
+        if !post.isModerator {
+            // Append the badge icon
+            let badgeIconImageViewAttachment = NSTextAttachment()
+            badgeIconImageViewAttachment.image = AmityIconSet.iconBadgeModerator
+            badgeIconImageViewAttachment.bounds = CGRect(x: 0, y: 0, width: 12, height: 12)
+            let attachmentString = NSAttributedString(attachment: badgeIconImageViewAttachment)
+            attributedString.append(attachmentString)
+            
+            // Append the localized string with the desired font
+            let moderatorString = " " + AmityLocalizedStringSet.General.moderator.localizedString + " • "
+            let moderatorAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.captionBold]
+            let moderatorAttributedString = NSAttributedString(string: moderatorString, attributes: moderatorAttributes)
+            attributedString.append(moderatorAttributedString)
+            
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(badgeLabelTapped))
+            badgeLabel.isUserInteractionEnabled = true
+            badgeLabel.addGestureRecognizer(tapGestureRecognizer)
+        }
+
+        // Append the post subtitle with the desired font
+        let subtitleAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
+        let subtitleAttributedString = NSAttributedString(string: " " + post.subtitle + " ", attributes: subtitleAttributes)
+        attributedString.append(subtitleAttributedString)
+        
+        // Append the post subtitle with the desired font
+        let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
+        let locationAttributedString = NSAttributedString(string: locationText, attributes: locationAttributes)
+        attributedString.append(locationAttributedString)
+
+        // Assign the attributed string to the label
+        badgeLabel.attributedText = attributedString
     }
 
     // MARK: - Setup views
@@ -140,13 +172,16 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
         badgeLabel.font = AmityFontSet.captionBold
         badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
+        badgeLabel.numberOfLines = 2
         badgeIconImageView.image = AmityIconSet.iconBadgeModerator
+        badgeIconImageView.isHidden = true
         
         // date time
         datetimeLabel.font = AmityFontSet.caption
         datetimeLabel.textColor = AmityColorSet.base.blend(.shade1)
         datetimeLabel.text = "45 mins"
-        datetimeLabel.numberOfLines = 0
+        datetimeLabel.numberOfLines = 2
+        datetimeLabel.isHidden = true
         
         // option
         optionButton.tintColor = AmityColorSet.base
@@ -177,6 +212,37 @@ private extension AmityPostHeaderTableViewCell {
     func communityTap() {
         performAction(action: .tapCommunityName)
     }
+    
+    @objc func badgeLabelTapped() {
+        if let location = post?.metadata?["location"] as? [String:Any] {
+            let latitude = location["lat"] as? Double
+            let longitude = location["long"] as? Double
+            
+            var urlString: String
+            if let latitude = latitude, let longitude = longitude {
+                // Use the coordinates to open Google Maps
+                urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+            } else {
+                return
+            }
+            
+            if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                // Fallback to Google Maps web if the app is not installed
+                if let latitude = latitude, let longitude = longitude {
+                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                } else {
+                    return
+                }
+                
+                if let url = URL(string: urlString) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+        }
+    }
+
 }
 
 extension AmityPostHeaderTableViewCell: AmityFeedDisplayNameLabelDelegate {

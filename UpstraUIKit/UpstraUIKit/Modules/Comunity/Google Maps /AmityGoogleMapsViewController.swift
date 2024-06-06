@@ -257,14 +257,6 @@ extension AmityGoogleMapsViewController: UITextFieldDelegate {
 
 // MARK: Google Maps Delegate
 extension AmityGoogleMapsViewController: GMSMapViewDelegate {
-    func mapView(_ mapView: GMSMapView, didTapMyLocation location: CLLocationCoordinate2D) {
-        let alert = UIAlertController(
-            title: "Location Tapped",
-            message: "Current location: <\(location.latitude), \(location.longitude)>",
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         // Move the marker to the tapped location.
@@ -294,6 +286,10 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
         guard let location = locations.first else {
             return
         }
+                
+        selectedMarker = GMSMarker(position: location.coordinate)
+        selectedMarker?.map = mapView
+        
         mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 10, bearing: 0, viewingAngle: 0)
         locationManager.stopUpdatingLocation()
         

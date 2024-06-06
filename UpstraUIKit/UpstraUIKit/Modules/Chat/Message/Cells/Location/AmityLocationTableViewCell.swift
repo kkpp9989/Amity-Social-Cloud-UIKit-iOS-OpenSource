@@ -51,14 +51,24 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         super.display(message: message)
         
+        if message.isOwner {
+            containerView.backgroundColor = AmityColorSet.messageBubble
+        } else {
+            containerView.backgroundColor = AmityColorSet.messageBubbleInverse
+        }
+        
         // Display text
         if let tableBoundingWidth = tableBoundingWidth {
             addressLabel.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
         }
         
+        var locationText: String = ""
         if let location  = message.data?["location"] as? [String: Any], let address = location["address"] as? String, !address.isEmpty {
-            addressLabel.text = address
+            locationText = address
+        } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["long"] as? Double {
+            locationText = "\(lat), \(long)"
         }
+        addressLabel.text = locationText
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -115,8 +125,32 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
 private extension AmityLocationTableViewCell {
     @objc
     func imageViewTap() {
-        if messageImageView.image != AmityIconSet.defaultMessageImage {
-            screenViewModel.action.performCellEvent(for: .imageViewer(indexPath: indexPath, imageView: messageImageView))
+        if let location = message?.data?["location"] as? [String:Any] {
+            let latitude = location["lat"] as? Double
+            let longitude = location["long"] as? Double
+            
+            var urlString: String
+            if let latitude = latitude, let longitude = longitude {
+                // Use the coordinates to open Google Maps
+                urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+            } else {
+                return
+            }
+            
+            if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                // Fallback to Google Maps web if the app is not installed
+                if let latitude = latitude, let longitude = longitude {
+                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                } else {
+                    return
+                }
+                
+                if let url = URL(string: urlString) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
         }
     }
 }
