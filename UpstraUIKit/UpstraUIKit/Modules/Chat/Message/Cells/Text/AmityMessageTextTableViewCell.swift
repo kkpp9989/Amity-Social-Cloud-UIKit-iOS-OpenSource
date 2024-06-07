@@ -64,6 +64,7 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
             textMessageView.textColor = AmityColorSet.baseInverse
             textMessageView.readMoreColor = AmityColorSet.highlightMessageBoardcast
             textMessageView.hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+            highlightColor = AmityColorSet.highlightMessageBoardcast
         }
 		
 		let mentionees = message.mentionees ?? []
