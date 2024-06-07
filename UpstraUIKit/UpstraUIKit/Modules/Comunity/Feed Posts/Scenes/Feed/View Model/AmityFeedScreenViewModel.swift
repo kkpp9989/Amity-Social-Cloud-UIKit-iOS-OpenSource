@@ -324,6 +324,7 @@ extension AmityFeedScreenViewModel {
 // MARK: Observer
 extension AmityFeedScreenViewModel {
     func startObserveFeedUpdate() {
+        if isKTBFeed { return }
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didCreate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didDelete, object: nil)
