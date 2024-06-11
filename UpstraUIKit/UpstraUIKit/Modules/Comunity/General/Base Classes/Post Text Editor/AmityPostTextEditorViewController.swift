@@ -848,6 +848,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
         setupMentionManager(withPost: postModel)
         updateConstraints()
         updateViewState()
+        updateLocationView(with: postModel.metadata ?? [:])
     }
     
     func screenViewModelDidCreatePost(_ viewModel: AmityPostTextEditorScreenViewModel, post: AmityPost?, error: Error?) {
@@ -940,7 +941,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             let name = location["name"] as? String ?? ""
             let address = location["address"] as? String ?? ""
             let lat = location["lat"] as? Double ?? 0.0
-            let long = location["long"] as? Double ?? 0.0
+            let long = location["lng"] as? Double ?? 0.0
             
             self.locationView.isHidden = false
             var text = "at \(name) \(address) "

@@ -108,7 +108,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             let name = location["name"] as? String ?? ""
             let address = location["address"] as? String ?? ""
             let lat = location["lat"] as? Double ?? 0.0
-            let long = location["long"] as? Double ?? 0.0
+            let long = location["lng"] as? Double ?? 0.0
             
             locationText = "\(name) \(address) "
             if name.isEmpty || address.isEmpty {
@@ -117,7 +117,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         }
         
         let attributedString = NSMutableAttributedString()
-        if !post.isModerator {
+        if post.isModerator {
             // Append the badge icon
             let badgeIconImageViewAttachment = NSTextAttachment()
             badgeIconImageViewAttachment.image = AmityIconSet.iconBadgeModerator
@@ -134,18 +134,20 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
 
         // Append the post subtitle with the desired font
         let subtitleAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
-        let subtitleAttributedString = NSAttributedString(string: " " + post.subtitle + " ", attributes: subtitleAttributes)
+        let subtitleAttributedString = NSAttributedString(string: " " + post.subtitle, attributes: subtitleAttributes)
         attributedString.append(subtitleAttributedString)
         
-        // Append the post prefix locatio  with the desired font
-        let prefixLocationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
-        let prefixLocationAttributeString = NSAttributedString(string: "- at ", attributes: prefixLocationAttributes)
-        attributedString.append(prefixLocationAttributeString)
-        
-        // Append the post subtitle with the desired font
-        let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.highlight.blend(.shade1)]
-        let locationAttributedString = NSAttributedString(string: locationText, attributes: locationAttributes)
-        attributedString.append(locationAttributedString)
+        if !locationText.isEmpty {
+            // Append the post prefix locatio  with the desired font
+            let prefixLocationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
+            let prefixLocationAttributeString = NSAttributedString(string: " - at ", attributes: prefixLocationAttributes)
+            attributedString.append(prefixLocationAttributeString)
+            
+            // Append the post subtitle with the desired font
+            let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.highlight]
+            let locationAttributedString = NSAttributedString(string: locationText, attributes: locationAttributes)
+            attributedString.append(locationAttributedString)
+        }
 
         // Assign the attributed string to the label
         badgeLabel.attributedText = attributedString
@@ -220,7 +222,7 @@ private extension AmityPostHeaderTableViewCell {
     @objc func badgeLabelTapped() {
         if let location = post?.metadata?["location"] as? [String:Any] {
             let latitude = location["lat"] as? Double
-            let longitude = location["long"] as? Double
+            let longitude = location["lng"] as? Double
             let placeId = location["googlemap_place_id"] as? String
 
             var urlString: String
