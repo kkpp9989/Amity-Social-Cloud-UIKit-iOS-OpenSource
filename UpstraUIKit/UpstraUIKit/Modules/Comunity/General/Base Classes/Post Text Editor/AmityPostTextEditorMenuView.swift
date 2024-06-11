@@ -148,21 +148,25 @@ class AmityPostTextEditorMenuView: UIView {
             albumButton.isEnabled = true
             videoButton.isEnabled = false
             fileButton.isEnabled = false
+            mapsButton.isEnabled = true
         case .video:
             cameraButton.isEnabled = true
             albumButton.isEnabled = false
             videoButton.isEnabled = true
             fileButton.isEnabled = false
+            mapsButton.isEnabled = true
         case .file:
             cameraButton.isEnabled = false
             albumButton.isEnabled = false
             videoButton.isEnabled = false
             fileButton.isEnabled = true
+            mapsButton.isEnabled = true
         case .none:
             cameraButton.isEnabled = true
             albumButton.isEnabled = true
             videoButton.isEnabled = true
             fileButton.isEnabled = true
+            mapsButton.isEnabled = true
         }
     }
     
