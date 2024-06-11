@@ -943,9 +943,9 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             let long = location["long"] as? Double ?? 0.0
             
             self.locationView.isHidden = false
-            var text = "- at \(name) \(address) "
+            var text = "at \(name) \(address) "
             if name.isEmpty || address.isEmpty {
-                text = "- at \(lat), \(long) "
+                text = "at \(lat), \(long) "
             }
             
             // Create an attributed string with the text
@@ -997,6 +997,12 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             strongSelf.filePicker.present(from: strongSelf.postMenuView, files: strongSelf.fileView.files)
         }
         
+        var mapOption = ImageItemOption(title: AmityLocalizedStringSet.General.location.localizedString,
+                                        image: AmityIconSet.CreatePost.iconLocation,
+                                          imageBackgroundColor: imageBackgroundColor) { [weak self] in
+            self?.presentMapsView()
+        }
+        
         // NOTE: Once the currentAttachmentState has changed from `none` to something else.
         // We still show the buttons, but we disable them based on the currentAttachmentState.
         if currentAttachmentState != .none {
@@ -1041,6 +1047,9 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         if settings.allowPostAttachments.contains(.video) {
             items.append(videoOption)
         }
+        
+        // Adding map button
+        items.append(mapOption)
         
         contentView.configure(items: items, selectedItem: nil)
         contentView.didSelectItem = { _ in
