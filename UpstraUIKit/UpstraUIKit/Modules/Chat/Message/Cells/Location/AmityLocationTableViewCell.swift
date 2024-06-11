@@ -44,8 +44,8 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         messageImageView.layer.cornerRadius = 4
         let tapGesuter = UITapGestureRecognizer(target: self, action: #selector(imageViewTap))
         tapGesuter.numberOfTouchesRequired = 1
-        messageImageView.isUserInteractionEnabled = true
-        messageImageView.addGestureRecognizer(tapGesuter)
+        contentView.isUserInteractionEnabled = true
+        contentView.addGestureRecognizer(tapGesuter)
     }
     
     override func display(message: AmityMessageModel) {
@@ -64,7 +64,7 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         
         var locationText: String = ""
         if let location  = message.data?["location"] as? [String: Any], let title = location["name"] as? String, let address = location["address"] as? String {
-            locationText = "\(title)\n\(address)\(title)\n\(address)"
+            locationText = "\(title)\n\(address)"
         } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["long"] as? Double {
             locationText = "\(lat), \(long)"
         }
@@ -145,7 +145,11 @@ private extension AmityLocationTableViewCell {
             var urlString: String
             if let latitude = latitude, let longitude = longitude {
                 // Use the coordinates to open Google Maps
-                urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+                if let placeId = placeId  {
+                    urlString = "comgooglemaps://?q=\(latitude),\(longitude)&q=place_id:\(placeId)"
+                } else {
+                    urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+                }
             } else {
                 return
             }
@@ -154,9 +158,12 @@ private extension AmityLocationTableViewCell {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
                 // Fallback to Google Maps web if the app is not installed
-                if let latitude = latitude, let longitude = longitude, let placeId = placeId {
-//                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
-                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)&query_place_id=\(placeId)"
+                if let latitude = latitude, let longitude = longitude {
+                    if let placeId = placeId {
+                        urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)&query_place_id=\(placeId)"
+                    } else {
+                        urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                    }
                 } else {
                     return
                 }
