@@ -11,7 +11,7 @@ import UIKit
 class AmityLocationTableViewCell: AmityMessageTableViewCell {
     
     enum Constant {
-        static let maximumLines: Int = 2
+        static let maximumLines: Int = 0
         static let textMessageFont = AmityFontSet.body
         static let spaceOfStackWithinContainerMessageView = 4.0
     }
@@ -63,8 +63,8 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         }
         
         var locationText: String = ""
-        if let location  = message.data?["location"] as? [String: Any], let address = location["address"] as? String, !address.isEmpty {
-            locationText = address
+        if let location  = message.data?["location"] as? [String: Any], let title = location["name"] as? String, let address = location["address"] as? String {
+            locationText = "\(title)\n\(address)\(title)\n\(address)"
         } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["long"] as? Double {
             locationText = "\(lat), \(long)"
         }
@@ -73,14 +73,14 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
         if message.isDeleted {
-            let displaynameHeight: CGFloat = message.isOwner ? 0 : 46
-            return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
+            let displayNameHeight: CGFloat = message.isOwner ? 0 : 46
+            return AmityMessageTableViewCell.deletedMessageCellHeight + displayNameHeight
         }
         
         var height: CGFloat = 0
         var actualWidth: CGFloat = 0
         
-        // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
+        // Calculate actual width based on whether the message is from the owner or not
         if message.isOwner {
             let horizontalPadding: CGFloat = 112
             actualWidth = boundingWidth - horizontalPadding
@@ -95,13 +95,25 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
             height += verticalPadding
         }
         
-        if let location  = message.data?["location"] as? [String: Any], let text = location["address"] as? String, !text.isEmpty {
+        // Check if the message contains location data
+        if let location = message.data?["location"] as? [String: Any], let address = location["address"] as? String, let title = location["name"] as? String {
+            var text = ""
+            if !title.isEmpty {
+                text = title
+            }
+            if !address.isEmpty {
+                text += "\n\(address)"
+            }
+            
+            // Calculate the height of the expandable label
             let maximumLines = Constant.maximumLines
             let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
             height += messageHeight
         }
         
-        height += actualWidth + 12 // height is equal actualwidth because must to set image ratio 1:1 | 12 is spacing between image and caption
+        // Add the height of the image view with aspect ratio 1:0.5
+        height += actualWidth * 0.5 // Height of the image with aspect ratio 1:0.5
+        height += 12 // Spacing between image and caption
         
         return height
     }
@@ -128,7 +140,8 @@ private extension AmityLocationTableViewCell {
         if let location = message?.data?["location"] as? [String:Any] {
             let latitude = location["lat"] as? Double
             let longitude = location["long"] as? Double
-            
+            let placeId = location["googlemap_place_id"] as? String
+
             var urlString: String
             if let latitude = latitude, let longitude = longitude {
                 // Use the coordinates to open Google Maps
@@ -141,8 +154,9 @@ private extension AmityLocationTableViewCell {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
                 // Fallback to Google Maps web if the app is not installed
-                if let latitude = latitude, let longitude = longitude {
-                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                if let latitude = latitude, let longitude = longitude, let placeId = placeId {
+//                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)&query_place_id=\(placeId)"
                 } else {
                     return
                 }

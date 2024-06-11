@@ -27,31 +27,31 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="o7Q-nO-jzK">
-                        <rect key="frame" x="68" y="16" width="486" height="15.666666666666664"/>
+                        <rect key="frame" x="68" y="15.999999999999998" width="486" height="20.333333333333329"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" axis="vertical" distribution="fillProportionally" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="SGJ-gI-fWB" userLabel="Vertical Stack View">
-                        <rect key="frame" x="68" y="39.666666666666686" width="486" height="548"/>
+                        <rect key="frame" x="68" y="44.333333333333314" width="486" height="543.33333333333348"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5mx-nZ-MGs">
-                                <rect key="frame" x="0.0" y="0.0" width="486" height="548"/>
+                                <rect key="frame" x="0.0" y="0.0" width="486" height="543.33333333333337"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eg8-b9-bhy" customClass="AmityResponsiveView" customModule="AmityUIKit" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="486" height="548"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="486" height="543.33333333333337"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="061-Ya-sht" userLabel="Vertical Stack View">
-                                                <rect key="frame" x="12" y="12" width="462" height="524"/>
+                                                <rect key="frame" x="12" y="12" width="462" height="519.33333333333337"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1yn-67-w5d">
-                                                        <rect key="frame" x="0.0" y="0.0" width="462" height="462"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="462" height="231"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" secondItem="1yn-67-w5d" secondAttribute="height" multiplier="1:1" id="EqQ-Qi-JEo"/>
+                                                            <constraint firstAttribute="width" secondItem="1yn-67-w5d" secondAttribute="height" multiplier="1:0.5" id="EqQ-Qi-JEo"/>
                                                         </constraints>
                                                     </imageView>
                                                     <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="zXS-ho-VjH" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="473.99999999999994" width="462" height="50.000000000000057"/>
+                                                        <rect key="frame" x="0.0" y="242.99999999999997" width="462" height="276.33333333333326"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     </view>
                                                 </subviews>
@@ -76,7 +76,7 @@
                         </subviews>
                     </stackView>
                     <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="h3H-2L-Z7r">
-                        <rect key="frame" x="562" y="303.66666666666669" width="20" height="20"/>
+                        <rect key="frame" x="562" y="306" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="4mX-IM-2zk"/>
                             <constraint firstAttribute="height" constant="20" id="epX-zh-fs5"/>
