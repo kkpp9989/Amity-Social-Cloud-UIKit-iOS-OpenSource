@@ -167,7 +167,7 @@ class AmityGoogleMapsViewController: AmityViewController {
             // Bind metadata dictionary
             metadata["location"] = [
                 "lat": latitude,
-                "long": longitude,
+                "lng": longitude,
                 "name": nil,
                 "address": nil,
                 "googlemap_placeId": nil
@@ -213,7 +213,7 @@ class AmityGoogleMapsViewController: AmityViewController {
             // Bind metadata dictionary
             strongSelf.metadata["location"] = [
                 "lat": place.coordinate.latitude,
-                "long": place.coordinate.longitude,
+                "lng": place.coordinate.longitude,
                 "name": place.name ?? placeData.placeSuggestion?.attributedPrimaryText.string ?? "",
                 "address": place.formattedAddress ?? placeData.placeSuggestion?.attributedSecondaryText?.string ?? "",
                 "googlemap_place_id": placeID
