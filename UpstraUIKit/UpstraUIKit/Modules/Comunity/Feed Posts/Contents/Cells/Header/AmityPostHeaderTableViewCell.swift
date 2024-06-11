@@ -110,14 +110,13 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             let lat = location["lat"] as? Double ?? 0.0
             let long = location["long"] as? Double ?? 0.0
             
-            locationText = "- at \(name) \(address) "
+            locationText = "\(name) \(address) "
             if name.isEmpty || address.isEmpty {
-                locationText = "- \(lat), \(long)"
+                locationText = "\(lat), \(long)"
             }
         }
         
         let attributedString = NSMutableAttributedString()
-
         if !post.isModerator {
             // Append the badge icon
             let badgeIconImageViewAttachment = NSTextAttachment()
@@ -131,10 +130,6 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             let moderatorAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.captionBold]
             let moderatorAttributedString = NSAttributedString(string: moderatorString, attributes: moderatorAttributes)
             attributedString.append(moderatorAttributedString)
-            
-            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(badgeLabelTapped))
-            badgeLabel.isUserInteractionEnabled = true
-            badgeLabel.addGestureRecognizer(tapGestureRecognizer)
         }
 
         // Append the post subtitle with the desired font
@@ -142,13 +137,22 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         let subtitleAttributedString = NSAttributedString(string: " " + post.subtitle + " ", attributes: subtitleAttributes)
         attributedString.append(subtitleAttributedString)
         
+        // Append the post prefix locatio  with the desired font
+        let prefixLocationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
+        let prefixLocationAttributeString = NSAttributedString(string: "- at ", attributes: prefixLocationAttributes)
+        attributedString.append(prefixLocationAttributeString)
+        
         // Append the post subtitle with the desired font
-        let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
+        let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.highlight.blend(.shade1)]
         let locationAttributedString = NSAttributedString(string: locationText, attributes: locationAttributes)
         attributedString.append(locationAttributedString)
 
         // Assign the attributed string to the label
         badgeLabel.attributedText = attributedString
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(badgeLabelTapped))
+        badgeLabel.isUserInteractionEnabled = true
+        badgeLabel.addGestureRecognizer(tapGestureRecognizer)
     }
 
     // MARK: - Setup views
@@ -217,11 +221,16 @@ private extension AmityPostHeaderTableViewCell {
         if let location = post?.metadata?["location"] as? [String:Any] {
             let latitude = location["lat"] as? Double
             let longitude = location["long"] as? Double
-            
+            let placeId = location["googlemap_place_id"] as? String
+
             var urlString: String
             if let latitude = latitude, let longitude = longitude {
                 // Use the coordinates to open Google Maps
-                urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+                if let placeId = placeId  {
+                    urlString = "comgooglemaps://?q=\(latitude),\(longitude)&q=place_id:\(placeId)"
+                } else {
+                    urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
+                }
             } else {
                 return
             }
@@ -231,7 +240,11 @@ private extension AmityPostHeaderTableViewCell {
             } else {
                 // Fallback to Google Maps web if the app is not installed
                 if let latitude = latitude, let longitude = longitude {
-                    urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                    if let placeId = placeId {
+                        urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)&query_place_id=\(placeId)"
+                    } else {
+                        urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
+                    }
                 } else {
                     return
                 }

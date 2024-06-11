@@ -229,7 +229,7 @@ class AmityGoogleMapsViewController: AmityViewController {
     
     func updateTableViewHeight(isShow: Bool) {
         // Assuming a standard row height (adjust if necessary)
-        let rowHeight: CGFloat = 65
+        let rowHeight: CGFloat = 80
         // Calculate the new height based on the number of results
         let newHeight = rowHeight * CGFloat(placeList?.count ?? 0)
         // Get the screen height

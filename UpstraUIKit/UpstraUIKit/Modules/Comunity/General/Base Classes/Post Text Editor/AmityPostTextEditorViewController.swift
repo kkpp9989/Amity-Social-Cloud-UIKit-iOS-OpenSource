@@ -945,7 +945,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             self.locationView.isHidden = false
             var text = "- at \(name) \(address) "
             if name.isEmpty || address.isEmpty {
-                text = "- \(lat), \(long) "
+                text = "- at \(lat), \(long) "
             }
             
             // Create an attributed string with the text
