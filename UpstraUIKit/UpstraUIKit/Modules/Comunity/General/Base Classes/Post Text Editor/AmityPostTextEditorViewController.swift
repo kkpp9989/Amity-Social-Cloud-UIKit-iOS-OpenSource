@@ -715,7 +715,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }
         
-        let imagePicker = NewImagePickerController(selectedAssets: mediaAsset)
+        let imagePicker = NewImagePickerController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection

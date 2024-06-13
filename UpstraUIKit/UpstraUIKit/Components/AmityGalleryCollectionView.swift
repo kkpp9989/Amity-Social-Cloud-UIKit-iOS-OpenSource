@@ -93,7 +93,7 @@ class AmityGalleryCollectionView: UICollectionView {
     }
     
     public func addMedias(_ medias: [AmityMedia]) {
-        self.medias = medias
+        self.medias += medias
         reloadData()
     }
     
