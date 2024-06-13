@@ -202,6 +202,13 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         delegate?.didPerformAction(self, action: action)
     }
     
+    func showToast() {
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+            let message = "Unable to Open Google Maps"
+            ToastView.shared.showToast(message: message, in: window)
+        }
+    }
+    
 }
 
 // MARK: - Action
@@ -234,6 +241,7 @@ private extension AmityPostHeaderTableViewCell {
                     urlString = "comgooglemaps://?q=\(latitude),\(longitude)"
                 }
             } else {
+                showToast()
                 return
             }
             
@@ -248,6 +256,7 @@ private extension AmityPostHeaderTableViewCell {
                         urlString = "https://www.google.com/maps/search/?api=1&query=\(latitude),\(longitude)"
                     }
                 } else {
+                    showToast()
                     return
                 }
                 
