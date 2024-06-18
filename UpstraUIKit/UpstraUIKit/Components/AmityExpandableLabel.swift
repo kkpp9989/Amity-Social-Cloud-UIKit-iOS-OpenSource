@@ -280,20 +280,13 @@ extension AmityExpandableLabel {
             return
         }
         let touchPoint = touch.force
-        print("Amity Log Touch point: \(touchPoint)")
-        
-        print("Amity Log hyperLinks: \(hyperLinks)")
-
         if let hyperLink = hyperLinks.first(where: { check(touch: touch, isInRange: $0.range) }) {
-            print("Amity Log Hyperlink found: \(hyperLink)")
             switch hyperLink.type {
             case .url(let url):
 //                print("[URL] click hyperlink | url.absoluteString: \(url.absoluteString)")
                 if let postId = extractPostId(from: url) {
-                    print("Post ID: \(postId)")
                     delegate?.didTapOnPostIdLink(self, withPostId: postId)
                 } else {
-                    print("Invalid URL or postId not found")
                     UIApplication.shared.open(url, options: [:], completionHandler: nil)
                 }
             case .mention(let userId):
@@ -302,7 +295,6 @@ extension AmityExpandableLabel {
                 delegate?.didTapOnHashtag(self, withKeyword: keyword, count: count)
             }
         } else {
-            print("Amity Log No hyperlink found")
             guard isExpandable else {
                 delegate?.expandableLabeldidTap(self)
                 return
@@ -507,7 +499,6 @@ extension AmityExpandableLabel {
         // other cases mean text is showing at the full size and no need to a range.
         let unwantedRange = isExpandable && !isExpanded ? truncateText.count + readMoreText.count : 0
         let index = characterIndex(at: touchPoint) - unwantedRange
-        print("Amity Log Character index: \(index)")
         return NSLocationInRange(index, targetRange)
     }
 
@@ -612,12 +603,10 @@ extension UILabel {
     func characterIndex(at touchPoint: CGPoint) -> Int {
         guard let attributedString = attributedText else { return NSNotFound }
         if !bounds.contains(touchPoint) {
-            print("Amity Log Touch point is outside bounds")
             return NSNotFound
         }
 
         let textRect = self.textRect(forBounds: bounds, limitedToNumberOfLines: numberOfLines)
-        print("Amity Log Text rect: \(textRect)")
         if !textRect.contains(touchPoint) {
             return NSNotFound
         }

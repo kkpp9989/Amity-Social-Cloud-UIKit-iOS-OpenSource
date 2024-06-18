@@ -884,7 +884,6 @@ extension LiveStreamBroadcastViewController {
         DispatchQueue.main.async { [self] in
             guard let currentPost = createdPost else { return }
             let serviceRequest = RequestViewerStatistics()
-            print("Amity Log: stremId = \(streamId)")
             serviceRequest.liveStreamStatus(postId: currentPost.postId, streamId: streamId ?? "", isLive: true) { [weak self] (result) in
                 guard let strongSelf = self else { return }
                 switch result {

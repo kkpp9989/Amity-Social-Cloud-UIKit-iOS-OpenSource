@@ -65,7 +65,7 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         var locationText: String = ""
         if let location  = message.data?["location"] as? [String: Any], let title = location["name"] as? String, let address = location["address"] as? String {
             locationText = "\(title)\n\(address)"
-        } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["long"] as? Double {
+        } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["lng"] as? Double {
             locationText = "\(lat), \(long)"
         }
         addressLabel.text = locationText
@@ -139,7 +139,7 @@ private extension AmityLocationTableViewCell {
     func imageViewTap() {
         if let location = message?.data?["location"] as? [String:Any] {
             let latitude = location["lat"] as? Double
-            let longitude = location["long"] as? Double
+            let longitude = location["lng"] as? Double
             let placeId = location["googlemap_place_id"] as? String
 
             var urlString: String

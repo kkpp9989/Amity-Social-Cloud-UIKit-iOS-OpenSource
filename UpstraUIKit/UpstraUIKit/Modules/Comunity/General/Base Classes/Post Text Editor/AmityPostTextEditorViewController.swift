@@ -345,7 +345,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let mentionees = mentionManager?.getMentionees()
         if let post = currentPost {
             // update post
-            screenViewModel.updatePost(oldPost: post, text: text, medias: medias, files: files, metadata: metadata, mentionees: mentionees)
+            screenViewModel.updatePost(oldPost: post, text: text, medias: medias, files: files, metadata: metadata, mentionees: mentionees, location: location)
         } else {
             // create post
             var communityId: String?
@@ -416,7 +416,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
             let isTextChanged = textView.text != post.text
             let isImageChanged = galleryView.medias != post.medias
             let isDocumentChanged = fileView.files.map({ $0.id }) != post.files.map({ $0.id })
-            let isPostChanged = isTextChanged || isImageChanged || isDocumentChanged
+            let isLocationChanged = checkLatChangeBetween(metadata1: locationMetadata, metadata2: post.metadata ?? [:])
+            let isPostChanged = isTextChanged || isImageChanged || isDocumentChanged || isLocationChanged
             postButton.isEnabled = isPostChanged && isPostValid
         } else {
             postButton.isEnabled = isPostValid
@@ -436,6 +437,19 @@ public class AmityPostTextEditorViewController: AmityViewController {
         if textView.text.isEmpty {
             textView.textColor = AmityColorSet.base
         }
+    }
+    
+    func checkLatChangeBetween(metadata1: [String: Any], metadata2: [String: Any]) -> Bool {
+        // Check if both metadata contain location key and it is a dictionary
+        guard let location1 = metadata1["location"] as? [String: Any],
+              let location2 = metadata2["location"] as? [String: Any],
+              let oldLat = location1["lat"] as? Double,
+              let newLat = location2["lat"] as? Double else {
+            return false
+        }
+        
+        // Compare old latitude with new latitude
+        return oldLat != newLat
     }
     
     // MARK: Helper functions
@@ -928,6 +942,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         let vc = AmityGoogleMapsViewController.make()
         vc.tapDoneButton = { metadata in
             self.locationMetadata = metadata
+            self.updateViewState()
             self.updateLocationView(with: metadata)
         }
         
@@ -944,7 +959,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             let long = location["lng"] as? Double ?? 0.0
             
             self.locationView.isHidden = false
-            var text = "at \(name) \(address) "
+            var text = "\(name) \(address) "
             if name.isEmpty || address.isEmpty {
                 text = "at \(lat), \(long) "
             }

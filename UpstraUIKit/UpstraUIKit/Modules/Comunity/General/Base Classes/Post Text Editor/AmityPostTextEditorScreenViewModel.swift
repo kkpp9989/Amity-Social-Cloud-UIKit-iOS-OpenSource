@@ -132,7 +132,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
      - You cannot add extra images/files or replace images/files in image/file post
      */
     
-    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
+    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any]) {
         AmityEventHandler.shared.showKTBLoading()
         
         // [URL Preview] Add get URL metadata for cache in post metadata to show URL preview
@@ -150,7 +150,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     updatedMetadata["is_show_url_preview"] = false
                 }
                 
-                if let updateLocation = oldPost.metadata?["location"] {
+                if let updateLocation = location["location"] {
                     updatedMetadata["location"] = updateLocation
                 }
                 doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
@@ -161,7 +161,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             updatedMetadata["url_preview_cache_url"] = ""
             updatedMetadata["is_show_url_preview"] = false
             
-            if let updateLocation = oldPost.metadata?["location"] {
+            if let updateLocation = location["location"] {
                 updatedMetadata["location"] = updateLocation
             }
             doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)

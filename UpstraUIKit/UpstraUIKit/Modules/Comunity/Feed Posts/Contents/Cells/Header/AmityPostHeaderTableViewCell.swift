@@ -18,6 +18,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var displayNameLabel: AmityFeedDisplayNameLabel!
     @IBOutlet private var badgeStackView: UIStackView!
     @IBOutlet private var badgeIconImageView: UIImageView!
+    @IBOutlet private var locationLabel: UILabel!
     @IBOutlet private var badgeLabel: UILabel!
     @IBOutlet private var datetimeLabel: UILabel!
     @IBOutlet private var optionButton: UIButton!
@@ -95,14 +96,15 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             optionButton.isHidden = !(post.appearance.shouldShowOption && post.isCommentable)
         }
         
-//        if post.isModerator {
-//            badgeStackView.isHidden = post.postAsModerator
-//        } else {
-//            badgeStackView.isHidden = true
-//        }
-        
-        //        datetimeLabel.text = post.subtitle
-                
+        if post.isModerator {
+            badgeStackView.isHidden = post.postAsModerator
+        } else {
+            badgeStackView.isHidden = true
+        }
+
+        datetimeLabel.text = post.subtitle
+        badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
+
         var locationText = ""
         if let metadata = post.metadata, let location = metadata["location"] as? [String: Any] {
             let name = location["name"] as? String ?? ""
@@ -116,41 +118,22 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             }
         }
         
-        let attributedString = NSMutableAttributedString()
-        if post.isModerator {
-            // Append the badge icon
-            let badgeIconImageViewAttachment = NSTextAttachment()
-            badgeIconImageViewAttachment.image = AmityIconSet.iconBadgeModerator
-            badgeIconImageViewAttachment.bounds = CGRect(x: 0, y: 0, width: 12, height: 12)
-            let attachmentString = NSAttributedString(attachment: badgeIconImageViewAttachment)
-            attributedString.append(attachmentString)
-            
-            // Append the localized string with the desired font
-            let moderatorString = " " + AmityLocalizedStringSet.General.moderator.localizedString + " • "
-            let moderatorAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.captionBold]
-            let moderatorAttributedString = NSAttributedString(string: moderatorString, attributes: moderatorAttributes)
-            attributedString.append(moderatorAttributedString)
-        }
-
-        // Append the post subtitle with the desired font
-        let subtitleAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
-        let subtitleAttributedString = NSAttributedString(string: " " + post.subtitle, attributes: subtitleAttributes)
-        attributedString.append(subtitleAttributedString)
+        locationLabel.isHidden = locationText.isEmpty
         
+        let attributedString = NSMutableAttributedString()
         if !locationText.isEmpty {
             // Append the post prefix locatio  with the desired font
             let prefixLocationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.base.blend(.shade1)]
-            let prefixLocationAttributeString = NSAttributedString(string: " - at ", attributes: prefixLocationAttributes)
+            let prefixLocationAttributeString = NSAttributedString(string: "at ", attributes: prefixLocationAttributes)
             attributedString.append(prefixLocationAttributeString)
             
             // Append the post subtitle with the desired font
             let locationAttributes: [NSAttributedString.Key: Any] = [.font: AmityFontSet.caption, .foregroundColor: AmityColorSet.highlight]
             let locationAttributedString = NSAttributedString(string: locationText, attributes: locationAttributes)
             attributedString.append(locationAttributedString)
+            
+            locationLabel.attributedText = attributedString
         }
-
-        // Assign the attributed string to the label
-        badgeLabel.attributedText = attributedString
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(badgeLabelTapped))
         badgeLabel.isUserInteractionEnabled = true
@@ -175,19 +158,24 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         displayNameLabel.configure(displayName: AmityLocalizedStringSet.General.anonymous.localizedString, communityName: nil, isOfficial: false, shouldShowCommunityName: false, shouldShowBannedSymbol: false, isModeratorUserInOfficialCommunity: false)
         
         // badge
-        badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
+        badgeLabel.text = ""
         badgeLabel.font = AmityFontSet.captionBold
         badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
-        badgeLabel.numberOfLines = 2
+        badgeLabel.numberOfLines = 0
         badgeIconImageView.image = AmityIconSet.iconBadgeModerator
         badgeIconImageView.isHidden = true
+        
+        // location
+        locationLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
+        locationLabel.font = AmityFontSet.captionBold
+        locationLabel.textColor = AmityColorSet.highlight
+        locationLabel.numberOfLines = 2
+        locationLabel.isHidden = true
         
         // date time
         datetimeLabel.font = AmityFontSet.caption
         datetimeLabel.textColor = AmityColorSet.base.blend(.shade1)
         datetimeLabel.text = "45 mins"
-        datetimeLabel.numberOfLines = 2
-        datetimeLabel.isHidden = true
         
         // option
         optionButton.tintColor = AmityColorSet.base
@@ -208,7 +196,6 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
             ToastView.shared.showToast(message: message, in: window)
         }
     }
-    
 }
 
 // MARK: - Action

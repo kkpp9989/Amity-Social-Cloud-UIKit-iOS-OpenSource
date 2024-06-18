@@ -25,8 +25,8 @@ class AmityGoogleMapsViewController: AmityViewController {
     var currentLocation: CLLocation?
     var mapView: GMSMapView!
     var placesClient: GMSPlacesClient!
-    var preciseLocationZoomLevel: Float = 15.0
-    var approximateLocationZoomLevel: Float = 10.0
+    var preciseLocationZoomLevel: Float = 20.0
+    var approximateLocationZoomLevel: Float = 17.0
     var placeList: [GMSAutocompleteSuggestion]? = []
     var metadata: [String: Any] = [:]
     let token = GMSAutocompleteSessionToken()
@@ -124,12 +124,14 @@ class AmityGoogleMapsViewController: AmityViewController {
                                               longitude: longitude,
                                               zoom: zoomLevel)
         mapView = GMSMapView.map(withFrame: view.bounds, camera: camera)
-        mapView.settings.myLocationButton = true
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        mapView.settings.setAllGesturesEnabled(true)
-        mapView.isMyLocationEnabled = true
         mapView.mapType = .normal
         mapView.delegate = self
+        
+        // Enable "My Location" button
+        mapView.isMyLocationEnabled = true
+        mapView.settings.myLocationButton = true
+        
         selectedMarker?.map = mapView
 
         // Add the map to the view, hide it until we got a location update.
@@ -286,11 +288,7 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
         guard let location = locations.first else {
             return
         }
-                
-        selectedMarker = GMSMarker(position: location.coordinate)
-        selectedMarker?.map = mapView
         
-        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 10, bearing: 0, viewingAngle: 0)
         locationManager.stopUpdatingLocation()
         
         var zoomLevel: Float
@@ -304,6 +302,11 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
         let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
                                               longitude: location.coordinate.longitude,
                                               zoom: zoomLevel)
+        
+        selectedMarker = GMSMarker(position: location.coordinate)
+        selectedMarker?.map = mapView
+        
+        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: zoomLevel, bearing: 0, viewingAngle: 0)
         
         if mapView.isHidden {
             mapView.isHidden = false
