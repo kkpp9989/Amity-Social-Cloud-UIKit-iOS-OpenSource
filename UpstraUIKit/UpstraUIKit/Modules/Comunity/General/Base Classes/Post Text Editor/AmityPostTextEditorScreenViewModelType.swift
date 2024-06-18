@@ -38,7 +38,7 @@ protocol AmityPostTextEditorScreenViewModelDelegate: AnyObject {
 
 protocol AmityPostTextEditorScreenViewModelAction {
     func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any])
-    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any])
 }
 
 protocol AmityPostTextEditorScreenViewModelType: AmityPostTextEditorScreenViewModelAction, AmityPostTextEditorScreenViewModelDataSource {

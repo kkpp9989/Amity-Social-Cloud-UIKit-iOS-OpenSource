@@ -870,10 +870,8 @@ private extension AmityMessageListScreenViewModel {
         // Mark latest message as read
         if let latestMessage = messages.last?.last?.object {
             latestMessage.markRead()
-            print("Amity Log: latestMessage1: \(latestMessage.messageId) markRead")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 latestMessage.markRead()
-                print("Amity Log: latestMessage2: \(latestMessage.messageId) markRead")
             }
         }
         
@@ -896,10 +894,8 @@ private extension AmityMessageListScreenViewModel {
             lastMessageHash = lastMessage.hashValue
             
             lastMessage.object.markRead()
-            print("Amity Log: latestMessage1: \(lastMessage.messageId) markRead")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 lastMessage.object.markRead()
-                print("Amity Log: latestMessage2: \(lastMessage.messageId) markRead")
             }
         }
         
