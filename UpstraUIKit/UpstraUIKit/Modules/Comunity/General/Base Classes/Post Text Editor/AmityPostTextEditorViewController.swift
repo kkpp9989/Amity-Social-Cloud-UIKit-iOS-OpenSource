@@ -416,7 +416,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             let isTextChanged = textView.text != post.text
             let isImageChanged = galleryView.medias != post.medias
             let isDocumentChanged = fileView.files.map({ $0.id }) != post.files.map({ $0.id })
-            let isLocationChanged = checkLatChangeBetween(metadata1: locationMetadata, metadata2: post.metadata ?? [:])
+            let isLocationChanged = checkLatChangeBetween(old: post.metadata ?? [:], new: locationMetadata)
             let isPostChanged = isTextChanged || isImageChanged || isDocumentChanged || isLocationChanged
             postButton.isEnabled = isPostChanged && isPostValid
         } else {
@@ -439,13 +439,15 @@ public class AmityPostTextEditorViewController: AmityViewController {
         }
     }
     
-    func checkLatChangeBetween(metadata1: [String: Any], metadata2: [String: Any]) -> Bool {
-        // Check if both metadata contain location key and it is a dictionary
-        guard let location1 = metadata1["location"] as? [String: Any],
-              let location2 = metadata2["location"] as? [String: Any],
-              let oldLat = location1["lat"] as? Double,
-              let newLat = location2["lat"] as? Double else {
-            return false
+    func checkLatChangeBetween(old: [String: Any], new: [String: Any]) -> Bool {
+        // Check if the new dictionary contains location key and it is a dictionary
+        guard let newLocation = new["location"] as? [String: Any] else { return false }
+        
+        // Check if the old dictionary contains location key and it is a dictionary
+        guard let oldLocation = old["location"] as? [String: Any],
+              let oldLat = oldLocation["lat"] as? Double,
+              let newLat = newLocation["lat"] as? Double else {
+            return true
         }
         
         // Compare old latitude with new latitude
@@ -859,6 +861,10 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
         galleryView.configure(medias: postModel.medias)
         textView.text = postModel.text
         
+        if let location = postModel.metadata?["location"] {
+            locationMetadata = location as! [String : Any]
+        }
+        
         setupMentionManager(withPost: postModel)
         updateConstraints()
         updateViewState()
@@ -969,7 +975,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
                         
             let imageRightAttachment = NSTextAttachment()
             imageRightAttachment.image = AmityIconSet.iconDeleteLocation
-            imageRightAttachment.bounds = CGRect(x: 0, y: 0, width: locationView.bounds.height, height: locationView.bounds.height)
+            imageRightAttachment.bounds = CGRect(x: 0, y: 0, width: 20, height: 20) // Adjusting y position
             let attachmentRightString = NSAttributedString(attachment: imageRightAttachment)
             attributedString.append(attachmentRightString)
             
