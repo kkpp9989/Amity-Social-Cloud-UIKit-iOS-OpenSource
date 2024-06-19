@@ -166,8 +166,8 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             case .custom:
                 if let _ = location {
                     displayName += "Sent a location"
-                } else {94291
-                    displayName = "No message yet"
+                } else {
+                    displayName = text
                 }
             case .file:
                 displayName += "Sent a file"

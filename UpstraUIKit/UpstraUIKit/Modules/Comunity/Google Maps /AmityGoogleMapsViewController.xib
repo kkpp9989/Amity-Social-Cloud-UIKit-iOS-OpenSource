@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityGoogleMapsViewController" customModule="AmityUIKit" customModuleProvider="target">
             <connections>
-                <outlet property="googleMapsView" destination="Fcb-ng-vfz" id="ZJU-KD-WOm"/>
+                <outlet property="googleMapsView" destination="Fcb-ng-vfz" id="XvL-25-yKM"/>
                 <outlet property="tableView" destination="tlc-aJ-CC4" id="WfQ-ew-t5p"/>
                 <outlet property="tableViewHeightConstraint" destination="aeH-9a-zYg" id="MC6-s4-8sM"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -33,19 +33,27 @@
                         <constraint firstAttribute="height" constant="128" id="aeH-9a-zYg"/>
                     </constraints>
                 </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ASl-1G-wNA">
+                    <rect key="frame" x="0.0" y="818" width="393" height="34"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="ASl-1G-wNA" secondAttribute="trailing" id="3wQ-Aq-DmE"/>
                 <constraint firstItem="tlc-aJ-CC4" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="5X2-M9-6xN"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="Fcb-ng-vfz" secondAttribute="bottom" id="5qV-rh-pxK"/>
+                <constraint firstAttribute="bottom" secondItem="ASl-1G-wNA" secondAttribute="bottom" id="ANb-ux-BNQ"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Fcb-ng-vfz" secondAttribute="trailing" id="Atm-Pt-ZVv"/>
                 <constraint firstItem="Fcb-ng-vfz" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="DfW-Hf-Fw3"/>
                 <constraint firstItem="Fcb-ng-vfz" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="Ecu-dx-dUt"/>
                 <constraint firstItem="tlc-aJ-CC4" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="JSd-83-dx7"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="tlc-aJ-CC4" secondAttribute="trailing" id="VMy-FM-q6c"/>
-                <constraint firstItem="Fcb-ng-vfz" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="bW9-mA-VCd"/>
+                <constraint firstItem="ASl-1G-wNA" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="b3Q-sZ-92J"/>
+                <constraint firstItem="ASl-1G-wNA" firstAttribute="top" secondItem="Fcb-ng-vfz" secondAttribute="bottom" id="qR5-LI-iI8"/>
             </constraints>
-            <point key="canvasLocation" x="61" y="21"/>
+            <point key="canvasLocation" x="60.305343511450381" y="20.422535211267608"/>
         </view>
     </objects>
     <resources>

@@ -25,8 +25,7 @@ class AmityGoogleMapsViewController: AmityViewController {
     var currentLocation: CLLocation?
     var mapView: GMSMapView!
     var placesClient: GMSPlacesClient!
-    var preciseLocationZoomLevel: Float = 20.0
-    var approximateLocationZoomLevel: Float = 17.0
+    var preciseLocationZoomLevel: Float = 15.0
     var placeList: [GMSAutocompleteSuggestion]? = []
     var metadata: [String: Any] = [:]
     let token = GMSAutocompleteSessionToken()
@@ -113,17 +112,13 @@ class AmityGoogleMapsViewController: AmityViewController {
         
         selectedMarker = GMSMarker(position: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
         
-        // Setting up the map camera based on location accuracy
-        var zoomLevel: Float = 0.0
-        if #available(iOS 14.0, *) {
-            zoomLevel = locationManager.accuracyAuthorization == .fullAccuracy ? preciseLocationZoomLevel : approximateLocationZoomLevel
-        } else {
-            zoomLevel = preciseLocationZoomLevel
-        }
-        let camera = GMSCameraPosition.camera(withLatitude: latitude,
-                                              longitude: longitude,
-                                              zoom: zoomLevel)
-        mapView = GMSMapView.map(withFrame: view.bounds, camera: camera)
+        let options = GMSMapViewOptions()
+        options.frame = googleMapsView.bounds
+        options.camera = GMSCameraPosition.camera(withLatitude: latitude,
+                                                  longitude: longitude,
+                                                  zoom: preciseLocationZoomLevel)
+        
+        mapView = GMSMapView.init(options: options)
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         mapView.mapType = .normal
         mapView.delegate = self
@@ -285,28 +280,17 @@ extension AmityGoogleMapsViewController: GMSMapViewDelegate {
 extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.first else {
-            return
-        }
+        guard let location = locations.first else { return }
         
         locationManager.stopUpdatingLocation()
         
-        var zoomLevel: Float
-        if #available(iOS 14.0, *) {
-            zoomLevel = locationManager.accuracyAuthorization == .fullAccuracy ? preciseLocationZoomLevel : approximateLocationZoomLevel
-        } else {
-            // Assuming full accuracy is used for iOS versions below 14.0 as accuracyAuthorization is not available.
-            zoomLevel = preciseLocationZoomLevel
-        }
-        
         let camera = GMSCameraPosition.camera(withLatitude: location.coordinate.latitude,
                                               longitude: location.coordinate.longitude,
-                                              zoom: zoomLevel)
-        
+                                              zoom: preciseLocationZoomLevel)
         selectedMarker = GMSMarker(position: location.coordinate)
         selectedMarker?.map = mapView
         
-        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: zoomLevel, bearing: 0, viewingAngle: 0)
+        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: preciseLocationZoomLevel, bearing: 0, viewingAngle: 0)
         
         if mapView.isHidden {
             mapView.isHidden = false

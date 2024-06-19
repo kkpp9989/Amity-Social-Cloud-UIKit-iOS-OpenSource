@@ -98,6 +98,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         
         if post.isModerator {
             badgeStackView.isHidden = post.postAsModerator
+            badgeIconImageView.isHidden = post.postAsModerator
         } else {
             badgeStackView.isHidden = true
         }
@@ -136,8 +137,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         }
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(badgeLabelTapped))
-        badgeLabel.isUserInteractionEnabled = true
-        badgeLabel.addGestureRecognizer(tapGestureRecognizer)
+        locationLabel.isUserInteractionEnabled = true
+        locationLabel.addGestureRecognizer(tapGestureRecognizer)
     }
 
     // MARK: - Setup views
@@ -166,7 +167,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         badgeIconImageView.isHidden = true
         
         // location
-        locationLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
+        locationLabel.text = ""
         locationLabel.font = AmityFontSet.captionBold
         locationLabel.textColor = AmityColorSet.highlight
         locationLabel.numberOfLines = 2
