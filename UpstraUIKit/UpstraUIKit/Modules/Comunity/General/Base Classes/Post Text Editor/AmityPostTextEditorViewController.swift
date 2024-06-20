@@ -375,6 +375,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
                 self.locationView.text = nil
                 self.locationView.isHidden = true
                 self.locationMetadata = [:]
+                self.postButton.isEnabled = true
             }
         }
     }
@@ -762,6 +763,16 @@ public class AmityPostTextEditorViewController: AmityViewController {
         
     }
     
+    private func authorizeNew(_ authorized: @escaping () -> Void) {
+        PHPhotoLibrary.requestAuthorization { (status) in
+            switch status {
+            case .authorized:
+                DispatchQueue.main.async(execute: authorized)
+            default:
+                break
+            }
+        }
+    }
 }
 
 extension AmityPostTextEditorViewController: AmityGalleryCollectionViewDelegate {
@@ -931,9 +942,13 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         case .camera:
             presentMediaPickerCamera()
         case .album:
-            presentMediaPickerAlbum(type: .image)
+            authorizeNew {
+                self.presentMediaPickerAlbum(type: .image)
+            }
         case .video:
-            presentMediaPickerAlbum(type: .video)
+            authorizeNew {
+                self.presentMediaPickerAlbum(type: .video)
+            }
         case .file:
             filePicker.present(from: view, files: fileView.files)
         case .expand:

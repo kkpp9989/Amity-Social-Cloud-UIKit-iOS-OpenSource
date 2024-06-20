@@ -159,8 +159,6 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     } else {
                         updatedMetadata["location"] = newLocation
                     }
-                } else if let oldLocation = oldPost.metadata?["location"] as? [String: Any] {
-                    updatedMetadata["location"] = oldLocation
                 }
 
                 doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
@@ -180,8 +178,6 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                 } else {
                     updatedMetadata["location"] = newLocation
                 }
-            } else if let oldLocation = oldPost.metadata?["location"] as? [String: Any] {
-                updatedMetadata["location"] = oldLocation
             }
             doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
         }
