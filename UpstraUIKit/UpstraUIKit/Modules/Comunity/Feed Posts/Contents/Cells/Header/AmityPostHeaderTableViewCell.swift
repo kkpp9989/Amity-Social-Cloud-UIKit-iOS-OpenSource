@@ -253,7 +253,7 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         badgeLabel.text = AmityLocalizedStringSet.General.moderator.localizedString + " • "
         badgeLabel.font = AmityFontSet.captionBold
         badgeLabel.textColor = AmityColorSet.base.blend(.shade1)
-        badgeLabel.numberOfLines = 0
+        badgeLabel.numberOfLines = 1
         badgeIconImageView.image = AmityIconSet.iconBadgeModerator
         
         // location
@@ -267,7 +267,8 @@ public final class AmityPostHeaderTableViewCell: UITableViewCell, Nibbable, Amit
         datetimeLabel.font = AmityFontSet.caption
         datetimeLabel.textColor = AmityColorSet.base.blend(.shade1)
         datetimeLabel.text = "45 mins"
-        
+        datetimeLabel.numberOfLines = 1
+
         // option
         optionButton.tintColor = AmityColorSet.base
         optionButton.setImage(AmityIconSet.iconOption, for: .normal)
