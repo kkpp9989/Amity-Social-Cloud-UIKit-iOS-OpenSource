@@ -45,7 +45,11 @@ extension AmityHashtagSearchScreenViewModel {
     func search(withText text: String?) {
         /* Check text is nil or is searching for ignore searching */
         guard let newKeyword = text else { return }
-        if isEndingResult { return }
+        if newKeyword.isEmpty { return }
+
+        if currentKeyword == newKeyword {
+            if isEndingResult { return }
+        }
         
         /* Check is current keyword with input text for clear data and reset static value or not */
         if currentKeyword != newKeyword {

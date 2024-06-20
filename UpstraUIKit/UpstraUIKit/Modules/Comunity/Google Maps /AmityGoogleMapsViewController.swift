@@ -218,9 +218,17 @@ class AmityGoogleMapsViewController: AmityViewController {
             
             strongSelf.updateTableViewHeight(isShow: false)
             
+            let camera = GMSCameraPosition.camera(withLatitude:place.coordinate.latitude,
+                                                  longitude: place.coordinate.longitude,
+                                                  zoom: strongSelf.preciseLocationZoomLevel)
+            strongSelf.mapView.clear()
+            strongSelf.selectedMarker = GMSMarker(position: place.coordinate)
+            strongSelf.selectedMarker?.map = strongSelf.mapView
+            strongSelf.mapView.animate(to: camera)
+            
             // call the tapDoneButton closure if it's set
-            strongSelf.tapDoneButton?(strongSelf.metadata)
-            strongSelf.generalDismiss()
+//            strongSelf.tapDoneButton?(strongSelf.metadata)
+//            strongSelf.generalDismiss()
         }
     }
     
@@ -290,7 +298,7 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
         selectedMarker = GMSMarker(position: location.coordinate)
         selectedMarker?.map = mapView
         
-        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: preciseLocationZoomLevel, bearing: 0, viewingAngle: 0)
+//        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: preciseLocationZoomLevel, bearing: 0, viewingAngle: 0)
         
         if mapView.isHidden {
             mapView.isHidden = false
