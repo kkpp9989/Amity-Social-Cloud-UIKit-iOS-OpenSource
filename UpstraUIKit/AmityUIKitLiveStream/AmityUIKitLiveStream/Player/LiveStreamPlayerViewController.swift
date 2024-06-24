@@ -1090,6 +1090,9 @@ extension LiveStreamPlayerViewController {
             if let error = error {
                 print(error.localizedDescription)
             }
+            
+            // ktb kk save coin when comment & reply
+            AmityLiveEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: parentId, reactType: nil)
         }
     }
     
@@ -1140,6 +1143,8 @@ extension LiveStreamPlayerViewController {
     }
     
     func addReaction(withReaction reaction: String, referanceId: String, referenceType: AmityReactionReferenceType, completion: AmityRequestCompletion?) {
+        // ktb kk save coin when react
+        AmityLiveEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: referanceId, reactType: reaction)
         reactionRepository.addReaction(reaction, referenceId: referanceId, referenceType: referenceType, completion: completion)
     }
     
