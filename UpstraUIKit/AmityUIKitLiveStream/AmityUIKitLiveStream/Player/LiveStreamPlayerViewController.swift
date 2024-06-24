@@ -1092,7 +1092,7 @@ extension LiveStreamPlayerViewController {
             }
             
             // ktb kk save coin when comment & reply
-            AmityLiveEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: parentId, reactType: nil)
+            AmityLiveEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: parentId ?? "", reactType: nil)
         }
     }
     
