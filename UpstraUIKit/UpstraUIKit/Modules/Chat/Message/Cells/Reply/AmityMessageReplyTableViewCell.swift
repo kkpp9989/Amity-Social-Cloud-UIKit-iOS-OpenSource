@@ -165,6 +165,8 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
                     replyDescLabel.text = "Video"
                 case .text:
                     replyDescLabel.text = message.parentMessageObjc?.data?["text"] as? String
+                case .custom:
+                    replyDescLabel.text = "Location"
                 default:
                     break
                 }

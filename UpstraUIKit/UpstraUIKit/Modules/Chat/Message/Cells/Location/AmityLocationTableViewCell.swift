@@ -68,6 +68,7 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["lng"] as? Double {
             locationText = "\(lat), \(long)"
         }
+        print("Amity Log: locationText: \(locationText)")
         addressLabel.text = locationText
     }
     
@@ -96,6 +97,7 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         }
         
         // Check if the message contains location data
+        let maximumLines = Constant.maximumLines
         if let location = message.data?["location"] as? [String: Any], let address = location["address"] as? String, let title = location["name"] as? String {
             var text = ""
             if !title.isEmpty {
@@ -106,7 +108,12 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
             }
             
             // Calculate the height of the expandable label
-            let maximumLines = Constant.maximumLines
+            let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
+            height += messageHeight
+        } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["lng"] as? Double {
+            let text = "\(lat), \(long)"
+
+            // Calculate the height of the expandable label
             let messageHeight = AmityExpandableLabel.height(for: text, font: Constant.textMessageFont, boundingWidth: actualWidth, maximumLines: maximumLines)
             height += messageHeight
         }
