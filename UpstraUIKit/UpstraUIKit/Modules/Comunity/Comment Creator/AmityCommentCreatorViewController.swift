@@ -12,8 +12,7 @@ import UIKit
 public class AmityCommentCreatorViewController: AmityEditTextViewController {
     
     // This is a wrapper class to help fill in parameters.
-    public static func make(forCommunity communityId: String?, isReply: Bool) -> AmityCommentCreatorViewController {
-        return AmityCommentCreatorViewController(headerTitle: nil, text: "", editMode: .create(communityId: communityId, isReply: isReply))
+    public static func make(forCommunity communityId: String?, isReply: Bool, settings: AmityPostEditorSettings = AmityPostEditorSettings()) -> AmityCommentCreatorViewController {
+        return AmityCommentCreatorViewController(headerTitle: nil, text: "", editMode: .create(communityId: communityId, isReply: isReply), settings: settings)
     }
-    
 }

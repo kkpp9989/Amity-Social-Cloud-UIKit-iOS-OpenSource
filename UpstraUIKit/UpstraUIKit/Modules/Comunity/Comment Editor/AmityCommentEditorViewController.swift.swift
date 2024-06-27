@@ -13,8 +13,7 @@ import AmitySDK
 public class AmityCommentEditorViewController: AmityEditTextViewController {
     
     // This is a wrapper class to help fill in parameters.
-    public static func make(comment: AmityCommentModel, communityId: String?) -> AmityCommentEditorViewController {
-        return AmityCommentEditorViewController(headerTitle: nil, text: comment.text, editMode: .edit(communityId: communityId, metadata: comment.metadata, isReply: comment.parentId != nil))
+    public static func make(comment: AmityCommentModel, communityId: String?, settings: AmityPostEditorSettings = AmityPostEditorSettings()) -> AmityCommentEditorViewController {
+        return AmityCommentEditorViewController(headerTitle: nil, text: comment.text, editMode: .edit(communityId: communityId, metadata: comment.metadata, isReply: comment.parentId != nil, comment: comment), settings: settings)
     }
-    
 }

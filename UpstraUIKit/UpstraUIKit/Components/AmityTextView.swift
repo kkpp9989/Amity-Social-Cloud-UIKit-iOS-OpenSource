@@ -196,6 +196,19 @@ open class AmityTextView: UITextView {
         
         return true
     }
+    
+    open class func height(for text: String, font: UIFont, boundingWidth: CGFloat, maximumLines: Int) -> CGFloat {
+        let attributedString = NSAttributedString(string: text, attributes: [NSAttributedString.Key.font: font])
+        let linesCount = attributedString.lines(for: boundingWidth).count
+        let actualHeight = attributedString.boundingRect(for: boundingWidth).height
+        
+        if maximumLines == 0 || linesCount <= maximumLines {
+            return ceil(actualHeight)
+        } else {
+            let oneLineHeight = actualHeight / CGFloat(linesCount)
+            return ceil(oneLineHeight * CGFloat(maximumLines))
+        }
+    }
 }
 
 extension AmityTextView: UITextViewDelegate {
