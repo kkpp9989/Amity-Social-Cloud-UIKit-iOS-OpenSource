@@ -655,14 +655,15 @@ extension OneKTBActivityDetailViewController: AmityPostDetailCompostViewDelegate
     func composeViewDidTapExpand(_ view: AmityPostDetailCompostView) {
         var editTextViewController: AmityEditTextViewController
         let communityId = (screenViewModel.dataSource.community?.isPublic ?? false) ? nil : screenViewModel.dataSource.community?.communityId
+        let settings: AmityPostEditorSettings = AmityPostEditorSettings()
         if let parentComment = parentComment {
             // create reply
             let header = String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.replyingTo.localizedString, parentComment.displayName)
-            editTextViewController = AmityEditTextViewController.make(headerTitle: header, text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: true))
+            editTextViewController = AmityEditTextViewController.make(headerTitle: header, text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: true), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createReply.localizedString
         } else {
             // create comment
-            editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false))
+            editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createComment.localizedString
         }
         editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees in

@@ -1056,7 +1056,8 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             guard let message = screenViewModel.dataSource.message(at: indexPath),
                   let text = message.text else { return }
             
-            let editTextVC = AmityEditTextViewController.make(text: text, editMode: .editMessage)
+            let settings: AmityPostEditorSettings = AmityPostEditorSettings()
+            let editTextVC = AmityEditTextViewController.make(text: text, editMode: .editMessage, settings: settings)
             editTextVC.title = AmityLocalizedStringSet.editMessageTitle.localizedString
             editTextVC.dismissHandler = {
                 editTextVC.dismiss(animated: true, completion: nil)
