@@ -107,7 +107,7 @@
 "unit_minute_singular" = "%@ minute";
 "unit_minute_plural" = "%@ minutes";
 
-"chat_title" = "Chats";
+"chat_title" = "Chat";
 "recent_title" = "Chats";
 "directory_title" = "Directory";
 "following_title" = "Following";

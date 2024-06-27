@@ -13,7 +13,7 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
     
     @IBOutlet weak var fileInfoView: UIStackView!
     @IBOutlet weak var fileIcon: UIImageView!
-    @IBOutlet weak var fileName: UILabel!
+    @IBOutlet weak var fileName: AmityExpandableLabel!
     @IBOutlet weak var fileSize: UILabel!
     
     override func awakeFromNib() {

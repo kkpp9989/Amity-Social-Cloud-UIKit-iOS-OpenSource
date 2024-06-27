@@ -228,7 +228,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             locationView.topAnchor.constraint(equalTo: textView.bottomAnchor),
             locationView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             locationView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            locationView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 16),
+            locationView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             galleryView.topAnchor.constraint(equalTo: locationView.bottomAnchor),
             galleryView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             galleryView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
