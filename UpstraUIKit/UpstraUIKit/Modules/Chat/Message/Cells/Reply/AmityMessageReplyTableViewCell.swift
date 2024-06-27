@@ -125,6 +125,7 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
                             // Set Icon
                             replyImageView.image = file.fileIcon
                             replyImageView.isHidden = false
+                            replyImageView.contentMode = .center
                         }
                     }
                     replyDescLabel.text = "File"
