@@ -35,6 +35,8 @@ class AmityCommentViewWithURLPreview: AmityView {
     @IBOutlet private weak var reactionDetailLikeIcon: UIImageView!
     @IBOutlet private weak var reactionDetailLabel: UILabel!
     @IBOutlet private weak var reactionDetailButton: UIButton!
+    @IBOutlet private weak var contentImageView: UIImageView!
+    @IBOutlet private weak var contentContainerView: UIView!
     
     // MARK: - Properties
     weak var delegate: AmityCommentViewWithURLPreviewDelegate?
@@ -50,6 +52,8 @@ class AmityCommentViewWithURLPreview: AmityView {
     @IBOutlet var urlPreviewView: UIView!
     @IBOutlet var loadingIndicator: UIActivityIndicatorView!
     
+    private var fileURL: String? = ""
+
     // MARK: - URLPreview Properties
     private var urlToOpen: URL?
     
@@ -118,6 +122,14 @@ class AmityCommentViewWithURLPreview: AmityView {
         viewReplyButton.layer.cornerRadius = 4
         viewReplyButton.setInsets(forContentPadding: UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 16), imageTitlePadding: 8)
         viewReplyButton.addTarget(self, action: #selector(viewReplyButtonTap), for: .touchUpInside)
+        
+        contentContainerView.backgroundColor = .clear
+        contentContainerView.isHidden = true
+        contentImageView.contentMode = .scaleAspectFill
+        
+        // Setup tap gesture
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(commentImageViewTap(_:)))
+        contentImageView.addGestureRecognizer(tapGesture)
     }
     
     // [Custom for ONE Krungthai] Modify function for use post model for check moderator user in official community for outputing
@@ -185,6 +197,39 @@ class AmityCommentViewWithURLPreview: AmityView {
             reactionDetailContainerView.isHidden = true
         }
         
+        // Image comment data
+        if !comment.isDeleted {
+            if !comment.comment.attachments.isEmpty {
+                for attachment in comment.comment.attachments {
+                    self.contentContainerView.isHidden = false
+                    switch attachment {
+                    case .image(fileId: let fileId, data: _):
+                        AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
+                            switch resultImageURL {
+                            case .success(let imageURL):
+                                DispatchQueue.main.async {
+                                    self.fileURL = imageURL
+                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
+                                }
+                            case .failure(_):
+                                DispatchQueue.main.async {
+                                    self.contentContainerView.isHidden = true
+                                }
+                            }
+                        }
+                    @unknown default:
+                        print("Unknown attachment")
+                        self.contentContainerView.isHidden = true
+                    }
+                }
+            } else {
+                // Handle case when attachments are empty
+                self.contentContainerView.isHidden = true
+            }
+        } else {
+            self.contentContainerView.isHidden = true
+        }
+        
         contentLabel.isExpanded = layout.isExpanded
         
         toggleActionVisibility(comment: comment, layout: layout)
@@ -242,9 +287,15 @@ class AmityCommentViewWithURLPreview: AmityView {
         delegate?.commentView(self, didTapAction: .reactionDetails)
     }
     
+    @objc private func commentImageViewTap(_ sender: UITapGestureRecognizer) {
+        delegate?.commentView(self, didTapAction: .commentImage(imageView: contentImageView, fileURL: fileURL))
+    }
+    
     func prepareForReuse() {
         bannedImageView.image = nil
         comment = nil
+        contentContainerView.isHidden = true
+        contentImageView.image = nil
         clearURLPreviewView()
     }
     
@@ -284,13 +335,19 @@ class AmityCommentViewWithURLPreview: AmityView {
             return bottomStackViewHeight
         } ()
         
+        let contentImageHeight: CGFloat = {
+            let contentHeight: CGFloat = !comment.comment.attachments.isEmpty ? 150 : 0
+            return contentHeight
+        }()
+        
         return topSpace
         + contentHeight
         + layout.space.belowContent
         + layout.space.aboveStack
         + bottomStackHeight
         + layout.space.belowStack
-        
+        + contentImageHeight
+
     }
     
 }

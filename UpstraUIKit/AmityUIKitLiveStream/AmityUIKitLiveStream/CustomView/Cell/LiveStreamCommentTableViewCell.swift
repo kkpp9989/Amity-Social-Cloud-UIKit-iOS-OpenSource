@@ -58,7 +58,7 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         
         // Add shadow to the label
         commentLabel.layer.shadowColor = UIColor.black.cgColor
-        commentLabel.layer.shadowOffset = CGSize(width: 1, height: 1) // Increased offset for more visible shadow
+        commentLabel.layer.shadowOffset = CGSize(width: 3, height: 3) // Increased offset for more visible shadow
         commentLabel.layer.shadowRadius = 5 // Slightly larger radius for a more pronounced shadow
         commentLabel.layer.shadowOpacity = 1
         

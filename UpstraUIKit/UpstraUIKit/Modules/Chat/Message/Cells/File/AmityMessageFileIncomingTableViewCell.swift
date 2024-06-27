@@ -24,7 +24,16 @@ final class AmityMessageFileIncomingTableViewCell: AmityMessageFileTableViewCell
         if message.isDeleted {
             return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight + 36
         }
-        return 152 + displaynameHeight
+        
+        var height: CGFloat = 0
+        let maximumLines = 2
+        if let fileInfo = message.object.getFileInfo() {
+            let file = AmityFile(state: .downloadable(fileData: fileInfo))
+            let messageHeight = AmityExpandableLabel.height(for: file.fileName, font: AmityFontSet.bodyBold, boundingWidth: boundingWidth, maximumLines: maximumLines)
+            height += messageHeight
+        }
+        
+        return 152 + displaynameHeight + height
     }
     
 }
