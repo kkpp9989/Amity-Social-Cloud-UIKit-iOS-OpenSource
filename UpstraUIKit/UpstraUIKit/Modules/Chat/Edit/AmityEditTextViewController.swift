@@ -35,8 +35,8 @@ public class AmityEditTextViewController: AmityViewController {
     @IBOutlet private var hashtagTableViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var galleryView: AmityGalleryCollectionView!
     @IBOutlet private var galleryViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private var postMenuView: AmityPostTextEditorMenuView!
-    @IBOutlet private var postMenuViewBottomConstraints: NSLayoutConstraint!
+//    @IBOutlet private var postMenuView: AmityPostTextEditorMenuView!
+//    @IBOutlet private var postMenuViewBottomConstraints: NSLayoutConstraint!
 
     // MARK: - Properties
     private let editMode: EditMode
@@ -58,7 +58,7 @@ public class AmityEditTextViewController: AmityViewController {
         self.headerTitle = headerTitle
         self.message = text
         self.editMode = editMode
-        self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
+//        self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
         switch editMode {
         case .editMessage:
             mentionManager = AmityMentionManager(withType: .message(channelId: nil))
@@ -101,9 +101,9 @@ public class AmityEditTextViewController: AmityViewController {
             extractCommentData()
         }
         
-        postMenuView.translatesAutoresizingMaskIntoConstraints = false
-        postMenuView.currentAttachmentState = .image
-        postMenuView.delegate = self
+//        postMenuView.translatesAutoresizingMaskIntoConstraints = false
+//        postMenuView.currentAttachmentState = .image
+//        postMenuView.delegate = self
 
         // keyboard
         let notificationCenter = NotificationCenter.default
@@ -291,11 +291,11 @@ public class AmityEditTextViewController: AmityViewController {
         if notification.name == UIResponder.keyboardWillHideNotification {
 //            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
 //            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
-            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
+//            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
 //            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
 //            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
-            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
+//            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
 //        scrollView.scrollIndicatorInsets = scrollView.contentInset
         let selectedRange = textView.selectedRange
