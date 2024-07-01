@@ -149,17 +149,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     updatedMetadata["url_preview_cache_url"] = ""
                     updatedMetadata["is_show_url_preview"] = false
                 }
-                
-                if let newLocation = location["location"] as? [String: Any] {
-                    if let oldLocation = oldPost.metadata?["location"] as? [String: Any] {
-                        let (oldLat, oldLng) = (oldLocation["lat"] as? Double ?? 0.0, oldLocation["lng"] as? Double ?? 0.0)
-                        let (newLat, newLng) = (newLocation["lat"] as? Double ?? 0.0, newLocation["lng"] as? Double ?? 0.0)
-
-                        updatedMetadata["location"] = (oldLat != newLat || oldLng != newLng) ? newLocation : oldLocation
-                    } else {
-                        updatedMetadata["location"] = newLocation
-                    }
-                }
+                updatedMetadata["location"] = newLocation
 
                 doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
             }
@@ -169,16 +159,8 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
             updatedMetadata["url_preview_cache_url"] = ""
             updatedMetadata["is_show_url_preview"] = false
             
-            if let newLocation = location["location"] as? [String: Any] {
-                if let oldLocation = oldPost.metadata?["location"] as? [String: Any] {
-                    let (oldLat, oldLng) = (oldLocation["lat"] as? Double ?? 0.0, oldLocation["lng"] as? Double ?? 0.0)
-                    let (newLat, newLng) = (newLocation["lat"] as? Double ?? 0.0, newLocation["lng"] as? Double ?? 0.0)
-
-                    updatedMetadata["location"] = (oldLat != newLat || oldLng != newLng) ? newLocation : oldLocation
-                } else {
-                    updatedMetadata["location"] = newLocation
-                }
-            }
+            updatedMetadata["location"] = location["location"]
+            
             doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
         }
     }
