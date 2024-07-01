@@ -154,36 +154,29 @@ class AmityGoogleMapsViewController: AmityViewController {
     
     // Update the map once the user has made their selection.
     @IBAction func doneButtonTapped() {
-        let alert = UIAlertController(title: "Confirm", message: "Shared this location?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .default) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            // Clear the map.
-            strongSelf.mapView.clear()
-            
-            if !strongSelf.isSearch {
-                // Check if the selected marker and place are available
-                if let selectedMarker = strongSelf.selectedMarker {
-                    let latitude = selectedMarker.position.latitude
-                    let longitude = selectedMarker.position.longitude
-                    
-                    // Bind metadata dictionary
-                    strongSelf.metadata["location"] = [
-                        "lat": latitude,
-                        "lng": longitude,
-                        "name": nil,
-                        "address": nil,
-                        "googlemap_placeId": nil
-                    ]
-                }
-            }
-            
-            // call the tapDoneButton closure if it's set
-            strongSelf.tapDoneButton?(strongSelf.metadata)
-            strongSelf.generalDismiss()
-        })
+        // Clear the map.
+        mapView.clear()
         
-        present(alert, animated: true, completion: nil)
+        if !isSearch {
+            // Check if the selected marker and place are available
+            if let selectedMarker = selectedMarker {
+                let latitude = selectedMarker.position.latitude
+                let longitude = selectedMarker.position.longitude
+                
+                // Bind metadata dictionary
+                metadata["location"] = [
+                    "lat": latitude,
+                    "lng": longitude,
+                    "name": nil,
+                    "address": nil,
+                    "googlemap_placeId": nil
+                ]
+            }
+        }
+        
+        // call the tapDoneButton closure if it's set
+        tapDoneButton?(metadata)
+        generalDismiss()
     }
                         
     @objc func backButtonTapped() {

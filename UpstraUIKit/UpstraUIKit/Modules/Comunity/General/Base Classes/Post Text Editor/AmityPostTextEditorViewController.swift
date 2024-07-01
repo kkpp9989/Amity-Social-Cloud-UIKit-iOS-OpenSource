@@ -210,44 +210,52 @@ public class AmityPostTextEditorViewController: AmityViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            
             postMenuView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             postMenuView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             postMenuView.heightAnchor.constraint(equalToConstant: postMode == .create ? AmityPostTextEditorMenuView.defaultHeight : AmityPostTextEditorMenuView.defaultHeight),
             postMenuViewBottomConstraints,
+            
             comunityPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             comunityPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             comunityPanelView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
             comunityPanelView.heightAnchor.constraint(equalToConstant: AmityComunityPanelView.defaultHeight),
+            
             textView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             textView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
             textView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            
             separaterLine.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             separaterLine.centerYAnchor.constraint(equalTo: galleryView.topAnchor),
             separaterLine.heightAnchor.constraint(equalToConstant: 1),
+            
             locationView.topAnchor.constraint(equalTo: textView.bottomAnchor),
-            locationView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            locationView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            locationView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            locationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            locationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
             galleryView.topAnchor.constraint(equalTo: locationView.bottomAnchor),
-            galleryView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            galleryView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            galleryView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
+            galleryView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            galleryView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             galleryViewHeightConstraint,
+            
             fileView.topAnchor.constraint(equalTo: galleryView.bottomAnchor),
             fileView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             fileView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             fileView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             fileViewHeightConstraint,
+            
             mentionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mentionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mentionTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
             mentionTableViewHeightConstraint,
+            
             hashtagTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hashtagTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             hashtagTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
             hashtagTableViewHeightConstraint
         ])
+
         updateConstraints()
         // keyboard
         let notificationCenter = NotificationCenter.default
