@@ -123,7 +123,7 @@ extension AmityPostPreviewCommentWithURLPreviewTableViewCell: AmityCommentViewWi
         case .status:
             break
         case .commentImage(imageView: let imageView, fileURL: let fileURL):
-            break
+            performAction(action: .tapOnCommentImage(imageView: imageView, fileURL: fileURL ?? ""))
         }
     }
     

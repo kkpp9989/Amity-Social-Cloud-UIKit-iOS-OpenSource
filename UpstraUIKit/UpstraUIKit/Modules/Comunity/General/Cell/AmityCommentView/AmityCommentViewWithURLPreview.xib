@@ -169,20 +169,36 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nB8-1P-6yD">
                             <rect key="frame" x="0.0" y="0.0" width="592" height="150"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-eU-BhT">
+                                <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Pes-eU-BhT">
                                     <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                     <constraints>
                                         <constraint firstAttribute="width" secondItem="Pes-eU-BhT" secondAttribute="height" multiplier="1:1" id="CLt-x6-DfM"/>
                                     </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                            <real key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
                                 </imageView>
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
-                                <constraint firstItem="Pes-eU-BhT" firstAttribute="leading" secondItem="nB8-1P-6yD" secondAttribute="leading" id="FdV-a8-pZ3"/>
                                 <constraint firstAttribute="bottom" secondItem="Pes-eU-BhT" secondAttribute="bottom" id="MdN-Pq-xNX"/>
+                                <constraint firstItem="Pes-eU-BhT" firstAttribute="leading" secondItem="nB8-1P-6yD" secondAttribute="leading" id="WEx-9k-eSy"/>
                                 <constraint firstItem="Pes-eU-BhT" firstAttribute="top" secondItem="nB8-1P-6yD" secondAttribute="top" id="YYC-zB-HOA"/>
                                 <constraint firstAttribute="height" constant="150" id="eZo-kT-aRP"/>
                             </constraints>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                    <real key="value" value="8"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                    <real key="value" value="1"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                    <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
                         </view>
                     </subviews>
                 </stackView>
