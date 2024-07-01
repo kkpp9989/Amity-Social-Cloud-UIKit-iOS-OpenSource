@@ -45,6 +45,7 @@ extension AmityReadingListScreenViewModel {
 extension AmityReadingListScreenViewModel {
 
     func fetchData() {
+        AmityEventHandler.shared.showKTBLoading()
         delegate?.screenViewModel(self, loadingState: .loading)
         let builderMemberships: Set<MessageReadMembershipFilter> = [.member]
         userCollection = messageObjc?.object.getReadUsers(memberships: builderMemberships)
@@ -53,6 +54,7 @@ extension AmityReadingListScreenViewModel {
             if let _ = error {
                 strongSelf.delegate?.screenViewModelDidFetchSuccess(strongSelf)
                 strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
+                AmityEventHandler.shared.hideKTBLoading()
             } else {
                 if collection.dataStatus == .fresh {
                     var users: [AmityUserModel] = []
@@ -63,7 +65,7 @@ extension AmityReadingListScreenViewModel {
                     strongSelf.usersList = users
                     strongSelf.delegate?.screenViewModelDidFetchSuccess(strongSelf)
                     strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loaded)
-
+                    AmityEventHandler.shared.hideKTBLoading()
                 }
             }
         })
