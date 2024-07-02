@@ -15,6 +15,7 @@ protocol AmityCommentWithURLPreviewTableViewCellDelegate: AnyObject {
     func commentCellDidTapOption(_ cell: AmityCommentWithURLPreviewTableViewCell)
     func commentCellDidTapAvatar(_ cell: AmityCommentWithURLPreviewTableViewCell, userId: String, communityId: String?)
     func commentCellDidTapReactionDetails(_ cell: AmityCommentWithURLPreviewTableViewCell)
+    func commentCellDidTapCommentImage(_ cell: AmityCommentWithURLPreviewTableViewCell, imageView: UIImageView, fileURL: String?)
 }
 
 class AmityCommentWithURLPreviewTableViewCell: UITableViewCell, Nibbable {
@@ -84,7 +85,7 @@ extension AmityCommentWithURLPreviewTableViewCell: AmityCommentViewWithURLPrevie
         case .status:
             break
         case .commentImage(let imageView, let fileURL):
-            break
+            actionDelegate?.commentCellDidTapCommentImage(self, imageView: imageView, fileURL: fileURL)
         }
     }
     
