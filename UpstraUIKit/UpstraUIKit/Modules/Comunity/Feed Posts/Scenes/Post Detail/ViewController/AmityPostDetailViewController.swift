@@ -1238,6 +1238,11 @@ extension AmityPostDetailViewController: AmityCommentWithURLPreviewTableViewCell
             break
         }
     }
+    
+    func commentCellDidTapCommentImage(_ cell: AmityCommentWithURLPreviewTableViewCell, imageView: UIImageView, fileURL: String?) {
+        let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
+        self.present(photoViewerVC, animated: true, completion: nil)
+    }
 }
 
 // MARK: - UITableViewDataSource

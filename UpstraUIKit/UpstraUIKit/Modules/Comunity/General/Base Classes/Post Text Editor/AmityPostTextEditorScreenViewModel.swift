@@ -149,7 +149,7 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
                     updatedMetadata["url_preview_cache_url"] = ""
                     updatedMetadata["is_show_url_preview"] = false
                 }
-                updatedMetadata["location"] = newLocation
+                updatedMetadata["location"] = location["location"]
 
                 doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
             }

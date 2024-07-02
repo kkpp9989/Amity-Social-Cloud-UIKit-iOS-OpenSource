@@ -298,7 +298,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         titleNameLabel.text = user.displayName
         descriptionLabel.text = user.about
         editProfileButton.isHidden = !user.isCurrentUser
-        messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser
+        messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser || user.object.isDeleted
         ktbContainerView.isHidden = user.isCurrentUser
     }
     
