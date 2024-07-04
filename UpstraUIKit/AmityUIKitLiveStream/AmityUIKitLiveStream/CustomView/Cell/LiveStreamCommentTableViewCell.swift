@@ -49,6 +49,12 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         displayNameLabel.textColor = .white
         displayNameLabel.backgroundColor = .clear
         
+        // Add shadow to the label
+        displayNameLabel.layer.shadowColor = UIColor.black.cgColor
+        displayNameLabel.layer.shadowOffset = CGSize(width: 1, height: 1) // Increased offset for more visible shadow
+        displayNameLabel.layer.shadowRadius = 1 // Slightly larger radius for a more pronounced shadow
+        displayNameLabel.layer.shadowOpacity = 1
+        
         commentLabel.font = AmityFontSet.caption.withSize(14)
         commentLabel.backgroundColor = .clear
         commentLabel.numberOfLines = 2
@@ -58,8 +64,8 @@ class LiveStreamCommentTableViewCell: UITableViewCell, Nibbable {
         
         // Add shadow to the label
         commentLabel.layer.shadowColor = UIColor.black.cgColor
-        commentLabel.layer.shadowOffset = CGSize(width: 3, height: 3) // Increased offset for more visible shadow
-        commentLabel.layer.shadowRadius = 5 // Slightly larger radius for a more pronounced shadow
+        commentLabel.layer.shadowOffset = CGSize(width: 1, height: 1) // Increased offset for more visible shadow
+        commentLabel.layer.shadowRadius = 1 // Slightly larger radius for a more pronounced shadow
         commentLabel.layer.shadowOpacity = 1
         
         likeButton.setTitle("", for: .normal)
