@@ -28,8 +28,8 @@ public final class AmityHashtagTableViewCell: UITableViewCell, Nibbable {
     }
     
     public func display(with model: AmityHashtagModel) {
-        keywordLabel.text = model.text
-        postCountLabel.text = model.count?.formatUsingAbbrevation()
+        keywordLabel.text = "#\(model.text ?? "")"
+        postCountLabel.text = "\(model.count?.formatUsingAbbrevation() ?? "0") posts"
     }
 }
 

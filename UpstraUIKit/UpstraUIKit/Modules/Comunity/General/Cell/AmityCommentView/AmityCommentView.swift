@@ -222,6 +222,7 @@ class AmityCommentView: AmityView {
                                 DispatchQueue.main.async {
                                     self.fileURL = imageURL
                                     self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
+                                    self.contentImageView.isUserInteractionEnabled = true
                                 }
                             case .failure(_):
                                 DispatchQueue.main.async {
@@ -314,6 +315,7 @@ class AmityCommentView: AmityView {
         comment = nil
         contentContainerView.isHidden = true
         contentImageView.image = nil
+        contentImageView.isUserInteractionEnabled = false
     }
     
     open class func height(with comment: AmityCommentModel, layout: AmityCommentView.Layout, boundingWidth: CGFloat) -> CGFloat {
