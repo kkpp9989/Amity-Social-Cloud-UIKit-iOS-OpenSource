@@ -36,6 +36,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
     private let gradient = CAGradientLayer()
     private var channelToken: AmityNotificationToken?
     var isUpdateInProgress = false
+    var isAlreadyUpdate = false
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -236,17 +237,25 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
             self.isUpdateInProgress = false
         case .member:
             screenViewModel.action.getPendingPostCount { [weak self] pendingPostsCount in
-                self?.pendingPostsContainerView.isHidden = true
-                self?.pendingPostsDescriptionLabel.text = AmityLocalizedStringSet.PendingPosts.statusMemberDesc.localizedString
-                self?.didUpdatePostBanner?()
-                self?.isUpdateInProgress = false
+                guard let strongSelf = self else { return }
+                strongSelf.pendingPostsContainerView.isHidden = true
+                strongSelf.pendingPostsDescriptionLabel.text = AmityLocalizedStringSet.PendingPosts.statusMemberDesc.localizedString
+                if !strongSelf.isAlreadyUpdate {
+                    strongSelf.isAlreadyUpdate = true
+                    strongSelf.didUpdatePostBanner?()
+                }
+                strongSelf.isUpdateInProgress = false
             }
         case .admin:
             screenViewModel.action.getPendingPostCount { [weak self] pendingPostsCount in
-                self?.pendingPostsContainerView.isHidden = pendingPostsCount == 0
-                self?.pendingPostsDescriptionLabel.text = pendingPostsCount == 1 ? String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDescOnePost.localizedString, pendingPostsCount) : String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDesc.localizedString, pendingPostsCount)
-                self?.didUpdatePostBanner?()
-                self?.isUpdateInProgress = false
+                guard let strongSelf = self else { return }
+                strongSelf.pendingPostsContainerView.isHidden = pendingPostsCount == 0
+                strongSelf.pendingPostsDescriptionLabel.text = pendingPostsCount == 1 ? String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDescOnePost.localizedString, pendingPostsCount) : String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDesc.localizedString, pendingPostsCount)
+                if !strongSelf.isAlreadyUpdate {
+                    strongSelf.isAlreadyUpdate = true
+                    strongSelf.didUpdatePostBanner?()
+                }
+                strongSelf.isUpdateInProgress = false
             }
         }
     }

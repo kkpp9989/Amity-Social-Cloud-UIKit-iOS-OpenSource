@@ -45,7 +45,14 @@ final class AmitySearchUserController {
                             let model = AmitySelectMemberModel(object: object)
                             model.isSelected = newSelectedUsers.contains { $0.userId == object.userId }
                             if !strongSelf.users.contains(where: { $0.userId == object.userId }) && !currentUsers.contains(where: { $0.userId == object.userId }) && !model.isCurrnetUser {
-                                strongSelf.users.append(model)
+                                if !object.isDeleted {
+                                    if !object.isGlobalBanned {
+                                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                        if object.userId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                            strongSelf.users.append(model)
+                                        }
+                                    }
+                                }
                             }
                         }
                         completion(.success(strongSelf.users))
