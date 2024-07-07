@@ -50,9 +50,11 @@ public class AmityChatHomeParentViewController: AmityViewController {
     // MARK: - Setup views
     private func setupView() {
         // Load the initial child view controller
-        if !AmityUIKitManagerInternal.shared.currentUserId.isEmpty {
-            let amityChatHomePageViewController = AmityChatHomePageViewController.make()
-            switchToChildViewController(childViewController: amityChatHomePageViewController)
+        if AmityUIKitManagerInternal.shared.isInitialClient() {
+            if !AmityUIKitManagerInternal.shared.currentUserId.isEmpty {
+                let amityChatHomePageViewController = AmityChatHomePageViewController.make()
+                switchToChildViewController(childViewController: amityChatHomePageViewController)
+            }
         }
     }
     

@@ -363,7 +363,7 @@ public class AmityPhotoViewerController: UIViewController {
     private var _shouldHideStatusBar = false
     private var _shouldUseStatusBarStyle = false
     
-    private var imageURL: String? = ""
+    public var imageURL: String? = ""
     
     /// Transition animator
     /// Customizable if you wish to provide your own transitions.

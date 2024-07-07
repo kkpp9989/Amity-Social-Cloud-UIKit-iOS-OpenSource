@@ -112,6 +112,7 @@ extension AmityPostGalleryTableViewCell: AmityPhotoViewerControllerDelegate {
     public func photoViewerController(_ photoViewerController: AmityPhotoViewerController, didScrollToPhotoAt index: Int) {
         galleryCollectionView.selectedImageIndex = index
         photoViewerController.titleLabel.text = "\(index + 1)/\(galleryCollectionView.medias.count)"
+        photoViewerController.imageURL = galleryCollectionView.medias[index].image?.fileURL
     }
     
     public func photoViewerControllerDidReceiveTapGesture(_ photoViewerController: AmityPhotoViewerController) {
