@@ -35,15 +35,15 @@ public class AmityEditTextViewController: AmityViewController {
     @IBOutlet private var hashtagTableViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var galleryView: AmityGalleryCollectionView!
     @IBOutlet private var galleryViewHeightConstraint: NSLayoutConstraint!
-//    @IBOutlet private var postMenuView: AmityPostTextEditorMenuView!
-//    @IBOutlet private var postMenuViewBottomConstraints: NSLayoutConstraint!
+    @IBOutlet private var postMenuView: AmityPostTextEditorMenuView!
+    @IBOutlet private var postMenuViewBottomConstraints: NSLayoutConstraint!
 
     // MARK: - Properties
     private let editMode: EditMode
     private var saveBarButton: UIBarButtonItem!
     private let headerTitle: String?
     private let message: String
-    var editHandler: ((String, [String: Any]?, AmityMentioneesBuilder?) -> Void)?
+    var editHandler: ((String, [String: Any]?, AmityMentioneesBuilder?, [AmityMedia]?) -> Void)?
     var dismissHandler: (() -> Void)?
     private let mentionManager: AmityMentionManager
     private var metadata: [String: Any]? = nil
@@ -58,7 +58,7 @@ public class AmityEditTextViewController: AmityViewController {
         self.headerTitle = headerTitle
         self.message = text
         self.editMode = editMode
-//        self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
+        self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
         switch editMode {
         case .editMessage:
             mentionManager = AmityMentionManager(withType: .message(channelId: nil))
@@ -101,9 +101,9 @@ public class AmityEditTextViewController: AmityViewController {
             extractCommentData()
         }
         
-//        postMenuView.translatesAutoresizingMaskIntoConstraints = false
-//        postMenuView.currentAttachmentState = .image
-//        postMenuView.delegate = self
+        postMenuView.translatesAutoresizingMaskIntoConstraints = false
+        postMenuView.currentAttachmentState = .comment
+        postMenuView.delegate = self
 
         // keyboard
         let notificationCenter = NotificationCenter.default
@@ -183,9 +183,10 @@ public class AmityEditTextViewController: AmityViewController {
     @objc private func saveTap() {
         let metadata = mentionManager.getMetadata()
         let mentionees = mentionManager.getMentionees()
+        let media = media
         dismiss(animated: true) { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.editHandler?(strongSelf.textView.text ?? "", metadata, mentionees)
+            strongSelf.editHandler?(strongSelf.textView.text ?? "", metadata, mentionees, media)
         }
     }
     
@@ -247,11 +248,11 @@ public class AmityEditTextViewController: AmityViewController {
         }
         
         // Update postMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
-//        if galleryView.medias.contains(where: { $0.type == .image }) {
-//            currentAttachmentState = .image
-//        } else {
-//            currentAttachmentState = .none
-//        }
+        if galleryView.medias.contains(where: { $0.type == .image }) {
+            postMenuView.currentAttachmentState = .comment
+        } else {
+            postMenuView.currentAttachmentState = .none
+        }
         
         if textView.text.isEmpty {
             textView.textColor = AmityColorSet.base
@@ -291,11 +292,11 @@ public class AmityEditTextViewController: AmityViewController {
         if notification.name == UIResponder.keyboardWillHideNotification {
 //            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
 //            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
-//            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
+            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - 18
         } else {
 //            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
 //            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
-//            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
+            postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
 //        scrollView.scrollIndicatorInsets = scrollView.contentInset
         let selectedRange = textView.selectedRange
@@ -429,13 +430,13 @@ public class AmityEditTextViewController: AmityViewController {
         case .create:
             maxNumberOfSelection = 1
         case .edit:
-            maxNumberOfSelection = 1 - galleryView.medias.count
+            maxNumberOfSelection = 1 //- galleryView.medias.count
         case .editMessage:
-            maxNumberOfSelection = 1 - galleryView.medias.count
+            maxNumberOfSelection = 1 //- galleryView.medias.count
         }
         
         let imagePicker = NewImagePickerController(selectedAssets: [])
-        imagePicker.settings.theme.selectionStyle = .numbered
+        imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
         imagePicker.settings.selection.unselectOnReachingMax = false
@@ -480,12 +481,12 @@ extension AmityEditTextViewController: AmityPostTextEditorMenuViewDelegate {
     }
     
     private func addMedias(_ medias: [AmityMedia], type: AmityMediaType) {
-        let totalNumberOfMedias = medias.count
-        guard totalNumberOfMedias <= 1 else {
-            presentMaxNumberReachDialogue()
-            return
-        }
-        galleryView.addMedias(medias)
+//        let totalNumberOfMedias = medias.count
+//        guard totalNumberOfMedias <= 1 else {
+//            presentMaxNumberReachDialogue()
+//            return
+//        }
+        galleryView.replaceMedias(medias)
         // start uploading
         updateViewState()
         switch type {

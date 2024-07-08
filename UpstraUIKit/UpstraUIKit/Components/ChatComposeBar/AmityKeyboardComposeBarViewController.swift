@@ -19,13 +19,26 @@ struct AmityKeyboardComposeBarModel {
     
     static func menuList() -> [AmityKeyboardComposeBarModel] {
         // [Custom for ONE Krungthai] Add video album and file for chat detail
-        return [
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
-        ]
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableChatlLocation
+        
+        var menuList: [AmityKeyboardComposeBarModel] = []
+        if isEnableMenu {
+            menuList = [
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
+            ]
+        } else {
+            menuList = [
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
+            ]
+        }
+        return menuList
     }
 }
 

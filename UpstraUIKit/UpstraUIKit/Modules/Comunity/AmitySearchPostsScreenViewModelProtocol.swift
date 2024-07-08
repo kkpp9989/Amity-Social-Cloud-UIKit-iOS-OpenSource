@@ -63,7 +63,7 @@ protocol AmitySearchPostsScreenViewModelAction {
     
     // MARK: Comment
     func delete(withCommentId commentId: String)
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?)
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia])
     func report(withCommentId commentId: String)
     func unreport(withCommentId commentId: String)
     func getReportStatus(withCommendId commendId: String, completion: ((Bool) -> Void)?)

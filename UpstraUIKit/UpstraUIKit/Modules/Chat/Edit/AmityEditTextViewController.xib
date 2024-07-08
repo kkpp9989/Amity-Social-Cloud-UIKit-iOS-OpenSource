@@ -22,6 +22,8 @@
                 <outlet property="mentionTableView" destination="863-ru-kjH" id="fsD-gn-UbL"/>
                 <outlet property="mentionTableViewBottomConstraint" destination="7xQ-LZ-fWk" id="jbf-KE-lQs"/>
                 <outlet property="mentionTableViewHeightConstraint" destination="MCf-1a-cSd" id="Lu1-yb-8GR"/>
+                <outlet property="postMenuView" destination="KFJ-9s-rP1" id="FUb-UF-ZAd"/>
+                <outlet property="postMenuViewBottomConstraints" destination="isn-iP-tnH" id="mgc-qq-LJR"/>
                 <outlet property="textView" destination="wNs-jb-2fO" id="Zla-zl-WWP"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -92,11 +94,19 @@
                         <constraint firstAttribute="height" constant="240" id="4WI-Da-r2k"/>
                     </constraints>
                 </tableView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KFJ-9s-rP1" customClass="AmityPostTextEditorMenuView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="802" width="414" height="60"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="60" id="KUx-4e-Lq9"/>
+                    </constraints>
+                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="fou-jD-0B9" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="1ji-vo-dso"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="KFJ-9s-rP1" secondAttribute="trailing" id="3Ma-xe-VCp"/>
                 <constraint firstItem="863-ru-kjH" firstAttribute="bottom" secondItem="fnl-2z-Ty3" secondAttribute="bottom" id="7xQ-LZ-fWk"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="keD-jN-QWr" secondAttribute="trailing" id="9BI-8g-4Ua"/>
                 <constraint firstItem="fou-jD-0B9" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="BxR-1p-HOC"/>
@@ -110,8 +120,10 @@
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="lwb-76-FgQ" secondAttribute="bottom" id="cna-yd-wOb"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="keD-jN-QWr" secondAttribute="bottom" id="dhQ-k9-yxp"/>
                 <constraint firstItem="keD-jN-QWr" firstAttribute="top" secondItem="fou-jD-0B9" secondAttribute="bottom" id="hq1-0N-bqr"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="KFJ-9s-rP1" secondAttribute="bottom" id="isn-iP-tnH"/>
                 <constraint firstItem="fou-jD-0B9" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="oyO-s7-iC4"/>
                 <constraint firstItem="ERo-GZ-2dl" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="qaN-S7-6HR"/>
+                <constraint firstItem="KFJ-9s-rP1" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="tHd-C9-7Hj"/>
             </constraints>
             <point key="canvasLocation" x="139" y="100"/>
         </view>

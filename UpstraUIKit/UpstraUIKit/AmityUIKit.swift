@@ -316,6 +316,18 @@ public final class AmityUIKitManager {
     public static func setASMRemoteConfig(_ isEnableMenu: Bool) {
         AmityUIKitManagerInternal.shared.isEnableMenu = isEnableMenu
     }
+    
+    public static func setLocationASMRemoteConfig(_ isEnableMenu: Bool) {
+        AmityUIKitManagerInternal.shared.isEnableLocation = isEnableMenu
+    }
+    
+    public static func setSocailLocationASMRemoteConfig(_ isEnableMenu: Bool) {
+        AmityUIKitManagerInternal.shared.isEnableSocialLocation = isEnableMenu
+    }
+    
+    public static func setChatLocationASMRemoteConfig(_ isEnableMenu: Bool) {
+        AmityUIKitManagerInternal.shared.isEnableChatlLocation = isEnableMenu
+    }
 
     //ktb kk custom share menu
     public static func getShareExternalURL(post: AmityPostModel) -> String {
@@ -385,6 +397,10 @@ final class AmityUIKitManagerInternal: NSObject {
     var env: [String: Any] = [:]
     
     var isEnableMenu: Bool = true
+    
+    var isEnableLocation: Bool = true
+    var isEnableSocialLocation: Bool = true
+    var isEnableChatlLocation: Bool = true
     
     // MARK: - Initializer
     

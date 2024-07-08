@@ -511,8 +511,8 @@ extension AmityFeedScreenViewModel {
         }
     }
     
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (success, error) in
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia]) {
+        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias) { [weak self] (success, error) in
             guard let strongSelf = self else { return }
             if success {
                 strongSelf.delegate?.screenViewModelDidEditCommentSuccess(strongSelf)

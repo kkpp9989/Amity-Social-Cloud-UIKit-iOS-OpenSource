@@ -1062,7 +1062,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             editTextVC.dismissHandler = {
                 editTextVC.dismiss(animated: true, completion: nil)
             }
-            editTextVC.editHandler = { [weak self] newMessage, metadata, mentionees in
+            editTextVC.editHandler = { [weak self] newMessage, metadata, mentionees, media in
                 self?.screenViewModel.action.editText(
 					with: newMessage,
 					messageId: message.messageId,
@@ -1094,6 +1094,17 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 switch result {
                 case .success(let image):
                     let imageURL = message.object.getImageInfo()?.fileURL
+                    
+                    guard let image = imageView.image else {
+                        print("Invalid image")
+                        return
+                    }
+                    
+                    guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+                        print("Invalid layer position: \(imageView.layer.position)")
+                        return
+                    }
+                    
                     let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: image, imageURL: imageURL)
                     self?.present(photoViewerVC, animated: true, completion: nil)
                 case .failure:

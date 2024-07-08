@@ -25,6 +25,7 @@ public enum AmityPostAttachmentType: CaseIterable {
     case image
     case video
     case file
+    case comment
 }
 
 class AmityPostTextEditorMenuView: UIView {
@@ -61,7 +62,10 @@ class AmityPostTextEditorMenuView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        // You can customize the Set of allowed attachments here if needed
+        self.allowPostAttachments = []
+        super.init(coder: coder)
+        commonInit()
     }
     
     private func commonInit() {
@@ -114,7 +118,9 @@ class AmityPostTextEditorMenuView: UIView {
         albumButton.isHidden = allowPostAttachments.isDisjoint(with: [.image])
         videoButton.isHidden = allowPostAttachments.isDisjoint(with: [.video])
         fileButton.isHidden = allowPostAttachments.isDisjoint(with: [.file])
-        mapsButton.isHidden = false
+        
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableSocialLocation
+        mapsButton.isHidden = !isEnableMenu
 
         // At empty view, at beginning, and the end of the stackview.
         // This logic works together with stackView.distribution = .equalCentering
@@ -167,6 +173,14 @@ class AmityPostTextEditorMenuView: UIView {
             videoButton.isEnabled = true
             fileButton.isEnabled = true
             mapsButton.isEnabled = true
+        case .comment:
+            stackView.alignment = .leading
+            cameraButton.isHidden = true
+            albumButton.isHidden = false
+            videoButton.isHidden = true
+            fileButton.isHidden = true
+            mapsButton.isHidden = true
+            expandButton.isHidden = true
         }
     }
     

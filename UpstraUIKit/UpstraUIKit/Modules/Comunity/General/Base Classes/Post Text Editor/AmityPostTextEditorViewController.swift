@@ -674,7 +674,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         
         // We automatically choose media type based on last media pick.
         switch currentAttachmentState {
-        case .none:
+        case .none, .comment:
             // If the user have not chosen any media yet, we allow both type to be picked.
             // After it is selected, we force the same type for the later actions.
             var mediaTypesWhenNothingSelected: [String] = []
@@ -1094,7 +1094,10 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         }
         
         // Adding map button
-        items.append(mapOption)
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableSocialLocation
+        if isEnableMenu {
+            items.append(mapOption)
+        }
         
         contentView.configure(items: items, selectedItem: nil)
         contentView.didSelectItem = { _ in

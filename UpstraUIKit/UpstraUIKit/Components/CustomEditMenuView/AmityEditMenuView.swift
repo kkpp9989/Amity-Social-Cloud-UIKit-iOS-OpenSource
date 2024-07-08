@@ -128,14 +128,16 @@ public class AmityEditMenuView {
         }
         
         // Add Forward function
-        items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconForward, title: "Forward", completion: { [weak self] in
-            guard let weakSelf = self else { return }
-            
-            // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)
-            if let indexPath = indexPath {
-                weakSelf.editMessageListActionDelegate?.didTapEditMenu(event: .forward(indexPath: indexPath), indexPath: indexPath)
-            }
-        }))
+        if message.messageType != .custom {
+            items.append(AmityEditMenuItem(icon: AmityIconSet.EditMessesgeMenu.iconForward, title: "Forward", completion: { [weak self] in
+                guard let weakSelf = self else { return }
+                
+                // Handle Edit message in message list viewcontroller action (editMessageActionDelegate)
+                if let indexPath = indexPath {
+                    weakSelf.editMessageListActionDelegate?.didTapEditMenu(event: .forward(indexPath: indexPath), indexPath: indexPath)
+                }
+            }))
+        }
         
         // Add unsend button if message is owner | Add report button if message is other
         if message.isOwner {

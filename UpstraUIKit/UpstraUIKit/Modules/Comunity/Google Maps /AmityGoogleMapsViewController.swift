@@ -93,7 +93,10 @@ class AmityGoogleMapsViewController: AmityViewController {
         
         // Set the items in the navigation bar
         navigationItem.rightBarButtonItems = [rightItem]
-        navigationItem.titleView = searchTextField
+        
+        if AmityUIKitManagerInternal.shared.isEnableLocation {
+            navigationItem.titleView = searchTextField
+        }
     }
     
     private func setupGoogleMapsView() {
@@ -132,7 +135,6 @@ class AmityGoogleMapsViewController: AmityViewController {
 
         // Add the map to the view, hide it until we got a location update.
         googleMapsView.addSubview(mapView)
-        mapView.isHidden = true
     }
     
     func setupTableView() {
