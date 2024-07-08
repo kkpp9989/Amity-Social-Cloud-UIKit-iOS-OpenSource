@@ -846,7 +846,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
             editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createComment.localizedString
         }
-        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees in
+        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees, medias in
             self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id, medias: self?.medias ?? [])
             editTextViewController?.dismiss(animated: true, completion: nil)
         }
@@ -1060,6 +1060,16 @@ extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
 
 extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
     func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
+        guard let image = imageView.image else {
+            print("Invalid image")
+            return
+        }
+        
+        guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+            print("Invalid layer position: \(imageView.layer.position)")
+            return
+        }
+        
         let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
         self.present(photoViewerVC, animated: true, completion: nil)
     }
@@ -1140,8 +1150,8 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
                 guard let strongSelf = self else { return }
                 let editTextViewController = AmityCommentEditorViewController.make(comment: comment, communityId: communityId)
                 editTextViewController.title = comment.isParent ? AmityLocalizedStringSet.PostDetail.editComment.localizedString : AmityLocalizedStringSet.PostDetail.editReply.localizedString
-                editTextViewController.editHandler = { [weak self] text, metadata, mentionees in
-                    self?.screenViewModel.action.editComment(with: comment, text: text, metadata: metadata, mentionees: mentionees)
+                editTextViewController.editHandler = { [weak self] text, metadata, mentionees, medias in
+                    self?.screenViewModel.action.editComment(with: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias ?? [])
                     editTextViewController.dismiss(animated: true, completion: nil)
                 }
                 editTextViewController.dismissHandler = { [weak editTextViewController] in
@@ -1240,6 +1250,16 @@ extension AmityPostDetailViewController: AmityCommentWithURLPreviewTableViewCell
     }
     
     func commentCellDidTapCommentImage(_ cell: AmityCommentWithURLPreviewTableViewCell, imageView: UIImageView, fileURL: String?) {
+        guard let image = imageView.image else {
+            print("Invalid image")
+            return
+        }
+        
+        guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+            print("Invalid layer position: \(imageView.layer.position)")
+            return
+        }
+        
         let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
         self.present(photoViewerVC, animated: true, completion: nil)
     }

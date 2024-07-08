@@ -257,7 +257,7 @@ extension AmitySearchPostsViewController: AmitySearchPostsScreenViewModelAction 
     func delete(withCommentId commentId: String) {
     }
     
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmitySDK.AmityMentioneesBuilder?) {
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmitySDK.AmityMentioneesBuilder?, medias: [AmityMedia]) {
     }
     
     func report(withCommentId commentId: String) {
@@ -722,6 +722,16 @@ extension AmitySearchPostsViewController: AmityPostPreviewCommentDelegate {
         case .tapOnPostIdLink(postId: let postId):
             AmityEventHandler.shared.postDidtap(from: self, postId: postId)
         case .tapOnCommentImage(imageView: let imageView, fileURL: let fileURL):
+            guard let image = imageView.image else {
+                print("Invalid image")
+                return
+            }
+            
+            guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+                print("Invalid layer position: \(imageView.layer.position)")
+                return
+            }
+            
             let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL)
             self.present(photoViewerVC, animated: true, completion: nil)
         }
@@ -745,8 +755,8 @@ extension AmitySearchPostsViewController: AmityPostPreviewCommentDelegate {
             }
             let editTextViewController = AmityCommentEditorViewController.make(comment: comment, communityId: commId)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.editComment.localizedString
-            editTextViewController.editHandler = { [weak self] text, metadata, mentionees in
-                self?.screenViewModel.action.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees)
+            editTextViewController.editHandler = { [weak self] text, metadata, mentionees, medias in
+                self?.screenViewModel.action.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias ?? [])
                 editTextViewController.dismiss(animated: true, completion: nil)
             }
             editTextViewController.dismissHandler = {

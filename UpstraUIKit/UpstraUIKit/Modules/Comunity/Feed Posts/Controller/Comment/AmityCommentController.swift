@@ -56,8 +56,8 @@ extension AmityCommentController {
         editorController.delete(withCommentId: commentId, completion: completion)
     }
     
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, completion: AmityRequestCompletion?) {
-        editorController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, completion: completion)
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: AmityRequestCompletion?) {
+        editorController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias, completion: completion)
     }
 }
 

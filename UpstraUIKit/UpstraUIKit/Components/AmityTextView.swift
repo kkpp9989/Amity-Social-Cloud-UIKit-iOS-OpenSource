@@ -122,6 +122,9 @@ open class AmityTextView: UITextView {
         delegate = self
         backgroundColor = AmityColorSet.backgroundColor
         textColor = AmityColorSet.base
+        autocorrectionType = .no
+        spellCheckingType = .no
+//        inputAccessoryView = UIView()
         setupPlaceholder()
     }
     

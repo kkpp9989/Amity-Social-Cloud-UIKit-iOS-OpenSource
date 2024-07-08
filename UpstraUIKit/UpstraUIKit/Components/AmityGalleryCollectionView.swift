@@ -97,6 +97,11 @@ class AmityGalleryCollectionView: UICollectionView {
         reloadData()
     }
     
+    public func replaceMedias(_ medias: [AmityMedia]) {
+        self.medias = medias
+        reloadData()
+    }
+    
     func updateViewState(for imageId: String, state: AmityGalleryCollectionViewCell.ViewState) {
         guard
             let index = medias.firstIndex(where: { $0.id == imageId }),

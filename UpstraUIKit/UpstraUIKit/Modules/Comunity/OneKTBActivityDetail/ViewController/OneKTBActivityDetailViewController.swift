@@ -666,7 +666,7 @@ extension OneKTBActivityDetailViewController: AmityPostDetailCompostViewDelegate
             editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createComment.localizedString
         }
-        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees in
+        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees, medias in
             self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id)
             editTextViewController?.dismiss(animated: true, completion: nil)
         }
@@ -866,7 +866,7 @@ extension OneKTBActivityDetailViewController: AmityCommentTableViewCellDelegate 
                 guard let strongSelf = self else { return }
                 let editTextViewController = AmityCommentEditorViewController.make(comment: comment, communityId: communityId)
                 editTextViewController.title = comment.isParent ? AmityLocalizedStringSet.PostDetail.editComment.localizedString : AmityLocalizedStringSet.PostDetail.editReply.localizedString
-                editTextViewController.editHandler = { [weak self] text, metadata, mentionees in
+                editTextViewController.editHandler = { [weak self] text, metadata, mentionees, medias in
                     self?.screenViewModel.action.editComment(with: comment, text: text, metadata: metadata, mentionees: mentionees)
                     editTextViewController.dismiss(animated: true, completion: nil)
                 }

@@ -410,7 +410,7 @@ extension OneKTBActivityDetailScreenViewModel {
     }
     
     func editComment(with comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (success, error) in
+        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: []) { [weak self] (success, error) in
             guard let strongSelf = self else { return }
             if success {
                 strongSelf.delegate?.screenViewModelDidEditComment(strongSelf)
