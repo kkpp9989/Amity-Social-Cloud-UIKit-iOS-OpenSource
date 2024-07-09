@@ -125,7 +125,9 @@ class AmityCommentViewWithURLPreview: AmityView {
         
         contentContainerView.backgroundColor = .clear
         contentContainerView.isHidden = true
+        contentImageView.isHidden = true
         contentImageView.contentMode = .scaleAspectFill
+        contentImageView.image = AmityIconSet.videoThumbnailPlaceholder
         
         // Setup tap gesture
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(commentImageViewTap(_:)))
@@ -202,6 +204,7 @@ class AmityCommentViewWithURLPreview: AmityView {
             if !comment.comment.attachments.isEmpty {
                 for attachment in comment.comment.attachments {
                     self.contentContainerView.isHidden = false
+                    self.contentImageView.isHidden = false
                     switch attachment {
                     case .image(fileId: let fileId, data: _):
                         AmityUIKitManagerInternal.shared.fileService.getImageURLByFileId(fileId: fileId) { resultImageURL in
@@ -209,7 +212,7 @@ class AmityCommentViewWithURLPreview: AmityView {
                             case .success(let imageURL):
                                 DispatchQueue.main.async {
                                     self.fileURL = imageURL
-                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: UIImage())
+                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: AmityIconSet.videoThumbnailPlaceholder)
                                     self.contentImageView.isUserInteractionEnabled = true
                                 }
                             case .failure(_):
@@ -296,7 +299,7 @@ class AmityCommentViewWithURLPreview: AmityView {
         bannedImageView.image = nil
         comment = nil
         contentContainerView.isHidden = true
-        contentImageView.image = nil
+        contentImageView.image = AmityIconSet.videoThumbnailPlaceholder
         contentImageView.isUserInteractionEnabled = false
         clearURLPreviewView()
     }
