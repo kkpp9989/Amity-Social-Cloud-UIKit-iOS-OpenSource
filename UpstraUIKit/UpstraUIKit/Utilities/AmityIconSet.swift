@@ -137,6 +137,7 @@ public struct AmityIconSet {
     public static var defaultGroupChat = UIImage(named: "default_group_chat", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var defaultCategory = UIImage(named: "default_category", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var videoThumbnailPlaceholder = UIImage(named: "video_thumbnail_placeholder", in: AmityUIKitManager.bundle, compatibleWith: nil)
+    public static var imagePlaceholder = UIImage(named: "image_placeholder", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconSetting = UIImage(named: "icon_setting", in: AmityUIKitManager.bundle, compatibleWith: nil)
     public static var iconDeleteMessage = UIImage(named: "icon_delete_message", in: AmityUIKitManager.bundle, compatibleWith: nil)
     
