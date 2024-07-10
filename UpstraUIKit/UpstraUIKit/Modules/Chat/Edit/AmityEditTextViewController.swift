@@ -439,7 +439,7 @@ public class AmityEditTextViewController: AmityViewController {
         imagePicker.settings.theme.selectionStyle = .checked
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
-        imagePicker.settings.selection.unselectOnReachingMax = false
+        imagePicker.settings.selection.unselectOnReachingMax = true
         
         let options = imagePicker.settings.fetch.album.options
         // Fetching user library and other smart albums
