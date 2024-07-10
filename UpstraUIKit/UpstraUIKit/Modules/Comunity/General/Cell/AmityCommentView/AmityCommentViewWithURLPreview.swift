@@ -127,7 +127,7 @@ class AmityCommentViewWithURLPreview: AmityView {
         contentContainerView.isHidden = true
         contentImageView.isHidden = true
         contentImageView.contentMode = .scaleAspectFill
-        contentImageView.image = AmityIconSet.videoThumbnailPlaceholder
+        contentImageView.image = AmityIconSet.imagePlaceholder
         
         // Setup tap gesture
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(commentImageViewTap(_:)))
@@ -212,7 +212,7 @@ class AmityCommentViewWithURLPreview: AmityView {
                             case .success(let imageURL):
                                 DispatchQueue.main.async {
                                     self.fileURL = imageURL
-                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: AmityIconSet.videoThumbnailPlaceholder)
+                                    self.contentImageView.loadImage(with: imageURL, size: .full, placeholder: AmityIconSet.imagePlaceholder)
                                     self.contentImageView.isUserInteractionEnabled = true
                                 }
                             case .failure(_):
@@ -299,7 +299,7 @@ class AmityCommentViewWithURLPreview: AmityView {
         bannedImageView.image = nil
         comment = nil
         contentContainerView.isHidden = true
-        contentImageView.image = AmityIconSet.videoThumbnailPlaceholder
+        contentImageView.image = AmityIconSet.imagePlaceholder
         contentImageView.isUserInteractionEnabled = false
         clearURLPreviewView()
     }

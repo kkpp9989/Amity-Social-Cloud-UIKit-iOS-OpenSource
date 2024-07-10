@@ -183,7 +183,7 @@ public class AmityEditTextViewController: AmityViewController {
     @objc private func saveTap() {
         let metadata = mentionManager.getMetadata()
         let mentionees = mentionManager.getMentionees()
-        let media = media
+        let media = galleryView.medias
         dismiss(animated: true) { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.editHandler?(strongSelf.textView.text ?? "", metadata, mentionees, media)
@@ -225,16 +225,16 @@ public class AmityEditTextViewController: AmityViewController {
         var isPostValid = textView.isValid
         
         // Update post button state
-        var isImageValid = true
+        var isImageValid = false
         if !galleryView.medias.isEmpty {
-            isImageValid = galleryView.medias.filter({
+            isImageValid = !galleryView.medias.allSatisfy({
                 switch $0.state {
-                case .uploadedImage, .uploadedVideo , .downloadableImage, .downloadableVideo:
-                    return false
-                default:
+                case .downloadableImage, .downloadableVideo:
                     return true
+                default:
+                    return false
                 }
-            }).isEmpty
+            })
             isPostValid = isImageValid
         }
         
@@ -242,7 +242,7 @@ public class AmityEditTextViewController: AmityViewController {
             let isTextChanged = textView.text != comment.text
 //            let isImageChanged = galleryView.medias != comment.comment
 //            let isPostChanged = isTextChanged || isImageChanged
-            saveBarButton.isEnabled = isTextChanged && isPostValid
+            saveBarButton.isEnabled = isTextChanged && isImageValid
         } else {
             saveBarButton.isEnabled = isPostValid
         }
