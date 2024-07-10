@@ -242,7 +242,7 @@ public class AmityEditTextViewController: AmityViewController {
             let isTextChanged = textView.text != comment.text
 //            let isImageChanged = galleryView.medias != comment.comment
 //            let isPostChanged = isTextChanged || isImageChanged
-            saveBarButton.isEnabled = isTextChanged && isImageValid
+            saveBarButton.isEnabled = isTextChanged || isPostValid
         } else {
             saveBarButton.isEnabled = isPostValid
         }
