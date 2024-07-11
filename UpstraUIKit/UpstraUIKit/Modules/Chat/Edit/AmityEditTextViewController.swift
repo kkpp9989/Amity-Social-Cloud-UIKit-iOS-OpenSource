@@ -251,6 +251,10 @@ public class AmityEditTextViewController: AmityViewController {
             }
         }
         
+        if isImageValid && textView.text.isEmpty {
+            saveBarButton.isEnabled = false
+        }
+        
         // Update postMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
         if galleryView.medias.contains(where: { $0.type == .image }) {
             postMenuView.currentAttachmentState = .comment
