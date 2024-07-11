@@ -242,17 +242,15 @@ public class AmityEditTextViewController: AmityViewController {
         
         if !isUploadProgress {
             if let comment = comment {
-                let isTextChanged = textView.text != comment.text
-                //            let isImageChanged = galleryView.medias != comment.comment
-                //            let isPostChanged = isTextChanged || isImageChanged
-                saveBarButton.isEnabled = isTextChanged || isPostValid
+                if textView.text.isEmpty && galleryView.medias.isEmpty {
+                    saveBarButton.isEnabled = false
+                } else {
+                    let isTextChanged = textView.text != comment.text
+                    saveBarButton.isEnabled = isTextChanged || isPostValid
+                }
             } else {
                 saveBarButton.isEnabled = isPostValid
             }
-        }
-        
-        if isImageValid && textView.text.isEmpty {
-            saveBarButton.isEnabled = false
         }
         
         // Update postMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
@@ -351,7 +349,7 @@ public class AmityEditTextViewController: AmityViewController {
                                 isUploadFailed = true
                             }
                             fileUploadFailedDispatchGroup.leave()
-                            self?.saveBarButton.isEnabled = false
+                            self?.saveBarButton.isEnabled = true
                             self?.isUploadProgress = false
                             self?.updateViewState()
                         })
