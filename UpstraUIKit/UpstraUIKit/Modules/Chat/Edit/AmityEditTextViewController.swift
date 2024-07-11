@@ -51,6 +51,8 @@ public class AmityEditTextViewController: AmityViewController {
     
     private var media: [AmityMedia] = []
     private var mediaAsset: [PHAsset] = []
+    
+    private var isUploadProgress: Bool = false
 
     // MARK: - View lifecycle
     
@@ -238,13 +240,15 @@ public class AmityEditTextViewController: AmityViewController {
             isPostValid = isImageValid
         }
         
-        if let comment = comment {
-            let isTextChanged = textView.text != comment.text
-//            let isImageChanged = galleryView.medias != comment.comment
-//            let isPostChanged = isTextChanged || isImageChanged
-            saveBarButton.isEnabled = isTextChanged || isPostValid
-        } else {
-            saveBarButton.isEnabled = isPostValid
+        if !isUploadProgress {
+            if let comment = comment {
+                let isTextChanged = textView.text != comment.text
+                //            let isImageChanged = galleryView.medias != comment.comment
+                //            let isPostChanged = isTextChanged || isImageChanged
+                saveBarButton.isEnabled = isTextChanged || isPostValid
+            } else {
+                saveBarButton.isEnabled = isPostValid
+            }
         }
         
         // Update postMenuView.currentAttachmentState to disable buttons based on the chosen attachment.
@@ -308,6 +312,7 @@ public class AmityEditTextViewController: AmityViewController {
     private func uploadImages() {
         let fileUploadFailedDispatchGroup = DispatchGroup()
         var isUploadFailed = false
+        isUploadProgress = true
         saveBarButton.isEnabled = false
         galleryView.isUserInteractionEnabled = false
         for index in 0..<galleryView.medias.count {
@@ -343,22 +348,27 @@ public class AmityEditTextViewController: AmityViewController {
                             }
                             fileUploadFailedDispatchGroup.leave()
                             self?.saveBarButton.isEnabled = false
+                            self?.isUploadProgress = false
                             self?.updateViewState()
                         })
                     case .failure:
                         media.state = .error
                         self?.galleryView.updateViewState(for: media.id, state: .error)
+                        self?.updateViewState()
+                        self?.isUploadProgress = false
                         isUploadFailed = true
                     }
                 }
             default:
                 Log.add("[UIKit]: Unsupported media state for uploading.")
+                self.isUploadProgress = false
                 break
             }
         }
         
         fileUploadFailedDispatchGroup.notify(queue: .main) { [weak self] in
             if isUploadFailed && self?.presentedViewController == nil {
+                self?.isUploadProgress = false
                 self?.showUploadFailureAlert()
             }
         }
@@ -584,7 +594,7 @@ extension AmityEditTextViewController: AmityKeyboardServiceDelegate {
 extension AmityEditTextViewController: AmityTextViewDelegate {
     public func textViewDidChange(_ textView: AmityTextView) {
         guard let text = textView.text else { return }
-        saveBarButton.isEnabled = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+//        saveBarButton.isEnabled = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             textView.attributedText = nil
             textView.textColor = AmityColorSet.base
