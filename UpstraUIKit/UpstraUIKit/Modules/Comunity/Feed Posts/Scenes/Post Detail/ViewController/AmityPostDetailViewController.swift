@@ -49,6 +49,8 @@ open class AmityPostDetailViewController: AmityViewController {
     private var livestreamId: String?
     
     public var backHandler: (() -> Void)?
+    
+    private var isUploadProgress: Bool = false
 
     private var parentComment: AmityCommentModel? {
         didSet {
@@ -882,6 +884,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
             showAlertForMaximumCharacters()
             return false
         }
+        updateViewState()
         return mentionManager?.shouldChangeTextIn(view.textView, inRange: range, replacementText: text, currentText: view.textView.text) ?? true
     }
 }
@@ -936,6 +939,9 @@ extension AmityPostDetailViewController {
         commentComposeBarView.updatePostButtonUploadState(isEnable: false)
         let fileUploadFailedDispatchGroup = DispatchGroup()
         var isUploadFailed = false
+        isUploadProgress = true
+        commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+        replyContentImageView.isUserInteractionEnabled = false
         guard let medias = medias, !medias.isEmpty else { return }
         for index in 0..<medias.count {
             let media = medias[index] // Take a mutable copy of the media object
@@ -959,23 +965,32 @@ extension AmityPostDetailViewController {
                                 // Update the media in the medias array
                                 self?.medias?[index] = media
                                 self?.commentComposeBarView.updatePostButtonUploadState(isEnable: true)
+                                self?.replyContentImageView.isUserInteractionEnabled = true
+                                self?.isUploadProgress = false
                                 self?.progressView.setProgress(1, animated: true)
                             case .failure:
                                 Log.add("[UIKit]: Image upload failed")
                                 media.state = .error
                                 isUploadFailed = true
+                                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+                                self?.isUploadProgress = false
                                 self?.progressView.setProgress(1, animated: true)
                             }
                             fileUploadFailedDispatchGroup.leave()
+                            self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+                            self?.updateViewState()
                         })
                     case .failure:
                         media.state = .error
                         isUploadFailed = true
+                        self?.updateViewState()
+                        self?.isUploadProgress = false
                         self?.progressView.setProgress(1, animated: true)
                     }
                 }
             default:
                 Log.add("[UIKit]: Unsupported media state for uploading.")
+                self.isUploadProgress = false
                 break
             }
         }
@@ -994,6 +1009,40 @@ extension AmityPostDetailViewController {
         let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    private func updateViewState() {
+        // Update post button state
+        var isImageValid = false
+        if let medias = medias, !medias.isEmpty {
+            isImageValid = !medias.allSatisfy({
+                switch $0.state {
+                case .downloadableImage, .downloadableVideo:
+                    return true
+                default:
+                    return false
+                }
+            })
+        }
+        
+        if !isUploadProgress {
+            let text = commentComposeBarView.textView.text!
+            if let medias = medias, !text.isEmpty || !medias.isEmpty {
+                if text.isEmpty && !medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: isImageValid)
+                } else if !text.isEmpty && medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: !text.isEmpty)
+                } else if !text.isEmpty && !medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: false)
+                } else {
+                    commentComposeBarView.updatePostButtonState(isEnable: isImageValid)
+                }
+            } else {
+                commentComposeBarView.updatePostButtonState(isEnable: !text.isEmpty)
+            }
+        } else {
+            commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+        }
     }
 }
 

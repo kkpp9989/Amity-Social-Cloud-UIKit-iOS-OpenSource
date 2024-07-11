@@ -265,7 +265,7 @@ extension AmityPostDetailCompostView: AmityTextViewDelegate {
     }
     
     func textViewDidChange(_ textView: AmityTextView) {
-        postButton.isEnabled = !text.isEmpty
+//        postButton.isEnabled = !text.isEmpty
         
         let height = textView.text.height(withConstrainedWidth: textView.contentSize.width, font: textView.font ?? AmityFontSet.body)
         let verticalPadding = Constant.textViewTopPadding + Constant.textViewBottomPadding
