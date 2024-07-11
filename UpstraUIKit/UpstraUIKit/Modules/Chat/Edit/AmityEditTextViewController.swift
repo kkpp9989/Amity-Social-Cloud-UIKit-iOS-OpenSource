@@ -308,6 +308,8 @@ public class AmityEditTextViewController: AmityViewController {
     private func uploadImages() {
         let fileUploadFailedDispatchGroup = DispatchGroup()
         var isUploadFailed = false
+        saveBarButton.isEnabled = false
+        galleryView.isUserInteractionEnabled = false
         for index in 0..<galleryView.medias.count {
             let media = galleryView.medias[index]
             guard case .idle = galleryView.viewState(for: media.id) else {
@@ -336,9 +338,11 @@ public class AmityEditTextViewController: AmityViewController {
                                 Log.add("[UIKit]: Image upload failed")
                                 media.state = .error
                                 self?.galleryView.updateViewState(for: media.id, state: .error)
+                                self?.galleryView.isUserInteractionEnabled = true
                                 isUploadFailed = true
                             }
                             fileUploadFailedDispatchGroup.leave()
+                            self?.saveBarButton.isEnabled = false
                             self?.updateViewState()
                         })
                     case .failure:
@@ -587,6 +591,7 @@ extension AmityEditTextViewController: AmityTextViewDelegate {
         }
         
         updateConstraints()
+        updateViewState()
     }
     
     public func textViewDidChangeSelection(_ textView: AmityTextView) {
