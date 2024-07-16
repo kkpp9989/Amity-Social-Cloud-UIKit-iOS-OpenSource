@@ -735,7 +735,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let maxNumberOfSelection: Int
         switch postMode {
         case .create:
-            maxNumberOfSelection = Constant.maximumNumberOfImages
+            maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         case .edit:
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }

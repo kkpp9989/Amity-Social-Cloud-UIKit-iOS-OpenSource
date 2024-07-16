@@ -171,6 +171,8 @@ extension AmitySearchPostsScreenViewModel {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
                             if !model.isDelete {
                                 self?.appendData(post: model)
+                            } else {
+                                self?.nextData()
                             }
                         } else {
                             self?.nextData()
