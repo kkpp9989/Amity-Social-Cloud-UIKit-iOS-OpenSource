@@ -368,7 +368,7 @@ extension AmityExpandableLabel {
             let lineTextWithLastWordRemoved = lineText.attributedSubstring(from: NSRange(location: 0, length: subRange.location))
             let lineTextWithAddedLink = NSMutableAttributedString(attributedString: lineTextWithLastWordRemoved)
             if let ellipsis = self.ellipsis {
-                lineTextWithAddedLink.append(NSAttributedString(string: " ", attributes: [.font: self.font]))
+                lineTextWithAddedLink.append(NSAttributedString(string: " ", attributes: [.font: AmityFontSet.bodyBold]))
                 lineTextWithAddedLink.append(ellipsis)
             }
             lineTextWithAddedLink.append(linkName)
@@ -396,7 +396,7 @@ extension AmityExpandableLabel {
         }
         let linkText = NSMutableAttributedString()
         if let ellipsis = self.ellipsis {
-            linkText.append(NSAttributedString(string: " ", attributes: [.font: self.font]))
+            linkText.append(NSAttributedString(string: " ", attributes: [.font: AmityFontSet.bodyBold]))
             linkText.append(ellipsis)
         }
         linkText.append(linkName)
@@ -758,10 +758,18 @@ extension AmityExpandableLabel {
         }
 
         // Apply other attributes
+        let attributedStringLength = attributedString.length
         for attribute in attributes {
-            attributedString.addAttributes(attribute.attributes, range: attribute.range)
-            hyperLinkTextRange.append(Hyperlink(range: attribute.range, type: .mention(userId: attribute.userId)))
+            let range = attribute.range
+            if NSLocationInRange(range.location, NSRange(location: 0, length: attributedStringLength)) &&
+                NSMaxRange(range) <= attributedStringLength {
+                attributedString.addAttributes(attribute.attributes, range: range)
+                hyperLinkTextRange.append(Hyperlink(range: range, type: .mention(userId: attribute.userId)))
+            } else {
+                print("Range out of bounds: \(range)")
+            }
         }
+
 
         hyperLinks = hyperLinkTextRange
         self.attributedText = attributedString
