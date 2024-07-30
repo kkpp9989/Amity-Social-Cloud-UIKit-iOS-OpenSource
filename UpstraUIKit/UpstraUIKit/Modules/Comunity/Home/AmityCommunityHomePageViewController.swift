@@ -52,7 +52,7 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        self.navigationController?.isNavigationBarHidden = false
         /* [Custom for ONE Krungthai] Clear setting navigation bar (normal) from ONE Krungthai custom theme */
         theme?.clearNavigationBarSetting()
         getUnreadCount()
