@@ -59,6 +59,11 @@ public class AmityCommunityHomePageViewController: AmityPageViewController {
         startObserveUpdate()
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         stopObserveUpdate()
