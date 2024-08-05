@@ -44,8 +44,8 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         messageImageView.layer.cornerRadius = 4
         let tapGesuter = UITapGestureRecognizer(target: self, action: #selector(imageViewTap))
         tapGesuter.numberOfTouchesRequired = 1
-        contentView.isUserInteractionEnabled = true
-        contentView.addGestureRecognizer(tapGesuter)
+        containerView.isUserInteractionEnabled = true
+        containerView.addGestureRecognizer(tapGesuter)
     }
     
     override func display(message: AmityMessageModel) {

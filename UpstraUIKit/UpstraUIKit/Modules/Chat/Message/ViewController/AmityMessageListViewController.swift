@@ -889,7 +889,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
         
         // Update interaction of compose bar view
         if channel.isMuted || channel.isDeleted {
-            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
+            composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: channel.channelType == .broadcast ? true : false)
         } else {
             composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
         }
