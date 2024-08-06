@@ -746,7 +746,7 @@ extension AmityMessageListScreenViewModel {
     }
     
     func getTotalUnreadCount() {
-        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManager.getUnreadCount()
 //        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
 //            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
 //            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)

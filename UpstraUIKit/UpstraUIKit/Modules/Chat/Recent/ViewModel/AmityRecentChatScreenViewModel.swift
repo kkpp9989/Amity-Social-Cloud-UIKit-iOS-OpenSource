@@ -226,7 +226,7 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     }
     
     func getTotalUnreadCount() {
-        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManager.getUnreadCount()
 //        AmityUIKitManagerInternal.shared.client.getUserUnread().sink(receiveValue: { userUnread in
 //            AmityUIKitManager.setUnreadCount(unreadCount: userUnread.unreadCount)
 //            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "RefreshNotification"), object: nil)
@@ -325,10 +325,12 @@ private extension AmityRecentChatScreenViewModel {
         guard let collection = channelsCollection else {
             return
         }
+        var unreadCount: Int = 0
         var _channels: [AmityChannelModel] = []
         for index in 0..<collection.count() {
             guard let channel = collection.object(at: index) else { return }
             let model = AmityChannelModel(object: channel)
+            unreadCount += model.unreadCount
             if !(model.channelType == .conversation && model.previewMessage == nil) {
                 _channels.append(model)
             }
@@ -337,5 +339,6 @@ private extension AmityRecentChatScreenViewModel {
         delegate?.screenViewModelLoadingState(for: .loaded)
         delegate?.screenViewModelDidGetChannel()
         delegate?.screenViewModelEmptyView(isEmpty: channels.isEmpty)
+        AmityUIKitManager.setUnreadCount(unreadCount: unreadCount)
     }
 }

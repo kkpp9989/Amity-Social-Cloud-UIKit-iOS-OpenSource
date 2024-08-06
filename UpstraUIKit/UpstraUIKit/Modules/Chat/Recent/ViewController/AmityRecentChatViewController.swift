@@ -47,7 +47,7 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
         super.viewDidLoad()
         setupView()
         setupScreenViewModel()
-        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManager.getUnreadCount()
         AmityUIKitManager.getSyncAllChannelPresence()
     }
     
@@ -81,7 +81,7 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
                                                selector: #selector(refreshPresence(notification:)),
                                                name: Notification.Name("RefreshChannelPresence"),
                                                object: nil)
-        AmityUIKitManager.getUnreadCount()
+//        AmityUIKitManager.getUnreadCount()
         AmityUIKitManager.getSyncAllChannelPresence()
     }
     

@@ -143,6 +143,7 @@
 "message_edit" = "Edited • %@";
 "message_readmore" = "...Read more";
 "message_list_cannot_download_image_in_chat" = "Can't download image";
+"message_list_cannot_download_video_in_chat" = "Can't download video";
 "message_list_alert_microphone_disabled_title" = "Microphone disabled";
 "message_list_alert_microphone_disabled_desc" = "To record, let ONE Krungthai access your microphone in Settings App.\n(Open Settings > Go to ONE Krungthai > Enable Microphone)";
 "message_list_alert_shared_message_successfully" = "Shared\nsuccessfully";
