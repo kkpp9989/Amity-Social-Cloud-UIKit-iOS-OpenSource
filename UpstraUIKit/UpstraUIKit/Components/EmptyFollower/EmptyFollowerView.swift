@@ -14,8 +14,6 @@ class EmptyFollowerView: AmityView {
 	@IBOutlet var view: UIView!
 	@IBOutlet var icon: UIImageView!
 	@IBOutlet var title: UILabel!
-    @IBOutlet var viewFollowFriends: UIView!
-    @IBOutlet var btn: UIButton!
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -41,7 +39,5 @@ extension EmptyFollowerView {
 		title.textColor = AmityColorSet.base.blend(.shade3)
 		title.font = AmityFontSet.title
 		title.numberOfLines = 2
-        
-        viewFollowFriends.isHidden = true
 	}
 }
