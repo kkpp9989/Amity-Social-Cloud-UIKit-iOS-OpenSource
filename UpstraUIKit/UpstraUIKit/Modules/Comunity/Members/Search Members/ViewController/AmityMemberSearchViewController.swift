@@ -12,6 +12,7 @@ final class AmityMemberSearchViewController: AmityViewController, IndicatorInfoP
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: UITableView!
+    @IBOutlet private var viewFollowFriends: UIView!
     
     // MARK: - Properties
     private var pageTitle: String?
@@ -60,6 +61,12 @@ final class AmityMemberSearchViewController: AmityViewController, IndicatorInfoP
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
+    }
+    
+    
+    // ktb kk goto FollowFriends
+    @IBAction func gotoFollowFriends(_ sender: Any) {
+        AmityEventHandler.shared.gotoFollowFriends(self, option: "")
     }
 }
 
@@ -113,16 +120,19 @@ extension AmityMemberSearchViewController: UITableViewDataSource {
 
 extension AmityMemberSearchViewController: AmityMemberSearchScreenViewModelDelegate {
     func screenViewModelDidSearch(_ viewModel: AmityMemberSearchScreenViewModelType) {
+        viewFollowFriends.isHidden = true
         emptyView.removeFromSuperview()
         tableView.reloadData()
     }
     
     func screenViewModelDidClearText(_ viewModel: AmityMemberSearchScreenViewModelType) {
+        viewFollowFriends.isHidden = true
         emptyView.removeFromSuperview()
         tableView.reloadData()
     }
     
     func screenViewModelDidSearchNotFound(_ viewModel: AmityMemberSearchScreenViewModelType) {
+        viewFollowFriends.isHidden = false
         tableView.setEmptyView(view: emptyView)
         tableView.reloadData()
     }
@@ -132,6 +142,7 @@ extension AmityMemberSearchViewController: AmityMemberSearchScreenViewModelDeleg
         case .initial:
             break
         case .loading:
+            viewFollowFriends.isHidden = true
             emptyView.removeFromSuperview()
             tableView.showLoadingIndicator()
         case .loaded:
@@ -167,4 +178,5 @@ extension AmityMemberSearchViewController: AmitySearchMemberTableViewCellDelegat
         guard let indexPath = tableView.indexPath(for: cell), let model = screenViewModel.dataSource.item(at: indexPath) else { return }
         AmityEventHandler.shared.userDidTap(from: self, userId: model.userId)
     }
+    
 }

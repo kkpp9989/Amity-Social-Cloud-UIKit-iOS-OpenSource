@@ -80,6 +80,9 @@ class AmityChatFriendPageViewController: AmityViewController, IndicatorInfoProvi
 		
 		switch screenViewModel.dataSource.type {
 		case .following:
+            // ktb kk custom button Follow Friends
+            emptyFollowView.viewFollowFriends.isHidden = false
+            emptyFollowView.btn.addTarget(self, action: #selector(handleFollowFriends), for: .touchUpInside)
 			emptyFollowView.title.text = "Once you follow people, you’ll see them here."
 		case .followers:
 			emptyFollowView.title.text = "Once people follow you, they’ll be shown here."
@@ -193,6 +196,11 @@ private extension AmityChatFriendPageViewController {
     
     @objc func handleRefreshingControl() {
         screenViewModel.action.getFollowsList()
+    }
+    
+    // ktb kk goto FollowFriends
+    @objc func handleFollowFriends() {
+        AmityEventHandler.shared.gotoFollowFriends(self, option: "")
     }
 }
 
