@@ -117,6 +117,12 @@ private extension AmityMessageListComposeBarViewController {
         switch channelType {
         case .broadcast:
             screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .content)
+        case .community:
+            if let channel = screenViewModel.dataSource.getChannelModel(), channel.isMuted {
+                if !channel.object.isPublic {
+                    screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .content)
+                }
+            }
         default:
             break
         }
@@ -127,6 +133,12 @@ private extension AmityMessageListComposeBarViewController {
         switch channelType {
         case .broadcast:
             screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .file)
+        case .community:
+            if let channel = screenViewModel.dataSource.getChannelModel(), channel.isMuted {
+                if !channel.object.isPublic {
+                    screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .file)
+                }
+            }
         default:
             break
         }
@@ -410,14 +422,23 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
                         inputMenuView.isHidden = false
                         openEditorMenuView.isHidden = true
                     } else {
-                        if isMember {
-                            inputMenuView.isHidden = false
-                            openEditorMenuView.isHidden = true
+                        if channel.isMuted {
+                            if isMember {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = false
+                            } else {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = true
+                            }
                         } else {
-                            inputMenuView.isHidden = true
-                            openEditorMenuView.isHidden = true
+                            if isMember {
+                                inputMenuView.isHidden = false
+                                openEditorMenuView.isHidden = true
+                            } else {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = true
+                            }
                         }
-
                     }
             default:
                 inputMenuView.isHidden = false
