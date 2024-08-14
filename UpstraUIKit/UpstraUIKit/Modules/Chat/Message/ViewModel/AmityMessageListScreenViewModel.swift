@@ -294,7 +294,13 @@ extension AmityMessageListScreenViewModel {
                 self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: result)
             }
         } else {
-            delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: true)
+            if let channel = channelModel, channel.isMuted && !channel.object.isPublic {
+                userController.getEditGroupChannelPermission { [weak self] result in
+                    self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: result)
+                }
+            } else {
+                delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: true)
+            }
         }
     }
     

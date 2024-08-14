@@ -875,6 +875,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                 if channel.isMuted {
                     if channel.channelType == .community && !channel.object.isPublic {
                         strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
+                        if !hasPermission {
+//                            strongSelf.composeBarContainerView.isHidden = true
+                        }
                     }
                 } else if channel.isDeleted {
                     strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
