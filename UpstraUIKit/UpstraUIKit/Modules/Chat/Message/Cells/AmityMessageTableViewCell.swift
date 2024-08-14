@@ -35,6 +35,7 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     // MARK: - Properties
     var screenViewModel: AmityMessageListScreenViewModelType!
     var message: AmityMessageModel!
+    var channel: AmityChannelModel?
     var channelType: AmityChannelType?
     var tableBoundingWidth: CGFloat?
     var shouldShowTypingTab: Bool = false
@@ -75,6 +76,10 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         let backgroundView = UIView()
         backgroundView.backgroundColor = .clear
         selectedBackgroundView = backgroundView
+    }
+    
+    func setChannel(with _channel: AmityChannelModel) {
+        channel = _channel
     }
     
     override func awakeFromNib() {

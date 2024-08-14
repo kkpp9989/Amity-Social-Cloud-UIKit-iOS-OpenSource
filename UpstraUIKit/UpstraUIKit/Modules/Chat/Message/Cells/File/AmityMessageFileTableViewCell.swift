@@ -84,6 +84,13 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
             // Change text color
             fileName.textColor = AmityColorSet.baseInverse
             fileSize.textColor = AmityColorSet.baseSecondaryInverse
+        } else if channelType == .community {
+            if let channel = channel, channel.isMuted && !channel.object.isPublic {
+                containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+                // Change text color
+                fileName.textColor = AmityColorSet.baseInverse
+                fileSize.textColor = AmityColorSet.baseSecondaryInverse
+            }
         }
     }
 }

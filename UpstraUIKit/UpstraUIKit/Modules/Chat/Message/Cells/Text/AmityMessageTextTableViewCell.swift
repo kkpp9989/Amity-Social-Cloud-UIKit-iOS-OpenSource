@@ -36,36 +36,54 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         
     override func display(message: AmityMessageModel) {
         super.display(message: message)
+        var textColor = AmityColorSet.base
         var highlightColor = AmityColorSet.primary
+        var readMoreColor = AmityColorSet.highlight
+        var hyperLinkColor = AmityColorSet.highlight
+        var backgroundColor = AmityColorSet.messageBubble
         if message.isOwner {
             if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
                 // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
-                textMessageView.textColor = AmityColorSet.base
-                textMessageView.readMoreColor = AmityColorSet.highlight
-                textMessageView.hyperLinkColor = AmityColorSet.highlight
+                textColor = AmityColorSet.base
+                readMoreColor = AmityColorSet.highlight
+                hyperLinkColor = AmityColorSet.highlight
             } else {
                 // [Original]
-                textMessageView.textColor = AmityColorSet.baseInverse
-                textMessageView.readMoreColor = AmityColorSet.baseInverse
-                textMessageView.hyperLinkColor = AmityColorSet.highlight
+                textColor = AmityColorSet.baseInverse
+                readMoreColor = AmityColorSet.baseInverse
+                hyperLinkColor = AmityColorSet.highlight
             }
             highlightColor = AmityColorSet.highlight
         } else {
-            textMessageView.textColor = AmityColorSet.base
-            textMessageView.readMoreColor = AmityColorSet.highlight
-            textMessageView.hyperLinkColor = AmityColorSet.highlight
+            textColor = AmityColorSet.base
+            readMoreColor = AmityColorSet.highlight
+            hyperLinkColor = AmityColorSet.highlight
             highlightColor = AmityColorSet.primary
         }
         
         // Set boardcast message bubble style if channel type is boardcast
         if channelType == .broadcast {
-            containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+            backgroundColor = AmityColorSet.messageBubbleBoardcast
             // Change text color
-            textMessageView.textColor = AmityColorSet.baseInverse
-            textMessageView.readMoreColor = AmityColorSet.highlightMessageBoardcast
-            textMessageView.hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+            textColor = AmityColorSet.baseInverse
+            readMoreColor = AmityColorSet.highlightMessageBoardcast
+            hyperLinkColor = AmityColorSet.highlightMessageBoardcast
             highlightColor = AmityColorSet.highlightMessageBoardcast
+        } else if channelType == .community {
+            if let channel = channel, channel.isMuted && !channel.object.isPublic {
+                backgroundColor = AmityColorSet.messageBubbleBoardcast
+                // Change text color
+                textColor = AmityColorSet.baseInverse
+                readMoreColor = AmityColorSet.highlightMessageBoardcast
+                hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+                highlightColor = AmityColorSet.highlightMessageBoardcast
+            }
         }
+        
+        containerView.backgroundColor = backgroundColor
+        textMessageView.textColor = textColor
+        textMessageView.readMoreColor = readMoreColor
+        textMessageView.hyperLinkColor = hyperLinkColor
 		
 		let mentionees = message.mentionees ?? []
 		if let metadata = message.metadata,
