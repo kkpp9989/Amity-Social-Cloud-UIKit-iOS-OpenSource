@@ -868,22 +868,17 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             navigationHeaderViewController?.updateViews(channel: channel, isOnline: isOnline, isMuted: isMuted)
         }
         
-        DispatchQueue.main.async {
-            AmityUIKitManager.client.hasPermission(.editChannel, forChannel: channel.channelId) { [weak self] hasPermission in
-                guard let strongSelf = self else { return }
-                // Update interaction of compose bar view
-                if channel.isMuted {
-                    if channel.channelType == .community && !channel.object.isPublic {
-                        strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
-                        if !hasPermission {
-//                            strongSelf.composeBarContainerView.isHidden = true
-                        }
-                    }
-                } else if channel.isDeleted {
-                    strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
-                } else {
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            // Update interaction of compose bar view
+            if channel.isMuted {
+                if channel.channelType == .community && !channel.object.isPublic {
                     strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
                 }
+            } else if channel.isDeleted {
+                strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: false)
+            } else {
+                strongSelf.composeBar.updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: true)
             }
         }
         
