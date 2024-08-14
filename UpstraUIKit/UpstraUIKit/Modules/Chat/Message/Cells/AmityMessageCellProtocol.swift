@@ -14,6 +14,7 @@ public protocol AmityMessageCellProtocol: UITableViewCell, AmityCellIdentifiable
     func display(message: AmityMessageModel)
     func displaySelected(isSelected: Bool)
     func setChannelType(channelType: AmityChannelType)
+    func setChannel(with _channel: AmityChannelModel)
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat
 }
 

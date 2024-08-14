@@ -551,7 +551,7 @@ final class AmityUIKitManagerInternal: NSObject {
             do {
                 let auth = try await AmityUserTokenManager(apiKey: apiKey, region: .SG).createUserToken(userId: userId, authToken: authToken)
                 userToken = auth.accessToken
-                
+                NotificationCenter.default.post(name: Notification.Name("AmitySetupSuccess"), object: nil)
                 // [Custom for ONE Krungthai] Get custom limit file size setting after register user token
                 getCustomLimitFileSizeSetting()
             } catch let _ {

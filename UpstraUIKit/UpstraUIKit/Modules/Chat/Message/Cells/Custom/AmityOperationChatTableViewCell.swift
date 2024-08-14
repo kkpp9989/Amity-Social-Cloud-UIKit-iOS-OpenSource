@@ -22,6 +22,7 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     // MARK: - Properties
     var message: AmityMessageModel?
+    var channel: AmityChannelModel?
     var channelType: AmityChannelType?
     var tableBoundingWidth: CGFloat?
     
@@ -67,6 +68,10 @@ final class AmityOperationChatTableViewCell: UITableViewCell, AmityMessageCellPr
     
     func setChannelType(channelType: AmitySDK.AmityChannelType) {
         self.channelType = channelType
+    }
+    
+    func setChannel(with _channel: AmityChannelModel) {
+        self.channel = _channel
     }
     
     private func cornerRadius(for text: String, boundingWidth: CGFloat) -> CGFloat {
