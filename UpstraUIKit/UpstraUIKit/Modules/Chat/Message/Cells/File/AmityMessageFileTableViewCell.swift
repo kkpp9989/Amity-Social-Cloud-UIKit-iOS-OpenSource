@@ -79,19 +79,22 @@ class AmityMessageFileTableViewCell: AmityMessageTableViewCell {
         }
         
         // Set boardcast message bubble style if channel type is boardcast
+        var backgroundColor = AmityColorSet.messageBubbleBoardcast
         if channelType == .broadcast {
-            containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+            backgroundColor = AmityColorSet.messageBubbleBoardcast
             // Change text color
             fileName.textColor = AmityColorSet.baseInverse
             fileSize.textColor = AmityColorSet.baseSecondaryInverse
         } else if channelType == .community {
             if let channel = channel, channel.isMuted && !channel.object.isPublic {
-                containerView.backgroundColor = AmityColorSet.messageBubbleBoardcast
+                backgroundColor = AmityColorSet.messageBubbleBoardcast
                 // Change text color
                 fileName.textColor = AmityColorSet.baseInverse
                 fileSize.textColor = AmityColorSet.baseSecondaryInverse
             }
         }
+        
+        containerView.backgroundColor = backgroundColor
     }
 }
 

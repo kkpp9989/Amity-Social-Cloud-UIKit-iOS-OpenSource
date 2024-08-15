@@ -136,7 +136,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
             iconImageView.isHidden = false
             let iconBadge: UIImage?
             if !channel.object.isPublic {
-                iconBadge = AmityIconSet.Chat.iconPrivateBadge
+                if channel.channelType == .community && channel.isMuted {
+                    iconBadge = AmityIconSet.Chat.iconBroadcastBadge
+                } else {
+                    iconBadge = AmityIconSet.Chat.iconPrivateBadge
+                }
             } else if channel.channelType == .broadcast {
                 iconBadge = AmityIconSet.Chat.iconBroadcastBadge
             } else {

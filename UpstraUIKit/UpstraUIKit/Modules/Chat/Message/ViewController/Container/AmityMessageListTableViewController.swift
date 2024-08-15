@@ -214,29 +214,35 @@ extension AmityMessageListTableViewController {
         if message.messageType == .audio {
             if message.isOwner {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                if let channel = screenViewModel.dataSource.getChannelModel() {
+                    cell.setChannel(with: channel)
+                }
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
                 cell.setIndexPath(with: indexPath)
-                cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
                 cell.delegateCell = self
                 cell.celliIndexPath = indexPath
+                cell.display(message: message)
                 return cell
             } else {
                 let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                if let channel = screenViewModel.dataSource.getChannelModel() {
+                    cell.setChannel(with: channel)
+                }
                 cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
                 cell.tableBoundingWidth = tableView.bounds.width
                 cell.setIndexPath(with: indexPath)
-                cell.display(message: message)
                 cell.setViewModel(with: screenViewModel)
                 let channelType = screenViewModel.dataSource.getChannelType()
                 cell.setChannelType(channelType: channelType)
                 cell.delegate = self
                 cell.delegateCell = self
                 cell.celliIndexPath = indexPath
+                cell.display(message: message)
                 return cell
             }
         } else {
@@ -329,10 +335,10 @@ extension AmityMessageListTableViewController {
         }
         let channelType = screenViewModel.dataSource.getChannelType()
         (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
-        (cell as? AmityMessageCellProtocol)?.display(message: message)
         if let channel = screenViewModel.dataSource.getChannelModel() {
             (cell as? AmityMessageCellProtocol)?.setChannel(with: channel)
         }
+        (cell as? AmityMessageCellProtocol)?.display(message: message)
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {

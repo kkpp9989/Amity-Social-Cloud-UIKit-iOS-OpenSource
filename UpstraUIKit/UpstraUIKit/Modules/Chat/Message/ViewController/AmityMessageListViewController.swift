@@ -994,8 +994,9 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
             let offset = messageViewController.tableView.contentOffset.y
             let contentHeight = messageViewController.tableView.contentSize.height
             
-            messageViewController.tableView.reloadData()
             messageViewController.tableView.layoutIfNeeded()
+            messageViewController.tableView.reloadData()
+            
 
             let newcontentHeight = self.messageViewController.tableView.contentSize.height
             let newOffset = (newcontentHeight - contentHeight) + offset

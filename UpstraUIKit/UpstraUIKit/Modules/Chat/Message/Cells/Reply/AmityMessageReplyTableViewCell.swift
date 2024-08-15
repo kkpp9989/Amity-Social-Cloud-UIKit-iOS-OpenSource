@@ -59,23 +59,30 @@ class AmityMessageReplyTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         super.display(message: message)
         var highlightColor = AmityColorSet.primary
+        var textColor = AmityColorSet.base
+        var readMoreColor = AmityColorSet.highlight
+        var hyperLinkColor = AmityColorSet.highlight
         if message.isOwner {
             if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
                 // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
-                textMessageView.textColor = AmityColorSet.base
-                textMessageView.readMoreColor = AmityColorSet.highlight
-                textMessageView.hyperLinkColor = AmityColorSet.highlight
+                textColor = AmityColorSet.base
+                readMoreColor = AmityColorSet.highlight
+                hyperLinkColor = AmityColorSet.highlight
             } else {
                 // [Original]
-                textMessageView.textColor = AmityColorSet.baseInverse
-                textMessageView.readMoreColor = AmityColorSet.baseInverse
-                textMessageView.hyperLinkColor = .white
+                textColor = AmityColorSet.baseInverse
+                readMoreColor = AmityColorSet.baseInverse
+                hyperLinkColor = .white
             }
         } else {
-            textMessageView.textColor = AmityColorSet.base
-            textMessageView.readMoreColor = AmityColorSet.highlight
-            textMessageView.hyperLinkColor = AmityColorSet.highlight
+            textColor = AmityColorSet.base
+            readMoreColor = AmityColorSet.highlight
+            hyperLinkColor = AmityColorSet.highlight
         }
+        
+        textMessageView.textColor = textColor
+        textMessageView.readMoreColor = readMoreColor
+        textMessageView.hyperLinkColor = hyperLinkColor
         
         if let metadata = message.metadata,
            let mentionees = message.mentionees,

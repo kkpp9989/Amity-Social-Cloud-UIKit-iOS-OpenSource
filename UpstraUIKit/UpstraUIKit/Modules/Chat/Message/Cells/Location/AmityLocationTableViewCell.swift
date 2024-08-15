@@ -51,11 +51,13 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
     override func display(message: AmityMessageModel) {
         super.display(message: message)
         
+        var backgroundColor = AmityColorSet.messageBubble
         if message.isOwner {
-            containerView.backgroundColor = AmityColorSet.messageBubble
+            backgroundColor = AmityColorSet.messageBubble
         } else {
-            containerView.backgroundColor = AmityColorSet.messageBubbleInverse
+            backgroundColor = AmityColorSet.messageBubbleInverse
         }
+        containerView.backgroundColor = backgroundColor
         
         // Display text
         if let tableBoundingWidth = tableBoundingWidth {
