@@ -291,7 +291,11 @@ extension AmityMessageListScreenViewModel {
     func getShowSettingButtonAndSendingPermission() {
         if channelType == .broadcast {
             userController.getEditGroupChannelPermission { [weak self] result in
-                self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: result)
+                if let channel = self?.channelModel, channel.isMuted {
+                    self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: result)
+                } else {
+                    self?.delegate?.screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: false)
+                }
             }
         } else {
             if let channel = channelModel, channel.isMuted && !channel.object.isPublic {
