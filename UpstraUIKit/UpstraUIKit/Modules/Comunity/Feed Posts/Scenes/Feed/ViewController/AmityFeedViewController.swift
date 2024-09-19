@@ -21,6 +21,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // ktb kk return table height for set up feed in ktb home
     var isKTBFeed = false
     var rowSetLimitCount = 10
+    var KTBFeedHandleLoadFeed: (() -> Void)?
     
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
@@ -475,6 +476,9 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         
         if isKTBFeed {
             dataDidUpdateHandler?(rowSetLimitCount)
+            if let callback = self.KTBFeedHandleLoadFeed {
+                callback()
+            }
         }else{
             dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
         }
@@ -880,7 +884,7 @@ extension AmityFeedViewController: IndicatorInfoProvider {
 extension AmityFeedViewController{
 
     // ktb kk makeK for feed in ktb home
-    public static func makeKTBFeed(_ rows: Int = 10) -> AmityFeedViewController {
+    public static func makeKTBFeed(_ rows: Int = 10, _ completion: @escaping() -> ()) -> AmityFeedViewController {
         
         let postController = AmityPostController()
         let commentController = AmityCommentController()
@@ -894,14 +898,13 @@ extension AmityFeedViewController{
         vc.isKTBFeed = true
         vc.rowSetLimitCount = rows + 1
         viewModel.isKTBFeed = true
+        vc.KTBFeedHandleLoadFeed = {
+            completion()
+        }
         //vc.tableView.isScrollEnabled = false
         return vc
     }
-    
-    public func setKTBFeedHome(){
-        //
-    }
-    
+
     public func getTable()->UITableView?{
         if let _t = self.tableView {
             return _t
