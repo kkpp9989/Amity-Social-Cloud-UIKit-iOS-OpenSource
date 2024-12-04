@@ -1,4 +1,5 @@
 {
+  "originHash" : "edc5c9f75b51ac57f05f237333cd33e40f2832409479ee1b4708b0eff860f60c",
   "pins" : [
     {
       "identity" : "amityuikit-frameworks-package",
@@ -10,5 +11,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
