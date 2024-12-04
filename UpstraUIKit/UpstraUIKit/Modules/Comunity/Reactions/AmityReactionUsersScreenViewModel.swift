@@ -70,13 +70,13 @@ class AmityReactionUsersScreenViewModel {
     private var token: AmityNotificationToken?
     
     private var isLoadingDummyData = false
-    
+        
     init(info: AmityReactionInfo) {
         self.reactionInfo = info
         self.reactionRepository = AmityReactionRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
-    func fetchUserList() {
+    func fetchUserList(reactionType: String) {
         // Check if we can fetch data in current screen state
         guard currentScreenState.canFetchData else { return }
         
@@ -88,7 +88,7 @@ class AmityReactionUsersScreenViewModel {
         liveCollection = nil
         
         // Query reactions
-        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: AmityReactionType.like.rawValue)
+        liveCollection = reactionRepository.getReactions(reactionInfo.referenceId, referenceType: reactionInfo.referenceType, reactionName: reactionType.isEmpty ? nil : reactionType)
         token = liveCollection?.observe({ [weak self] liveCollection, _, error in
             guard let weakSelf = self else { return }
 
@@ -100,11 +100,25 @@ class AmityReactionUsersScreenViewModel {
                 weakSelf.isLoadingDummyData = false
             } else {
                 let allObjects = liveCollection.allObjects()
-                weakSelf.reactionList = allObjects.map { ReactionUser(reaction: $0) }
+                let dummyList = allObjects.map { ReactionUser(reaction: $0) }
+                var filteredList: [ReactionUser] = []  // Replace ObjectType with the actual type of objects in your collection
                 
+                for object in dummyList {
+                    // Assuming you want to perform case-insensitive search
+                    if !filteredList.contains(where: { $0.userId == object.userId }) {
+                        filteredList.append(object)
+                    }
+                }
+                
+                weakSelf.reactionList = filteredList
+                                
                 // Change state
                 weakSelf.setupScreenState(state: .loaded(data: weakSelf.reactionList, error: nil))
                 weakSelf.isLoadingDummyData = false
+                
+                if liveCollection.dataStatus == .fresh {
+                    weakSelf.token?.invalidate()
+                }
             }
         })
     }
@@ -132,5 +146,9 @@ class AmityReactionUsersScreenViewModel {
     func loadDummyDataSet() {
         self.reactionList = Array(repeating: ReactionUser(userId: "", displayName: "", avatarURL: ""), count: 15)
         self.isLoadingDummyData = true
+    }
+    
+    func reactionListCount() -> Int {
+        return reactionList.count
     }
 }

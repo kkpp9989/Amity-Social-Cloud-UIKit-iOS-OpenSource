@@ -59,7 +59,8 @@ public class AmityMedia: Equatable, Hashable {
     
     private func showImage(from asset: PHAsset, in imageView: UIImageView, size preferredSize: CGSize?) {
     
-        let targetSize = preferredSize ?? imageView.bounds.size
+        let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
+//        let targetSize = preferredSize ?? imageView.bounds.size
         let manager = PHImageManager.default()
     
         let option = PHImageRequestOptions()
@@ -100,7 +101,7 @@ public class AmityMedia: Equatable, Hashable {
             }
             
         case .uploadedImage(let imageData):
-            imageView.loadImage(with: imageData.fileURL, size: .medium, placeholder: nil)
+            imageView.loadImage(with: imageData.fileURL, size: .full, placeholder: nil)
             
         case .uploadedVideo:
             if let asset = localAsset {

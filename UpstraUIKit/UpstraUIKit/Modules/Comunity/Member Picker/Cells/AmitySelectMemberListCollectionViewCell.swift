@@ -56,7 +56,6 @@ final class AmitySelectMemberListCollectionViewCell: UICollectionViewCell {
         displayNameLabel.text = user.displayName ?? user.defaultDisplayName
         avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
     }
-    
 }
 
 private extension AmitySelectMemberListCollectionViewCell {

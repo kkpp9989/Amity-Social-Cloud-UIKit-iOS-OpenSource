@@ -11,7 +11,7 @@ import AmitySDK
 
 protocol AmityMemberListRepositoryManagerProtocol {
     func search(withText text: String, sortyBy: AmityUserSortOption, _ completion: (([AmityUserModel]) -> Void)?)
-    func loadMore()
+    func loadMore() -> Bool
 }
 
 final class AmityMemberListRepositoryManager: AmityMemberListRepositoryManagerProtocol {
@@ -33,23 +33,30 @@ final class AmityMemberListRepositoryManager: AmityMemberListRepositoryManagerPr
                 for index in 0..<collection.count() {
                     guard let object = collection.object(at: index) else { continue }
                     let model = AmityUserModel(user: object)
-                    membersList.append(model)
+                    if !model.isCurrentUser {
+                        membersList.append(model)
+                    }
                 }
                 completion?(membersList)
-                self?.token?.invalidate()
+                /* [Fix-defect] Disable invalidate result search observer for load more ability */
+//                self?.token?.invalidate()
             }
         }
     }
     
-    func loadMore() {
-        guard let collection = collection else { return }
+    func loadMore() -> Bool {
+        var isEndPagination: Bool = true
+        guard let collection = collection else { return isEndPagination }
         switch collection.loadingStatus {
         case .loaded:
             if collection.hasNext {
+                isEndPagination = false
                 collection.nextPage()
             }
         default:
             break
         }
+        
+        return isEndPagination
     }
 }

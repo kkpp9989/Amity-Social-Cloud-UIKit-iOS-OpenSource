@@ -8,6 +8,12 @@
 
 import UIKit
 
+protocol AmityComposeBarOnlyTextDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+	func sendMessageTap()
+}
+
 final class AmityComposeBarOnlyTextViewController: UIViewController {
 
     // MARK: - IBOutlet Properties
@@ -18,7 +24,7 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
     // MARK: - Properties
     private let screenViewModel: AmityMessageListScreenViewModelType
     let composeBarView = AmityKeyboardComposeBarViewController.make()
-    
+	weak var delegate: AmityComposeBarOnlyTextDelegate?
     // MARK: - View lifecycle
     private init(viewModel: AmityMessageListScreenViewModelType) {
         screenViewModel = viewModel
@@ -34,8 +40,11 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
         setupView()
     }
     
-    static func make(viewModel: AmityMessageListScreenViewModelType) -> AmityComposeBarOnlyTextViewController {
-        return AmityComposeBarOnlyTextViewController(viewModel: viewModel)
+    static func make(viewModel: AmityMessageListScreenViewModelType,
+					 delegate: AmityComposeBarOnlyTextDelegate?) -> AmityComposeBarOnlyTextViewController {
+		let vc = AmityComposeBarOnlyTextViewController(viewModel: viewModel)
+		vc.delegate = delegate
+        return vc
     }
     
 }
@@ -44,8 +53,15 @@ final class AmityComposeBarOnlyTextViewController: UIViewController {
 private extension AmityComposeBarOnlyTextViewController {
     
     @IBAction func sendMessageTap() {
-        screenViewModel.action.send(withText: textComposeBarView.text)
-        clearText()
+        if textComposeBarView.textView.text.count <= 10000 {
+            delegate?.sendMessageTap()
+            clearText()
+        } else {
+            let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
+        }
     }
     
 }
@@ -59,9 +75,17 @@ private extension AmityComposeBarOnlyTextViewController {
     }
     
     func setupTextComposeBarView() {
+		textComposeBarView.delegate = self
         textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
         textComposeBarView.textViewDidChanged = { [weak self] text in
-            self?.screenViewModel.action.setText(withText: text)
+            if text.count >= 10000 {
+                let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self?.present(alertController, animated: true, completion: nil)
+            } else {
+                self?.screenViewModel.action.setText(withText: text)
+            }
         }
         
         textComposeBarView.textViewShouldBeginEditing = { [weak self] textView in
@@ -80,6 +104,49 @@ private extension AmityComposeBarOnlyTextViewController {
 }
 
 extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
+    func updateViewDidGetChannel(channel: AmityChannelModel) {
+        // Intentionally left empty
+    }
+    
+    func updateViewDidReplyProcess(isReplying: Bool) {
+        // Intentionally left empty
+        // This class doesn't support reply message.
+    }
+    
+    func updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: Bool) {
+        // Intentionally left empty
+        // This class doesn't support showJoinMenuButton.
+    }
+    
+    func prepareTypingText() {
+        if !textComposeBarView.becomeFirstResponder() {
+            textComposeBarView.textView.becomeFirstResponder()
+        }
+    }
+    
+    func showJoinMenuButton(show: Bool) {
+        // Intentionally left empty
+        // This class doesn't support showJoinMenuButton.
+    }
+    
+    func updateViewDidSelectForwardMessage(amount: Int) {
+        // Intentionally left empty
+        // This class doesn't support updateViewDidSelectForwardMessage.
+    }
+    
+    func showForwardMenuButton(show: Bool) {
+        // Intentionally left empty
+        // This class doesn't support showForwardMenuButton.
+    }
+    
+	var textView: AmityTextView {
+		get {
+			textComposeBarView.textView
+		}
+		set {
+			textComposeBarView.textView = newValue
+		}
+	}
     
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
@@ -135,3 +202,12 @@ extension AmityComposeBarOnlyTextViewController: AmityComposeBar {
     
 }
 
+extension AmityComposeBarOnlyTextViewController: AmityTextComposeBarViewDelegate {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		delegate?.composeView(view, shouldChangeTextIn: range, replacementText: text) ?? true
+	}
+	
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
+		delegate?.composeViewDidChangeSelection(view)
+	}
+}

@@ -18,6 +18,8 @@ final class AmitySettingsItemTextContentTableViewCell: UITableViewCell, Nibbable
     @IBOutlet private var iconView: AmityIconView!
     @IBOutlet private var titleLabel: AmityLabel!
     @IBOutlet private var descriptionLabel: AmityLabel!
+    @IBOutlet var itemStackView: UIStackView!
+    @IBOutlet var titleStackView: UIStackView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -30,6 +32,8 @@ final class AmitySettingsItemTextContentTableViewCell: UITableViewCell, Nibbable
         iconView.isHidden = false
         titleLabel.text = AmityLocalizedStringSet.titlePlaceholder
         descriptionLabel.text = AmityLocalizedStringSet.descriptionPlaceholder
+        titleStackView.spacing = 0
+        itemStackView.alignment = .center
     }
 
     func display(content: AmitySettingsItem.TextContent) {
@@ -38,7 +42,9 @@ final class AmitySettingsItemTextContentTableViewCell: UITableViewCell, Nibbable
         titleLabel.text = content.title
         titleLabel.textColor = content.titleTextColor
         descriptionLabel.text = content.description
-        descriptionLabel.isHidden = content.description == nil
+        descriptionLabel.isHidden = content.description == nil || content.description == ""
+        titleStackView.spacing = content.description == nil || content.description == "" ? 0 : 4
+        itemStackView.alignment = content.description == nil || content.description == "" ? .center : .top
     }
     
     // MARK: - Setup view
@@ -48,8 +54,10 @@ final class AmitySettingsItemTextContentTableViewCell: UITableViewCell, Nibbable
         contentView.backgroundColor = AmityColorSet.backgroundColor
         
         // Title
+        titleStackView.spacing = 0
+        itemStackView.alignment = .center
         titleLabel.text = AmityLocalizedStringSet.titlePlaceholder
-        titleLabel.font = AmityFontSet.bodyBold
+        titleLabel.font = AmityFontSet.body
         titleLabel.textColor = AmityColorSet.base
         
         // Description

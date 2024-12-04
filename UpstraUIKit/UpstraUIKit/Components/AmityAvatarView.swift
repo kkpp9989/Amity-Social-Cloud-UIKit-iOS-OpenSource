@@ -75,6 +75,9 @@ public final class AmityAvatarView: AmityImageView {
         backgroundColor = UIColor(hex: "#D9E5FC")
         avatarShape = .circle
         
+        // [Custom for ONE Krungthai] Set placeholder image to full size for custom default avatar icon (Wayu)
+        placeholderPostion = .fullSize
+        
         updateAvatarShape()
         updatePlaceholderConstraint()
     }

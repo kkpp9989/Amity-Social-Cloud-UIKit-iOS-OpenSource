@@ -13,6 +13,11 @@ public class AmityChatHomePageViewController: AmityPageViewController {
     
     // MARK: - Properties
     var recentsChatViewController = AmityRecentChatViewController.make()
+    var followingChatViewController = AmityChatFriendPageViewController.make(type: .following)
+    var followersChatViewController = AmityChatFriendPageViewController.make(type: .followers)
+
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - View lifecycle
     private init() {
@@ -28,9 +33,22 @@ public class AmityChatHomePageViewController: AmityPageViewController {
         return AmityChatHomePageViewController()
     }
     
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.setBackgroundApp(index: 0)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        theme?.clearNavigationBarSetting()
+    }
+    
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
         recentsChatViewController.pageTitle = AmityLocalizedStringSet.recentTitle.localizedString
-        return [recentsChatViewController]
+        followingChatViewController.pageTitle = AmityLocalizedStringSet.followingTitle.localizedString
+        followersChatViewController.pageTitle = AmityLocalizedStringSet.followersTitle.localizedString
+        return [recentsChatViewController, followingChatViewController, followersChatViewController]
     }
     
 }

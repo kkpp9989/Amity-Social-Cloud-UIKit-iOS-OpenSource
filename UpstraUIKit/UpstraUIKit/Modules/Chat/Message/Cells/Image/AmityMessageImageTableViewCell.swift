@@ -32,6 +32,19 @@ class AmityMessageImageTableViewCell: AmityMessageTableViewCell {
     }
     
     override func display(message: AmityMessageModel) {
+        // Set style
+        var backgroundColor = AmityColorSet.messageBubble
+        
+        if channelType == .broadcast {
+            backgroundColor = AmityColorSet.messageBubbleBoardcast
+        } else if channelType == .community {
+            if let channel = channel, channel.isMuted && !channel.object.isPublic {
+                backgroundColor = AmityColorSet.messageBubbleBoardcast
+            }
+        }
+        
+        containerView.backgroundColor = backgroundColor
+        
         if !message.isDeleted {
             let indexPath = self.indexPath
             AmityUIKitManagerInternal.shared.messageMediaService.downloadImageForMessage(message: message.object, size: .medium) { [weak self] in

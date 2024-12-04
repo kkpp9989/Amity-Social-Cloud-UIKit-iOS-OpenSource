@@ -12,12 +12,49 @@ import UIKit
 public class AmityReactionPageViewController: AmityPageViewController {
 
     let info: [AmityReactionInfo]
-    let reactionViewController: AmityReactionUsersViewController
-        
+	var reactionViewControllerList: [AmityReactionUsersViewController] = []
+    private let orderedReactionKeys = ["create", "honest", "harmony", "success", "society", "like", "love"]
+    
     // MARK: - View lifecycle
-    private init(info: [AmityReactionInfo]) {
+    private init(info: [AmityReactionInfo], reactionList: [String: Int]) {
         self.info = info
-        self.reactionViewController = AmityReactionUsersViewController.make(with: info[0])
+		
+		/// Tab all
+		reactionViewControllerList.append(AmityReactionUsersViewController.make(
+			with: info[0],
+			reactionType: "",
+			reactionCount: info[0].reactionsCount)
+		)
+		
+		/// Tab other reactions [Original][Backup]
+//		for (key, value) in reactionList where value > 0 {
+//			switch key {
+//			case "create", "honest", "harmony", "success", "society", "like", "love":
+//				let reactionViewController = AmityReactionUsersViewController.make(
+//					with: info[0],
+//					reactionType: key,
+//					reactionCount: value)
+//				reactionViewControllerList.append(reactionViewController)
+//			default:
+//				break
+//			}
+//		}
+        
+        /// Tab other reactions [Fixed]
+        for key in orderedReactionKeys {
+            switch key {
+            case "create", "honest", "harmony", "success", "society", "like", "love":
+                if let count = reactionList[key], count > 0 {
+                    let reactionViewController = AmityReactionUsersViewController.make(
+                        with: info[0],
+                        reactionType: key,
+                        reactionCount: count)
+                    reactionViewControllerList.append(reactionViewController)
+                }
+            default:
+                break
+            }
+        }
         
         super.init(nibName: AmityReactionPageViewController.identifier, bundle: AmityUIKitManager.bundle)
         title = AmityLocalizedStringSet.Reaction.reactionTitle.localizedString
@@ -28,11 +65,11 @@ public class AmityReactionPageViewController: AmityPageViewController {
     }
  
     /// Initializes instance of AmityReactionPageViewController.
-    public static func make(info: [AmityReactionInfo]) -> AmityReactionPageViewController {
-        return AmityReactionPageViewController(info: info)
+    public static func make(info: [AmityReactionInfo], reactionList: [String: Int]) -> AmityReactionPageViewController {
+        return AmityReactionPageViewController(info: info, reactionList: reactionList)
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [reactionViewController]
+        return reactionViewControllerList
     }
 }

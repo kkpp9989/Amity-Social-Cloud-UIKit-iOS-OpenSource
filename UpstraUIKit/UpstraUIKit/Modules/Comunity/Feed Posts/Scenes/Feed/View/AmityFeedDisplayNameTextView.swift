@@ -33,12 +33,14 @@ class AmityFeedDisplayNameLabel: UILabel {
         addGestureRecognizer(tap)
     }
     
-    func configure(displayName: String, communityName: String?, isOfficial: Bool, shouldShowCommunityName: Bool, shouldShowBannedSymbol: Bool) {
-        self.displayName = displayName
+    // [Custom for ONE Krungthai] Modify function for moderator user permission (add argument/parameter isModeratorUser: Bool)
+    func configure(displayName: String, communityName: String?, isOfficial: Bool, shouldShowCommunityName: Bool, shouldShowBannedSymbol: Bool, isModeratorUserInOfficialCommunity: Bool) {
+        // [Custom for ONE Krungthai] Add check is moderator user for set displayname to community name or current display name
+        self.displayName = isModeratorUserInOfficialCommunity && isOfficial ? communityName ?? "" : displayName
         self.communityName = communityName
         
         let attributeString = NSMutableAttributedString()
-        attributeString.append(NSAttributedString(string: displayName))
+        attributeString.append(NSAttributedString(string: self.displayName))
         
         if shouldShowBannedSymbol {
             let imageRightAttachment = NSTextAttachment()
@@ -49,7 +51,8 @@ class AmityFeedDisplayNameLabel: UILabel {
         }
         
         // configure community displayname
-        if shouldShowCommunityName, let communityName = communityName {
+        // [Custom for ONE Krungthai] Add check is moderator user for show community name when open post detail or global feed
+        if shouldShowCommunityName, let communityName = communityName, !(isModeratorUserInOfficialCommunity && isOfficial) {
             attributeString.append(NSAttributedString(string: " ‣ "))
             attributeString.append(NSAttributedString(string: communityName))
         }
@@ -59,7 +62,8 @@ class AmityFeedDisplayNameLabel: UILabel {
         attributedText = attributeString
         
         // configure official badge
-        let shouldShowBadge = (shouldShowCommunityName && isOfficial)
+        // [Custom for ONE Krungthai] Change condition of shouldShowBadge
+        let shouldShowBadge = (shouldShowCommunityName && isOfficial) || (isOfficial && isModeratorUserInOfficialCommunity)
         setImageWithText(position: .right(image: shouldShowBadge ? AmityIconSet.iconBadgeCheckmark : nil), size: CGSize(width: 18, height: 18), tintColor: AmityColorSet.highlight)
     }
     

@@ -5,154 +5,267 @@
 //  Created by min khant on 05/05/2021.
 //  Copyright © 2021 Amity. All rights reserved.
 //
+/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsViewController and add new action some setting */
 
 import UIKit
+import AmitySDK
 
+// MARK: - Viewcontroller
 final class AmityChatSettingsViewController: AmityViewController {
     
-    @IBOutlet private weak var tableView: UITableView!
+    // MARK: - IBOutlet Properties
+    @IBOutlet private var settingTableView: AmitySettingsItemTableView!
+    
+    // MARK: - Properties
     private var screenViewModel: AmityChatSettingsScreenViewModelType!
+    private var isCanEditGroupChannel: Bool?
+    
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
     
     static func make(channelId: String) -> AmityViewController {
         let vc = AmityChatSettingsViewController(
             nibName: AmityChatSettingsViewController.identifier,
             bundle: AmityUIKitManager.bundle)
-        vc.screenViewModel = AmityChatSettingsScreenViewModel(channelId: channelId)
+
+        let chatNotificationController = AmityChatNotificationSettingsController(withChannelId: channelId)
+        let channelController = AmityChannelController(channelId: channelId)
+        let userController = AmityChatUserController(channelId: channelId)
+        vc.screenViewModel = AmityChatSettingsScreenViewModel(channelId: channelId,
+                                                              chatNotificationController: chatNotificationController,
+                                                              channelController: channelController,
+                                                              userController: userController)
         return vc
     }
     
+    // MARK: - View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpView()
-        setUpTableView()
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        
+        screenViewModel.delegate = self
+        setupView()
+        setupSettingTableView()
     }
     
-    private func setUpView() {
-        title = screenViewModel.dataSource.title()
-        screenViewModel.delegate  = self
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        screenViewModel.action.retrieveChannel()
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
-    private func setUpTableView() {
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
-        tableView.register(AmitySettingsItemNavigationContentTableViewCell.nib,
-                           forCellReuseIdentifier: AmitySettingsItemNavigationContentTableViewCell.identifier)
-        tableView.register(AmitySettingsItemTextContentTableViewCell.nib,
-                           forCellReuseIdentifier: AmitySettingsItemTextContentTableViewCell.identifier)
+    private func setupView() {
+        view.backgroundColor = AmityColorSet.backgroundColor
     }
-}
-
-extension AmityChatSettingsViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch screenViewModel.dataSource.getOption(with: indexPath.row) {
-        case .leave, .report(let _) :
-            let cell = tableView.dequeueReusableCell(withIdentifier: AmitySettingsItemTextContentTableViewCell.identifier) as! AmitySettingsItemTextContentTableViewCell
-            return cell
-        default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: AmitySettingsItemNavigationContentTableViewCell.identifier) as! AmitySettingsItemNavigationContentTableViewCell
-            return cell
+        
+    private func setupSettingTableView() {
+        settingTableView.actionHandler = { [weak self] settingsItem in
+            self?.handleActionItem(settingsItem: settingsItem)
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        switch screenViewModel.dataSource.getOption(with: indexPath.row) {
-        case .leave, .report(let _):
-            if let cell = cell as? AmitySettingsItemTextContentTableViewCell {
-                let item = AmitySettingsItem.TextContent(identifier: "",
-                                                         icon: screenViewModel.dataSource.getOptionImage(with: indexPath.row),
-                                                         title: screenViewModel.dataSource.getOptionTitle(with: indexPath.row),
-                                                         description: "",
-                                                         titleTextColor: screenViewModel.dataSource.getOptionTextColor(with: indexPath.row))
-                cell.display(content: item)
+    private func handleActionItem(settingsItem: AmitySettingsItem) {
+        guard let channel = screenViewModel.dataSource.channel else { return }
+        switch settingsItem {
+        case .textContent(content: let content):
+            switch content.identifier {
+            case "report": // (1:1 Chat)
+                AmityHUD.show(.loading)
+                screenViewModel.action.changeReportUserStatus()
+            case "leave": // (Group chat)
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
+                var description: String
+                if let isCanEditGroupChannel = screenViewModel.dataSource.isCanEditGroupChannel, isCanEditGroupChannel {
+                    if channel.memberCount == 1 {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithOneMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.close.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.deleteChat()
+                            })],
+                            from: self)
+                    } else {
+                        description = AmityLocalizedStringSet.ChatSettings.leaveChatModeratorRoleWithManyMemberGroupChatMessage.localizedString
+                        AmityAlertController.present(
+                            title: alertTitle,
+                            message: description,
+                            actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                                guard let strongSelf = self else { return }
+                                strongSelf.screenViewModel.action.leaveChat()
+                            })],
+                            from: self)
+                    }
+                } else {
+                    description = AmityLocalizedStringSet.ChatSettings.leaveChatMemberRoleGroupChatMessage.localizedString
+                    AmityAlertController.present(
+                        title: alertTitle,
+                        message: description,
+                        actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                            guard let strongSelf = self else { return }
+                            strongSelf.screenViewModel.action.leaveChat()
+                        })],
+                        from: self)
+                }
+            case "delete": // (1:1 Chat)
+                var description: String
+
+                let alertTitle = AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString
+                description = AmityLocalizedStringSet.ChatSettings.leaveChatConversationChatMessage.localizedString
+
+                AmityAlertController.present(
+                    title: alertTitle,
+                    message: description,
+                    actions: [.cancel(handler: nil), .custom(title: AmityLocalizedStringSet.General.leave.localizedString, style: .destructive, handler: { [weak self] in
+                        guard let strongSelf = self else { return }
+                        strongSelf.screenViewModel.action.deleteChat()
+                    })],
+                    from: self)
+            case "members": // (Group Chat)
+                // Use navigation content instead
+                break
+            case "groupProfile": // (Group Chat [Moderator role])
+                // Use navigation content instead
+                break
+            case "inviteUser": // (1:1 Chat)
+                var selectusers: [AmitySelectMemberModel] = []
+                if let otherUser = screenViewModel.dataSource.otherUser {
+                    selectusers.append(AmitySelectMemberModel(object: otherUser.object))
+                }
+                AmityChannelEventHandler.shared.channelCreateEditGroupChat(from: self, selectUsers: selectusers)
+            case "notification": // (1:1 Chat, Group Chat)
+                AmityHUD.show(.loading)
+                screenViewModel.action.changeNotificationSettings()
+                break
+            case "inviteViaQRAndLink":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
+                break
+            case "inviteViaQRAndLink1_1":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat1_1, id: channel.getOtherUserId(), title: channel.displayName, desc: channel.displayName)
+                break
+            default:
+                break
             }
-        case .members:
-            if let cell = cell as? AmitySettingsItemNavigationContentTableViewCell {
-                let item = AmitySettingsItem.NavigationContent(identifier: "", icon: screenViewModel.dataSource.getOptionImage(with: indexPath.row),
-                                                               title: screenViewModel.dataSource.getOptionTitle(with: indexPath.row),
-                                                               description: screenViewModel.dataSource.getMemberCount())
-                cell.display(content: item)
+            
+        case .navigationContent(content: let content):
+            switch content.identifier {
+            case "report": // (1:1 Chat)
+                // Use in text content instead
+                break
+            case "leave": // (Group chat)
+                // Use in text content instead
+                break
+            case "delete": // (1:1 Chat, Group Chat [Moderator role])
+                // Use in text content instead
+                break
+            case "members": // (Group Chat)
+                AmityChannelEventHandler.shared.channelOpenGroupChatMemberList(from: self, channel: channel)
+                break
+            case "groupProfile": // (Group Chat [Moderator role])
+                AmityChannelEventHandler.shared.channelEditGroupChatProfile(from: self, channelId: channel.channelId)
+            case "inviteUser": // (1:1 Chat)
+                // Use in text content instead
+                break
+            case "notification": // (1:1 Chat, Group Chat)
+                // Use in text content instead
+                break
+            case "inviteViaQRAndLink":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat, id: channel.channelId, title: channel.displayName, desc: channel.displayName)
+                break
+            case "inviteViaQRAndLink1_1":
+                // ktb kk goto share qr from Community setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityChatSetting")
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .chat1_1, id: channel.getOtherUserId(), title: channel.displayName, desc: channel.displayName)
+                break
+            default:
+                break
             }
         default:
-            if let cell = cell as? AmitySettingsItemNavigationContentTableViewCell {
-                let item = AmitySettingsItem.NavigationContent(identifier: "", icon: screenViewModel.dataSource.getOptionImage(with: indexPath.row),
-                                                               title: screenViewModel.dataSource.getOptionTitle(with: indexPath.row),
-                                                               description: "")
-                cell.display(content: item)
-            }
+            break
         }
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return screenViewModel.dataSource.getNumberOfItems()
-    }
-    
-}
 
-extension AmityChatSettingsViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        switch screenViewModel.dataSource.getOption(with: indexPath.row) {
-        case .leave:
-            let cancelAction = AmityAlertController.Action.cancel(style: .cancel, handler: {
-                self.dismiss(animated: true, completion: nil)
-            })
-            let leaveAction = AmityAlertController.Action.custom(
-                title: AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString,
-                style: .destructive,
-                handler: {
-                    AmityHUD.show(HUDContentType.loading)
-                    self.screenViewModel.action.didClickCell(index: indexPath.row)
-                })
-            AmityAlertController.present(
-                title: AmityLocalizedStringSet.ChatSettings.leaveChatTitle.localizedString,
-                message: AmityLocalizedStringSet.ChatSettings.leaveChatMessage.localizedString,
-                                         actions: [cancelAction, leaveAction],
-                                         from: self)
-        case .report(let _):
-            AmityHUD.show(.loading)
-            screenViewModel.action.didClickCell(index: indexPath.row)
-        default:
-            screenViewModel.action.didClickCell(index: indexPath.row)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
     }
 }
 
+// MARK: - Delegate
 extension AmityChatSettingsViewController: AmityChatSettingsScreenViewModelDelegate {
-    func screenViewModelDidFinishReport(error: String?) {
-        if let error = error {
-            AmityHUD.show(.error(message: error))
+    // MARK: - Get setting menu delegate
+    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetSettingMenu settings: [AmitySettingsItem]) {
+        settingTableView.settingsItems = settings
+    }
+    
+    // MARK: - Get channel delegate
+    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, didGetChannelSuccess channel: AmityChannelModel) {
+        title = viewModel.dataSource.title
+    }
+    
+    func screenViewModel(_ viewModel: AmityChatSettingsScreenViewModelType, failure error: AmityError) {
+        // Not ready
+    }
+    
+    // MARK: - Update notification delegate
+    func screenViewModelDidUpdateNotificationSettings(_ viewModel: AmityChatSettingsScreenViewModelType, isNotificationEnabled: Bool) {
+        AmityHUD.show(.success(message: "\(isNotificationEnabled ? AmityLocalizedStringSet.HUD.unmuted.localizedString : AmityLocalizedStringSet.HUD.muted.localizedString)"))
+    }
+    
+    func screenViewModelDidUpdateNotificationSettingsFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityHUD.show(.error(message: error.localizedDescription))
+    }
+    
+    // MARK: - Update report user status delegate
+    func screenViewModelDidUpdateReportUser(_ viewModel: AmityChatSettingsScreenViewModelType, isReported: Bool) {
+        AmityHUD.show(.success(message: "\(isReported ? AmityLocalizedStringSet.ChatSettings.reportSent.localizedString : AmityLocalizedStringSet.ChatSettings.unreportSent.localizedString)"))
+    }
+    
+    func screenViewModelDidUpdateReportUserFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityHUD.show(.error(message: error.localizedDescription))
+    }
+    
+    // MARK: - Leave channel delegate
+    func screenViewModelDidLeaveChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
+        // Handle back to view some each case
+        if let chatHomePage = navigationController?.viewControllers.first(where: { $0.isKind(of: AmityChatHomePageViewController.self) }) {
+            navigationController?.popToViewController(chatHomePage, animated: true)
         } else {
-            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.reportSent.localizedString))
+            navigationController?.popToRootViewController(animated: true)
         }
-        tableView.reloadData()
     }
     
-    func screenViewmodelDidPresentGroupDetail(channelId: String) {
-        let vc = AmityGroupChatEditViewController.make(channelId: channelId)
-        navigationController?.pushViewController(vc, animated: true)
+    func screenViewModelDidLeaveChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityAlertController.present(
+            title: AmityLocalizedStringSet.ChatSettings.unableLeaveChatTitle.localizedString,
+            message: AmityLocalizedStringSet.ChatSettings.unableLeaveChatMessage.localizedString,
+            actions: [.ok(handler: nil)],
+            from: self)
     }
     
-    func screenViewModelDidFinishLeaveChat(error: String?) {
-        if let error = error {
-            AmityHUD.show(.error(message: error))
+    // MARK: - Delete channel delegate
+    func screenViewModelDidDeleteChannel(_ viewModel: AmityChatSettingsScreenViewModelType) {
+        // Handle back to view some each case
+        if let chatHomePage = navigationController?.viewControllers.first(where: { $0.isKind(of: AmityChatHomePageViewController.self) }) {
+            navigationController?.popToViewController(chatHomePage, animated: true)
         } else {
-            AmityChannelEventHandler.shared.channelDidLeaveSuccess(from: self)
+            navigationController?.popToRootViewController(animated: true)
         }
     }
     
-    func screenViewModelDidUpdate(viewModel: AmityChatSettingsScreenViewModel) {
-        AmityHUD.hide({
-            self.tableView.reloadData()
-        })
+    func screenViewModelDidDeleteChannelFail(_ viewModel: AmityChatSettingsScreenViewModelType, error: Error) {
+        AmityAlertController.present(
+            title: AmityLocalizedStringSet.ChatSettings.unableDeleteChatTitle.localizedString,
+            message: AmityLocalizedStringSet.ChatSettings.unableDeleteChatMessage.localizedString,
+            actions: [.ok(handler: nil)],
+            from: self)
     }
     
-    func screenViewModelDidPresentMember(channel: AmityChannelModel) {
-        let vc = AmityChannelMemberSettingsViewController.make(channel: channel)
-        navigationController?.pushViewController(vc, animated: true)
-    }
 }

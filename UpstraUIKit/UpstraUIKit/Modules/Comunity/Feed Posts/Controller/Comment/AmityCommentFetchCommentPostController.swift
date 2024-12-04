@@ -14,6 +14,7 @@ protocol AmityCommentFetchCommentPostControllerProtocol {
     var hasMoreComments: Bool { get }
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool, completion: ((Result<[AmityCommentModel], AmityError>) -> Void)?)
+    func subscribeCommentsForPostId(withReferencePost post: AmityPost?, completion: ((Result<Bool, AmityError>) -> Void)?)
     func loadMoreComments()
 }
 
@@ -21,10 +22,24 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
     
     private let repository = AmityCommentRepository(client: AmityUIKitManagerInternal.shared.client)
     private var token: AmityNotificationToken?
+    private var subscriptionToken: AmityNotificationToken?
     private var collection: AmityCollection<AmityComment>?
-    
+    private var subscriptionManager = AmityTopicSubscription(client: AmityUIKitManagerInternal.shared.client)
+
     var hasMoreComments: Bool {
-        return collection?.hasPrevious ?? false
+        return collection?.hasNext ?? false
+    }
+    
+    func subscribeCommentsForPostId(withReferencePost post: AmitySDK.AmityPost?, completion: ((Result<Bool, AmityError>) -> Void)?) {
+        guard let currentPost = post else { return }
+        let eventTopic = AmityPostTopic(post: currentPost, andEvent: .comments)
+        subscriptionManager.subscribeTopic(eventTopic) { isSuccess, error in
+            if let error = AmityError(error: error) {
+                completion?(.failure(error))
+            } else {
+                completion?(.success(isSuccess))
+            }
+        }
     }
     
     func getCommentsForPostId(withReferenceId postId: String, referenceType: AmityCommentReferenceType, filterByParentId isParent: Bool, parentId: String?, orderBy: AmityOrderBy, includeDeleted: Bool, completion: ((Result<[AmityCommentModel], AmityError>) -> Void)?) {
@@ -47,7 +62,7 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
         guard let collection = collection else { return }
         switch collection.loadingStatus {
         case .loaded:
-            collection.previousPage()
+            collection.nextPage()
         default:
             break
         }
@@ -59,7 +74,12 @@ class AmityCommentFetchCommentPostController: AmityCommentFetchCommentPostContro
         for i in 0..<collection.count() {
             guard let comment = collection.object(at: i) else { continue }
             let model = AmityCommentModel(comment: comment)
-            models.append(model)
+            switch comment.syncState {
+            case .error, .syncing:
+                break
+            default:
+                models.append(model)
+            }
         }
         return models
     }

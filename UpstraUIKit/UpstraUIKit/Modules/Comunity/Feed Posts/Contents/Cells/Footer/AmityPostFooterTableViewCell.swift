@@ -14,6 +14,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     public weak var delegate: AmityPostFooterDelegate?
 
     // MARK: - IBOutlet Properties
+    @IBOutlet private var connerContainerView: UIView!
     @IBOutlet private var topContainerView: UIView!
     @IBOutlet private var likeLabel: UILabel!
     @IBOutlet private var commentLabel: UILabel!
@@ -26,6 +27,15 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var likeLabelIcon: UIImageView!
     @IBOutlet private var warningLabel: UILabel!
     @IBOutlet private var likeDetailButton: UIButton!
+    
+    @IBOutlet private var twoReactionsView: UIView!
+    @IBOutlet private var twoReactionsFirstIcon: UIImageView!
+    @IBOutlet private var twoReactionsSecondIcon: UIImageView!
+    
+    @IBOutlet private var threeReactionsView: UIView!
+    @IBOutlet private var threeReactionsFirstIcon: UIImageView!
+    @IBOutlet private var threeReactionsSecondIcon: UIImageView!
+    @IBOutlet private var threeReactionsThirdIcon: UIImageView!
     
     // MARK: - Properties
     private(set) public var post: AmityPostModel?
@@ -42,13 +52,27 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     
     public func display(post: AmityPostModel) {
         self.post = post
-        likeButton.isSelected = post.isLiked
+        
+        if let reactionType = post.reacted {
+            setLikedButton(reactionType: reactionType)
+            likeButton.isSelected = true
+        } else {
+            likeButton.isSelected = false
+        }
+        
         likeLabel.isHidden = post.reactionsCount == 0
-        likeLabelIcon.isHidden = post.reactionsCount == 0
+//        likeLabelIcon.isHidden = post.reactionsCount == 0
+        
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+        setReactions(reactions: post.reactions)
+        
         likeDetailButton.isEnabled = post.reactionsCount != 0
         let reactionsPrefix = post.reactionsCount == 1 ? AmityLocalizedStringSet.Unit.likeSingular.localizedString : AmityLocalizedStringSet.Unit.likePlural.localizedString
-        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
-                                                          post.reactionsCount.formatUsingAbbrevation())
+//        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix,
+//                                                          post.reactionsCount.formatUsingAbbrevation())
+        likeLabel.text = String.localizedStringWithFormat(reactionsPrefix, post.reactionsCount.formatUsingAbbrevation())  //post.reactionsCount.formatUsingAbbrevation()
         commentLabel.isHidden = post.allCommentCount == 0
         let commentPrefix = post.allCommentCount == 1 ? AmityLocalizedStringSet.Unit.commentSingular.localizedString : AmityLocalizedStringSet.Unit.commentPlural.localizedString
         commentLabel.text = String.localizedStringWithFormat(commentPrefix,
@@ -59,23 +83,23 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         warningLabel.isHidden = post.isCommentable
         topContainerView.isHidden = isReactionExisted
         
-        // [Custom for ONE Krungthai] Disable default setting share button for ONE Krungthai
-//        shareButton.isHidden = !AmityPostSharePermission.canSharePost(post: post)
-//        shareLabel.isHidden = post.sharedCount == 0
-//        let sharePrefix = post.sharedCount > 1 ? AmityLocalizedStringSet.Unit.sharesPlural.localizedString :
-//            AmityLocalizedStringSet.Unit.sharesSingular.localizedString
-//        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount)
-        
-        // [Custom for ONE Krungthai] Hide share button for ONE Krungthai
-        shareButton.isHidden = true
-        shareLabel.isHidden = true
+        shareButton.isHidden = !AmityPostSharePermission.canSharePost(post: post)
+        shareLabel.isHidden = post.sharedCount == 0
+        let sharePrefix = post.sharedCount > 1 ? AmityLocalizedStringSet.Unit.sharesPlural.localizedString :
+            AmityLocalizedStringSet.Unit.sharesSingular.localizedString
+        shareLabel.text = String.localizedStringWithFormat(sharePrefix, post.sharedCount)
     }
     
     // MARK: - Setup views
     private func setupView() {
+        // ktb kk set conner radius
+        self.connerContainerView.layer.cornerRadius = 10
+        self.connerContainerView.layer.masksToBounds = true
+        self.connerContainerView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
-        contentView.backgroundColor = AmityColorSet.backgroundColor
+        backgroundColor = .clear //AmityColorSet.backgroundColor
+        contentView.backgroundColor = .clear //AmityColorSet.backgroundColor
         // separator
         separatorView.forEach { $0.backgroundColor = AmityColorSet.secondary.blend(.shade4) }
     }
@@ -101,10 +125,16 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         likeButton.setTitleFont(AmityFontSet.bodyBold)
         likeButton.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
         
+        // Create a long press gesture recognizer
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(likeHoldTap(_:)))
+        longPressRecognizer.minimumPressDuration = 0.2
+        likeButton.addGestureRecognizer(longPressRecognizer)
+        
         // like badge
         likeLabel.textColor = AmityColorSet.base.blend(.shade2)
         likeLabel.font = AmityFontSet.caption
     }
+    
     private func setupCommentButton() {
         // comment button
         commentButton.tintColor = AmityColorSet.base.blend(.shade2)
@@ -128,12 +158,76 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
         shareLabel.textColor = AmityColorSet.base.blend(.shade2)
         shareLabel.font = AmityFontSet.caption
     }
+    
+    private func setLikedButton(reactionType: AmityReactionType) {
+        
+        switch reactionType {
+        case .create:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sangsun.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSangsun, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASangsun, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSangsun, for: .selected)
+        case .honest:
+            likeButton.setTitle(AmityLocalizedStringSet.General.satsue.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSatsue, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASatsue, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSatsue, for: .selected)
+        case .harmony:
+            likeButton.setTitle(AmityLocalizedStringSet.General.samakki.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSamakki, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASamakki, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSamakki, for: .selected)
+        case .success:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sumrej.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSumrej, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASumrej, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSumrej, for: .selected)
+        case .society:
+            likeButton.setTitle(AmityLocalizedStringSet.General.sangkom.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaSangkom, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNASangkom, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaSangkom, for: .selected)
+        case .like:
+            likeButton.setTitle(AmityLocalizedStringSet.General.liked.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaLike, for: .selected)
+            likeButton.setImage(AmityIconSet.iconLikeFill, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaLike, for: .selected)
+        case .love:
+            likeButton.setTitle(AmityLocalizedStringSet.General.love.localizedString, for: .selected)
+            likeButton.setTitleColor(AmityColorSet.dnaLove, for: .selected)
+            likeButton.setImage(AmityIconSet.iconBadgeDNALove, for: .selected)
+            likeButton.setTintColor(AmityColorSet.dnaLove, for: .selected)
+        }
+    }
+    
+    private func dnaLabelIcon(reactionType: AmityReactionType) -> UIImage? {
+        switch reactionType {
+        case .create:
+            return AmityIconSet.iconBadgeDNASangsun
+        case .honest:
+            return AmityIconSet.iconBadgeDNASatsue
+        case .harmony:
+            return AmityIconSet.iconBadgeDNASamakki
+        case .success:
+            return AmityIconSet.iconBadgeDNASumrej
+        case .society:
+            return AmityIconSet.iconBadgeDNASangkom
+        case .like:
+            return AmityIconSet.iconBadgeDNALike
+        case .love:
+            return AmityIconSet.iconBadgeDNALove
+        }
+    }
  
     // MARK: - Perform Action
     private func performAction(action: AmityPostFooterAction) {
         delegate?.didPerformAction(self, action: action)
     }
     
+    private func performAction(action: AmityPostFooterAction, view: UIView) {
+        delegate?.didPerformView(self, view: view)
+        delegate?.didPerformAction(self, action: action)
+    }
 }
 
 private extension AmityPostFooterTableViewCell {
@@ -157,4 +251,93 @@ private extension AmityPostFooterTableViewCell {
     @IBAction func didTapReactionDetails() {
         performAction(action: .tapReactionDetails)
     }
+    
+    @objc func likeHoldTap(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            performAction(action: .tapHoldLike, view: likeButton)
+        }
+    }
+}
+
+private extension AmityPostFooterTableViewCell {
+    
+    private func setReactions(reactions: [String: Int]) {
+        let filteredReactions = reactions.filter { $1 != 0 }
+        let sortedKeys = filteredReactions.keys.sorted { (key1, key2) in
+            if filteredReactions[key1]! == filteredReactions[key2]! {
+                // If the integer values are the same, sort based on priority
+                guard let reactionType1 = AmityReactionType(rawValue: key1),
+                      let reactionType2 = AmityReactionType(rawValue: key2) else {
+                    return false // Default sorting behavior if reaction types are not valid
+                }
+                
+                return sortReactionPriority(reactionType1) < sortReactionPriority(reactionType2)
+            } else {
+                // If the integer values are different, sort by integer value
+                return filteredReactions[key1]! > filteredReactions[key2]!
+            }
+        }
+        
+        let totalReactionsCount = sortedKeys.count
+        
+        if totalReactionsCount <= 0 {
+            hideAllReactionViews()
+        } else if totalReactionsCount == 1 {
+            showSingleReactionView(reaction: sortedKeys[0])
+        } else {
+            // Handle multiple reactions
+            
+            if totalReactionsCount == 2 {
+                showTwoReactionsView(reactions: sortedKeys)
+            } else {
+                showThreeReactionsView(reactions: sortedKeys)
+            }
+        }
+    }
+    
+    private func sortReactionPriority(_ reactionType: AmityReactionType) -> Int {
+        // Define the priority order using the AmityReactionType enum
+        let priorityOrder: [AmityReactionType] = [.create, .honest, .harmony, .success, .society, .like, .love]
+        
+        if let index = priorityOrder.firstIndex(of: reactionType) {
+            return index
+        } else {
+            return Int.max // Default priority for unknown reaction types
+        }
+    }
+
+    
+    private func hideAllReactionViews() {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+    }
+    
+    private func showSingleReactionView(reaction: String) {
+        likeLabelIcon.isHidden = false
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = true
+        
+        likeLabelIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reaction) ?? .like)
+    }
+    
+    private func showTwoReactionsView(reactions: [String]) {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = false
+        threeReactionsView.isHidden = true
+        
+        twoReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[0]) ?? .like)
+        twoReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[1]) ?? .like)
+    }
+    
+    private func showThreeReactionsView(reactions: [String]) {
+        likeLabelIcon.isHidden = true
+        twoReactionsView.isHidden = true
+        threeReactionsView.isHidden = false
+        
+        threeReactionsFirstIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[0]) ?? .like)
+        threeReactionsSecondIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[1]) ?? .like)
+        threeReactionsThirdIcon.image = dnaLabelIcon(reactionType: AmityReactionType(rawValue: reactions[2]) ?? .like)
+    }
+
 }

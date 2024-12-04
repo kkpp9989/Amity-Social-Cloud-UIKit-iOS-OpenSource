@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Share event handler for feed
 ///
@@ -24,9 +25,20 @@ open class AmityFeedEventHandler {
     /// It will be triggered when more option is tapped
     ///
     /// A default behavior is presenting a `AmityActivityController`
-    open func sharePostDidTap(from source: AmityViewController, postId: String) {
-        let viewController = AmityActivityController.make(activityItems: [postId])
-        source.present(viewController, animated: true, completion: nil)
+    open func sharePostDidTap(from source: AmityViewController, post: AmityPostModel) {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        
+        let viewController = AmityActivityController.make(activityItems: [externalURL])
+        viewController.popoverPresentationController?.sourceView = source.view
+        viewController.popoverPresentationController?.sourceRect = CGRect(x: 0, y: source.view.bounds.size.height, width: source.view.bounds.size.width, height: 0)
+        viewController.popoverPresentationController?.permittedArrowDirections = .any
+
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            viewController.modalPresentationStyle = .popover
+            source.present(viewController, animated: true, completion: nil)
+        } else {
+            source.present(viewController, animated: true, completion: nil)
+        }
     }
     
     /// Event to share a post

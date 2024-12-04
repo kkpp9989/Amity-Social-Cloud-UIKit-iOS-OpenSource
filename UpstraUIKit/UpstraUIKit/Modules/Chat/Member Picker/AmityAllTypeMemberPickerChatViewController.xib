@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AmityAllTypeMemberPickerChatViewController" customModule="AmityUIKit" customModuleProvider="target">
+            <connections>
+                <outlet property="buttonBarView" destination="Nrm-ce-ecM" id="RtY-ur-Cam"/>
+                <outlet property="containerView" destination="d60-YX-w5E" id="SFU-iB-FLP"/>
+                <outlet property="view" destination="e92-Cq-mz3" id="j0Y-fP-drw"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="e92-Cq-mz3">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Nrm-ce-ecM" customClass="ButtonBarView" customModule="AmityUIKit" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="ywK-eP-gVe"/>
+                    </constraints>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="69a-io-R6o">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
+                </collectionView>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d60-YX-w5E">
+                    <rect key="frame" x="0.0" y="103" width="393" height="715"/>
+                </scrollView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Pwh-2p-vMK"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="Pwh-2p-vMK" firstAttribute="bottom" secondItem="d60-YX-w5E" secondAttribute="bottom" id="9Ck-6n-Qgz"/>
+                <constraint firstItem="d60-YX-w5E" firstAttribute="top" secondItem="Nrm-ce-ecM" secondAttribute="bottom" id="MSZ-zj-GUN"/>
+                <constraint firstItem="Nrm-ce-ecM" firstAttribute="trailing" secondItem="Pwh-2p-vMK" secondAttribute="trailing" id="Qcy-ed-sEo"/>
+                <constraint firstItem="Nrm-ce-ecM" firstAttribute="top" secondItem="Pwh-2p-vMK" secondAttribute="top" id="VBZ-bw-yKJ"/>
+                <constraint firstItem="Nrm-ce-ecM" firstAttribute="leading" secondItem="Pwh-2p-vMK" secondAttribute="leading" id="VSp-Ci-W9X"/>
+                <constraint firstItem="d60-YX-w5E" firstAttribute="top" secondItem="Nrm-ce-ecM" secondAttribute="bottom" id="a4B-Zp-UID"/>
+                <constraint firstItem="d60-YX-w5E" firstAttribute="trailing" secondItem="Pwh-2p-vMK" secondAttribute="trailing" id="emG-pt-wfF"/>
+                <constraint firstItem="d60-YX-w5E" firstAttribute="leading" secondItem="Pwh-2p-vMK" secondAttribute="leading" id="qxp-cw-pbX"/>
+            </constraints>
+            <point key="canvasLocation" x="139" y="105"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

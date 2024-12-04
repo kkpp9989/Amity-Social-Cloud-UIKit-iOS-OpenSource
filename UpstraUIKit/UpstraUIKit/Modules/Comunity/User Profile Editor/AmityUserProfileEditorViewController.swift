@@ -23,8 +23,11 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     @IBOutlet private weak var aboutSeparatorView: UIView!
     @IBOutlet private weak var displaynameSeparatorView: UIView!
     private var saveBarButtonItem: UIBarButtonItem!
+    @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
+    @IBOutlet private weak var overlayView: UIView!
     
     private var screenViewModel: AmityUserProfileEditorScreenViewModelType?
+    private var cacheAboutText: String = ""
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -42,8 +45,10 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         return isValueChanged && isValueExisted
     }
     
+    // [Custom for ONE Krungthai] Seperate max character each data
     private enum Constant {
-        static let maxCharactor: Int = 100
+        static let maxCharacterOfDisplayname: Int = 100
+        static let maxCharacterOfAboutInfo: Int = 180
     }
     
     private init() {
@@ -83,29 +88,52 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     private func setupNavigationBar() {
         saveBarButtonItem = UIBarButtonItem(title: AmityLocalizedStringSet.General.save.localizedString, style: .done, target: self, action: #selector(saveButtonTap))
+        
+        // [Fix defect] Set font of save button refer to AmityFontSet
+        saveBarButtonItem.tintColor = AmityColorSet.primary
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveBarButtonItem.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         saveBarButtonItem.isEnabled = false
         navigationItem.rightBarButtonItem = saveBarButtonItem
     }
     
     private func setupView() {
         // avatar
-        userAvatarView.placeholder = AmityIconSet.defaultAvatar
         cameraImageView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         cameraImageView.layer.borderColor = AmityColorSet.backgroundColor.cgColor
         cameraImageView.layer.borderWidth = 1.0
         cameraImageView.layer.cornerRadius = 14.0
         cameraImageView.clipsToBounds = true
+        userAvatarView.placeholder = AmityIconSet.defaultAvatar
+        userAvatarView.bringSubviewToFront(overlayView)
+        avatarUploadingProgressBar.tintColor = AmityColorSet.primary
+        avatarUploadingProgressBar.setProgress(0.0, animated: true)
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        overlayView.isHidden = true
         
         // display name
-        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
+        /* [Original] */
+//        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
+        /* [Custom For ONE Krungthai][Fix defect] Delete * from "Display Name" topic label | refer design from Figma */
+        displayNameLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString
         displayNameLabel.font = AmityFontSet.title
         displayNameLabel.textColor = AmityColorSet.base
+        
         displayNameCounterLabel.font = AmityFontSet.caption
         displayNameCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
+        /* [Custom For ONE Krungthai][Fix defect] Hide displayname counter lable | refer design from Figma */
+        displayNameCounterLabel.isHidden = true
+        
         displayNameTextField.delegate = self
         displayNameTextField.borderStyle = .none
         displayNameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
-        displayNameTextField.maxLength = Constant.maxCharactor
+        displayNameTextField.maxLength = Constant.maxCharacterOfDisplayname
+        
+        // [Fix defect] Set font of displayname text field refer to AmityFontSet and set disable text field color | refer design from Figma
+        displayNameTextField.font = AmityFontSet.body
+        displayNameTextField.textColor = AmityColorSet.disableTextField
         
         // [Custom for ONE Krungthai] Disable display name editing for ONE Krungthai
         displayNameTextField.isUserInteractionEnabled = false
@@ -117,7 +145,14 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         aboutCounterLabel.font = AmityFontSet.caption
         aboutCounterLabel.textColor = AmityColorSet.base.blend(.shade1)
         aboutTextView.customTextViewDelegate = self
-        aboutTextView.maxCharacters = Constant.maxCharactor
+        aboutTextView.layer.borderWidth = 0
+        aboutTextView.isScrollEnabled = false
+        aboutTextView.textContainer.lineBreakMode = .byWordWrapping
+        aboutTextView.padding = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+        aboutTextView.maxCharacters = Constant.maxCharacterOfAboutInfo
+        aboutTextView.maxLength = Constant.maxCharacterOfAboutInfo
+        aboutTextView.font = AmityFontSet.body
+        aboutTextView.textColor = AmityColorSet.base
         
         // separator
         aboutSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
@@ -128,28 +163,50 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         view.endEditing(true)
+        AmityHUD.show(.loading)
         
-        // Update display name and about
-        screenViewModel?.action.update(displayName: displayNameTextField.text ?? "", about: aboutTextView.text ?? "")
-        
-        // Update user avatar
-        if let avatar = uploadingAvatarImage {
-            userAvatarView.state = .loading
-            screenViewModel?.action.update(avatar: avatar) { [weak self] success in
-                if success {
+        Task { @MainActor in
+            // Update display name and about data
+            let newDisplayName = displayNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let newAbout = aboutTextView.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isUpdateTextSuccess = await screenViewModel?.action.update(displayName: newDisplayName, about: newAbout)
+            
+            // Check is display name and about data update fail for show error
+            if let isUpdateTextSuccess, !isUpdateTextSuccess {
+                AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                return
+            }
+            
+            // Update user avatar if need
+            if let avatar = uploadingAvatarImage {
+                // Show overlay view and progress bar
+                avatarUploadingProgressBar.setProgress(0.0, animated: true)
+                overlayView.isHidden = false // Custom overlay for this view controller only
+                
+                // Start update user avatar
+                let isUpdateAvatarSuccess = await screenViewModel?.action.update(avatar: avatar)
+                
+                // Hide overlay view and progress bar
+                overlayView.isHidden = true // Custom overlay for this view controller only
+                avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+                
+                // Reset cache image and update view state
+                uploadingAvatarImage = nil
+                updateViewState()
+                
+                // Check is avatar update success for show error or success
+                if let isUpdateAvatarSuccess, isUpdateAvatarSuccess {
                     AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                    self?.userAvatarView.image = avatar
+                    AmityEventHandler.shared.didEditUserComplete(from: self)
                 } else {
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 }
-                self?.userAvatarView.state = .idle
-                self?.uploadingAvatarImage = nil
-                self?.updateViewState()
+            } else {
+                // when there is no image update
+                // directly show success message after updated
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                AmityEventHandler.shared.didEditUserComplete(from: self)
             }
-        } else {
-            // when there is no image update
-            // directly show success message after updated
-            AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
         }
     }
     
@@ -168,13 +225,34 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
         // Show image picker
         var galleryOption = TextItemOption(title: AmityLocalizedStringSet.General.imageGallery.localizedString)
         galleryOption.completion = { [weak self] in
-            let imagePicker = AmityImagePickerController(selectedAssets: [])
+            let imagePicker = NewImagePickerController(selectedAssets: [])
             imagePicker.settings.theme.selectionStyle = .checked
             imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
             imagePicker.settings.selection.max = 1
             imagePicker.settings.selection.unselectOnReachingMax = true
             
-            self?.presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            let options = imagePicker.settings.fetch.album.options
+            // Fetching user library and other smart albums
+            let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+            let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+            let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+            let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+            let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+            
+            // Fetching regular albums
+            let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+            
+            imagePicker.settings.fetch.album.fetchResults = [
+                userLibraryCollection,
+                favoritesCollection,
+                regularAlbumsCollection,
+                selfPortraitsCollection,
+                panoramasCollection,
+                videosCollection
+            ]
+                        
+            imagePicker.modalPresentationStyle = .overFullScreen
+            self?.presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
                 guard let asset = assets.first else { return }
                 asset.getImage { result in
                     switch result {
@@ -184,7 +262,7 @@ final public class AmityUserProfileEditorViewController: AmityViewController {
                         break
                     }
                 }
-            })
+            }
         }
         
         let bottomSheet = BottomSheetViewController()
@@ -234,6 +312,11 @@ extension AmityUserProfileEditorViewController: AmityUserProfileEditorScreenView
         }
         
         updateViewState()
+    }
+    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityUserProfileEditorScreenViewModelType, progressing: Double) {
+//        print("[Avatar][Chat] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+        avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
     
 }

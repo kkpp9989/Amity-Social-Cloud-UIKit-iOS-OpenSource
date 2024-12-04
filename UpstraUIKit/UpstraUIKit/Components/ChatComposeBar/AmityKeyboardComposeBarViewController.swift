@@ -14,16 +14,31 @@ struct AmityKeyboardComposeBarModel {
     let menuType: MenuType
      
     enum MenuType {
-        case camera, album, file, location
+        case camera, album, file, location, videoAlbum
     }
     
     static func menuList() -> [AmityKeyboardComposeBarModel] {
-        return [
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
-            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
-//            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
-//            AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
-        ]
+        // [Custom for ONE Krungthai] Add video album and file for chat detail
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableChatlLocation
+        
+        var menuList: [AmityKeyboardComposeBarModel] = []
+        if isEnableMenu {
+            menuList = [
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.location.localizedString, image: AmityIconSet.iconLocationFill, menuType: .location)
+            ]
+        } else {
+            menuList = [
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.camera.localizedString, image: AmityIconSet.iconCameraFill, menuType: .camera),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.album.localizedString, image: AmityIconSet.iconAlbumFill, menuType: .album),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.generalVideo.localizedString, image: AmityIconSet.iconVideoAlbumFill, menuType: .videoAlbum),
+                AmityKeyboardComposeBarModel(name: AmityLocalizedStringSet.General.file.localizedString, image: AmityIconSet.iconFileFill, menuType: .file),
+            ]
+        }
+        return menuList
     }
 }
 
@@ -65,10 +80,10 @@ private extension AmityKeyboardComposeBarViewController {
     
     func setupCollectionView() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            let margin: CGFloat = 20
+            let margin: CGFloat = 16 // [Improvement] Change margin for 4 item per row (Original = 20)
             let width = collectionView.bounds.width
-            let numberOfItemsPerRow: CGFloat = 3
-            let spacing: CGFloat = 40
+            let numberOfItemsPerRow: CGFloat = 4 // [Improvement] Change item per row to 3(Original = 3)
+            let spacing: CGFloat = 16 // [Improvement] Change spacing for 4 item per row (Original = 40)
             let availableWidth = width - spacing * (numberOfItemsPerRow + 1) - (margin * 2)
             let itemDimension = floor(availableWidth / numberOfItemsPerRow)
             layout.scrollDirection = .vertical

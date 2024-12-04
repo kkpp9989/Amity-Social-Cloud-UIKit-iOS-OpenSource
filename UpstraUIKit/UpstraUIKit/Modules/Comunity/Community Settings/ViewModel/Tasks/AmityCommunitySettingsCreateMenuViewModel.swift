@@ -84,9 +84,18 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                                             title: AmityCommunitySettingsItem.notification.title,
                                                                             description: itemNotificationDesc.localizedString)
             settingsItems.append(.navigationContent(content: itemNotificationContent))
-            // add separator
-            settingsItems.append(.separator)
         }
+        
+        // ktb kk custom add menu Invite Via QR And Link
+        // MARK: Invite Via QR And Link
+        let iteminviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityCommunitySettingsItem.inviteViaQRAndLink.identifier,
+                                                                  icon: AmityCommunitySettingsItem.inviteViaQRAndLink.icon,
+                                                                  title: AmityCommunitySettingsItem.inviteViaQRAndLink.title,
+                                                                  description: AmityCommunitySettingsItem.inviteViaQRAndLink.description)
+        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+        
+        // add separator
+        settingsItems.append(.separator)
         
         // MARK: Create Community Permission
         if shouldShowEditProfileItem || isModerator {
@@ -99,6 +108,7 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                                       title: AmityCommunitySettingsItem.postReview.title,
                                                                       description: AmityCommunitySettingsItem.postReview.description)
             settingsItems.append(.navigationContent(content: itemPostReviewContent))
+            settingsItems.append(.separator)
         }
         
         // MARK: Create leave community item
@@ -119,8 +129,9 @@ final class AmityCommunitySettingsCreateMenuViewModel: AmityCommunitySettingsCre
                                                            title: AmityCommunitySettingsItem.closeCommunity.title,
                                                            description: AmityCommunitySettingsItem.closeCommunity.description,
                                                            titleTextColor: AmityColorSet.alert)
-            settingsItems.append(.textContent(content: closeContent))
-            settingsItems.append(.separator)
+            // [Custom for ONE Krungthai] Hide close social button for close social at backend console only
+//            settingsItems.append(.textContent(content: closeContent))
+//            settingsItems.append(.separator)
         }
         
         completion?(settingsItems)

@@ -9,6 +9,8 @@
 import UIKit
 
 public class AmityPageViewController: AmityButtonPagerTabSViewController {
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
     
     public override func viewDidLoad() {
         // Original
@@ -38,11 +40,17 @@ public class AmityPageViewController: AmityButtonPagerTabSViewController {
             newCell?.label.font = AmityFontSet.title
         }
         containerView.isScrollEnabled = false
+        
+        // Initial ONE Krungthai Custom theme
+        theme = ONEKrungthaiCustomTheme(viewController: self)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setBackgroundColor(with: AmityColorSet.backgroundColor)
+        
+        // Set color navigation bar by custom theme
+        theme?.setBackgroundNavigationBar()
     }
     
     override func reloadPagerTabStripView() {

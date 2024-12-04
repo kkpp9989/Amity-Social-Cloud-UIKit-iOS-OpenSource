@@ -20,14 +20,15 @@ final class AmityMemberPickerScreenViewModel: AmityMemberPickerScreenViewModelTy
     private var searchUserController: AmitySearchUserController?
     private var selectUserContrller: AmitySelectUserController?
     
+    // MARK: - Properties
     private var users: AmityFetchUserController.GroupUser = []
     private var searchUsers: [AmitySelectMemberModel] = []
-    private var storeUsers: [AmitySelectMemberModel] = [] {
+    private var newSelectedUsers: [AmitySelectMemberModel] = [] {
         didSet {
-            delegate?.screenViewModelCanDone(enable: !storeUsers.isEmpty)
+            delegate?.screenViewModelCanDone(enable: !newSelectedUsers.isEmpty)
         }
     }
-    
+    private var currentUsers: [AmitySelectMemberModel] = []
     private var isSearch: Bool = false
     
     init() {
@@ -48,8 +49,16 @@ extension AmityMemberPickerScreenViewModel {
         return isSearch ? searchUsers.count : users[section].value.count
     }
     
+    func numberOfAllUsers() -> Int {
+        return users.count
+    }
+    
+    func numberOfSearchUsers() -> Int {
+        return searchUsers.count
+    }
+    
     func numberOfSelectedUsers() -> Int {
-        return storeUsers.count
+        return newSelectedUsers.count
     }
     
     func alphabetOfHeader(in section: Int) -> String {
@@ -59,35 +68,73 @@ extension AmityMemberPickerScreenViewModel {
     func user(at indexPath: IndexPath) -> AmitySelectMemberModel? {
         if isSearch {
             guard !searchUsers.isEmpty else { return nil }
-            return searchUsers[indexPath.row]
+            return indexPath.row < searchUsers.count ? searchUsers[indexPath.row] : nil
         } else {
             guard !users.isEmpty else { return nil }
-            return users[indexPath.section].value[indexPath.row]
+            if indexPath.section < users.count {
+                if indexPath.row < users[indexPath.section].value.count {
+                    return users[indexPath.section].value[indexPath.row]
+                } else {
+                    return nil
+                }
+            } else {
+                return nil
+            }
         }
     }
     
     func selectUser(at indexPath: IndexPath) -> AmitySelectMemberModel {
-        return storeUsers[indexPath.item]
+        return newSelectedUsers[indexPath.item]
     }
     
     func isSearching() -> Bool {
         return isSearch
     }
     
+    func isCurrentUserInGroup(id: String) -> Bool {
+        return currentUsers.contains(where: { $0.userId == id })
+    }
+    
     func getStoreUsers() -> [AmitySelectMemberModel] {
-        return storeUsers
+        return currentUsers + newSelectedUsers
+    }
+    
+    func getNewSelectedUsers() -> [AmitySelectMemberModel] {
+        return newSelectedUsers
     }
 }
 
 // MARK: - Action
 extension AmityMemberPickerScreenViewModel {
     
+    func updateSearchingStatus(isSearch: Bool) {
+        self.isSearch = isSearch
+    }
+    
     func setCurrentUsers(users: [AmitySelectMemberModel]) {
-        storeUsers = users
+        currentUsers = users
+        
+        if currentUsers.count == 0 {
+            delegate?.screenViewModelDidSetCurrentUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
+        } else {
+            delegate?.screenViewModelDidSetCurrentUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
+        }
+    }
+    
+    func setNewSelectedUsers(users: [AmitySelectMemberModel], isFromAnotherTab: Bool, keyword: String) {
+        newSelectedUsers = users
+        
+        if newSelectedUsers.count == 0 {
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+        } else {
+            delegate?.screenViewModelDidSetNewSelectedUsers(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false, isFromAnotherTab: isFromAnotherTab, keyword: keyword)
+        }
     }
     
     func getUsers() {
-        fetchUserController?.storeUsers = storeUsers
+        isSearch = false
+        fetchUserController?.newSelectedUsers = newSelectedUsers
+        fetchUserController?.currentUsers = currentUsers
         fetchUserController?.getUser { (result) in
             switch result {
             case .success(let users):
@@ -101,7 +148,7 @@ extension AmityMemberPickerScreenViewModel {
     
     func searchUser(with text: String) {
         isSearch = true
-        searchUserController?.search(with: text, storeUsers: storeUsers, { [weak self] (result) in
+        searchUserController?.search(with: text, newSelectedUsers: newSelectedUsers, currentUsers: currentUsers, { [weak self] (result) in
             switch result {
             case .success(let users):
                 self?.searchUsers = users
@@ -118,21 +165,42 @@ extension AmityMemberPickerScreenViewModel {
         })
     }
     
+    func updateSelectedUserInfo() {
+        // Edit selected of search user
+        for (index, data) in searchUsers.enumerated() {
+            if newSelectedUsers.contains(where: { $0.userId == data.userId } ) || currentUsers.contains(where: { $0.userId == data.userId } ) {
+                searchUsers[index].isSelected = true
+            } else {
+                searchUsers[index].isSelected = false
+            }
+        }
+        // Edit selected of user
+        for (indexGroup, (key, group)) in users.enumerated() {
+            for (indexUser, user) in group.enumerated() {
+                if newSelectedUsers.contains(where: { $0.userId == user.userId } ) || currentUsers.contains(where: { $0.userId == user.userId } ) {
+                    users[indexGroup].value[indexUser].isSelected = true
+                } else {
+                    users[indexGroup].value[indexUser].isSelected = false
+                }
+            }
+        }
+    }
+    
     func selectUser(at indexPath: IndexPath) {
-        selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, storeUsers: &storeUsers, at: indexPath, isSearch: isSearch)
-        if storeUsers.count == 0 {
+        selectUserContrller?.selectUser(searchUsers: searchUsers, users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath, isSearch: isSearch)
+        if newSelectedUsers.count == 0 {
             delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
         } else {
-            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
     }
     
     func deselectUser(at indexPath: IndexPath) {
-        selectUserContrller?.deselect(users: &users, storeUsers: &storeUsers, at: indexPath)
-        if storeUsers.count == 0 {
+        selectUserContrller?.deselect(searchUsers: &searchUsers ,users: &users, newSelectedUsers: &newSelectedUsers, at: indexPath)
+        if newSelectedUsers.count == 0 {
             delegate?.screenViewModelDidSelectUser(title: AmityLocalizedStringSet.selectMemberListTitle.localizedString, isEmpty: true)
         } else {
-            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(storeUsers.count)"), isEmpty: false)
+            delegate?.screenViewModelDidSelectUser(title: String.localizedStringWithFormat(AmityLocalizedStringSet.selectMemberListSelectedTitle.localizedString, "\(newSelectedUsers.count)"), isEmpty: false)
         }
     }
     
@@ -143,7 +211,8 @@ extension AmityMemberPickerScreenViewModel {
             success = controller.loadmore(isSearch: isSearch)
         } else {
             guard let controller = fetchUserController else { return }
-            fetchUserController?.storeUsers = storeUsers
+            fetchUserController?.newSelectedUsers = newSelectedUsers
+            fetchUserController?.currentUsers = currentUsers
             success = controller.loadmore(isSearch: isSearch)
         }
         
@@ -152,5 +221,10 @@ extension AmityMemberPickerScreenViewModel {
         } else {
             delegate?.screenViewModelLoadingState(for: .loaded)
         }
+    }
+    
+    func clearData() {
+        searchUsers.removeAll()
+        delegate?.screenViewModelClearData()
     }
 }

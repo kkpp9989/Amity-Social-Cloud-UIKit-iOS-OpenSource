@@ -49,7 +49,8 @@ extension AmityFollowersListScreenViewModel {
 // MARK: - Action
 extension AmityFollowersListScreenViewModel {
     func getFollowsList() {
-        followManager.clearAmityFollowRelationshipLocalData()
+        /* [Fix-defect] Disable clearAmityFollowRelationshipLocalData function for fix case click following list from followed user then back to user profile, follow button will appear.*/
+//        followManager.clearAmityFollowRelationshipLocalData()
         if userId == AmityUIKitManagerInternal.shared.client.currentUserId {
             followersCollection = type == .followers ? followManager.getMyFollowerList(with: .accepted) : followManager.getMyFollowingList(with: .accepted)
         } else {
@@ -142,7 +143,14 @@ private extension AmityFollowersListScreenViewModel {
             var followers: [AmityFollowRelationship] = []
             for i in 0..<collection.count() {
                 guard let follow = collection.object(at: i) else { continue }
-                followers.append(follow)
+                if !(follow.targetUser?.isDeleted ?? false) {
+                    if !(follow.targetUser?.isGlobalBanned ?? false) {
+                        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                        if follow.targetUserId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                            followers.append(follow)
+                        }
+                    }
+                }
             }
             
             followersList = followers

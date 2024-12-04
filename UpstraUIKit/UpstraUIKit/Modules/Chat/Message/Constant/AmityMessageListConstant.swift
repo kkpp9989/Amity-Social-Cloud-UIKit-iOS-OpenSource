@@ -13,8 +13,19 @@ public enum AmityMessageTypes: CaseIterable {
     case textOutgoing
     case imageIncoming
     case imageOutgoing
+    case imageWithCaptionIncoming
+    case imageWithCaptionOutgoing
     case audioIncoming
     case audioOutgoing
+    case videoIncoming
+    case videoOutgoing
+    case fileIncoming
+    case fileOutgoing
+    case replyIncoming
+    case replyOutgoing
+    case operation
+    case locationIncomming
+    case locationOutgoing
     
     var identifier: String {
         switch self {
@@ -22,8 +33,19 @@ public enum AmityMessageTypes: CaseIterable {
         case .textOutgoing: return "textOutgoing"
         case .imageIncoming: return "imageIncoming"
         case .imageOutgoing: return "imageOutgoing"
+        case .imageWithCaptionIncoming: return "imageWithCaptionIncoming"
+        case .imageWithCaptionOutgoing: return "imageWithCaptionOutgoing"
         case .audioIncoming: return "audioIncoming"
         case .audioOutgoing: return "audioOutgoing"
+        case .videoIncoming: return "videoIncoming"
+        case .videoOutgoing: return "videoOutgoing"
+        case .fileIncoming: return "fileIncoming"
+        case .fileOutgoing: return "fileOutgoing"
+        case .replyIncoming: return "replyIncoming"
+        case .replyOutgoing: return "replyOutgoing"
+        case .operation: return "operation"
+        case .locationIncomming: return "locationIncomming"
+        case .locationOutgoing: return "locationOutgoing"
         }
     }
     
@@ -37,10 +59,32 @@ public enum AmityMessageTypes: CaseIterable {
             return UINib(nibName: "AmityMessageImageIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .imageOutgoing:
             return UINib(nibName: "AmityMessageImageOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .imageWithCaptionIncoming:
+            return UINib(nibName: "AmityMessageImageWithCaptionIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .imageWithCaptionOutgoing:
+            return UINib(nibName: "AmityMessageImageWithCaptionOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .audioIncoming:
             return UINib(nibName: "AmityMessageAudioIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
         case .audioOutgoing:
             return UINib(nibName: "AmityMessageAudioOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .videoIncoming:
+            return UINib(nibName: "AmityMessageVideoIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .videoOutgoing:
+            return UINib(nibName: "AmityMessageVideoOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .fileIncoming:
+            return UINib(nibName: "AmityMessageFileIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .fileOutgoing:
+            return UINib(nibName: "AmityMessageFileOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .replyIncoming:
+            return UINib(nibName: "AmityMessageReplyIncomingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .replyOutgoing:
+            return UINib(nibName: "AmityMessageReplyOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .operation:
+            return UINib(nibName: "AmityOperationChatTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .locationIncomming:
+            return UINib(nibName: "AmityLocationIncommingTableViewCell", bundle: AmityUIKitManager.bundle)
+        case .locationOutgoing:
+            return UINib(nibName: "AmityLocationOutgoingTableViewCell", bundle: AmityUIKitManager.bundle)
         }
     }
     
@@ -52,8 +96,28 @@ public enum AmityMessageTypes: CaseIterable {
             return AmityMessageImageIncomingTableViewCell.self
         case .imageOutgoing:
             return AmityMessageImageOutgoingTableViewCell.self
+        case .imageWithCaptionIncoming:
+            return AmityMessageImageWithCaptionIncomingTableViewCell.self
+        case .imageWithCaptionOutgoing:
+            return AmityMessageImageWithCaptionOutgoingTableViewCell.self
         case .audioIncoming, .audioOutgoing:
             return AmityMessageAudioTableViewCell.self
+        case .videoIncoming:
+            return AmityMessageVideoIncomingTableViewCell.self
+        case .videoOutgoing:
+            return AmityMessageVideoOutgoingTableViewCell.self
+        case .fileIncoming:
+            return AmityMessageFileIncomingTableViewCell.self
+        case .fileOutgoing:
+            return AmityMessageFileOutgoingTableViewCell.self
+        case .replyIncoming, .replyOutgoing:
+            return AmityMessageReplyTableViewCell.self
+        case .operation:
+            return AmityOperationChatTableViewCell.self
+        case .locationIncomming:
+            return AmityLocationIncommingTableViewCell.self
+        case .locationOutgoing:
+            return AmityLocationOutgoingTableViewCell.self
         }
     }
     

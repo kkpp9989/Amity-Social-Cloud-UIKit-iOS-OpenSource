@@ -11,29 +11,30 @@ import AmitySDK
  Amity Comment model
  */
 public struct AmityCommentModel {
-    let id: String
-    let displayName: String
-    let fileURL: String
-    let text: String
-    let isDeleted: Bool
-    let isEdited: Bool
-    var createdAt: Date
-    var updatedAt: Date
-    let childrenNumber: Int
-    let childrenComment: [AmityCommentModel]
-    let parentId: String?
-    let userId: String
-    let isAuthorGlobalBanned: Bool
-    private let myReactions: [String]
-    let metadata: [String: Any]?
-    let mentionees: [AmityMentionees]?
-    let reactions: [String: Int]
-    
+    public let id: String
+    public let displayName: String
+    public let fileURL: String
+    public let text: String
+    public let isDeleted: Bool
+    public let isEdited: Bool
+    public var createdAt: Date
+    public var updatedAt: Date
+    public let childrenNumber: Int
+    public let childrenComment: [AmityCommentModel]
+    public let parentId: String?
+    public let userId: String
+    public let isAuthorGlobalBanned: Bool
+    public let myReactions: [String]
+    public let metadata: [String: Any]?
+    public let mentionees: [AmityMentionees]?
+    public let reactions: [String: Int]
+    public var isModerator: Bool = false
+    public let syncState: AmitySyncState
     // Due to AmityChat 4.0.0 requires comment object for editing and deleting
     // So, this is a workaroud for passing the original object.
-    let comment: AmityComment
+    public let comment: AmityComment
     
-    init(comment: AmityComment) {
+    public init(comment: AmityComment) {
         id = comment.commentId
         displayName = comment.user?.displayName ?? AmityLocalizedStringSet.General.anonymous.localizedString
         fileURL = comment.user?.getAvatarInfo()?.fileURL ?? ""
@@ -52,25 +53,34 @@ public struct AmityCommentModel {
         metadata = comment.metadata
         mentionees = comment.mentionees
         reactions = comment.reactions as? [String: Int] ?? [:]
+        syncState = comment.syncState
+        switch comment.target {
+        case .community(_, let communityMember):
+            if let communityMember {
+                isModerator = communityMember.hasModeratorRole
+            }
+        default:
+            break
+        }
     }
     
-    var isChildrenExisted: Bool {
+    public var isChildrenExisted: Bool {
         return comment.childrenNumber > 0
     }
     
-    var reactionsCount: Int {
+    public var reactionsCount: Int {
         return Int(comment.reactionsCount)
     }
     
-    var isLiked: Bool {
+    public var isLiked: Bool {
         return myReactions.contains("like")
     }
     
-    var isOwner: Bool {
+    public var isOwner: Bool {
         return userId == AmityUIKitManagerInternal.shared.client.currentUserId
     }
     
-    var isParent: Bool {
+    public var isParent: Bool {
         return parentId == nil
     }
     

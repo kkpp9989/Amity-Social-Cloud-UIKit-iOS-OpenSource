@@ -18,28 +18,35 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     // MARK: - IBOutlet Properties
     @IBOutlet weak private var avatarView: AmityAvatarView!
     @IBOutlet weak private var displayNameLabel: UILabel!
+    @IBOutlet weak private var titleNameLabel: UILabel!
     @IBOutlet weak private var descriptionLabel: UILabel!
     @IBOutlet weak private var editProfileButton: AmityButton!
     @IBOutlet weak private var messageButton: AmityButton!
-    @IBOutlet weak private var postsButton: AmityButton!
     @IBOutlet weak private var followingButton: AmityButton!
     @IBOutlet weak private var followersButton: AmityButton!
     @IBOutlet weak private var followButton: AmityButton!
+    @IBOutlet weak private var messageFriendButton: AmityButton!
+    @IBOutlet weak private var contactFriendButton: AmityButton!
     @IBOutlet weak private var followRequestsStackView: UIStackView!
     @IBOutlet weak private var followRequestBackgroundView: UIView!
     @IBOutlet weak private var dotView: UIView!
     @IBOutlet weak private var pendingRequestsLabel: UILabel!
     @IBOutlet weak private var followRequestDescriptionLabel: UILabel!
+    @IBOutlet weak private var ktbContainerView: UIView!
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
+    private var isScrollViewReachedLowestPoint: Bool = false
     
+    private var userId: String = ""
+
     // MARK: Initializer
     static func make(withUserId userId: String, settings: AmityUserProfilePageSettings) -> AmityUserProfileHeaderViewController {
         let viewModel = AmityUserProfileHeaderScreenViewModel(userId: userId)
         let vc = AmityUserProfileHeaderViewController(nibName: AmityUserProfileHeaderViewController.identifier, bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.settings = settings
+        vc.userId = userId
         return vc
     }
     
@@ -53,26 +60,41 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         setupEditButton()
         setupChatButton()
         setupViewModel()
-        setupPostsButton()
         setupFollowingButton()
         setupFollowersButton()
         setupFollowButton()
         setupFollowRequestsView()
+        setupMessageButton()
+        setupContactButton()
         
+        /* [Custom for ONE Krungthai] Add viewcontroller to ONEKrungthaiCustomTheme class for set theme */
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
         
         // Set background app for this navigation bar
-        theme?.setBackgroundApp(index: 0)
+        theme?.setBackgroundApp(index: 0, isUserProfile: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        screenViewModel.action.fetchUserData()
-        screenViewModel.action.fetchFollowInfo()
+        /* [Custom for ONE Krungthai] Check view is initialized and is scroll view reached lower point */
+        if isScrollViewReachedLowestPoint { // Case : View is initialized and is scroll view reached lower point
+            theme?.setBackgroundNavigationBar()
+        } else { // Case : View isn't initialize or is scroll view reached topper point
+            theme?.clearNavigationBarSetting()
+        }
         
-        // Clear setting navigation bar (normal) from ONE Krungthai custom theme
-        theme?.clearNavigationBarSetting()
+        /* [Fix-defect] Setup notification center observer if view appear for handle scroll view UI */
+        setupNotificationCenter()
+        
+        handleRefreshing()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        /* [Fix-defect] Delete observer notification center if view diappeared for cancel handle scroll view UI processing */
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Refreshable
@@ -94,6 +116,12 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         displayNameLabel.font = AmityFontSet.headerLine
         displayNameLabel.textColor = AmityColorSet.base
         displayNameLabel.numberOfLines = 3
+        
+        titleNameLabel.text = ""
+        titleNameLabel.font = AmityFontSet.title
+        titleNameLabel.textColor = AmityColorSet.base
+        titleNameLabel.numberOfLines = 1
+        titleNameLabel.isHidden = true
     }
     
     private func setupDescription() {
@@ -109,7 +137,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         editProfileButton.tintColor = AmityColorSet.secondary
         editProfileButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
         editProfileButton.layer.borderWidth = 1
-        editProfileButton.layer.cornerRadius = 6
+        editProfileButton.layer.cornerRadius = editProfileButton.frame.height / 2
         editProfileButton.isHidden = true
         editProfileButton.setTitleFont(AmityFontSet.bodyBold)
     }
@@ -120,7 +148,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         messageButton.tintColor = AmityColorSet.secondary
         messageButton.layer.borderColor = AmityColorSet.secondary.blend(.shade3).cgColor
         messageButton.layer.borderWidth = 1
-        messageButton.layer.cornerRadius = 6
+        messageButton.layer.cornerRadius = messageButton.frame.height / 2
         messageButton.isHidden = settings.shouldChatButtonHide
     }
     
@@ -128,41 +156,42 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         screenViewModel.delegate = self
     }
     
-    private func setupPostsButton() {
-        let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
-        attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
-        postsButton.attributedString = attribute
-        postsButton.isHidden = true
-    }
-    
     private func setupFollowingButton() {
         let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
+        attribute.setBoldFont(for: AmityFontSet.title)
+        attribute.setBoldColor(for: AmityColorSet.secondary)
         attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
+        attribute.setNormalColor(for: UIColor(hex: "#898E9E"))
         followingButton.attributedString = attribute
         followingButton.isHidden = false
-        followingButton.isUserInteractionEnabled = false
-        
+        followingButton.isUserInteractionEnabled = true /* [Custom for ONE Krungthai] Force following/followers button can interaction all scenarioes | Set isUserInteractionEnabled to true */
         followingButton.addTarget(self, action: #selector(followingAction(_:)), for: .touchUpInside)
+        followingButton.titleLabel?.numberOfLines = 0
+        followingButton.titleLabel?.textAlignment = .center
         
-        followingButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowingCount.localizedString, "0"))
+        let title = String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowingCount.localizedString, "0")
+        followingButton.attributedString.setTitle(title)
+//        followingButton.attributedString.setBoldText(for: ["0"])
+//        followingButton.setAttributedTitle()
     }
     
     private func setupFollowersButton() {
         let attribute = AmityAttributedString()
-        attribute.setBoldFont(for: AmityFontSet.captionBold)
+        attribute.setBoldFont(for: AmityFontSet.title)
+        attribute.setBoldColor(for: AmityColorSet.secondary)
         attribute.setNormalFont(for: AmityFontSet.caption)
-        attribute.setColor(for: AmityColorSet.secondary)
+        attribute.setNormalColor(for: UIColor(hex: "#898E9E"))
         followersButton.attributedString = attribute
         followersButton.isHidden = false
-        followersButton.isUserInteractionEnabled = false
-        
+        followersButton.isUserInteractionEnabled = true /* [Custom for ONE Krungthai] Force following/followers button can interaction all scenarioes | Set isUserInteractionEnabled to true */
         followersButton.addTarget(self, action: #selector(followersAction(_:)), for: .touchUpInside)
+        followersButton.titleLabel?.numberOfLines = 0
+        followersButton.titleLabel?.textAlignment = .center
         
-        followersButton.attributedString.setTitle(String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowersCount.localizedString, "0"))
+        let title = String.localizedStringWithFormat(AmityLocalizedStringSet.userDetailFollowersCount.localizedString, "0")
+        followingButton.attributedString.setTitle(title)
+//        followingButton.attributedString.setBoldText(for: ["0"])
+//        followingButton.setAttributedTitle()
     }
     
     private func setupFollowButton() {
@@ -170,7 +199,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         followButton.setTitleFont(AmityFontSet.bodyBold)
         followButton.tintColor = AmityColorSet.baseInverse
         followButton.backgroundColor = AmityColorSet.primary
-        followButton.layer.cornerRadius = 4
+        followButton.layer.cornerRadius = followButton.frame.height / 2
         followButton.setTitle(AmityLocalizedStringSet.userDetailFollowButtonFollow.localizedString, for: .normal)
         followButton.setImage(AmityIconSet.iconAdd, position: .left)
         
@@ -195,26 +224,87 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         followRequestDescriptionLabel.text = AmityLocalizedStringSet.userDetailsPendingRequestsDescription.localizedString
     }
     
+    private func setupMessageButton() {
+        messageFriendButton.isHidden = !AmityUIKitManagerInternal.shared.isEnableMenu
+        messageFriendButton.setImage(AmityIconSet.iconMessageProfile, position: .left)
+        messageFriendButton.setTitle("Message", for: .normal)
+        messageFriendButton.tintColor = AmityColorSet.base
+        messageFriendButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
+        messageFriendButton.layer.borderWidth = 1
+        messageFriendButton.layer.cornerRadius = messageFriendButton.frame.height / 2
+        messageFriendButton.setTitleFont(AmityFontSet.bodyBold)
+    }
+    
+    private func setupContactButton() {
+        contactFriendButton.setImage(AmityIconSet.iconContactProfile, position: .left)
+        contactFriendButton.setTitle("Contact", for: .normal)
+        contactFriendButton.tintColor = AmityColorSet.base
+        contactFriendButton.layer.borderColor = AmityColorSet.base.blend(.shade3).cgColor
+        contactFriendButton.layer.borderWidth = 1
+        contactFriendButton.layer.cornerRadius = messageFriendButton.frame.height / 2
+        contactFriendButton.setTitleFont(AmityFontSet.bodyBold)
+    }
+    
+    private func setupNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedLowestPoint), name: .scrollViewReachedLowestPoint, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleScrollViewReachedTopperPoint), name: .scrollViewReachedTopperPoint, object: nil)
+    }
+    
+    @objc func handleScrollViewReachedLowestPoint() {
+        /* [Original] */
+//        titleNameLabel.isHidden = false
+//
+//        //  Hide all don't to show
+//        avatarView.isHidden = true
+//        displayNameLabel.isHidden = true
+//        descriptionLabel.isHidden = true
+//        followingButton.isHidden = true
+//        followersButton.isHidden = true
+//        followButton.isHidden = true
+        
+        /* [Fix-defect] Set static value for check in viewWillAppear cycle and set navigation bar */
+        if !isScrollViewReachedLowestPoint {
+            theme?.setBackgroundNavigationBar()
+            isScrollViewReachedLowestPoint = true
+        }
+    }
+    
+    @objc func handleScrollViewReachedTopperPoint() {
+        /* [Original] */
+//        titleNameLabel.isHidden = true
+//
+//        //  Show all
+//        avatarView.isHidden = false
+//        displayNameLabel.isHidden = false
+//        descriptionLabel.isHidden = false
+//        followingButton.isHidden = false
+//        followersButton.isHidden = false
+//        followButton.isHidden = false
+        
+        /* [Fix-defect] Set static value for check in viewWillAppear cycle and clear navigation bar setting */
+        if isScrollViewReachedLowestPoint {
+            theme?.clearNavigationBarSetting()
+            isScrollViewReachedLowestPoint = false
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func updateView(with user: AmityUserModel) {
-        avatarView.setImage(withImageURL: user.avatarURL, placeholder: AmityIconSet.defaultAvatar)
+        avatarView.setImage(withImageURL: user.avatarURL, size: .large, placeholder: AmityIconSet.defaultAvatar)
         displayNameLabel.text = user.displayName
+        titleNameLabel.text = user.displayName
         descriptionLabel.text = user.about
         editProfileButton.isHidden = !user.isCurrentUser
-        messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser
+        messageButton.isHidden = settings.shouldChatButtonHide || user.isCurrentUser || user.object.isDeleted
+        ktbContainerView.isHidden = user.isCurrentUser
     }
     
     private func updateFollowInfo(with model: AmityFollowInfo) {
         updateFollowingCount(with: model.followingCount)
         updateFollowerCount(with: model.followerCount)
-    }
-    
-    private func updatePostsCount(with postCount: Int) {
-        let format = postCount == 1 ? AmityLocalizedStringSet.Unit.postSingular.localizedString : AmityLocalizedStringSet.Unit.postPlural.localizedString
-        let value = postCount.formatUsingAbbrevation()
-        let string = String.localizedStringWithFormat(format, value)
-        postsButton.attributedString.setTitle(string)
-        postsButton.attributedString.setBoldText(for: [value])
-        postsButton.setAttributedTitle()
     }
     
     private func updateFollowingCount(with followingCount: Int) {
@@ -238,7 +328,7 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         case .accepted:
             followButton.isHidden = true
         case .pending:
-            followButton.isHidden = false
+            followButton.isHidden = true
             followButton.setTitle(AmityLocalizedStringSet.userDetailFollowButtonCancel.localizedString, for: .normal)
             followButton.setImage(AmityIconSet.Follow.iconFollowPendingRequest, position: .left)
             followButton.backgroundColor = .white
@@ -284,9 +374,6 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
         }
     }
     
-    @objc func postsAction(_ sender: UIButton) {
-    }
-    
     @objc func followingAction(_ sender: UIButton) {
         handleTapAction(isFollowersSelected: false)
     }
@@ -298,6 +385,16 @@ class AmityUserProfileHeaderViewController: AmityViewController, AmityRefreshabl
     @IBAction func followRequestsAction(_ sender: UIButton) {
         let requestsViewController = AmityFollowRequestsViewController.make(withUserId: screenViewModel.dataSource.userId)
         navigationController?.pushViewController(requestsViewController, animated: true)
+    }
+    
+    @IBAction func messageFriendAction(_ sender: UIButton) {
+        AmityEventHandler.shared.showKTBLoading()
+        screenViewModel.action.createChannel()
+    }
+    
+    @IBAction func contachFriendAction(_ sender: UIButton) {
+        let userId = userId.replacingOccurrences(of: "1001", with: "")
+        AmityEventHandler.shared.openKTBContact(from: self, id: userId)
     }
 }
 
@@ -327,18 +424,20 @@ extension AmityUserProfileHeaderViewController : AmityUserProfileHeaderScreenVie
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didGetFollowInfo followInfo: AmityFollowInfo) {
         updateFollowInfo(with: followInfo)
+        /* [Custom for ONE Krungthai] Force following/followers button can interaction all scenarioes | Comment isUserInteractionEnabled code */
         if let pendingCount = screenViewModel.dataSource.followInfo?.pendingCount {
             updateFollowRequestsView(with: pendingCount)
-            followersButton.isUserInteractionEnabled = true
-            followingButton.isUserInteractionEnabled = true
+//            followersButton.isUserInteractionEnabled = true
+//            followingButton.isUserInteractionEnabled = true
         } else if let status = screenViewModel.dataSource.followInfo?.status {
             updateFollowButton(with: status)
-            followersButton.isUserInteractionEnabled = status == .accepted
-            followingButton.isUserInteractionEnabled = status == .accepted
+//            followersButton.isUserInteractionEnabled = status == .accepted
+//            followingButton.isUserInteractionEnabled = status == .accepted
         }
     }
     
     func screenViewModel(_ viewModel: AmityUserProfileHeaderScreenViewModelType, didCreateChannel channel: AmityChannel) {
+        AmityEventHandler.shared.hideKTBLoading()
         AmityChannelEventHandler.shared.channelDidTap(from: self, channelId: channel.channelId, subChannelId: channel.defaultSubChannelId)
     }
     

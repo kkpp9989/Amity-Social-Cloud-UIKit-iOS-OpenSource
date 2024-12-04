@@ -26,7 +26,13 @@ public final class AmityMessageModel {
     public var data: [AnyHashable : Any]?
     public var tags: [String]
     public var channelSegment: UInt
-    
+	public let metadata: [String: Any]?
+	public let mentionees: [AmityMentionees]?
+    public let parentId: String?
+    public var parentMessageObjc: AmityMessage?
+    public var readCount: Int?
+    public var isFlaggedByMe: Bool = false
+	
     /**
      * The post appearance settings
      */
@@ -35,6 +41,9 @@ public final class AmityMessageModel {
     public var isOwner: Bool {
         return userId == AmityUIKitManagerInternal.shared.client.currentUserId
     }
+    
+    private let messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
+    private var messageToken: AmityNotificationToken?
     
     public init(object: AmityMessage) {
         self.object = object
@@ -46,17 +55,34 @@ public final class AmityMessageModel {
         self.isEdited = object.isEdited
         self.messageType = object.messageType
         self.createdAtDate = object.createdAt
-        self.date = AmityDateFormatter.Message.getDate(date: self.isEdited ? object.editedAt : object.createdAt)
-        self.time = AmityDateFormatter.Message.getTime(date: self.isEdited ? object.editedAt : object.createdAt)
+        self.date = AmityDateFormatter.Message.getDate(date: object.createdAt)
+        self.time = AmityDateFormatter.Message.getTime(date: object.createdAt)
         self.flagCount = UInt(object.flagCount)
         self.data = object.data
         self.tags = object.tags
         self.channelSegment = UInt(object.channelSegment)
         self.appearance = AmityMessageModelAppearance()
+		self.metadata = object.metadata
+		self.mentionees = object.mentionees
+        self.parentId = object.parentId
+        self.readCount = object.readCount
+        self.getParentMessage { result in
+            self.parentMessageObjc = result
+            self.messageToken?.invalidate()
+        }
+        self.getFlaggedData()
     }
     
     public var text: String? {
         return data?["text"] as? String
+    }
+    
+    public var imageCaption: String? {
+        if let caption = data?["caption"] as? String, caption != "" {
+            return caption
+        } else {
+            return nil
+        }
     }
 }
 
@@ -98,9 +124,60 @@ extension AmityMessageModel: Hashable {
         hasher.combine(text)
         hasher.combine(tags)
         hasher.combine(channelSegment)
+        hasher.combine(readCount)
         if let dataDesc = data?.description {
             hasher.combine(dataDesc)
         }
     }
     
+}
+
+extension AmityMessageModel {
+    private func getParentMessage(completion: @escaping (AmityMessage?) -> Void) {
+        if let cachedMessage = MessageCacheManager.shared.getMessageFromCache(parentId ?? "") {
+            // If the message is cached, use it directly
+            completion(cachedMessage)
+        } else {
+            // If not cached, fetch it from the repository
+            guard let parentId = parentId else {
+                completion(nil)
+                return
+            }
+            messageToken = messageRepository.getMessage(parentId).observeOnce { (message, error) in
+                if let message = message.snapshot {
+                    // Cache the fetched message
+                    MessageCacheManager.shared.cacheMessage(parentId, message: message)
+                    completion(message)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+    }
+    
+    private func getFlaggedData() {
+        Task { @MainActor in
+            do {
+                let isFlaggedByMe = try await messageRepository.isMessageFlaggedByMe(withId: self.messageId)
+                self.isFlaggedByMe = isFlaggedByMe
+            } catch {
+                self.isFlaggedByMe = false
+            }
+        }
+    }
+}
+
+// Create a simple cache manager
+class MessageCacheManager {
+    static let shared = MessageCacheManager()
+    
+    private var messageCache: [String: AmityMessage] = [:]
+    
+    func cacheMessage(_ messageId: String, message: AmityMessage) {
+        messageCache[messageId] = message
+    }
+    
+    func getMessageFromCache(_ messageId: String) -> AmityMessage? {
+        return messageCache[messageId]
+    }
 }

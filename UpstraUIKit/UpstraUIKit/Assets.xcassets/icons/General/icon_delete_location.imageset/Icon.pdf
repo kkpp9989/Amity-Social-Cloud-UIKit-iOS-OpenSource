@@ -1,0 +1,132 @@
+%PDF-1.7
+
+1 0 obj
+  << /Length 2 0 R >>
+stream
+0.625000 0 -0.003906 0.058594 0.626953 0.626953 d1
+
+endstream
+endobj
+
+2 0 obj
+  51
+endobj
+
+3 0 obj
+  [ 0.625000 ]
+endobj
+
+4 0 obj
+  << /Length 5 0 R >>
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+/CIDSystemInfo
+<< /Registry (FigmaPDF)
+   /Ordering (FigmaPDF)
+   /Supplement 0
+>> def
+/CMapName /A-B-C def
+/CMapType 2 def
+1 begincodespacerange
+<00> <FF>
+endcodespacerange
+1 beginbfchar
+<00> <00740069006D00650073>
+endbfchar
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+endstream
+endobj
+
+5 0 obj
+  348
+endobj
+
+6 0 obj
+  << /Subtype /Type3
+     /CharProcs << /C0 1 0 R >>
+     /Encoding << /Type /Encoding
+                  /Differences [ 0 /C0 ]
+               >>
+     /Widths 3 0 R
+     /FontBBox [ 0.000000 0.000000 0.000000 0.000000 ]
+     /FontMatrix [ 1.000000 0.000000 0.000000 1.000000 0.000000 0.000000 ]
+     /Type /Font
+     /ToUnicode 4 0 R
+     /FirstChar 0
+     /LastChar 0
+     /Resources << >>
+  >>
+endobj
+
+7 0 obj
+  << /Font << /F1 6 0 R >> >>
+endobj
+
+8 0 obj
+  << /Filter /FlateDecode
+     /Length 9 0 R
+  >>
+stream
+x¥S»NÄ0ì÷+\Bq>û;IËS¢Ò•u§Cºœ„Nâûoì]#J¶Éd¼3ûp²½Û¦ıËã¹}¥­¾¥}‘·Ã¸
+6‚şvrqœI	élp~Š`è½¢¹¤3…z¼éªh¡#yoû8xÛY7u,ä{;öŒ7ŞîFŸ“OäaÑ1[D¿8N§jxr˜”=¹*³§fÏÎfŸ•ŠggCñl¹N<‹íÌkó'Š–Ë´™™d5“Å2Öy•
+u3 Š4aq¬R<ğë-kAÊØ-U¶£RYc¢×“C~Ò¡öÙ”u †‘†‹.Zrüq¸kz¿”TP
+5LV1àÜì¥Æğ1Ìô.$“Érib*7	¤”|"Eù^d
+øÉ‡…yÖa[*gA¬RYüdÿÍ†t 3=ÿë»™Éc“š!@ÏĞ(Gó¯Ím¼˜ôf®Ş¯Í‡™Ÿè~Fw?œÂÌø
+endstream
+endobj
+
+9 0 obj
+  366
+endobj
+
+10 0 obj
+  << /Annots []
+     /Type /Page
+     /MediaBox [ 0.000000 0.000000 20.000000 20.000000 ]
+     /Resources 7 0 R
+     /Contents 8 0 R
+     /Parent 11 0 R
+  >>
+endobj
+
+11 0 obj
+  << /Kids [ 10 0 R ]
+     /Count 1
+     /Type /Pages
+  >>
+endobj
+
+12 0 obj
+  << /Pages 11 0 R
+     /Type /Catalog
+  >>
+endobj
+
+xref
+0 13
+0000000000 65535 f
+0000000010 00000 n
+0000000117 00000 n
+0000000138 00000 n
+0000000169 00000 n
+0000000573 00000 n
+0000000595 00000 n
+0000001007 00000 n
+0000001053 00000 n
+0000001503 00000 n
+0000001525 00000 n
+0000001700 00000 n
+0000001776 00000 n
+trailer
+<< /ID [ (some) (id) ]
+   /Root 12 0 R
+   /Size 13
+>>
+startxref
+1837
+%%EOF

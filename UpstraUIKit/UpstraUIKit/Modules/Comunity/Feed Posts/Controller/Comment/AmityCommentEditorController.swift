@@ -11,7 +11,7 @@ import AmitySDK
 
 protocol AmityCommentEditorControllerProtocol {
     func delete(withCommentId commentId: String, completion: AmityRequestCompletion?)
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, completion: AmityRequestCompletion?)
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: AmityRequestCompletion?)
 }
 
 final class AmityCommentEditorController: AmityCommentEditorControllerProtocol {
@@ -23,10 +23,42 @@ final class AmityCommentEditorController: AmityCommentEditorControllerProtocol {
         commentRepository?.deleteComment(withId: commentId, hardDelete: false, completion: completion)
     }
         
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, completion: AmityRequestCompletion?) {
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: AmityRequestCompletion?) {
         commentRepository = AmityCommentRepository(client: AmityUIKitManagerInternal.shared.client)
-        let options = AmityCommentUpdateOptions(text: text, metadata: metadata, mentioneesBuilder: mentionees)
+        // [URL Preview] Add get URL metadata for cache in comment metadata to show URL preview
+        var updatedMetadata = metadata ?? [:]
+        if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
+            // Get URL metadata
+            Task { @MainActor in
+                var updatedMetadata = metadata ?? [:]
+                if let newURLMetadata = await AmityPreviewLinkWizard.shared.getMetadata(url: urlData) {
+                    updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                    updatedMetadata["url_preview_cache_url"] = urlData.absoluteString
+                    updatedMetadata["is_show_url_preview"] = true
+                } else {
+                    updatedMetadata["url_preview_cache_title"] = ""
+                    updatedMetadata["url_preview_cache_url"] = ""
+                    updatedMetadata["is_show_url_preview"] = false
+                }
+                doEdit(withComment: comment, text: text, metadata: updatedMetadata, mentionees: mentionees, medias: medias, completion: completion)
+            }
+        } else {
+            var updatedMetadata = metadata ?? [:]
+            updatedMetadata["url_preview_cache_title"] = ""
+            updatedMetadata["url_preview_cache_url"] = ""
+            updatedMetadata["is_show_url_preview"] = false
+            doEdit(withComment: comment, text: text, metadata: updatedMetadata, mentionees: mentionees, medias: medias, completion: completion)
+        }
+    }
+    
+    private func doEdit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia], completion: AmityRequestCompletion?) {
+//        print("[Comment][Update] text: \(text) | comment metadata: \(metadata)")
         
+        let imagesData = getImagesData(from: medias)
+        let fileData: [AmityCommentAttachment]? = imagesData.map { AmityCommentAttachment.image(fileId: $0) }
+        
+        let options = AmityCommentUpdateOptions(text: text, attachments: fileData, metadata: metadata, mentioneesBuilder: mentionees)
+
         // Map completion to AmityCommentRequestCompletion
         let mappedCompletion: (AmityComment?, Error?) -> Void = { comment, error in
             if let error {
@@ -37,5 +69,19 @@ final class AmityCommentEditorController: AmityCommentEditorControllerProtocol {
         }
         
         commentRepository?.updateComment(withId: comment.id, options: options, completion: mappedCompletion)
+    }
+    
+    private func getImagesData(from medias: [AmityMedia]) -> [String] {
+        var imagesData: [AmityImageData] = []
+        for media in medias {
+            switch media.state {
+            case .uploadedImage(let imageData), .downloadableImage(let imageData, _):
+                imagesData.append(imageData)
+            default:
+                continue
+            }
+        }
+        let fileId = imagesData.map{ $0.fileId }
+        return fileId
     }
 }

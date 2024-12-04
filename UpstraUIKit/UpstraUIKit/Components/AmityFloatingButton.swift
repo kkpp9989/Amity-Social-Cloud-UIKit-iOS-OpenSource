@@ -15,7 +15,7 @@ final class AmityFloatingButton: UIButton {
     }
     
     var actionHandler: ((AmityFloatingButton) -> Void)?
-    var size: CGSize = CGSize(width: 64, height: 64)
+    var size: CGSize = CGSize(width: 56, height: 56)
     var image: UIImage? {
         didSet {
             setImage(image, for: .normal)

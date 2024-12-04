@@ -7,22 +7,32 @@
 //
 
 import Foundation
+import UIKit
+
 enum AmityPostFooterProtocolHandlerAction {
     case tapLike
+    case tapHoldLike
     case tapComment
     case tapReactionDetails
+    case tapShare
 }
 protocol AmityPostFooterProtocolHandlerDelegate: AnyObject {
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel)
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView)
 }
 
 final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
+    
     weak var delegate: AmityPostFooterProtocolHandlerDelegate?
     
     private weak var viewController: AmityViewController?
     
     init(viewController: AmityViewController) {
         self.viewController = viewController
+    }
+    
+    func didPerformView(_ cell: AmityPostFooterProtocol, view: UIView) {
+        delegate?.footerProtocolHandlerDidPerformView(self, view: view)
     }
     
     func didPerformAction(_ cell: AmityPostFooterProtocol, action: AmityPostFooterAction) {
@@ -36,52 +46,61 @@ final class AmityPostFooterProtocolHandler: AmityPostFooterDelegate {
             delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapComment, withPost: post)
         case .tapShare:
             handleShareOption(post: post)
+        case .tapHoldLike:
+            delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapHoldLike, withPost: post)
         }
     }
     
+    /* [Custom for ONE Krungthai][Share Post By URL] Create new function for open default share view of iOS refer to user story */
     private func handleShareOption(post: AmityPostModel) {
         guard let viewController = viewController else { return }
-        let bottomSheet = BottomSheetViewController()
-        
-        let shareToTimeline = TextItemOption(title: AmityLocalizedStringSet.SharingType.shareToMyTimeline.localizedString)
-        let shareToGroup = TextItemOption(title: AmityLocalizedStringSet.SharingType.shareToGroup.localizedString)
-        let moreOptions = TextItemOption(title: AmityLocalizedStringSet.SharingType.moreOptions.localizedString)
-        
-        var items = [TextItemOption]()
-        
-        if AmityPostSharePermission.canShareToMyTimeline(post: post) {
-            items.append(shareToTimeline)
-        }
-        
-        if AmityPostSharePermission.canSharePostToGroup(post: post) {
-            items.append(shareToGroup)
-        }
-        
-        if AmityPostSharePermission.canSharePostToExternal(post: post) {
-            items.append(moreOptions)
-        }
-        
-        if items.isEmpty { return }
-        
-        let contentView = ItemOptionView<TextItemOption>()
-        contentView.configure(items: items, selectedItem: nil)
-        contentView.didSelectItem = { [weak bottomSheet] action in
-            bottomSheet?.dismissBottomSheet {
-                switch action {
-                case shareToTimeline:
-                    AmityFeedEventHandler.shared.sharePostToMyTimelineDidTap(from: viewController, postId: post.postId)
-                case shareToGroup:
-                    AmityFeedEventHandler.shared.sharePostToGroupDidTap(from: viewController, postId: post.postId)
-                case moreOptions:
-                    AmityFeedEventHandler.shared.sharePostDidTap(from: viewController, postId: post.postId)
-                default: break
-                }
-            }
-        }
-        
-        bottomSheet.sheetContentView = contentView
-        bottomSheet.isTitleHidden = true
-        bottomSheet.modalPresentationStyle = .overFullScreen
-        viewController.present(bottomSheet, animated: false, completion: nil)
+        delegate?.footerProtocolHandlerDidPerformAction(self, action: .tapShare, withPost: post)
     }
+    
+    // [Original]
+//    private func handleShareOption(post: AmityPostModel) {
+//        guard let viewController = viewController else { return }
+//        let bottomSheet = BottomSheetViewController()
+//
+//        let shareToTimeline = TextItemOption(title: AmityLocalizedStringSet.SharingType.shareToMyTimeline.localizedString)
+//        let shareToGroup = TextItemOption(title: AmityLocalizedStringSet.SharingType.shareToGroup.localizedString)
+//        let moreOptions = TextItemOption(title: AmityLocalizedStringSet.SharingType.moreOptions.localizedString)
+//
+//        var items = [TextItemOption]()
+//
+//        if AmityPostSharePermission.canShareToMyTimeline(post: post) {
+//            items.append(shareToTimeline)
+//        }
+//
+//        if AmityPostSharePermission.canSharePostToGroup(post: post) {
+//            items.append(shareToGroup)
+//        }
+//
+//        if AmityPostSharePermission.canSharePostToExternal(post: post) {
+//            items.append(moreOptions)
+//        }
+//
+//        if items.isEmpty { return }
+//
+//        let contentView = ItemOptionView<TextItemOption>()
+//        contentView.configure(items: items, selectedItem: nil)
+//        contentView.didSelectItem = { [weak bottomSheet] action in
+//            bottomSheet?.dismissBottomSheet {
+//                switch action {
+//                case shareToTimeline:
+//                    AmityFeedEventHandler.shared.sharePostToMyTimelineDidTap(from: viewController, postId: post.postId)
+//                case shareToGroup:
+//                    AmityFeedEventHandler.shared.sharePostToGroupDidTap(from: viewController, postId: post.postId)
+//                case moreOptions:
+//                    AmityFeedEventHandler.shared.sharePostDidTap(from: viewController, postId: post.postId)
+//                default: break
+//                }
+//            }
+//        }
+//
+//        bottomSheet.sheetContentView = contentView
+//        bottomSheet.isTitleHidden = true
+//        bottomSheet.modalPresentationStyle = .overFullScreen
+//        viewController.present(bottomSheet, animated: false, completion: nil)
+//    }
 }

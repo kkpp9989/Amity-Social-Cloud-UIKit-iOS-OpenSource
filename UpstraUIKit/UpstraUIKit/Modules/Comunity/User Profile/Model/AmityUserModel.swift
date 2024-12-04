@@ -15,6 +15,7 @@ struct AmityUserModel {
     let avatarURL: String
     let about: String
     let isGlobalBan: Bool
+    let object: AmityUser
     
     init(user: AmityUser) {
         userId = user.userId
@@ -22,6 +23,7 @@ struct AmityUserModel {
         avatarURL = user.getAvatarInfo()?.fileURL ?? ""
         about = user.userDescription
         isGlobalBan = user.isGlobalBanned
+        object = user
     }
     
     var isCurrentUser: Bool {

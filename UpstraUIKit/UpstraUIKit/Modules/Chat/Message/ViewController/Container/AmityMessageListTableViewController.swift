@@ -13,6 +13,10 @@ final class AmityMessageListTableViewController: UITableViewController {
     
     // MARK: - Properties
     private var screenViewModel: AmityMessageListScreenViewModelType!
+    private var expandedMessageIdList: [String] = []
+    var shouldShowSettingButtonAndSendMessageView: Bool = false
+    
+    var oldIndexPath: IndexPath?
     
     // MARK: - View lifecycle
     private convenience init(viewModel: AmityMessageListScreenViewModelType) {
@@ -39,20 +43,37 @@ final class AmityMessageListTableViewController: UITableViewController {
     
 }
 
+extension AmityMessageListTableViewController: AmityMessageAudioTableViewCellDelegate {
+    
+    func reloadDataAudioCell(indexPath: IndexPath) {
+        if oldIndexPath == nil {
+            oldIndexPath = indexPath
+        } else {
+            tableView.reloadRows(at: [oldIndexPath ?? IndexPath()], with: .none)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.oldIndexPath = indexPath
+            }
+        }
+    }
+    
+}
+
 // MARK: - Setup View
 extension AmityMessageListTableViewController {
     func setupView() {
-        tableView.separatorInset.left = UIScreen.main.bounds.width
+        /* [Custom for ONE Krungthai] Delete separator line refer to ONE KTB figma */
+//        tableView.separatorInset.left = UIScreen.main.bounds.width // [Original]
+        tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         tableView.keyboardDismissMode = .onDrag
         tableView.estimatedRowHeight = 0
-        tableView.backgroundColor = AmityColorSet.backgroundColor
+        tableView.backgroundColor = AmityColorSet.chatBackgroundColor
         screenViewModel.dataSource.allCellNibs.forEach {
             tableView.register($0.value, forCellReuseIdentifier: $0.key)
         }
         tableView.dataSource = self
         tableView.delegate = self
-        
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
 }
 
@@ -95,7 +116,9 @@ extension AmityMessageListTableViewController {
             //
             // User is at the bottom-most page. So we just scroll to the bottom when new message appears.
             Log.add("Scrolling tableview to show latest message")
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            if indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section) {
+                tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            }
         } else {
             // State 3:
             //
@@ -104,16 +127,44 @@ extension AmityMessageListTableViewController {
         
     }
     
+    func updateEditMode(isEdit: Bool, indexPath: IndexPath? = nil) {
+        if !isEdit { // Clear current selected row if set editing to false before
+            clearSelectedRow()
+        }
+        
+        // Enable | Disable edit mode for the table view
+        tableView.setEditing(isEdit, animated: true)
+        
+        if let selectedIndexPath = indexPath, isEdit { // Add this message to forward list at first if set editing to true after
+            // Get message
+            guard let message = screenViewModel.dataSource.message(at: selectedIndexPath) else { return }
+            if message.messageType == .custom { return }
+            // Add message to forward message in list
+            screenViewModel.action.updateForwardMessageInList(with: message)
+            // Select this message row at first
+            tableView.selectRow(at: selectedIndexPath, animated: true, scrollPosition: .none)
+        }
+    }
+    
+    private func clearSelectedRow() {
+        guard let selectedRows = tableView.indexPathsForSelectedRows else { return }
+        for indexPath in selectedRows { tableView.deselectRow(at: indexPath, animated: true) }
+    }
 }
 
 // MARK: - Delegate
 extension AmityMessageListTableViewController {
+    
     override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         screenViewModel.action.loadMoreScrollUp(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let message = screenViewModel.dataSource.message(at: indexPath) else { return 0 }
+        
+        if expandedMessageIdList.contains(where: { $0 == message.messageId }) {
+            message.appearance.isExpanding = true
+        }
         
         return cellType(for: message)?
             .height(for: message, boundingWidth: tableView.bounds.width) ?? 0.0
@@ -130,6 +181,19 @@ extension AmityMessageListTableViewController {
         return dateView
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.updateForwardMessageInList(with: message)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+            screenViewModel.action.updateForwardMessageInList(with: message)
+        }
+    }
 }
 
 // MARK: - DataSource
@@ -147,10 +211,63 @@ extension AmityMessageListTableViewController {
             let cellIdentifier = cellIdentifier(for: message) else {
                 return UITableViewCell()
         }
+        if message.messageType == .audio {
+            if message.isOwner {
+                let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioOutgoing.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                if let channel = screenViewModel.dataSource.getChannelModel() {
+                    cell.setChannel(with: channel)
+                }
+                cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
+                cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
+                cell.setViewModel(with: screenViewModel)
+                let channelType = screenViewModel.dataSource.getChannelType()
+                cell.setChannelType(channelType: channelType)
+                cell.delegate = self
+                cell.delegateCell = self
+                cell.celliIndexPath = indexPath
+                cell.display(message: message)
+                return cell
+            } else {
+                let cell:AmityMessageAudioTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityMessageTypes.audioIncoming.identifier, for: indexPath) as! AmityMessageAudioTableViewCell
+                if let channel = screenViewModel.dataSource.getChannelModel() {
+                    cell.setChannel(with: channel)
+                }
+                cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
+                cell.tableBoundingWidth = tableView.bounds.width
+                cell.setIndexPath(with: indexPath)
+                cell.setViewModel(with: screenViewModel)
+                let channelType = screenViewModel.dataSource.getChannelType()
+                cell.setChannelType(channelType: channelType)
+                cell.delegate = self
+                cell.delegateCell = self
+                cell.celliIndexPath = indexPath
+                cell.display(message: message)
+                return cell
+            }
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+            (cell as? AmityMessageCellProtocol)?.tableBoundingWidth = tableView.bounds.width
+            configure(for: cell, at: indexPath)
+            return cell
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
+        let isForwardMessageSelected = screenViewModel.dataSource.isMessageInForwardMessageList(messageId: message.messageId)
+        if !cell.isSelected && isForwardMessageSelected { // Select row again if tableview cell selected status is false but is forward message selected in list
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard let message = screenViewModel.dataSource.message(at: indexPath) else { return false }
+        if message.messageType == .custom || message.isDeleted{
+            return false
+        }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        configure(for: cell, at: indexPath)
-        return cell
+        return true
     }
 }
 
@@ -172,10 +289,15 @@ extension AmityMessageListTableViewController: AmityMessageCellDelegate {
                 DispatchQueue.main.async { [weak self] in
                     self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                 }
+                expandedMessageIdList.append(message.messageId)
             }
         case .didCollapseExpandableLabel:
             message.appearance.isExpanding = false
             tableView.endUpdates()
+		case .didTapOnMention(_, let userId):
+			screenViewModel.action.tapOnMention(withUserId: userId)
+        case .didTapOnPostIdLink(label: let label, postId: let postId):
+            screenViewModel.action.tapOnPostIdLink(withPostId: postId)
         }
     }
     
@@ -206,25 +328,52 @@ extension AmityMessageListTableViewController {
             cell.delegate = self
             cell.setViewModel(with: screenViewModel)
             cell.setIndexPath(with: indexPath)
+            cell.shouldShowTypingTab = shouldShowSettingButtonAndSendMessageView
         }
-        
+        if expandedMessageIdList.contains(where: { $0 == message.messageId } ) {
+            message.appearance.isExpanding = true
+        }
+        let channelType = screenViewModel.dataSource.getChannelType()
+        (cell as? AmityMessageCellProtocol)?.setChannelType(channelType: channelType)
+        if let channel = screenViewModel.dataSource.getChannelModel() {
+            (cell as? AmityMessageCellProtocol)?.setChannel(with: channel)
+        }
         (cell as? AmityMessageCellProtocol)?.display(message: message)
     }
     
     private func cellIdentifier(for message: AmityMessageModel) -> String? {
-        switch message.messageType {
-        case .text:
-            return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
-        case .image :
-            return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
-        case .audio:
-            return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
-        case .custom:
-            fallthrough
-        default:
-            return nil
+        if message.parentId == nil {
+            switch message.messageType {
+            case .text:
+                return message.isOwner ? AmityMessageTypes.textOutgoing.identifier : AmityMessageTypes.textIncoming.identifier
+            case .image :
+                if screenViewModel.dataSource.getChannelType() == .broadcast {
+                    return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                } else {
+                    if !(message.text?.isEmpty ?? false) {
+                        return message.isOwner ? AmityMessageTypes.imageWithCaptionOutgoing.identifier : AmityMessageTypes.imageWithCaptionIncoming.identifier
+                    } else {
+                        return message.isOwner ? AmityMessageTypes.imageOutgoing.identifier : AmityMessageTypes.imageIncoming.identifier
+                    }
+                }
+            case .audio:
+                return message.isOwner ? AmityMessageTypes.audioOutgoing.identifier : AmityMessageTypes.audioIncoming.identifier
+            case .video:
+                return message.isOwner ? AmityMessageTypes.videoOutgoing.identifier : AmityMessageTypes.videoIncoming.identifier
+            case .file:
+                return message.isOwner ? AmityMessageTypes.fileOutgoing.identifier : AmityMessageTypes.fileIncoming.identifier
+            case .custom:
+                if message.metadata?["location"] != nil || message.data?["location"] != nil {
+                    return message.isOwner ? AmityMessageTypes.locationOutgoing.identifier : AmityMessageTypes.locationIncomming.identifier
+                } else {
+                    return AmityMessageTypes.operation.identifier
+                }
+            default:
+                return nil
+            }
+        } else {
+            return message.isOwner ? AmityMessageTypes.replyOutgoing.identifier : AmityMessageTypes.replyIncoming.identifier
         }
-
     }
     
     private func cellType(for message: AmityMessageModel) -> AmityMessageCellProtocol.Type? {

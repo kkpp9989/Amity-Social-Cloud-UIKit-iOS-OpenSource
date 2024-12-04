@@ -23,6 +23,7 @@ final class AmityChannelMemberScreenViewModel: AmityChannelMemberScreenViewModel
     private let addMemberController: AmityChannelAddMemberControllerProtocol
     private let roleController: AmityChannelRoleControllerProtocol
     private var searchUserController: AmitySearchUserController?
+    private var customMessageController: AmityCustomMessageController
     
     // MARK: - Properties
     private var members: [AmityChannelMembershipModel] = []
@@ -43,6 +44,7 @@ final class AmityChannelMemberScreenViewModel: AmityChannelMemberScreenViewModel
         self.addMemberController = addMemberController
         self.roleController = roleController
         self.searchUserController = AmitySearchUserController(repository: userRepository)
+        customMessageController = AmityCustomMessageController(channelId: channel.channelId)
     }
     
 }
@@ -123,7 +125,7 @@ extension AmityChannelMemberScreenViewModel {
 /// Add user
 extension AmityChannelMemberScreenViewModel {
     func addUser(users: [AmitySelectMemberModel]) {
-        addMemberController.add(currentUsers: members, newUsers: users, { [weak self] (amityError, controllerError) in
+        addMemberController.add(currentUsers: members, newUsers: users, { [weak self] (amityError, controllerError, addedUser, removedUser) in
             guard let strongSelf = self else { return }
             if let error = amityError {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: error)
@@ -134,18 +136,68 @@ extension AmityChannelMemberScreenViewModel {
                         strongSelf.delegate?.screenViewModel(strongSelf, failure: error)
                     } else {
                         strongSelf.delegate?.screenViewModelDidAddMemberSuccess()
+                        // Send custom message with remove user scenario
+                        if let addedUser = addedUser {
+                            strongSelf.sendOperationMessage(users: addedUser, event: .addMember)
+                        }
                     }
                 case .removeMemberFailure(let error):
                     if let error = error {
                         strongSelf.delegate?.screenViewModel(strongSelf, failure: error)
                     } else {
                         strongSelf.delegate?.screenViewModelDidAddMemberSuccess()
+                        // Send custom message with add user scenario
+                        if let removedUser = removedUser {
+                            strongSelf.sendOperationMessage(users: removedUser, event: .removeMember)
+                        }
                     }
                 }
             } else {
                 self?.delegate?.screenViewModelDidAddMemberSuccess()
+                // Send custom message with add user scenario
+                if let addedUser = addedUser {
+                    strongSelf.sendOperationMessage(users: addedUser, event: .addMember)
+                }
+                // Send custom message with remove user scenario
+                if let removedUser = removedUser {
+                    strongSelf.sendOperationMessage(users: removedUser, event: .removeMember)
+                }
             }
         })
+    }
+    
+    private func sendOperationMessage(users: [String], event: AmityGroupChatEvent) {
+        let currentUserName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+        switch event {
+        case .addMember:
+            for user in users {
+                customMessageController.send(event: .addMember, subjectUserName: currentUserName, objectUserName: user) { result in
+                    switch result {
+                    case .success(_):
+//                        print(#"[Custom message] send message success : "\#(currentUserName) invited \#(user) to joined this chat"#)
+                        break
+                    case .failure(_):
+//                        print(#"[Custom message] send message fail : "\#(currentUserName) invited \#(user) to joined this chat"#)
+                        break
+                    }
+                }
+            }
+        case .removeMember:
+            for user in users {
+                customMessageController.send(event: .removeMember, subjectUserName: currentUserName, objectUserName: user) { result in
+                    switch result {
+                    case .success(_):
+//                        print(#"[Custom message] send message success : "\#(currentUserName) removed \#(user) from this chat"#)
+                        break
+                    case .failure(_):
+//                        print(#"[Custom message] send message fail : "\#(currentUserName) removed \#(user) to joined this chat"#)
+                        break
+                    }
+                }
+            }
+        default:
+            break
+        }
     }
 }
 
@@ -182,6 +234,8 @@ extension AmityChannelMemberScreenViewModel {
 /// Remove user
 extension AmityChannelMemberScreenViewModel {
     func removeUser(at indexPath: IndexPath) {
+        // Get removed user display name before delete
+        let objectDisplayName = member(at: indexPath).displayName
         // remove user role and remove user from channel
         removeRole(at: indexPath)
         removeMemberController.remove(users: members, at: indexPath) { [weak self] (error) in
@@ -190,6 +244,19 @@ extension AmityChannelMemberScreenViewModel {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: error)
             } else {
                 strongSelf.delegate?.screenViewModelDidRemoveMemberSuccess()
+                
+                // Send custom message with remove user scenario
+                let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+                strongSelf.customMessageController.send(event: .removeMember, subjectUserName: subjectDisplayName, objectUserName: objectDisplayName) { result in
+                    switch result {
+                    case .success(_):
+//                        print(#"[Custom message] send message success : "\#(subjectDisplayName) removed \#(objectDisplayName) from this chat"#)
+                        break
+                    case .failure(_):
+//                        print(#"[Custom message] send message fail : "\#(subjectDisplayName) removed \#(objectDisplayName) to joined this chat"#)
+                        break
+                    }
+                }
             }
         }
     }

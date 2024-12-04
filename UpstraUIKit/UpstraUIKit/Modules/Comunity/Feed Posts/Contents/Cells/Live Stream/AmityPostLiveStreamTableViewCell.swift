@@ -21,6 +21,9 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
     @IBOutlet private weak var thumbnailImageView: UIImageView!
     @IBOutlet private weak var streamStateContainer: UIView!
     @IBOutlet private weak var streamStateLabel: UILabel!
+    @IBOutlet private weak var viewerCountContainer: UIView!
+    @IBOutlet private weak var viewerCountLabel: UILabel!
+
     
     @IBOutlet private weak var streamEndView: UIView!
     @IBOutlet private weak var streamEndTitleLabel: UILabel!
@@ -30,6 +33,8 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
         super.awakeFromNib()
         streamStateContainer.clipsToBounds = true
         streamStateContainer.layer.cornerRadius = 4
+        viewerCountContainer.clipsToBounds = true
+        viewerCountContainer.layer.cornerRadius = 4
     }
     
     override func prepareForReuse() {
@@ -64,6 +69,9 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
         streamStateLabel.font = AmityFontSet.captionBold
         streamStateLabel.textColor = .white
         
+        viewerCountLabel.font = AmityFontSet.captionBold
+        viewerCountLabel.textColor = .white
+        
         // Whether to show stream end view, which will obsecure all the view behinds.
         switch streamStatus {
         case .ended:
@@ -86,18 +94,26 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
             streamStateContainer.isHidden = false
             streamStateContainer.backgroundColor = UIColor(hex: "FF305A")
             streamStateLabel.text = "LIVE"
+            viewerCountContainer.isHidden = false
+            
+            getViewerCount(withpostId: post.postId) { [self] viewerCount in
+                setViewerCount(viewerCount: viewerCount)
+            }
         case .recorded:
             streamStateContainer.isHidden = false
             streamStateContainer.backgroundColor = UIColor.black.withAlphaComponent(0.7)
             streamStateLabel.text = "RECORDED"
+            viewerCountContainer.isHidden = true
         default:
             streamStateContainer.isHidden = true
+            viewerCountContainer.isHidden = true
         }
         
         // Set the placeholder
         // - while waiting for image loading
         // - or if there's no image to load
         let placeholder = UIImage(named: "default_livestream", in: AmityUIKitManager.bundle, compatibleWith: nil)
+		thumbnailImageView.frame.size.width = UIScreen.main.bounds.width
         thumbnailImageView.image = placeholder
         
         // Load thumbnail image
@@ -105,6 +121,7 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
             loadImageAsync(fromFileUrl: thumbnailImageUrl)
         }
         
+        viewerCountLabel.text = String(post.viewerCount.formatUsingAbbrevation())
     }
     
     private func loadImageAsync(fromFileUrl fileUrl: String) {
@@ -128,8 +145,26 @@ class AmityPostLiveStreamTableViewCell: UITableViewCell, Nibbable, AmityPostProt
                 break
             }
         }
-        
-        
+    }
+    
+    func getViewerCount(withpostId postId: String, completion: @escaping (Int) -> Void) {
+        // Simulate your API request using a service object or Alamofire, etc.
+        let serviceRequest = RequestGetViewerCount()
+        serviceRequest.getViewerCount(postId: postId) { result in
+            switch result {
+            case .success(let dataResponse):
+                let viwerCount = dataResponse.viewerCount ?? 0
+                completion(viwerCount)
+            case .failure(_):
+                completion(0)
+            }
+        }
+    }
+    
+    func setViewerCount(viewerCount: Int) {
+        DispatchQueue.main.async { [self] in
+            viewerCountLabel.text = String(viewerCount.formatUsingAbbrevation())
+        }
     }
     
     @IBAction private func playLiveStreamButtonDidTouch() {

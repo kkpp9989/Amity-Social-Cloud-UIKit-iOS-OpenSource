@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import AVFoundation
 
 class PostGalleryItemCell: UICollectionViewCell, Nibbable {
     
@@ -29,13 +30,13 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
     
     private var session = UUID().uuidString
     
-    static var durationFormatter: DateComponentsFormatter = {
+    static func getDurationFormatter(showHour: Bool) -> DateComponentsFormatter {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
-        formatter.allowedUnits = [.minute, .second]
+        formatter.allowedUnits = showHour ? [.hour, .minute, .second] : [.minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
-    } ()
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,6 +47,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = AmityThemeManager.currentTheme.base.blend(.shade4)
         // Duration View
+        durationView.isHidden = true
         durationView.backgroundColor = UIColor(hex: "000000", alpha: 0.7)
         durationView.clipsToBounds = true
         durationView.layer.cornerRadius = 4
@@ -102,7 +104,7 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
             } else {
                 duration = .zero
             }
-            durationText = PostGalleryItemCell.durationFormatter.string(from: duration)
+            durationText = PostGalleryItemCell.getDurationFormatter(showHour: duration >= 3600).string(from: duration)
             mediaTitle = nil
             streamStatus = nil
         case "liveStream":
@@ -234,5 +236,4 @@ class PostGalleryItemCell: UICollectionViewCell, Nibbable {
         )
         
     }
-
 }

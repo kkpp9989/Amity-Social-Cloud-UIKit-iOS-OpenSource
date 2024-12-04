@@ -45,6 +45,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private let comunityPanelView = AmityComunityPanelView(frame: .zero)
     private let scrollView = UIScrollView(frame: .zero)
     private let textView = AmityTextView(frame: .zero)
+    private let locationView = UILabel(frame: .zero)
     private let separaterLine = UIView(frame: .zero)
     private let galleryView = AmityGalleryCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let fileView = AmityFileTableView(frame: .zero, style: .plain)
@@ -56,7 +57,11 @@ public class AmityPostTextEditorViewController: AmityViewController {
     private var filePicker: AmityFilePicker!
     private var mentionTableView: AmityMentionTableView
     private var mentionTableViewHeightConstraint: NSLayoutConstraint!
+    private var hashtagTableView: AmityHashtagTableView
+    private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
     private var mentionManager: AmityMentionManager?
+    private var bottomScrollViewInset: CGFloat = 0
+    private var heightConstraintOfMentionHashTagTableView: CGFloat = 0
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -73,6 +78,9 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     weak var delegate: AmityPostViewControllerDelegate?
     
+    private var mediaAsset: [PHAsset] = []
+    private var locationMetadata: [String: Any] = [:]
+    
     init(postTarget: AmityPostTarget, postMode: AmityPostMode, settings: AmityPostEditorSettings) {
         
         self.postTarget = postTarget
@@ -80,7 +88,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
         self.settings = settings
         self.postMenuView = AmityPostTextEditorMenuView(allowPostAttachments: settings.allowPostAttachments)
         self.mentionTableView = AmityMentionTableView(frame: .zero)
-        
+        self.hashtagTableView = AmityHashtagTableView(frame: .zero)
+
         if postMode == .create {
             var communityId: String? = nil
             switch postTarget {
@@ -111,6 +120,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let isCreateMode = (postMode == .create)
         postButton = UIBarButtonItem(title: isCreateMode ? AmityLocalizedStringSet.General.post.localizedString : AmityLocalizedStringSet.General.save.localizedString, style: .plain, target: self, action: #selector(onPostButtonTap))
         postButton.tintColor = AmityColorSet.primary
+        
+        // [Fix defect] Set font of post button refer to AmityFontSet
+        postButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        postButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        postButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         navigationItem.rightBarButtonItem = postButton
         navigationItem.rightBarButtonItem?.isEnabled = false
         
@@ -127,8 +142,21 @@ public class AmityPostTextEditorViewController: AmityViewController {
         textView.isScrollEnabled = false
         textView.font = AmityFontSet.body
         textView.minCharacters = 1
+        textView.setupWithoutSuggestions()
         textView.placeholder = AmityLocalizedStringSet.postCreationTextPlaceholder.localizedString
         scrollView.addSubview(textView)
+        
+        // Add tap gesture recognizer to the locationView
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapOnLabel))
+        locationView.addGestureRecognizer(tapGesture)
+        locationView.isUserInteractionEnabled = true
+        
+        locationView.translatesAutoresizingMaskIntoConstraints = false
+        locationView.font = AmityFontSet.body
+        locationView.textColor = AmityColorSet.highlight
+        locationView.numberOfLines = 0
+        locationView.isHidden = true
+        scrollView.addSubview(locationView)
         
         separaterLine.translatesAutoresizingMaskIntoConstraints = false
         separaterLine.backgroundColor = AmityColorSet.secondary.blend(.shade4)
@@ -157,7 +185,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
         mentionTableView.isHidden = true
         mentionTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mentionTableView)
-        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 240.0)
+        mentionTableViewHeightConstraint = mentionTableView.heightAnchor.constraint(equalToConstant: 1.0)
+        
+//        hashtagTableView.isHidden = true
+        hashtagTableView.translatesAutoresizingMaskIntoConstraints = false
+        hashtagTableView.tag = 1
+        view.addSubview(hashtagTableView)
+        hashtagTableViewHeightConstraint = hashtagTableView.heightAnchor.constraint(equalToConstant: 1.0)
         
         galleryViewHeightConstraint = NSLayoutConstraint(item: galleryView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
         fileViewHeightConstraint = NSLayoutConstraint(item: fileView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 0)
@@ -168,7 +202,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
             // If there is no menu to show, so we don't show postMenuView.
             postMenuView.isHidden = settings.allowPostAttachments.isEmpty
         case .edit:
-            postMenuView.isHidden = true
+            postMenuView.isHidden = false
         }
         
         NSLayoutConstraint.activate([
@@ -176,36 +210,52 @@ public class AmityPostTextEditorViewController: AmityViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            
             postMenuView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             postMenuView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            postMenuView.heightAnchor.constraint(equalToConstant: postMode == .create ? AmityPostTextEditorMenuView.defaultHeight : 0),
+            postMenuView.heightAnchor.constraint(equalToConstant: postMode == .create ? AmityPostTextEditorMenuView.defaultHeight : AmityPostTextEditorMenuView.defaultHeight),
             postMenuViewBottomConstraints,
+            
             comunityPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             comunityPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             comunityPanelView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
             comunityPanelView.heightAnchor.constraint(equalToConstant: AmityComunityPanelView.defaultHeight),
+            
             textView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             textView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
             textView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            
             separaterLine.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
+            separaterLine.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             separaterLine.centerYAnchor.constraint(equalTo: galleryView.topAnchor),
             separaterLine.heightAnchor.constraint(equalToConstant: 1),
-            galleryView.topAnchor.constraint(equalTo: textView.bottomAnchor),
-            galleryView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            galleryView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            galleryView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width),
+            
+            locationView.topAnchor.constraint(equalTo: textView.bottomAnchor),
+            locationView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            locationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
+            galleryView.topAnchor.constraint(equalTo: locationView.bottomAnchor),
+            galleryView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            galleryView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             galleryViewHeightConstraint,
+            
             fileView.topAnchor.constraint(equalTo: galleryView.bottomAnchor),
             fileView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             fileView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             fileView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             fileViewHeightConstraint,
+            
             mentionTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mentionTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mentionTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
-            mentionTableViewHeightConstraint
+            mentionTableViewHeightConstraint,
+            
+            hashtagTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hashtagTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hashtagTableView.bottomAnchor.constraint(equalTo: postMenuView.topAnchor),
+            hashtagTableViewHeightConstraint
         ])
+
         updateConstraints()
         // keyboard
         let notificationCenter = NotificationCenter.default
@@ -228,12 +278,13 @@ public class AmityPostTextEditorViewController: AmityViewController {
             }
         }
         
-        if case .edit(let postId) = postMode {
-            screenViewModel.dataSource.loadPost(for: postId)
-        }
         mentionTableView.delegate = self
         mentionTableView.dataSource = self
         mentionManager?.delegate = self
+        
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+        hashtagTableView.tag = 1
         
         updateAttributesText()
     }
@@ -270,10 +321,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let keyboardScreenEndFrame = keyboardValue.size
         let comunityPanelHeight = comunityPanelView.isHidden ? 0.0 : AmityComunityPanelView.defaultHeight
         if notification.name == UIResponder.keyboardWillHideNotification {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom
         } else {
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight, right: 0)
+            bottomScrollViewInset = keyboardScreenEndFrame.height - view.safeAreaInsets.bottom + AmityPostTextEditorMenuView.defaultHeight + comunityPanelHeight + heightConstraintOfMentionHashTagTableView
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
             postMenuViewBottomConstraints.constant = view.layoutMargins.bottom - keyboardScreenEndFrame.height
         }
         scrollView.scrollIndicatorInsets = scrollView.contentInset
@@ -296,19 +349,43 @@ public class AmityPostTextEditorViewController: AmityViewController {
         view.endEditing(true)
         postButton.isEnabled = false
         let metadata = mentionManager?.getMetadata()
+        let location = locationMetadata
         let mentionees = mentionManager?.getMentionees()
         if let post = currentPost {
             // update post
-            screenViewModel.updatePost(oldPost: post, text: text, medias: medias, files: files, metadata: metadata, mentionees: mentionees)
+            screenViewModel.updatePost(oldPost: post, text: text, medias: medias, files: files, metadata: metadata, mentionees: mentionees, location: location)
         } else {
             // create post
             var communityId: String?
             if case .community(let community) = postTarget {
                 communityId = community.communityId
             }
-            screenViewModel.createPost(text: text, medias: medias, files: files, communityId: communityId, metadata: metadata, mentionees: mentionees)
+            screenViewModel.createPost(text: text, medias: medias, files: files, communityId: communityId, metadata: metadata, mentionees: mentionees, location: location)
         }
+    }
+    
+    @objc func handleTapOnLabel(gesture: UITapGestureRecognizer) {
+        // Get the location of the tap relative to the label
+        let location = gesture.location(in: locationView)
         
+        // Determine if the tap occurred within the bounds of the image attachment
+        if let attributedString = locationView.attributedText {
+            let textContainer = NSTextContainer(size: CGSize(width: locationView.bounds.width, height: CGFloat.greatestFiniteMagnitude))
+            let layoutManager = NSLayoutManager()
+            let textStorage = NSTextStorage(attributedString: attributedString)
+            textStorage.addLayoutManager(layoutManager)
+            layoutManager.addTextContainer(textContainer)
+            
+            let characterIndex = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: nil)
+            
+            if let attachment = attributedString.attribute(.attachment, at: characterIndex, effectiveRange: nil) as? NSTextAttachment {
+                // Handle the tap on the image attachment here
+                self.locationView.text = nil
+                self.locationView.isHidden = true
+                self.locationMetadata = [:]
+                self.postButton.isEnabled = true
+            }
+        }
     }
     
     private func updateViewState() {
@@ -348,7 +425,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
             let isTextChanged = textView.text != post.text
             let isImageChanged = galleryView.medias != post.medias
             let isDocumentChanged = fileView.files.map({ $0.id }) != post.files.map({ $0.id })
-            let isPostChanged = isTextChanged || isImageChanged || isDocumentChanged
+            let isLocationChanged = checkLatChangeBetween(old: post.metadata ?? [:], new: locationMetadata)
+            let isPostChanged = isTextChanged || isImageChanged || isDocumentChanged || isLocationChanged
             postButton.isEnabled = isPostChanged && isPostValid
         } else {
             postButton.isEnabled = isPostValid
@@ -368,6 +446,21 @@ public class AmityPostTextEditorViewController: AmityViewController {
         if textView.text.isEmpty {
             textView.textColor = AmityColorSet.base
         }
+    }
+    
+    func checkLatChangeBetween(old: [String: Any], new: [String: Any]) -> Bool {
+        // Check if the new dictionary contains location key and it is a dictionary
+        guard let newLocation = new["location"] as? [String: Any] else { return false }
+        
+        // Check if the old dictionary contains location key and it is a dictionary
+        guard let oldLocation = old["location"] as? [String: Any],
+              let oldLat = oldLocation["lat"] as? Double,
+              let newLat = newLocation["lat"] as? Double else {
+            return true
+        }
+        
+        // Compare old latitude with new latitude
+        return oldLat != newLat
     }
     
     // MARK: Helper functions
@@ -576,11 +669,12 @@ public class AmityPostTextEditorViewController: AmityViewController {
         
         let cameraPicker = UIImagePickerController()
         cameraPicker.sourceType = .camera
+        cameraPicker.videoQuality = .typeHigh
         cameraPicker.delegate = self
         
         // We automatically choose media type based on last media pick.
         switch currentAttachmentState {
-        case .none:
+        case .none, .comment:
             // If the user have not chosen any media yet, we allow both type to be picked.
             // After it is selected, we force the same type for the later actions.
             var mediaTypesWhenNothingSelected: [String] = []
@@ -607,7 +701,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
     
     private func presentMediaPickerAlbum(type: AmityMediaType) {
         
-        let supportedMediaTypes: Set<Settings.Fetch.Assets.MediaTypes>
+        let supportedMediaTypes: Set<NewSettings.NewFetch.NewAssets.MediaTypes>
         
         // The closue to execute when picker finish picking the media.
         let finish: ([PHAsset]) -> Void
@@ -620,6 +714,8 @@ public class AmityPostTextEditorViewController: AmityViewController {
                 let medias: [AmityMedia] = assets.map { asset in
                     AmityMedia(state: .localAsset(asset), type: .image)
                 }
+                
+                strongSelf.mediaAsset = assets
                 strongSelf.addMedias(medias, type: .image)
             }
         case .video:
@@ -631,6 +727,7 @@ public class AmityPostTextEditorViewController: AmityViewController {
                     media.localAsset = asset
                     return media
                 }
+                strongSelf.mediaAsset = assets
                 strongSelf.addMedias(medias, type: .video)
             }
         }
@@ -638,20 +735,52 @@ public class AmityPostTextEditorViewController: AmityViewController {
         let maxNumberOfSelection: Int
         switch postMode {
         case .create:
-            maxNumberOfSelection = Constant.maximumNumberOfImages
+            maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         case .edit:
             maxNumberOfSelection = Constant.maximumNumberOfImages - galleryView.medias.count
         }
         
-        let imagePicker = AmityImagePickerController(selectedAssets: [])
+        let imagePicker = NewImagePickerController(selectedAssets: [])
         imagePicker.settings.theme.selectionStyle = .numbered
         imagePicker.settings.fetch.assets.supportedMediaTypes = supportedMediaTypes
         imagePicker.settings.selection.max = maxNumberOfSelection
         imagePicker.settings.selection.unselectOnReachingMax = false
-        presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+                    
+        imagePicker.modalPresentationStyle = .overFullScreen
+        self.presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: finish, completion: nil)
         
     }
     
+    private func authorizeNew(_ authorized: @escaping () -> Void) {
+        PHPhotoLibrary.requestAuthorization { (status) in
+            switch status {
+            case .authorized:
+                DispatchQueue.main.async(execute: authorized)
+            default:
+                break
+            }
+        }
+    }
 }
 
 extension AmityPostTextEditorViewController: AmityGalleryCollectionViewDelegate {
@@ -659,6 +788,7 @@ extension AmityPostTextEditorViewController: AmityGalleryCollectionViewDelegate 
     func galleryView(_ view: AmityGalleryCollectionView, didRemoveImageAt index: Int) {
         var medias = galleryView.medias
         medias.remove(at: index)
+        mediaAsset = medias.compactMap { $0.localAsset }
         galleryView.configure(medias: medias)
         updateViewState()
     }
@@ -750,12 +880,28 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
         galleryView.configure(medias: postModel.medias)
         textView.text = postModel.text
         
+        if let location = postModel.metadata?["location"] {
+            locationMetadata = location as! [String : Any]
+        }
+        
         setupMentionManager(withPost: postModel)
         updateConstraints()
+        updateViewState()
+        updateLocationView(with: postModel.metadata ?? [:])
     }
     
     func screenViewModelDidCreatePost(_ viewModel: AmityPostTextEditorScreenViewModel, post: AmityPost?, error: Error?) {
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first , let error = error {
+            ToastView.shared.showToast(message: error.localizedDescription, in: window)
+            postButton.isEnabled = true
+            return
+        }
+        
         if let post = post {
+            
+            // ktb kk save coin when post
+            AmityEventHandler.shared.saveKTBCoin(v: self , type: .post, id: post.postId , reactType: nil)
+            
             switch post.getFeedType() {
             case .reviewing:
                 AmityAlertController.present(title: AmityLocalizedStringSet.postCreationSubmitTitle.localizedString,
@@ -776,8 +922,13 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
     }
     
     func screenViewModelDidUpdatePost(_ viewModel: AmityPostTextEditorScreenViewModel, error: Error?) {
-        postButton.isEnabled = true
-        dismiss(animated: true, completion: nil)
+        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first , let error = error {
+            ToastView.shared.showToast(message: error.localizedDescription, in: window)
+            postButton.isEnabled = true
+        } else {
+            postButton.isEnabled = true
+            dismiss(animated: true, completion: nil)
+        }
     }
     
     private func closeViewController() {
@@ -789,7 +940,6 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorScreenViewModelD
             }
         }
     }
-    
 }
 
 extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate {
@@ -800,15 +950,63 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
         case .camera:
             presentMediaPickerCamera()
         case .album:
-            presentMediaPickerAlbum(type: .image)
+            authorizeNew {
+                self.presentMediaPickerAlbum(type: .image)
+            }
         case .video:
-            presentMediaPickerAlbum(type: .video)
+            authorizeNew {
+                self.presentMediaPickerAlbum(type: .video)
+            }
         case .file:
             filePicker.present(from: view, files: fileView.files)
         case .expand:
             presentBottomSheetMenus()
+        case .maps:
+            presentMapsView()
         }
         
+    }
+    
+    private func presentMapsView() {
+        let vc = AmityGoogleMapsViewController.make()
+        vc.tapDoneButton = { metadata in
+            self.locationMetadata = metadata
+            self.updateViewState()
+            self.updateLocationView(with: metadata)
+        }
+        
+        let navVc = UINavigationController(rootViewController: vc)
+        navVc.modalPresentationStyle = .fullScreen
+        present(navVc, animated: true, completion: nil)
+    }
+    
+    func updateLocationView(with metadata: [String: Any]) {
+        if let location = metadata["location"] as? [String: Any] {
+            let name = location["name"] as? String ?? ""
+            let address = location["address"] as? String ?? ""
+            let lat = location["lat"] as? Double ?? 0.0
+            let long = location["lng"] as? Double ?? 0.0
+            
+            self.locationView.isHidden = false
+            var text = "\(name) \(address) "
+            if name.isEmpty || address.isEmpty {
+                text = "at \(lat), \(long) "
+            }
+            
+            // Create an attributed string with the text
+            let attributedString = NSMutableAttributedString(string: text)
+                        
+            let imageRightAttachment = NSTextAttachment()
+            imageRightAttachment.image = AmityIconSet.iconDeleteLocation
+            imageRightAttachment.bounds = CGRect(x: 0, y: 0, width: 20, height: 20) // Adjusting y position
+            let attachmentRightString = NSAttributedString(attachment: imageRightAttachment)
+            attributedString.append(attachmentRightString)
+            
+            self.locationView.attributedText = attributedString
+        } else {
+            // Handle the case where meta["location"] is not the expected type
+            self.locationView.isHidden = true
+        }
     }
     
     private func presentBottomSheetMenus() {
@@ -844,6 +1042,44 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             strongSelf.filePicker.present(from: strongSelf.postMenuView, files: strongSelf.fileView.files)
         }
         
+        var mapOption = ImageItemOption(title: AmityLocalizedStringSet.General.location.localizedString,
+                                        image: AmityIconSet.CreatePost.iconLocation,
+                                          imageBackgroundColor: imageBackgroundColor) { [weak self] in
+            self?.presentMapsView()
+        }
+        
+        // NOTE: Once the currentAttachmentState has changed from `none` to something else.
+        // We still show the buttons, but we disable them based on the currentAttachmentState.
+        if currentAttachmentState != .none {
+            // Disable gallery option if currentAttachmentState is not .image or .video
+            if currentAttachmentState != .image {
+                galleryOption.image = AmityIconSet.iconPhoto?.setTintColor(disabledColor)
+                galleryOption.textColor = disabledColor
+                galleryOption.completion = nil
+            }
+            
+            // Disable camera option if currentAttachmentState is not .image or .video
+            if currentAttachmentState != .image && currentAttachmentState != .video {
+                cameraOption.image = AmityIconSet.iconCameraSmall?.setTintColor(disabledColor)
+                cameraOption.textColor = disabledColor
+                cameraOption.completion = nil
+            }
+            
+            // Disable video option if currentAttachmentState is not .video
+            if currentAttachmentState != .video {
+                videoOption.image = AmityIconSet.iconPlayVideo?.setTintColor(disabledColor)
+                videoOption.textColor = disabledColor
+                videoOption.completion = nil
+            }
+            
+            // Disable file option if currentAttachmentState is not .file
+            if currentAttachmentState != .file {
+                fileOption.image = AmityIconSet.iconAttach?.setTintColor(disabledColor)
+                fileOption.textColor = disabledColor
+                fileOption.completion = nil
+            }
+        }
+        
         // Each option will be added, based on allowPostAttachments.
         var items: [ImageItemOption] = []
         if settings.allowPostAttachments.contains(.image) || settings.allowPostAttachments.contains(.video) {
@@ -857,31 +1093,10 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
             items.append(videoOption)
         }
         
-        // NOTE: Once the currentAttachmentState has changed from `none` to something else.
-        // We still show the buttons, but we disable them based on the currentAttachmentState.
-        if currentAttachmentState != .none {
-            if currentAttachmentState != .image || currentAttachmentState != .video {
-                // Disable gallery option
-                galleryOption.image = AmityIconSet.iconPhoto?.setTintColor(disabledColor)
-                galleryOption.textColor = disabledColor
-                galleryOption.completion = nil
-                // Disable camera option
-                cameraOption.image = AmityIconSet.iconCameraSmall?.setTintColor(disabledColor)
-                cameraOption.textColor = disabledColor
-                cameraOption.completion = nil
-            }
-            if currentAttachmentState != .video {
-                // Disable video option
-                videoOption.image = AmityIconSet.iconPlayVideo?.setTintColor(disabledColor)
-                videoOption.textColor = disabledColor
-                videoOption.completion = nil
-            }
-            if currentAttachmentState != .file {
-                // Disable file option
-                fileOption.image = AmityIconSet.iconAttach?.setTintColor(disabledColor)
-                fileOption.textColor = disabledColor
-                fileOption.completion = nil
-            }
+        // Adding map button
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableSocialLocation
+        if isEnableMenu {
+            items.append(mapOption)
         }
         
         contentView.configure(items: items, selectedItem: nil)
@@ -898,7 +1113,7 @@ extension AmityPostTextEditorViewController: AmityPostTextEditorMenuViewDelegate
     }
     
     private func addMedias(_ medias: [AmityMedia], type: AmityMediaType) {
-        let totalNumberOfMedias = galleryView.medias.count + medias.count
+        let totalNumberOfMedias = medias.count
         guard totalNumberOfMedias <= Constant.maximumNumberOfImages else {
             presentMaxNumberReachDialogue()
             return
@@ -983,23 +1198,24 @@ extension AmityPostTextEditorViewController {
         guard isValueChanged, !(mentionManager?.isSearchingStarted ?? false) else {
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
-            
-        if let view = gestureRecognizer.view,
-            let directions = (gestureRecognizer as? UIPanGestureRecognizer)?.direction(in: view),
-            directions.contains(.right) {
-            let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
-            let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
-            let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
-                self?.generalDismiss()
-            }
-            alertController.addAction(cancelAction)
-            alertController.addAction(discardAction)
-            present(alertController, animated: true, completion: nil)
 
-            // prevents swiping back and present confirmation message
-            return false
+        if let panGestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let translation = panGestureRecognizer.translation(in: panGestureRecognizer.view)
+            if translation.x > 0 && abs(translation.x) > abs(translation.y) {
+                let alertController = UIAlertController(title: AmityLocalizedStringSet.postCreationDiscardPostTitle.localizedString, message: AmityLocalizedStringSet.postCreationDiscardPostMessage.localizedString, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.cancel.localizedString, style: .cancel, handler: nil)
+                let discardAction = UIAlertAction(title: AmityLocalizedStringSet.General.discard.localizedString, style: .destructive) { [weak self] _ in
+                    self?.generalDismiss()
+                }
+                alertController.addAction(cancelAction)
+                alertController.addAction(discardAction)
+                present(alertController, animated: true, completion: nil)
+
+                // prevents swiping back and present confirmation message
+                return false
+            }
         }
-        
+
         // falls back to normal behaviour, swipe back to previous page
         return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
@@ -1008,16 +1224,30 @@ extension AmityPostTextEditorViewController {
 // MARK: - UITableViewDelegate
 extension AmityPostTextEditorViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return AmityMentionTableViewCell.height
+        if tableView.tag != 1 {
+            return AmityMentionTableViewCell.height
+        } else {
+            return AmityHashtagTableViewCell.height
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mentionManager?.addMention(from: textView, in: textView.text, at: indexPath)
+        if tableView.tag != 1 {
+            mentionManager?.addMention(from: textView, in: textView.text, at: indexPath)
+        } else {
+            mentionManager?.addHashtag(from: textView, in: textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
-            mentionManager?.loadMore()
+        if tableView.tag != 1 {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMore()
+            }
+        } else {
+            if indexPath.row == (mentionManager?.keywords.count ?? 0) - 4 {
+                mentionManager?.loadMoreHashtag()
+            }
         }
     }
 }
@@ -1025,18 +1255,59 @@ extension AmityPostTextEditorViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension AmityPostTextEditorViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mentionManager?.users.count ?? 0
+        if tableView.tag != 1 {
+            return mentionManager?.users.count ?? 0
+        } else {
+            return mentionManager?.keywords.count ?? 0
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
-        cell.display(with: model)
-        return cell
+        if tableView.tag != 1 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager?.itemHashtag(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
     }
 }
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
+    
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
+            hashtagTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
+        } else {
+            heightConstraintOfMentionHashTagTableView = 240.0
+            if keywords.count < 5 {
+                heightConstraintOfMentionHashTagTableView = CGFloat(keywords.count) * 65
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
+        }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         textView.attributedText = attributedString
         textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
@@ -1045,16 +1316,28 @@ extension AmityPostTextEditorViewController: AmityMentionManagerDelegate {
     public func didGetUsers(users: [AmityMentionUserModel]) {
         if users.isEmpty {
             mentionTableViewHeightConstraint.constant = 0
+            heightConstraintOfMentionHashTagTableView = 0
             mentionTableView.isHidden = true
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset, right: 0)
         } else {
-            var heightConstant:CGFloat = 240.0
+            heightConstraintOfMentionHashTagTableView = 240.0
             if users.count < 5 {
-                heightConstant = CGFloat(users.count) * 52.0
+                heightConstraintOfMentionHashTagTableView = CGFloat(users.count) * 52.0
             }
-            mentionTableViewHeightConstraint.constant = heightConstant
+            mentionTableViewHeightConstraint.constant = heightConstraintOfMentionHashTagTableView
             mentionTableView.isHidden = false
             mentionTableView.reloadData()
+            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomScrollViewInset + heightConstraintOfMentionHashTagTableView, right: 0)
         }
+        
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+        
+        // Calculate the position of the cursor in the textView
+        let cursorRect = textView.caretRect(for: textView.selectedTextRange!.start)
+
+        // Scroll to current cursor of text view
+        let rect = textView.convert(cursorRect, to: scrollView)
+        scrollView.scrollRectToVisible(rect, animated: false)
     }
     
     public func didMentionsReachToMaximumLimit() {

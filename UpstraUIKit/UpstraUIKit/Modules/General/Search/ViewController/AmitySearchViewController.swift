@@ -20,9 +20,13 @@ public class AmitySearchViewController: AmityPageViewController {
     // MARK: - Child ViewController
     private var communitiesVC = AmityCommunitySearchViewController.make(title: AmityLocalizedStringSet.communities.localizedString)
     private var membersVC = AmityMemberSearchViewController.make(title: AmityLocalizedStringSet.accounts.localizedString)
-    
+    private var hashtagVC = AmityHashtagSearchViewController.make(title: AmityLocalizedStringSet.hashtags.localizedString)
+    private var postsVC = AmitySearchPostsViewController.make(title: AmityLocalizedStringSet.posts.localizedString)
+
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
+    
+    private let debouncer = Debouncer(delay: 0.5)
 
     private init() {
         super.init(nibName: AmitySearchViewController.identifier, bundle: AmityUIKitManager.bundle)
@@ -71,13 +75,13 @@ public class AmitySearchViewController: AmityPageViewController {
     }
     
     override func viewControllers(for pagerTabStripController: AmityPagerTabViewController) -> [UIViewController] {
-        return [communitiesVC, membersVC]
+        return [postsVC, communitiesVC, membersVC, hashtagVC]
     }
     
     override func moveToViewController(at index: Int, animated: Bool = true) {
         super.moveToViewController(at: index, animated: animated)
         
-        viewControllerWillMove()
+        viewControllerWillMove(newIndex: index)
     }
     
     // MARK: - Setup views
@@ -88,10 +92,11 @@ public class AmitySearchViewController: AmityPageViewController {
     private func setupSearchController() {
         searchTextField.delegate = self
         searchTextField.placeholder = AmityLocalizedStringSet.General.search.localizedString
-        searchTextField.returnKeyType = .search
+        searchTextField.returnKeyType = .done
         searchTextField.clearButtonMode = .always
+        searchTextField.setupWithoutSuggestions()
         
-        searchTextField.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        searchTextField.backgroundColor = .white
         searchTextField.tintColor = AmityColorSet.base
         searchTextField.textColor = AmityColorSet.base
         searchTextField.font = AmityFontSet.body
@@ -103,35 +108,48 @@ public class AmitySearchViewController: AmityPageViewController {
         searchIcon.image = AmityIconSet.iconSearch?.withRenderingMode(.alwaysTemplate)
         searchIcon.tintColor = AmityColorSet.base.blend(.shade1)
         
-        searchView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        searchView.backgroundColor = .white
         searchView.layer.cornerRadius = 4
     }
     
     @IBAction func cancelAction(_ sender: UIButton) {
-        handelSearch(with: nil)
+        handleSearch(with: nil)
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func textFieldEditingChanged(_ sender: UITextField) {
-        setButtonBarHidden(hidden: false)
-        handelSearch(with: sender.text)
+        debouncer.run {
+//            print("[Search] textFieldEditingChanged| text: \(sender.text ?? "")")
+            self.setButtonBarHidden(hidden: false)
+        }
     }
 }
 
 private extension AmitySearchViewController {
-    func handelSearch(with key: String?) {
+    func handleSearch(with key: String?) {
         if viewControllers[currentIndex] == communitiesVC {
             communitiesVC.search(with: key)
+        } else if viewControllers[currentIndex] == hashtagVC {
+            hashtagVC.search(withText: key)
+        } else if viewControllers[currentIndex] == postsVC {
+            postsVC.fetchPosts(keyword: searchTextField.text ?? "")
         } else {
             membersVC.search(with: key)
         }
     }
     
-    func viewControllerWillMove() {
-        if currentIndex == 1 {
+    func viewControllerWillMove(newIndex: Int) {
+        switch newIndex {
+        case 0:
+            postsVC.fetchPosts(keyword: searchTextField.text ?? "")
+        case 1:
             communitiesVC.search(with: searchTextField.text)
-        } else {
+        case 2:
             membersVC.search(with: searchTextField.text)
+        case 3:
+            hashtagVC.search(withText: searchTextField.text)
+        default:
+            break
         }
     }
 }
@@ -139,8 +157,10 @@ private extension AmitySearchViewController {
 extension AmitySearchViewController: UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         setButtonBarHidden(hidden: false)
-        handelSearch(with: textField.text)
         textField.resignFirstResponder()
+        debouncer.run {
+            self.handleSearch(with: textField.text)
+        }
         return true
     }
 }

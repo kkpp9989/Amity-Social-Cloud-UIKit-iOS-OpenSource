@@ -34,9 +34,53 @@ struct AmityColorSet {
     static var messageBubbleInverse: UIColor {
         return AmityThemeManager.currentTheme.messageBubbleInverse
     }
+    static var messageBubbleBoardcast: UIColor {
+        return UIColor(hex: "#0080BD")
+    }
+    static var highlightMessageBoardcast: UIColor {
+        return UIColor(hex: "#FFBE16")
+    }
+    static var baseSecondaryInverse: UIColor {
+        return UIColor(hex: "#B2EAFF")
+    }
     
     static var backgroundColor: UIColor {
         return UIColor.white
     }
     
+    static var chatBackgroundColor: UIColor {
+        return UIColor(hex: "#292B32").blend(.shade4).withAlphaComponent(0.3)
+    }
+    
+    static var dnaSangsun: UIColor {
+        return UIColor(hex: "#FFC104")
+    }
+    
+    static var dnaSatsue: UIColor {
+        return UIColor(hex: "#002FFF")
+    }
+    
+    static var dnaSamakki: UIColor {
+        return UIColor(hex: "#04873F")
+    }
+    
+    static var dnaSumrej: UIColor {
+        return UIColor(hex: "#FE0202")
+    }
+    
+    static var dnaSangkom: UIColor {
+        return UIColor(hex: "#FC7111")
+    }
+    
+    static var dnaLike: UIColor {
+        return UIColor(hex: "#0080BD")
+    }
+    
+    static var dnaLove: UIColor {
+        return UIColor(hex: "#EC4545")
+    }
+    
+    static var disableTextField: UIColor {
+        return UIColor(hex: "8F9FAF")
+    }
 }

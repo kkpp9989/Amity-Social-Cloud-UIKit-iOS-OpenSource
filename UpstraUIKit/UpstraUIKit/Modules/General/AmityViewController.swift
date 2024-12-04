@@ -76,13 +76,15 @@ open class AmityViewController: UIViewController {
         }
     }
     
+    var isLastViewController: Bool = false
+    
     private var leftBarButtonItem: UIBarButtonItem?
     private let fullWidthBackGestureRecognizer = UIPanGestureRecognizer()
     
     open override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AmityColorSet.backgroundColor
-        leftBarButtonItem = UIBarButtonItem(image: AmityIconSet.iconBack, style: .plain, target: self, action: #selector(didTapLeftBarButton))
+        leftBarButtonItem = UIBarButtonItem(image: AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(didTapLeftBarButton)) // [Custom for ONE Krungthai] Set custom icon theme
         leftBarButtonItem?.tintColor = AmityColorSet.base
         
         // We don't support dark mode yet.
@@ -122,7 +124,7 @@ open class AmityViewController: UIViewController {
         case .push:
             titleFont = AmityFontSet.title
             navigationItem.titleView = titleLabel
-            leftBarButtonItem?.image = AmityIconSet.iconBack
+            leftBarButtonItem?.image = AmityIconSet.iconBackNavigationBar?.withRenderingMode(.alwaysOriginal) // [Custom for ONE Krungthai] Set custom icon theme
             navigationItem.leftBarButtonItem = leftBarButtonItem
         case .custom:
             navigationItem.leftBarButtonItem = nil

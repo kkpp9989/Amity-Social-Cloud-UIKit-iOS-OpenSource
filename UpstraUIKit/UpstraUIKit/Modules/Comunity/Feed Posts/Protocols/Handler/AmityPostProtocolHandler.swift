@@ -11,6 +11,7 @@ import AmitySDK
 
 protocol AmityPostProtocolHandlerDelegate: AnyObject {
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol)
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String: [String]])
 }
 
 final class AmityPostProtocolHandler {
@@ -80,9 +81,9 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
             case .image:
                 break
             }
-        case .tapViewAll, .tapExpandableLabel:
+        case .tapViewAll(_, let pollAnswers), .tapExpandableLabel( _, _, let pollAnswers):
             if let viewController = viewController {
-                AmityEventHandler.shared.postDidtap(from: viewController, postId: post.postId)
+                AmityEventHandler.shared.postDidtap(from: viewController, postId: post.postId, pollAnswers: pollAnswers)
             }
         case .willExpandExpandableLabel:
             tableView?.beginUpdates()
@@ -118,17 +119,28 @@ extension AmityPostProtocolHandler: AmityPostDelegate {
                     from: viewController!,
                     postId: post.postId,
                     streamId: stream.streamId,
-                    recordedData: stream.recordingData
+                    stream: stream
                 )
             default:
                 AmityEventHandler.shared.openLiveStreamPlayer(
                     from: viewController!,
                     postId: post.postId,
-                    streamId: stream.streamId
+                    streamId: stream.streamId,
+                    postModel: post.post
                 )
             }
         case .tapOnMentionWithUserId(let userId):
             AmityEventHandler.shared.userDidTap(from: viewController!, userId: userId)
+        case .tapOnHashtagWithKeyword(keyword: let keyword, count: let count):
+			/// Don't repeat to click same hashtag
+//			let titleLabel = self.viewController?.navigationItem.titleView as? UILabel
+//			guard let text = titleLabel?.text, !text.contains(keyword) else { return }
+			
+            AmityEventHandler.shared.hashtagDidTap(from: viewController!, keyword: keyword, count: count)
+        case .tapPollAnswers(postId: let postId, pollAnswers: let pollAnswers):
+            delegate?.amityPostProtocolHandlerDidTapPollAnswers(cell, postId: postId, pollAnswers: pollAnswers)
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: viewController!, postId: postId)
         }
         
     }

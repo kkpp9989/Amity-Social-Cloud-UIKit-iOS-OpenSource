@@ -26,7 +26,7 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
         setupView()
     }
     
-    public func display(post: AmityPostModel, comment: AmityCommentModel?) {
+    public func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath) {
         self.comment = comment
         self.post = post
         guard let comment = comment else { return }
@@ -36,7 +36,8 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
             shouldShowActions: post.isCommentable,
             shouldLineShow: false
         )
-        commentView.configure(with: comment, layout: layout)
+        
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
         commentView.contentLabel.delegate = self
     }
@@ -46,8 +47,17 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
     }
 
     private func setupView() {
+        
+        // ktb kk set conner radius
+        commentView.layer.cornerRadius = 10
+        commentView.layer.masksToBounds = true
+        commentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        separatorView.layer.cornerRadius = 10
+        separatorView.layer.masksToBounds = true
+        separatorView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        
         selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
+        backgroundColor = .clear //AmityColorSet.backgroundColor
         contentView.backgroundColor = AmityColorSet.backgroundColor
         separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         commentView.backgroundColor = AmityColorSet.backgroundColor
@@ -63,6 +73,14 @@ public final class AmityPostPreviewCommentTableViewCell: UITableViewCell, Nibbab
 
 // MARK: AmityExpandableLabelDelegate
 extension AmityPostPreviewCommentTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        performAction(action: .tapOnPostIdLink(postId: postId))
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtag(keyword: keyword, count: count))
+    }
+    
     public func willExpandLabel(_ label: AmityExpandableLabel) {
         performAction(action: .willExpandExpandableLabel(label: label))
     }
@@ -95,7 +113,14 @@ extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
         guard let comment = view.comment else { return }
         switch action {
         case .avatar:
-            performAction(action: .tapAvatar(comment: comment))
+            // [Custom for ONE Krungthai] Check moderator user in official community for prepare tap action
+            if view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity { // Case : Post is from official community and owner is moderator
+                if let currentPost = post, view.shouldDidTapAction { // Post must to output from newsfeed only
+                    performAction(action: .tapCommunityName(post: currentPost)) // Send post model for get community model
+                }
+            } else { // Case : Post isn't from official community or owner isn't moderator
+                performAction(action: .tapAvatar(comment: comment))
+            }
         case .like:
             performAction(action: .tapLike(comment: comment))
         case .option:
@@ -104,6 +129,10 @@ extension AmityPostPreviewCommentTableViewCell: AmityCommentViewDelegate {
             performAction(action: .tapReply(comment: comment))
         case .reactionDetails:
             performAction(action: .tapOnReactionDetail)
+        case .status:
+            break
+        case .commentImage(let imageView, let fileURL):
+            performAction(action: .tapOnCommentImage(imageView: imageView, fileURL: fileURL ?? ""))
         }
     }
     

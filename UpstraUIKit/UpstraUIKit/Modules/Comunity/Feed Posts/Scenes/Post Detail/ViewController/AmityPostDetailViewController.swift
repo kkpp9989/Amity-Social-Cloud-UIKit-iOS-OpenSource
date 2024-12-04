@@ -8,6 +8,7 @@
 
 import UIKit
 import AmitySDK
+import Photos
 
 /// A view controller for providing post and relevant comments.
 open class AmityPostDetailViewController: AmityViewController {
@@ -18,6 +19,15 @@ open class AmityPostDetailViewController: AmityViewController {
     @IBOutlet private var commentComposeBarBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var mentionTableView: AmityMentionTableView!
     @IBOutlet private var mentionTableViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var hashtagTableView: AmityHashtagTableView!
+    @IBOutlet private var hashtagTableViewHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet private var replyContentImageView: UIImageView!
+    @IBOutlet private var replyContainerView: UIView!
+    @IBOutlet private var replySeparatorContainerView: UIView!
+    @IBOutlet private var replyContainerViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private var replyCloseViewButton: UIButton!
+    @IBOutlet private var progressView: UIProgressView!
     
     private var optionButton: UIBarButtonItem!
     
@@ -33,27 +43,55 @@ open class AmityPostDetailViewController: AmityViewController {
     private var expandedIds: Set<String> = []
     private var showReplyIds: [String] = []
     private var mentionManager: AmityMentionManager?
+    private var pollAnswers: [String: [String]] = [:]
+    private var medias: [AmityMedia]? = []
     
+    private var livestreamId: String?
+    
+    public var backHandler: (() -> Void)?
+    
+    private var isUploadProgress: Bool = false
+
     private var parentComment: AmityCommentModel? {
         didSet {
-            commentComposeBarView.replyingUsername = parentComment?.displayName
+            // [Custom for ONE Krungthai] Add check moderator user in official community for outputing
+            if let currentPost = screenViewModel.post, let community = currentPost.targetCommunity, let comment = parentComment { // Case : Comment from post community
+                let isModeratorUserInOfficialCommunity = AmityMemberCommunityUtilities.isModeratorUserInCommunity(withUserId: comment.userId, communityId: community.communityId)
+                let isOfficialCommunity = community.isOfficial
+                if isModeratorUserInOfficialCommunity, isOfficialCommunity { // Case : Comment owner is moderator in official community
+                    commentComposeBarView.replyingUsername = community.displayName
+                } else { // Case : Comment owner isn't moderator or not official community
+                    // Original
+                    commentComposeBarView.replyingUsername = parentComment?.displayName
+                }
+            } else { // Case : Comment from user profile post
+                // Original
+                commentComposeBarView.replyingUsername = parentComment?.displayName
+            }
+            // [Original]
+//            commentComposeBarView.replyingUsername = parentComment?.displayName
         }
     }
+    
+    // Reaction Picker
+    private let reactionPickerView = AmityReactionPickerView()
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
     
     // MARK: - Initializer
-    required public init(withPostId postId: String) {
+    required public init(withPostId postId: String, withStreamId streamId: String?, withPollAnswers pollAnswers: [String: [String]]?) {
         let postController = AmityPostController()
         let commentController = AmityCommentController()
         let reactionController = AmityReactionController()
         let childrenController = AmityCommentChildrenController(postId: postId)
         screenViewModel = AmityPostDetailScreenViewModel(withPostId: postId,
-                                                             postController: postController,
-                                                             commentController: commentController,
-                                                             reactionController: reactionController,
-                                                             childrenController: childrenController)
+                                                         postController: postController,
+                                                         commentController: commentController,
+                                                         reactionController: reactionController,
+                                                         childrenController: childrenController,
+                                                         withStreamId: streamId,
+                                                         withPollAnswers: pollAnswers ?? [:])
         super.init(nibName: AmityPostDetailViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -61,20 +99,24 @@ open class AmityPostDetailViewController: AmityViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public class func make(withPostId postId: String) -> Self {
-        return self.init(withPostId: postId)
+    public class func make(withPostId postId: String, withStreamId streamId: String? = nil, withPollAnswers pollAnswers: [String: [String]]? = [:]) -> Self {
+        return self.init(withPostId: postId, withStreamId: streamId, withPollAnswers: pollAnswers)
     }
     
     // MARK: - View Lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        setupNavigationBar()
+        /* [Improvement] Move add option button of navigation bar to get post success data because of click post notification */
+//        setupNavigationBar()
         setupTableView()
         setupComposeBarView()
         setupProtocolHandler()
         setupScreenViewModel()
         setupMentionTableView()
+        setupHashtagTableView()
+        setupReactionPicker()
+        setupReplyView()
         
         // Initial ONE Krungthai Custom theme
         theme = ONEKrungthaiCustomTheme(viewController: self)
@@ -117,6 +159,7 @@ open class AmityPostDetailViewController: AmityViewController {
         screenViewModel.delegate = self
         screenViewModel.action.fetchPost()
         screenViewModel.action.fetchComments()
+//        screenViewModel.action.fetchReactionList() // Use post.reactions in screenviewModel instead
     }
     
     // MARK: Setup views
@@ -125,7 +168,7 @@ open class AmityPostDetailViewController: AmityViewController {
     }
     
     private func setupNavigationBar() {
-        optionButton = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
+        optionButton = UIBarButtonItem(image: AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(optionTap)) // [Custom for ONE Krungthai] Set custom icon theme
         optionButton.tintColor = AmityColorSet.base
         navigationItem.rightBarButtonItem = optionButton
     }
@@ -134,6 +177,7 @@ open class AmityPostDetailViewController: AmityViewController {
         tableView.registerCustomCell()
         tableView.registerPostCell()
         tableView.register(cell: AmityCommentTableViewCell.self)
+        tableView.register(cell: AmityCommentWithURLPreviewTableViewCell.self)
         tableView.register(cell: AmityPostDetailDeletedTableViewCell.self)
         tableView.register(cell: AmityViewMoreReplyTableViewCell.self)
         tableView.register(cell: AmityDeletedReplyTableViewCell.self)
@@ -153,9 +197,44 @@ open class AmityPostDetailViewController: AmityViewController {
         mentionTableView.dataSource = self
     }
     
+    private func setupHashtagTableView() {
+        hashtagTableView.isHidden = true
+        hashtagTableView.delegate = self
+        hashtagTableView.dataSource = self
+        hashtagTableView.tag = 1
+        hashtagTableView.backgroundColor = .red
+    }
+    
     private func setupComposeBarView() {
         commentComposeBarView.delegate = self
         commentComposeBarView.isHidden = true
+    }
+    
+    private func setupReactionPicker() {
+        
+        reactionPickerView.alpha = 0
+        view.addSubview(reactionPickerView)
+        
+        // Setup tap gesture recognizer
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    private func setupReplyView() {
+        replySeparatorContainerView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        replyCloseViewButton.setImage(AmityIconSet.iconCloseWhite, for: .normal)
+        replyCloseViewButton.setTitle("", for: .normal)
+        
+        replyContentImageView.contentMode = .center
+        replyContentImageView.layer.cornerRadius = 4
+        
+        progressView.trackTintColor = AmityColorSet.baseInverse
+        progressView.transform = CGAffineTransform(scaleX: 1, y: 2)
+        progressView.layer.cornerRadius = 3
+        progressView.clipsToBounds = true
+        progressView.isHidden = true
+        progressView.progress = 0
     }
     
     @objc private func optionTap() {
@@ -243,16 +322,44 @@ open class AmityPostDetailViewController: AmityViewController {
         mentionManager?.delegate = self
     }
     
-    private func createComment(withText text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, parentId: String?) {
-        screenViewModel.action.createComment(withText: text, parentId: parentId, metadata: metadata, mentionees: mentionees)
+    private func createComment(withText text: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, parentId: String?, medias: [AmityMedia]) {
+        screenViewModel.action.createComment(withText: text, parentId: parentId, metadata: metadata, mentionees: mentionees, medias: medias)
         parentComment = nil
         commentComposeBarView.resetState()
         mentionManager?.resetState()
+        hideReplyContainerView()
     }
     
-    private func showReactionUserList(info: AmityReactionInfo) {
-        let controller = AmityReactionPageViewController.make(info: [info])
+    private func showReactionUserList(info: AmityReactionInfo, reactionList: [String: Int]) {
+        let controller = AmityReactionPageViewController.make(info: [info], reactionList: reactionList)
         self.navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    @IBAction func closeImageContainerTap(_ sender: UIButton) {
+        hideReplyContainerView()
+    }
+}
+
+// MARK: - ReactionPickerView
+extension AmityPostDetailViewController {
+    
+    @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: view)
+        if !reactionPickerView.frame.contains(location) {
+            hideReactionPicker()
+        }
+    }
+    
+    private func showReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 1 // Fade in
+        }
+    }
+    
+    private func hideReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 0 // Fade out
+        }
     }
 }
 
@@ -266,104 +373,41 @@ extension AmityPostDetailViewController: AmityPostTableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
-        return section == 0 ? 0 : 1.0
-    }
+//    func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
+//        return section == 0 ? 0 : 1.0
+//    }
     
-    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
-        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
-        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
-        return separatorView
-    }
+//    func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
+//        let separatorView = UIView(frame: CGRect(x: tableView.separatorInset.left, y: 0.0, width: tableView.frame.width - tableView.separatorInset.right - tableView.separatorInset.left, height: 1.0))
+//        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+//        return separatorView
+//    }
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
         if tableView.isBottomReached {
             screenViewModel.loadMoreComments()
         }
         
-        let viewModel = screenViewModel.item(at: indexPath)
-        switch viewModel {
-        case .post(let postComponent):
-            (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
-            (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
-            (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
-        case .comment(let comment):
-            if comment.isDeleted {
-                let _cell = cell as! AmityPostDetailDeletedTableViewCell
-                _cell.configure(deletedAt: comment.updatedAt)
-            } else {
-                let _cell = cell as! AmityCommentTableViewCell
-                let layout = AmityCommentView.Layout(
-                    type: .comment,
-                    isExpanded: expandedIds.contains(comment.id),
-                    shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                    shouldLineShow: viewModel.isReplyType
-                )
-                _cell.configure(with: comment, layout: layout)
-                _cell.labelDelegate = self
-                _cell.actionDelegate = self
-            }
-            
-        case .replyComment(let comment):
-            if comment.isDeleted {
-                return
-            }
-            let _cell = cell as! AmityCommentTableViewCell
-            let layout = AmityCommentView.Layout(
-                type: .reply,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
-            _cell.configure(with: comment, layout: layout)
-            _cell.labelDelegate = self
-            _cell.actionDelegate = self
-            
-        case .loadMoreReply:
-            break
-        }
-        
+        // [Custom for ONE Krungthai][Improvement][URL Preview] Set protocol handler to willDisplay same as AmityFeedViewController
+        (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
+        (cell as? AmityPostFooterProtocol)?.delegate = postFooterProtocolHandler
+        (cell as? AmityPostProtocol)?.delegate = postProtocolHandler
+
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let viewModel = screenViewModel.item(at: indexPath)
-        switch viewModel {
-        case .post, .loadMoreReply:
-            return UITableView.automaticDimension
-        case .comment(let comment):
-            if comment.isDeleted {
-                return AmityPostDetailDeletedTableViewCell.height
-            }
-            // Although AmityCommentTableViewCell is a self-sizing cell.
-            // Due to the layout glitch, we need to calculate cell height manually here.
-            let layout = AmityCommentView.Layout(
-                type: .comment,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
-            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
-        case .replyComment(let comment):
-            if comment.isDeleted {
-                return AmityPostDetailDeletedTableViewCell.height
-            }
-            // Although AmityCommentTableViewCell is a self-sizing cell.
-            // Due to the layout glitch, we need to calculate cell height manually here.
-            let layout = AmityCommentView.Layout(
-                type: .reply,
-                isExpanded: expandedIds.contains(comment.id),
-                shouldShowActions: screenViewModel.post?.isCommentable ?? false,
-                shouldLineShow: viewModel.isReplyType
-            )
-            return AmityCommentTableViewCell.height(with: comment, layout: layout, boundingWidth: tableView.bounds.width)
-        }
+       
+        // [Custom for ONE Krungthai][Improvement][URL Preview] Change height of row to automatic dimension for url preview can show success
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: AmityPostTableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
     
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView) {
+        hideReactionPicker()
+    }
     
 }
 
@@ -388,22 +432,76 @@ extension AmityPostDetailViewController: AmityPostTableViewDataSource {
             } else {
                 cell = postComponent.getComponentCell(tableView, at: indexPath)
             }
+            
             return cell
         case .comment(let comment):
             if comment.isDeleted {
                 let cell: AmityPostDetailDeletedTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                cell.configure(deletedAt: comment.updatedAt)
                 return cell
+            } else {
+                if let isShowURLPreview = comment.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview {
+                    let cell: AmityCommentWithURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentViewWithURLPreview.Layout(
+                        type: .comment,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                } else {
+                    let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentView.Layout(
+                        type: .comment,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                }
             }
-            
-            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            return cell
         case .replyComment(let comment):
             if comment.isDeleted {
                 let cell: AmityDeletedReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
                 return cell
+            } else {
+                if let isShowURLPreview = comment.metadata?["is_show_url_preview"] as? Bool, isShowURLPreview {
+                    let cell: AmityCommentWithURLPreviewTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentViewWithURLPreview.Layout(
+                        type: .reply,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                } else {
+                    let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+                    let layout = AmityCommentView.Layout(
+                        type: .reply,
+                        isExpanded: expandedIds.contains(comment.id),
+                        shouldShowActions: screenViewModel.post?.isCommentable ?? false,
+                        shouldLineShow: viewModel.isReplyType
+                    )
+                    cell.configure(with: comment, layout: layout, indexPath: indexPath, post: screenViewModel.post)
+                    cell.labelDelegate = self
+                    cell.actionDelegate = self
+                    
+                    return cell
+                }
             }
-            let cell: AmityCommentTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-            return cell
+            
         case .loadMoreReply:
             let cell: AmityViewMoreReplyTableViewCell = tableView.dequeueReusableCell(for: indexPath)
             return cell
@@ -429,6 +527,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModelDidUpdateData(_ viewModel: AmityPostDetailScreenViewModelType) {
         tableView.reloadData()
         if let post = screenViewModel.post {
+            /* [Improvement] Move add option button of navigation bar to get post success data because of click post notification */
+            setupNavigationBar()
             commentComposeBarView.configure(with: post)
         }
         
@@ -471,6 +571,9 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     // MARK: - Comment
     func screenViewModelDidCreateComment(_ viewModel: AmityPostDetailScreenViewModelType, comment: AmityCommentModel) {
         
+        // ktb kk save coin when comment & reply
+        AmityEventHandler.shared.saveKTBCoin(v: self, type: .comment, id: viewModel.post?.postId ?? "", reactType: nil)
+        
         if comment.parentId == nil {
             // When new parent comment is created, it will not show in query stream.
             // We forcibly fetch a comment list to include new added comments.
@@ -486,6 +589,8 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     }
     
     func screenViewModelDidLikeComment(_ viewModel: AmityPostDetailScreenViewModelType) {
+        //ktb kk save coin reaction
+        AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: viewModel.post?.postId ?? "" , reactType: AmityReactionType.like.rawValue)
         tableView.feedDelegate?.didPerformActionLikeComment()
     }
     
@@ -521,14 +626,47 @@ extension AmityPostDetailViewController: AmityPostDetailScreenViewModelDelegate 
     func screenViewModel(_ viewModel: AmityPostDetailScreenViewModelType, didFinishWithError error: AmityError) {
         switch error {
         case .unknown:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            //AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                // [Back up]
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString, duration: 0.3, in: window)
+                
+            }
         case .bannedWord:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString))
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString)) // [Back up]
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString, in: window)
+            }
+        case .linkNotAllowed:
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString)) // [Back up]
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString, in: window)
+            }
+        case .noPermission, .noUserAccessPermission:
+            let firstAction = AmityDefaultModalModel.Action(title: AmityLocalizedStringSet.General.ok,
+                                                            textColor: AmityColorSet.baseInverse,
+                                                            backgroundColor: AmityColorSet.primary)
+            let communityPostModel = AmityDefaultModalModel(image: nil,
+                                                            title: "Permission required",
+                                                            description: "You don't have permission to view this post.",
+                                                            firstAction: firstAction, secondAction: nil,
+                                                            layout: .horizontal)
+            let communityPostModalView = AmityDefaultModalView.make(content: communityPostModel)
+            communityPostModalView.firstActionHandler = {
+                AmityHUD.hide{ [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.navigationController?.popViewController(animated: true)
+                    
+                    // Check if backHandler is not nil, then invoke it
+                    strongSelf.backHandler?()
+                }
+            }
+            
+            AmityHUD.showWithoutRepresenting(.custom(view: communityPostModalView))
         default:
             break
         }
     }
-    
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
@@ -546,6 +684,12 @@ extension AmityPostDetailViewController: AmityPostHeaderProtocolHandlerDelegate 
             screenViewModel.action.reportPost()
         case .tapClosePoll:
             screenViewModel.action.close(withPollId: post.poll?.id)
+        case .TapPinpost:
+            if post.isPinPost {
+//                screenViewModel.action.unpinpost(withpostId: postId)
+            } else {
+//                screenViewModel.action.pinpost(withpostId: postId)
+            }
         }
     }
     
@@ -553,6 +697,10 @@ extension AmityPostDetailViewController: AmityPostHeaderProtocolHandlerDelegate 
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityPostDetailViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -563,14 +711,18 @@ extension AmityPostDetailViewController: AmityPostProtocolHandlerDelegate {
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
 extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate {
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
+        let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
+        reactionPickerView.frame.origin = CGPoint(x: 16, y: likeButtonFrameInSuperview.maxY - likeButtonFrameInSuperview.height - self.reactionPickerView.frame.height)
+    }
     
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel) {
         switch action {
         case .tapLike:
-            if post.isLiked {
-                screenViewModel.action.unlikePost()
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReactionPost(type: reactionType)
             } else {
-                screenViewModel.action.likePost()
+                screenViewModel.action.addReactionPost(type: .create)
             }
         case .tapComment:
             parentComment = nil
@@ -579,7 +731,47 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
             }
         case .tapReactionDetails:
             let info = AmityReactionInfo(referenceId: post.postId, referenceType: .post, reactionsCount: post.reactionsCount)
-            self.showReactionUserList(info: info)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: reactionList)
+        case .tapHoldLike:
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReactionPost(type: reacted, typeSelect: reactionType)
+                    } else {
+                        self?.screenViewModel.action.addReactionPost(type: reactionType)
+                    }
+                }
+            }
+            showReactionPicker()
+        case .tapShare:
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
+                }
+            }
+            options.append(shareOption)
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
     
@@ -588,6 +780,56 @@ extension AmityPostDetailViewController: AmityPostFooterProtocolHandlerDelegate 
 // MARK: - AmityPostDetailCompostViewDelegate
 extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
     
+    func composeViewDidTapAddImage(_ view: AmityPostDetailCompostView) {
+        let imagePicker = NewImagePickerController(selectedAssets: [])
+        imagePicker.settings.theme.selectionStyle = .checked
+        imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
+        imagePicker.settings.selection.max = 1
+        imagePicker.settings.selection.unselectOnReachingMax = true
+        
+        let options = imagePicker.settings.fetch.album.options
+        // Fetching user library and other smart albums
+        let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+        let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+        let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+        let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+        let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+        
+        // Fetching regular albums
+        let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+        
+        imagePicker.settings.fetch.album.fetchResults = [
+            userLibraryCollection,
+            favoritesCollection,
+            regularAlbumsCollection,
+            selfPortraitsCollection,
+            panoramasCollection,
+            videosCollection
+        ]
+        
+        imagePicker.modalPresentationStyle = .overFullScreen
+        presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
+            let medias = assets.map { AmityMedia(state: .localAsset($0), type: .image) }
+            self.medias = medias
+            
+            switch medias[0].state {
+            case .image(let image):
+                self.replyContentImageView.image = image
+                self.replyContentImageView.contentMode = .scaleAspectFill
+                self.showReplyContainerView()
+                self.uploadImages()
+            case .localAsset(let asset):
+                self.getAssetThumbnail(asset: asset) { image in
+                    self.replyContentImageView.image = image
+                    self.replyContentImageView.contentMode = .scaleAspectFill
+                    self.showReplyContainerView()
+                    self.uploadImages()
+                }
+            case .downloadableImage, .downloadableVideo, .localURL, .uploadedImage, .uploadedVideo, .none, .uploading, .error: break
+            }
+        }
+    }
+    
     func composeViewDidTapReplyDismiss(_ view: AmityPostDetailCompostView) {
         parentComment = nil
     }
@@ -595,18 +837,19 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
     func composeViewDidTapExpand(_ view: AmityPostDetailCompostView) {
         var editTextViewController: AmityEditTextViewController
         let communityId = (screenViewModel.dataSource.community?.isPublic ?? false) ? nil : screenViewModel.dataSource.community?.communityId
+        let settings: AmityPostEditorSettings = AmityPostEditorSettings()
         if let parentComment = parentComment {
             // create reply
             let header = String.localizedStringWithFormat(AmityLocalizedStringSet.PostDetail.replyingTo.localizedString, parentComment.displayName)
-            editTextViewController = AmityEditTextViewController.make(headerTitle: header, text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: true))
+            editTextViewController = AmityEditTextViewController.make(headerTitle: header, text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: true), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createReply.localizedString
         } else {
             // create comment
-            editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false))
+            editTextViewController = AmityEditTextViewController.make(text: commentComposeBarView.text, editMode: .create(communityId: communityId, isReply: false), settings: settings)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.createComment.localizedString
         }
-        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees in
-            self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id)
+        editTextViewController.editHandler = { [weak self, weak editTextViewController] text, metadata, mentionees, medias in
+            self?.createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: self?.parentComment?.id, medias: self?.medias ?? [])
             editTextViewController?.dismiss(animated: true, completion: nil)
         }
         editTextViewController.dismissHandler = { [weak self, weak editTextViewController] in
@@ -629,7 +872,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
     func composeView(_ view: AmityPostDetailCompostView, didPostText text: String) {
         let metadata = mentionManager?.getMetadata()
         let mentionees = mentionManager?.getMentionees()
-        createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: parentComment?.id)
+        createComment(withText: text, metadata: metadata, mentionees: mentionees, parentId: parentComment?.id, medias: medias ?? [])
     }
     
     func composeViewDidChangeSelection(_ view: AmityPostDetailCompostView) {
@@ -641,6 +884,7 @@ extension AmityPostDetailViewController: AmityPostDetailCompostViewDelegate {
             showAlertForMaximumCharacters()
             return false
         }
+        updateViewState()
         return mentionManager?.shouldChangeTextIn(view.textView, inRange: range, replacementText: text, currentText: view.textView.text) ?? true
     }
 }
@@ -657,7 +901,159 @@ extension AmityPostDetailViewController: AmityKeyboardServiceDelegate {
     
 }
 
+extension AmityPostDetailViewController {
+    func getAssetThumbnail(asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
+        let manager = PHImageManager.default()
+        let option = PHImageRequestOptions()
+
+        // Request the original dimensions of the asset
+        let targetSize = CGSize(width: asset.pixelWidth, height: asset.pixelHeight)
+
+        option.isSynchronous = false // Make it asynchronous
+        option.deliveryMode = .highQualityFormat
+
+        manager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFit, options: option, resultHandler: {(result, info) -> Void in
+            completion(result) // Pass the result back via completion handler
+        })
+    }
+    
+    private func showReplyContainerView() {
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 100
+            self.replyContainerView.isHidden = false
+            self.commentComposeBarView.updatePostButtonState(isEnable: true)
+        }
+    }
+    
+    private func hideReplyContainerView() {
+        UIView.animate(withDuration: 0.3) {
+            self.replyContainerViewHeightConstraint.constant = 0
+            self.replyContainerView.isHidden = true
+            self.replyContentImageView.image = UIImage()
+            self.medias = []
+            self.commentComposeBarView.updatePostButtonState(isEnable: false)
+        }
+    }
+    
+    private func uploadImages() {
+        commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+        let fileUploadFailedDispatchGroup = DispatchGroup()
+        var isUploadFailed = false
+        isUploadProgress = true
+        commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+        replyContentImageView.isUserInteractionEnabled = false
+        guard let medias = medias, !medias.isEmpty else { return }
+        for index in 0..<medias.count {
+            let media = medias[index] // Take a mutable copy of the media object
+            switch media.state {
+            case .localAsset, .image:
+                fileUploadFailedDispatchGroup.enter()
+                self.progressView.isHidden = false
+                self.progressView.setProgress(0, animated: false)
+                // get local image for uploading
+                media.getImageForUploading { [weak self] result in
+                    switch result {
+                    case .success(let img):
+                        AmityUIKitManagerInternal.shared.fileService.uploadImage(image: img, progressHandler: { progress in
+                            self?.progressView.setProgress(Float(progress), animated: true)
+                            Log.add("[UIKit]: Upload Progress \(progress)")
+                        }, completion:  { [weak self] result in
+                            switch result {
+                            case .success(let imageData):
+                                Log.add("[UIKit]: Uploaded image data \(imageData.fileId)")
+                                media.state = .uploadedImage(data: imageData)
+                                // Update the media in the medias array
+                                self?.medias?[index] = media
+                                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: true)
+                                self?.replyContentImageView.isUserInteractionEnabled = true
+                                self?.isUploadProgress = false
+                                self?.progressView.setProgress(1, animated: true)
+                            case .failure:
+                                Log.add("[UIKit]: Image upload failed")
+                                media.state = .error
+                                isUploadFailed = true
+                                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+                                self?.isUploadProgress = false
+                                self?.progressView.setProgress(1, animated: true)
+                            }
+                            fileUploadFailedDispatchGroup.leave()
+                            self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+                            self?.updateViewState()
+                        })
+                    case .failure:
+                        media.state = .error
+                        isUploadFailed = true
+                        self?.updateViewState()
+                        self?.isUploadProgress = false
+                        self?.progressView.setProgress(1, animated: true)
+                    }
+                }
+            default:
+                Log.add("[UIKit]: Unsupported media state for uploading.")
+                self.isUploadProgress = false
+                break
+            }
+        }
+        
+        fileUploadFailedDispatchGroup.notify(queue: .main) { [weak self] in
+            self?.progressView.isHidden = true
+            if isUploadFailed {
+                self?.commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+                self?.showUploadFailureAlert()
+            }
+        }
+    }
+    
+    private func showUploadFailureAlert() {
+        let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteTitle.localizedString, message: AmityLocalizedStringSet.Chat.messageCreationUploadIncompleteDescription.localizedString, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func updateViewState() {
+        // Update post button state
+        var isImageValid = false
+        if let medias = medias, !medias.isEmpty {
+            isImageValid = !medias.allSatisfy({
+                switch $0.state {
+                case .downloadableImage, .downloadableVideo:
+                    return true
+                default:
+                    return false
+                }
+            })
+        }
+        
+        if !isUploadProgress {
+            let text = commentComposeBarView.textView.text!
+            if let medias = medias, !text.isEmpty || !medias.isEmpty {
+                if text.isEmpty && !medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: isImageValid)
+                } else if !text.isEmpty && medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: !text.isEmpty)
+                } else if !text.isEmpty && !medias.isEmpty {
+                    commentComposeBarView.updatePostButtonState(isEnable: false)
+                } else {
+                    commentComposeBarView.updatePostButtonState(isEnable: isImageValid)
+                }
+            } else {
+                commentComposeBarView.updatePostButtonState(isEnable: !text.isEmpty)
+            }
+        } else {
+            commentComposeBarView.updatePostButtonUploadState(isEnable: false)
+        }
+    }
+}
+
 extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
+    }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
         // Intentionally left empty
@@ -711,9 +1107,29 @@ extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
     }
 }
 
-extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {    
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String) {
-        AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
+    func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
+        guard let image = imageView.image else {
+            print("Invalid image")
+            return
+        }
+        
+        guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+            print("Invalid layer position: \(imageView.layer.position)")
+            return
+        }
+        
+        let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
+        self.present(photoViewerVC, animated: true, completion: nil)
+    }
+    
+    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?) {
+        // [Custom for ONE Krungthai] Add check condition for tap to community for moderator user in official community action
+        if let currentCommunityId = communityId {
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: currentCommunityId)
+        } else {
+            AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        }
     }
     
     func commentCellDidTapReadMore(_ cell: AmityCommentTableViewCell) {
@@ -757,12 +1173,15 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
         switch screenViewModel.item(at: indexPath) {
         case .comment(let comment), .replyComment(let comment):
             let info = AmityReactionInfo(referenceId: comment.id, referenceType: .comment, reactionsCount: comment.reactionsCount)
-            self.showReactionUserList(info: info)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: [:])
         case .post, .loadMoreReply:
             break
         }
     }
     
+    // Use both of AmityCommentTableViewCellDelegate and AmityCommentWithURLPreviewTableViewCellDelegate
     private func presentOptionBottomSheet(comment: AmityCommentModel) {
         let communityId = (screenViewModel.dataSource.community?.isPublic ?? false) ? nil : screenViewModel.dataSource.community?.communityId
         // Comment options
@@ -780,8 +1199,8 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
                 guard let strongSelf = self else { return }
                 let editTextViewController = AmityCommentEditorViewController.make(comment: comment, communityId: communityId)
                 editTextViewController.title = comment.isParent ? AmityLocalizedStringSet.PostDetail.editComment.localizedString : AmityLocalizedStringSet.PostDetail.editReply.localizedString
-                editTextViewController.editHandler = { [weak self] text, metadata, mentionees in
-                    self?.screenViewModel.action.editComment(with: comment, text: text, metadata: metadata, mentionees: mentionees)
+                editTextViewController.editHandler = { [weak self] text, metadata, mentionees, medias in
+                    self?.screenViewModel.action.editComment(with: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias ?? [])
                     editTextViewController.dismiss(animated: true, completion: nil)
                 }
                 editTextViewController.dismissHandler = { [weak editTextViewController] in
@@ -820,39 +1239,160 @@ extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
     }
 }
 
+extension AmityPostDetailViewController: AmityCommentWithURLPreviewTableViewCellDelegate {
+    func commentCellDidTapAvatar(_ cell: AmityCommentWithURLPreviewTableViewCell, userId: String, communityId: String?) {
+        // [Custom for ONE Krungthai] Add check condition for tap to community for moderator user in official community action
+        if let currentCommunityId = communityId {
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: currentCommunityId)
+        } else {
+            AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        }
+    }
+    
+    func commentCellDidTapReadMore(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        //
+    }
+    
+    func commentCellDidTapLike(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            if comment.isLiked {
+                screenViewModel.action.unlikeComment(withCommendId: comment.id)
+            } else {
+                screenViewModel.action.likeComment(withCommendId: comment.id)
+            }
+        case .post, .loadMoreReply:
+            break
+        }
+    }
+    
+    func commentCellDidTapReply(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell),
+            case .comment(let comment) = screenViewModel.item(at: indexPath) else { return }
+        parentComment = comment
+        _ = commentComposeBarView.becomeFirstResponder()
+    }
+    
+    func commentCellDidTapOption(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            presentOptionBottomSheet(comment: comment)
+        case .post, .loadMoreReply:
+            break
+        }
+    }
+    
+    func commentCellDidTapReactionDetails(_ cell: AmityCommentWithURLPreviewTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        switch screenViewModel.item(at: indexPath) {
+        case .comment(let comment), .replyComment(let comment):
+            let info = AmityReactionInfo(referenceId: comment.id, referenceType: .comment, reactionsCount: comment.reactionsCount)
+            let reactionList = screenViewModel.dataSource.getReactionList()
+            
+            self.showReactionUserList(info: info, reactionList: [:])
+        case .post, .loadMoreReply:
+            break
+        }
+    }
+    
+    func commentCellDidTapCommentImage(_ cell: AmityCommentWithURLPreviewTableViewCell, imageView: UIImageView, fileURL: String?) {
+        guard let image = imageView.image else {
+            print("Invalid image")
+            return
+        }
+        
+        guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+            print("Invalid layer position: \(imageView.layer.position)")
+            return
+        }
+        
+        let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL ?? "")
+        self.present(photoViewerVC, animated: true, completion: nil)
+    }
+}
+
 // MARK: - UITableViewDataSource
 extension AmityPostDetailViewController: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mentionManager?.users.count ?? 0
+        if tableView.tag != 1 {
+            return mentionManager?.users.count ?? 0
+        } else {
+            return mentionManager?.keywords.count ?? 0
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
-        cell.display(with: model)
-        return cell
+        if tableView.tag != 1 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityMentionTableViewCell.identifier) as? AmityMentionTableViewCell, let model = mentionManager?.item(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: AmityHashtagTableViewCell.identifier) as? AmityHashtagTableViewCell, let model = mentionManager?.itemHashtag(at: indexPath) else { return UITableViewCell() }
+            cell.display(with: model)
+            return cell
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
 extension AmityPostDetailViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return AmityMentionTableViewCell.height
+        if tableView.tag != 1 {
+            return AmityMentionTableViewCell.height
+        } else {
+            return AmityHashtagTableViewCell.height
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        mentionManager?.addMention(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        if tableView.tag != 1 {
+            mentionManager?.addMention(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        } else {
+            mentionManager?.addHashtag(from: commentComposeBarView.textView, in: commentComposeBarView.textView.text, at: indexPath)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
-            mentionManager?.loadMore()
+        if tableView.tag != 1 {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMore()
+            }
+        } else {
+            if indexPath.row == (mentionManager?.users.count ?? 0) - 4 {
+                mentionManager?.loadMoreHashtag()
+            }
         }
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // Do not anything
     }
 }
 
 // MARK: - AmityMentionManagerDelegate
 extension AmityPostDetailViewController: AmityMentionManagerDelegate {
+    public func didRemoveAttributedString() {
+        commentComposeBarView.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
+    }
+    
+    public func didGetHashtag(keywords: [AmityHashtagModel]) {
+        if keywords.isEmpty {
+            hashtagTableViewHeightConstraint.constant = 0
+            hashtagTableView.isHidden = true
+        } else {
+            var heightConstant:CGFloat = 240.0
+            if keywords.count < 5 {
+                heightConstant = CGFloat(keywords.count) * 52.0
+            }
+            hashtagTableViewHeightConstraint.constant = heightConstant
+            hashtagTableView.isHidden = false
+            hashtagTableView.reloadData()
+        }
+    }
+    
     public func didCreateAttributedString(attributedString: NSAttributedString) {
         commentComposeBarView.textView.attributedText = attributedString
         commentComposeBarView.textView.typingAttributes = [.font: AmityFontSet.body, .foregroundColor: AmityColorSet.base]
@@ -863,10 +1403,7 @@ extension AmityPostDetailViewController: AmityMentionManagerDelegate {
             mentionTableViewHeightConstraint.constant = 0
             mentionTableView.isHidden = true
         } else {
-            var heightConstant:CGFloat = 240.0
-            if users.count < 5 {
-                heightConstant = CGFloat(users.count) * 52.0
-            }
+            var heightConstant:CGFloat = 200.0
             mentionTableViewHeightConstraint.constant = heightConstant
             mentionTableView.isHidden = false
             mentionTableView.reloadData()

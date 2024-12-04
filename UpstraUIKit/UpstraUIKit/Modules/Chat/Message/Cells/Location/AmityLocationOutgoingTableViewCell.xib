@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="641" id="3Qk-dt-Wpe" customClass="AmityLocationOutgoingTableViewCell" customModule="AmityUIKit" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="561" height="641"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="3Qk-dt-Wpe" id="AIt-CO-NbF">
+                <rect key="frame" x="0.0" y="0.0" width="561" height="641"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="33d-AN-6E9" userLabel="Container Content View">
+                        <rect key="frame" x="72" y="8" width="473" height="621"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="HaI-eJ-O00">
+                                <rect key="frame" x="0.0" y="0.0" width="473" height="617"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zYo-1d-nHQ" customClass="AmityResponsiveView" customModule="AmityUIKit" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="473" height="617"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="5bZ-1Q-vhh" userLabel="Vertical Stack View">
+                                                <rect key="frame" x="12" y="12" width="449" height="593"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="epa-QV-vV5" userLabel="Group Image View">
+                                                        <rect key="frame" x="0.0" y="0.0" width="449" height="224.66666666666666"/>
+                                                        <subviews>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fdb-Fm-QwN">
+                                                                <rect key="frame" x="0.0" y="0.0" width="449" height="224.66666666666666"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" secondItem="fdb-Fm-QwN" secondAttribute="height" multiplier="1:0.5" id="4Xh-jP-Kyw"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstAttribute="trailing" secondItem="fdb-Fm-QwN" secondAttribute="trailing" id="0P0-0K-AeB"/>
+                                                            <constraint firstItem="fdb-Fm-QwN" firstAttribute="leading" secondItem="epa-QV-vV5" secondAttribute="leading" id="pbL-eS-zni"/>
+                                                            <constraint firstItem="fdb-Fm-QwN" firstAttribute="top" secondItem="epa-QV-vV5" secondAttribute="top" id="r2E-Oj-7vv"/>
+                                                            <constraint firstAttribute="bottom" secondItem="fdb-Fm-QwN" secondAttribute="bottom" id="wWL-VA-QyG"/>
+                                                        </constraints>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="yVO-wK-aFP" customClass="AmityExpandableLabel" customModule="AmityUIKit" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="236.66666666666671" width="449" height="356.33333333333326"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    </view>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstItem="5bZ-1Q-vhh" firstAttribute="leading" secondItem="zYo-1d-nHQ" secondAttribute="leading" constant="12" id="9As-Mv-Keq"/>
+                                            <constraint firstItem="5bZ-1Q-vhh" firstAttribute="top" secondItem="zYo-1d-nHQ" secondAttribute="top" constant="12" id="FNc-rp-CrJ"/>
+                                            <constraint firstAttribute="trailing" secondItem="5bZ-1Q-vhh" secondAttribute="trailing" constant="12" id="Fyq-h9-2fH"/>
+                                            <constraint firstAttribute="bottom" secondItem="5bZ-1Q-vhh" secondAttribute="bottom" constant="12" id="r74-8F-MEU"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="zYo-1d-nHQ" firstAttribute="top" secondItem="HaI-eJ-O00" secondAttribute="top" id="Bau-Ks-4b6"/>
+                                    <constraint firstAttribute="trailing" secondItem="zYo-1d-nHQ" secondAttribute="trailing" id="Q04-Hw-g5g"/>
+                                    <constraint firstAttribute="bottom" secondItem="zYo-1d-nHQ" secondAttribute="bottom" id="gVU-4u-ddH"/>
+                                    <constraint firstItem="zYo-1d-nHQ" firstAttribute="leading" secondItem="HaI-eJ-O00" secondAttribute="leading" id="rur-vU-MnC"/>
+                                </constraints>
+                            </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="LLi-oD-Si3" userLabel="Vertical Stack View">
+                                <rect key="frame" x="0.0" y="621" width="473" height="0.0"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R0L-XF-YnZ">
+                                        <rect key="frame" x="333.66666666666669" y="0.0" width="139.33333333333331" height="0.0"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Bcf-HA-DaS">
+                                                <rect key="frame" x="0.0" y="0.0" width="139.33333333333334" height="0.0"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="HtW-4D-Uds">
+                                                        <rect key="frame" x="0.0" y="0.0" width="14" height="0.0"/>
+                                                    </imageView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bLB-KU-won">
+                                                        <rect key="frame" x="18" y="0.0" width="64" height="0.0"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B0h-yv-Yw3">
+                                                        <rect key="frame" x="86" y="0.0" width="53.333333333333343" height="0.0"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="Bcf-HA-DaS" firstAttribute="top" secondItem="R0L-XF-YnZ" secondAttribute="top" id="28Z-yt-A6I"/>
+                                            <constraint firstAttribute="trailing" secondItem="Bcf-HA-DaS" secondAttribute="trailing" id="BxB-1F-dNj"/>
+                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Bcf-HA-DaS" secondAttribute="bottom" id="YWh-XH-J8O"/>
+                                            <constraint firstItem="Bcf-HA-DaS" firstAttribute="leading" secondItem="R0L-XF-YnZ" secondAttribute="leading" id="uiX-t0-o4n"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                    </stackView>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="D6T-vx-4QZ" userLabel="Container Report View">
+                        <rect key="frame" x="39" y="308" width="25" height="25"/>
+                        <subviews>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconError" translatesAutoresizingMaskIntoConstraints="NO" id="tII-Yq-wIA">
+                                <rect key="frame" x="-24" y="0.66666666666668561" width="24" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="24" id="4Rq-LG-YUt"/>
+                                    <constraint firstAttribute="width" constant="24" id="Gy3-RL-bM4"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WrD-P6-0Kn">
+                                <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="Ece-Ja-zw8"/>
+                                    <constraint firstAttribute="height" constant="25" id="Tka-LF-ddY"/>
+                                </constraints>
+                                <state key="normal" image="icon_message_failed"/>
+                                <connections>
+                                    <action selector="errorTap" destination="3Qk-dt-Wpe" eventType="touchUpInside" id="QLB-QW-nin"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="33d-AN-6E9" firstAttribute="top" secondItem="AIt-CO-NbF" secondAttribute="top" constant="8" id="7tO-nv-ED4"/>
+                    <constraint firstItem="33d-AN-6E9" firstAttribute="leading" secondItem="D6T-vx-4QZ" secondAttribute="trailing" constant="8" id="81g-ED-fzK"/>
+                    <constraint firstItem="33d-AN-6E9" firstAttribute="leading" secondItem="AIt-CO-NbF" secondAttribute="leading" constant="72" id="YFz-op-mNX"/>
+                    <constraint firstAttribute="bottom" secondItem="33d-AN-6E9" secondAttribute="bottom" constant="12" id="bFX-fZ-oCK"/>
+                    <constraint firstItem="D6T-vx-4QZ" firstAttribute="centerY" secondItem="AIt-CO-NbF" secondAttribute="centerY" id="eZk-ds-7Hx"/>
+                    <constraint firstAttribute="trailing" secondItem="33d-AN-6E9" secondAttribute="trailing" constant="16" id="f6L-jC-zWQ"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="K7M-BK-9zi"/>
+            <connections>
+                <outlet property="addressLabel" destination="yVO-wK-aFP" id="bCp-sT-yDU"/>
+                <outlet property="containerMessageView" destination="HaI-eJ-O00" id="2EZ-I6-9NC"/>
+                <outlet property="containerMetadataView" destination="R0L-XF-YnZ" id="4kv-5W-brV"/>
+                <outlet property="containerView" destination="zYo-1d-nHQ" id="vS3-jG-Hhs"/>
+                <outlet property="errorButton" destination="WrD-P6-0Kn" id="DgG-d6-yny"/>
+                <outlet property="messageImageView" destination="fdb-Fm-QwN" id="E5U-15-Te1"/>
+                <outlet property="metadataLabel" destination="bLB-KU-won" id="PjK-jp-RFO"/>
+                <outlet property="readCountLabel" destination="B0h-yv-Yw3" id="shI-Fy-eHz"/>
+                <outlet property="reportIconImageView" destination="tII-Yq-wIA" id="LQE-6j-7jj"/>
+                <outlet property="statusMetadataImageView" destination="HtW-4D-Uds" id="5Jg-VK-D1w"/>
+            </connections>
+            <point key="canvasLocation" x="234.35114503816794" y="482.04225352112678"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="iconError" width="78" height="78"/>
+        <image name="icon_delete_message" width="14" height="16"/>
+        <image name="icon_message_failed" width="16" height="16"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

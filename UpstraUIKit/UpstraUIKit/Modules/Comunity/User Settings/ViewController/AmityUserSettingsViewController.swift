@@ -28,11 +28,13 @@ final class AmityUserSettingsViewController: AmityViewController {
         screenViewModel.delegate = self
         setupView()
         setupSettingTableView()
-        screenViewModel.action.fetchUserSettings()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // [Custom for ONE Krungthai][Improvement] Move fetch user setting and add retrieve notification settings in viewWill appear for update data when back from each edit setting
+        screenViewModel.action.fetchUserSettings()
+        screenViewModel.action.retrieveNotifcationSettings()
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
@@ -76,14 +78,18 @@ final class AmityUserSettingsViewController: AmityViewController {
                     actions: [.cancel(handler: nil),
                               .custom(title: AmityLocalizedStringSet.UserSettings.itemUnfollow.localizedString,
                                       style: .destructive, handler: { [weak self] in
-                                        self?.screenViewModel.action.unfollowUser()
+                                          self?.screenViewModel.action.unfollowUser()
                                       })],
                     from: self)
             case .report:
                 screenViewModel.action.reportUser()
             case .unreport:
                 screenViewModel.action.unreportUser()
-            case .basicInfo, .manage, .editProfile:
+            case .basicInfo, .manage, .editProfile, .notification:
+                break
+            case .inviteViaQRAndLink:
+                break
+            case .inviteViaQRAndLinkFriend:
                 break
             }
         case .navigationContent(let content):
@@ -91,6 +97,23 @@ final class AmityUserSettingsViewController: AmityViewController {
             switch item {
             case .editProfile:
                 AmityEventHandler.shared.editUserDidTap(from: self, userId: screenViewModel.dataSource.userId)
+            case .notification: // [Custom for ONE Krungthai][Improvement] Add handle action of notification setting item
+                let vc = AmityUserNotificationSettingsViewController.make()
+                navigationController?.pushViewController(vc, animated: true)
+            case .inviteViaQRAndLink:
+                // ktb kk goto share qr from user setting
+                //AmityEventHandler.shared.gotoKTBShareQR(v:self ,url: "AmityUserSetting")
+            let descriptionOrDisplayName = screenViewModel?.dataSource.user?.userDescription.isEmpty != false
+                        ? screenViewModel?.dataSource.user?.displayName ?? ""
+                        : screenViewModel?.dataSource.user?.userDescription ?? ""
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: descriptionOrDisplayName)
+            case .inviteViaQRAndLinkFriend:
+                // ktb kk goto ahare qr from user setting
+                    
+                let descriptionOrDisplayName = screenViewModel?.dataSource.user?.userDescription.isEmpty != false
+                        ? screenViewModel?.dataSource.user?.displayName ?? ""
+                        : screenViewModel?.dataSource.user?.userDescription ?? ""
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .userProfile, id: screenViewModel?.dataSource.user?.userId ?? "", title: screenViewModel?.dataSource.user?.displayName ?? "", desc: descriptionOrDisplayName)
             case .basicInfo, .manage, .report, .unfollow, .unreport:
                 break
             }

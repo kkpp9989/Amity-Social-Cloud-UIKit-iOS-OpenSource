@@ -60,7 +60,7 @@ public final class AmityMyCommunityViewController: AmityViewController {
     private func setupView() {
         title = AmityLocalizedStringSet.myCommunityTitle.localizedString
         if communityCreationButtonVisible() {
-            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(createCommunityTap))
+            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(createCommunityTap)) // [Custom for ONE Krungthai] Set custom icon theme
             rightItem.tintColor = AmityColorSet.base
             navigationItem.rightBarButtonItem = rightItem
         }

@@ -21,11 +21,9 @@ class AmityCategorySeletionTableViewCell: UITableViewCell, Nibbable {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        selectionStyle = .none
-        backgroundColor = AmityColorSet.backgroundColor
-        contentView.backgroundColor = AmityColorSet.backgroundColor
-        checkmarkImageView.image = AmityIconSet.iconCheckMark
-        checkmarkImageView.tintColor = AmityColorSet.primary
+        
+        // [Improvement] Encapsulate statement to setupView() function
+        setupView()
     }
     
     override func prepareForReuse() {
@@ -41,9 +39,30 @@ class AmityCategorySeletionTableViewCell: UITableViewCell, Nibbable {
     
     func configure(category: AmityCommunityCategory, shouldSelectionEnable: Bool) {
         titleLabel.text = category.name
+        
+        // [Fix defect] Set font of title label refer to AmityFontSet
+        titleLabel.textColor = AmityColorSet.base
+        titleLabel.font = AmityFontSet.bodyBold
+        
         avatarView.setImage(withImageURL: category.avatar?.fileURL ?? "", placeholder: AmityIconSet.defaultCategory)
         self.shouldSelectionEnable = shouldSelectionEnable
         checkmarkTrailingConstraint.constant = shouldSelectionEnable ? 38 : 8
     }
     
+}
+
+// MARK: - Setup view
+private extension AmityCategorySeletionTableViewCell {
+    func setupView() {
+        selectionStyle = .none
+        backgroundColor = AmityColorSet.backgroundColor
+        contentView.backgroundColor = AmityColorSet.backgroundColor
+        checkmarkImageView.image = AmityIconSet.iconCheckMark
+        checkmarkImageView.tintColor = AmityColorSet.primary
+        
+        // [Improvement] Set avatar view setting same as trending community table view cell
+        avatarView.placeholderPostion = .fullSize
+        avatarView.contentMode = .scaleAspectFill
+        avatarView.placeholder = AmityIconSet.defaultCategory
+    }
 }

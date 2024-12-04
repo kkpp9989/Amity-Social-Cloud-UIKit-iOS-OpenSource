@@ -23,4 +23,6 @@ public protocol AmityPostComposable {
     
     // This can be optional
     func getComponentHeight(indexPath: IndexPath) -> CGFloat
+    
+    func disableTopPadding(cell: AmityPostHeaderProtocol)
 }

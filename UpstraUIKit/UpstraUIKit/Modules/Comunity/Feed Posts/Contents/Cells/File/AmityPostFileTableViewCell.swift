@@ -97,11 +97,14 @@ extension AmityPostFileTableViewCell: AmityFileTableViewDelegate {
     }
     
     func fileTableViewDidTapViewAll(_ view: AmityFileTableView) {
-        performAction(action: .tapViewAll)
+        performAction(action: .tapViewAll())
     }
 }
 
 extension AmityPostFileTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        performAction(action: .tapOnPostIdLink(postId: postId))
+    }
     
     public func willExpandLabel(_ label: AmityExpandableLabel) {
         performAction(action: .willExpandExpandableLabel(label: label))
@@ -125,5 +128,9 @@ extension AmityPostFileTableViewCell: AmityExpandableLabelDelegate {
     
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
     }
 }

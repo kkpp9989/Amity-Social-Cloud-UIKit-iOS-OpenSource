@@ -58,7 +58,7 @@ private extension AmityPollCreatorScreenViewModel {
         let success = post != nil
         Log.add("Poll post created: \(success) Error: \(String(describing: error))")
         delegate?.screenViewModelDidCreatePost(self, post: post, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: post?.postId)
     }
 }
 

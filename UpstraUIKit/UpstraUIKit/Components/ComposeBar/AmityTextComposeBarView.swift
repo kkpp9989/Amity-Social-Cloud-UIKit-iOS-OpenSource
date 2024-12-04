@@ -13,6 +13,12 @@ extension AmityTextComposeBarView: UIKeyInput {
     func insertText(_ text: String) { }
     func deleteBackward() { }
 }
+
+protocol AmityTextComposeBarViewDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+}
+
 /// TextView Compose Bar
 class AmityTextComposeBarView: AmityView {
     
@@ -34,7 +40,8 @@ class AmityTextComposeBarView: AmityView {
     var textViewDidChanged: ((String) -> Void)?
     var textViewShouldBeginEditing: ((AmityTextView) -> Void)?
     var maxHeight: CGFloat = 120
-
+	weak var delegate: AmityTextComposeBarViewDelegate?
+	
     private var defaultHeightTextView: CGFloat = 0
     
     /// Text
@@ -81,11 +88,15 @@ class AmityTextComposeBarView: AmityView {
     
     private func setupView() {
         contentView.backgroundColor = AmityColorSet.backgroundColor
-        textView.backgroundColor = AmityColorSet.backgroundColor
+        /* [Custom for ONE Krungthai] Set new design of text compose bar view refer to ONE KTB figma */
+//        textView.backgroundColor = AmityColorSet.backgroundColor // [Original]
+        textView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         textView.layer.borderWidth = 1
         textView.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
-        textView.layer.cornerRadius = 4
+//        textView.layer.cornerRadius = 4 // [Original]
+        textView.layer.cornerRadius = textView.frame.height / 2
         textView.customTextViewDelegate = self
+        textView.inputAccessoryView = UIView() // [Improvement] Delete done button view in keyboard
         
         defaultHeightTextView = textView.frame.height
     }
@@ -108,7 +119,7 @@ extension AmityTextComposeBarView: AmityTextViewDelegate {
         guard !(((currentText == "") && (text == " ")) || ((currentText == "") && (text == "\n"))) else {
             return false
         }
-        return true
+		return delegate?.composeView(self, shouldChangeTextIn: range, replacementText: text) ?? true
     }
     
     func textViewDidChange(_ textView: AmityTextView) {
@@ -127,4 +138,8 @@ extension AmityTextComposeBarView: AmityTextViewDelegate {
         textViewShouldBeginEditing?(textView)
         return true
     }
+	
+	func textViewDidChangeSelection(_ textView: AmityTextView) {
+		delegate?.composeViewDidChangeSelection(self)
+	}
 }

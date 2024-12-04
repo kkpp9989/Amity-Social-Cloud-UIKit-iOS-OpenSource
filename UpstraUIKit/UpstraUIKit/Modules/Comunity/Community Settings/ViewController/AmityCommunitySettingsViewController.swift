@@ -34,7 +34,6 @@ final class AmityCommunitySettingsViewController: AmityViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         screenViewModel.action.retrieveCommunity()
-        screenViewModel.action.retrieveNotifcationSettings()
         
         // Set color navigation bar by custom theme
         theme?.setBackgroundNavigationBar()
@@ -91,6 +90,9 @@ final class AmityCommunitySettingsViewController: AmityViewController {
             case .postReview:
                 let vc = AmityPostReviewSettingsViewController.make(communityId: community.communityId)
                 navigationController?.pushViewController(vc, animated: true)
+            case .inviteViaQRAndLink:
+                // ktb kk goto share qr from Community setting
+                AmityEventHandler.shared.gotoKTBShareQR(v: self, type: .communityProfilePage, id: community.communityId, title: community.displayName, desc: community.description)
             default:
                 break
             }

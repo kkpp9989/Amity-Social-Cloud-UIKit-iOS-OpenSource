@@ -36,7 +36,7 @@ import Photos
             return assetStore.assets
         }
     }
-
+        
     // Note this trick to get the apple localization no longer works.
     // Figure out why. Until then, expose the variable for users to set to whatever they want it localized to
     // TODO: Fix this ^^
@@ -126,6 +126,12 @@ import Photos
         doneButton.target = self
         doneButton.action = #selector(doneButtonPressed(_:))
         doneButton.tintColor = AmityColorSet.primary
+        
+        // [Fix defect] Set font of done button refer to AmityFontSet
+        doneButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .normal)
+        doneButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        doneButton.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         firstViewController?.navigationItem.rightBarButtonItem = doneButton
 
         cancelButton.target = self

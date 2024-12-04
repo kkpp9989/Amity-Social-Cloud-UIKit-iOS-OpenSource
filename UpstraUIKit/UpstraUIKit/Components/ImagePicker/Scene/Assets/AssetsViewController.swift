@@ -83,7 +83,13 @@ class AssetsViewController: UIViewController {
             assertionFailure("AssetsViewController only support either .image or .video, but not both")
             pageHeaderTitle = ""
         }
-        navigationItem.title = pageHeaderTitle
+        
+        // [Fix defect] Set font of navigation title refer to AmityFontSet
+        let pageHeaderTitleCustom = UILabel()
+        pageHeaderTitleCustom.text = pageHeaderTitle
+        pageHeaderTitleCustom.font = AmityFontSet.title
+        pageHeaderTitleCustom.textColor = AmityColorSet.base
+        navigationItem.titleView = pageHeaderTitleCustom
         
         collectionView.allowsMultipleSelection = true
         collectionView.bounces = true
@@ -211,7 +217,13 @@ extension AssetsViewController: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        guard store.count < settings.selection.max || settings.selection.unselectOnReachingMax else { return false }
+        guard store.count < settings.selection.max || settings.selection.unselectOnReachingMax else {
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                let message = String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.alertSelectImageFull.localizedString, String(settings.selection.max))
+                ToastView.shared.showToast(message: message, in: window)
+            }
+            return false
+        }
         selectionFeedback.prepare()
 
         return true

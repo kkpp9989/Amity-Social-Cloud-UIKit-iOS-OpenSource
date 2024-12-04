@@ -25,12 +25,15 @@ public enum AmityPostAction {
     case tapMedia(media: AmityMedia)
     case tapMediaInside(media: AmityMedia, photoViewer: AmityPhotoViewerController)
     case tapFile(file: AmityFile)
-    case tapViewAll
-    case tapExpandableLabel(label: AmityExpandableLabel)
+    case tapViewAll(postId: String? = nil, pollAnswers: [String: [String]]? = nil)
+    case tapExpandableLabel(label: AmityExpandableLabel, postId: String? = nil, pollAnswers: [String: [String]]? = nil)
     case willExpandExpandableLabel(label: AmityExpandableLabel)
     case didExpandExpandableLabel(label: AmityExpandableLabel)
     case willCollapseExpandableLabel(label: AmityExpandableLabel)
     case didCollapseExpandableLabel(label: AmityExpandableLabel)
     case submit
     case tapOnMentionWithUserId(userId: String)
+    case tapOnHashtagWithKeyword(keyword: String, count: Int)
+    case tapPollAnswers(postId: String, pollAnswers: [String: [String]])
+    case tapOnPostIdLink(postId: String)
 }

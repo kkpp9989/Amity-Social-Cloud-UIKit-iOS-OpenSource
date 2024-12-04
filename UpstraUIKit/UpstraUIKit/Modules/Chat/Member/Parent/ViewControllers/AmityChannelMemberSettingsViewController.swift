@@ -17,12 +17,22 @@ public final class AmityChannelMemberSettingsViewController: AmityPageViewContro
     private var memberVC: AmityChannelMemberViewController?
     private var moderatorVC: AmityChannelMemberViewController?
     
+    // MARK: - Custom Theme Properties [Additional]
+    private var theme: ONEKrungthaiCustomTheme?
+    
     // MARK: - View lifecycle
     public override func viewDidLoad() {
         super.viewDidLoad()
         title = AmityLocalizedStringSet.ChatSettings.navigationTitle.localizedString
         screenViewModel.delegate = self
         screenViewModel.action.getUserRoles()
+        
+        theme = ONEKrungthaiCustomTheme(viewController: self)
+        theme?.setBackgroundApp(index: 0)
+    }
+    
+    override public func viewWillAppear(_ animated: Bool) {
+        theme?.clearNavigationBarSetting()
     }
     
     public static func make(channel: AmityChannelModel) -> AmityChannelMemberSettingsViewController {
@@ -62,13 +72,20 @@ public final class AmityChannelMemberSettingsViewController: AmityPageViewContro
 
 extension AmityChannelMemberSettingsViewController: AmityChannelMemberSettingsScreenViewModelDelegate {
     func screenViewModelShouldShowAddButtonBarItem(status: Bool) {
+        // [Original]
         if status {
-            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAdd, style: .plain, target: self, action: #selector(addMemberTap))
+            let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
             rightItem.tintColor = AmityColorSet.base
             navigationItem.rightBarButtonItem = rightItem
             navigationController?.reset()
         } else {
             navigationItem.rightBarButtonItem = nil
         }
+        
+        // [Custom for ONE Krungthai] Show add member button all role
+//        let rightItem = UIBarButtonItem(image: AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(addMemberTap)) // [Custom for ONE Krungthai] Set custom icon theme
+//        rightItem.tintColor = AmityColorSet.base
+//        navigationItem.rightBarButtonItem = rightItem
+//        navigationController?.reset()
     }
 }

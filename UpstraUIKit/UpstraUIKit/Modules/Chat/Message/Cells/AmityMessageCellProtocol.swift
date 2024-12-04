@@ -10,7 +10,11 @@ import UIKit
 import AmitySDK
 
 public protocol AmityMessageCellProtocol: UITableViewCell, AmityCellIdentifiable {
+    var tableBoundingWidth: CGFloat? { get set }
     func display(message: AmityMessageModel)
+    func displaySelected(isSelected: Bool)
+    func setChannelType(channelType: AmityChannelType)
+    func setChannel(with _channel: AmityChannelModel)
     static func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat
 }
 
@@ -34,4 +38,6 @@ enum AmityMessageLabelEvents {
     case didExpandExpandableLabel(label: AmityExpandableLabel)
     case willCollapseExpandableLabel(label: AmityExpandableLabel)
     case didCollapseExpandableLabel(label: AmityExpandableLabel)
+	case didTapOnMention(label: AmityExpandableLabel, userId: String)
+    case didTapOnPostIdLink(label: AmityExpandableLabel, postId: String)
 }

@@ -10,8 +10,8 @@ import UIKit
 import AmitySDK
 
 protocol AmityGroupChatEditorScreenViewModelAction {
-    func update(displayName: String)
-    func update(avatar: UIImage, completion: @escaping (Bool) -> ())
+    func update(displayName: String) async -> Bool
+    func update(avatar: UIImage) async -> Bool
 }
 
 protocol AmityGroupChatEditorViewModelDataSource {
@@ -21,9 +21,7 @@ protocol AmityGroupChatEditorViewModelDataSource {
 
 protocol AmityGroupChatEditorScreenViewModelDelegate: AnyObject {
     func screenViewModelDidUpdate(_ viewModel: AmityGroupChatEditorScreenViewModelType)
-    func screenViewModelDidUpdateFailed(_ viewModel: AmityGroupChatEditorScreenViewModelType, withError error: String)
-    func screenViewModelDidUpdateSuccess(_ viewModel: AmityGroupChatEditorScreenViewModelType)
-    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityGroupChatEditorScreenViewModelType, progressing: Double)
 }
 
 protocol AmityGroupChatEditorScreenViewModelType: AmityGroupChatEditorScreenViewModelAction, AmityGroupChatEditorViewModelDataSource {
@@ -55,37 +53,42 @@ class AmityGroupChatEditScreenViewModel: AmityGroupChatEditorScreenViewModelType
         channelNotificationToken = channelRepository.getChannel(channelId)
             .observe({ [weak self] channel, error in
                 guard let weakself = self,
-                    let channel = channel.object else{ return }
+                    let channel = channel.snapshot else{ return }
                 weakself.channel = channel
                 weakself.delegate?.screenViewModelDidUpdate(weakself)
             })
     }
     
-    func update(displayName: String) {
-        // Update
-        channelUpdateBuilder.setDisplayName(displayName)
-                
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.updateChannel, parameters: channelUpdateBuilder) { [weak self] channel, error in
-            guard let weakSelf = self else { return }
-            
-            if let error = error {
-                weakSelf.delegate?.screenViewModelDidUpdateFailed(weakSelf, withError: error.localizedDescription)
-            } else {
-                weakSelf.delegate?.screenViewModelDidUpdateSuccess(weakSelf)
-            }
+    func update(displayName: String) async -> Bool {
+        do {
+            // Set about text to builder
+            channelUpdateBuilder.setDisplayName(displayName)
+            // Update profile
+            let _ = try await channelRepository.editChannel(with: channelUpdateBuilder)
+            return true
+        } catch {
+//            print("[Chat] Can't update display name / about to profile with error: \(error.localizedDescription)")
+            return false
         }
     }
     
-    func update(avatar: UIImage, completion: @escaping (Bool) -> ()) {
-        // Update user avatar
-        fileRepository.uploadImage(avatar, progress: nil) { [weak self] (imageData, error) in
-            guard let weakSelf = self else { return }
-            weakSelf.channelUpdateBuilder.setAvatar(imageData)
-            
-            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: weakSelf.channelRepository.updateChannel, parameters: weakSelf.channelUpdateBuilder) { [weak self] channel, error in
-                guard let weakSelf = self else { return }
-                completion(error == nil)
+    func update(avatar: UIImage) async -> Bool {
+        do {
+            // Upload avatar image
+            let imageData = try await fileRepository.uploadImage(avatar) { progress in
+//                print("[Avatar][Chat] Upload progressing result: \(progress)")
+                DispatchQueue.main.async {
+                    self.delegate?.screenViewModelDidUpdateAvatarUploadingProgress(self, progressing: progress)
+                }
             }
+            // Set avatar to update builder
+            channelUpdateBuilder.setAvatar(imageData)
+            // Update group chat profile
+            let _ = try await channelRepository.editChannel(with: channelUpdateBuilder)
+            return true
+        } catch {
+//          print("[Chat] Can't update avatar to profile with error: \(error.localizedDescription)")
+            return false
         }
     }
     

@@ -18,12 +18,14 @@ enum AmityPostMenuActionType {
     case video
     case file
     case expand
+    case maps
 }
 
 public enum AmityPostAttachmentType: CaseIterable {
     case image
     case video
     case file
+    case comment
 }
 
 class AmityPostTextEditorMenuView: UIView {
@@ -39,6 +41,7 @@ class AmityPostTextEditorMenuView: UIView {
     private let videoButton = AmityButton(frame: .zero)
     private let fileButton = AmityButton(frame: .zero)
     private let expandButton = AmityButton(frame: .zero)
+    private let mapsButton = AmityButton(frame: .zero)
     
     var currentAttachmentState: AmityPostAttachmentType? {
         didSet {
@@ -59,7 +62,10 @@ class AmityPostTextEditorMenuView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        // You can customize the Set of allowed attachments here if needed
+        self.allowPostAttachments = []
+        super.init(coder: coder)
+        commonInit()
     }
     
     private func commonInit() {
@@ -85,12 +91,14 @@ class AmityPostTextEditorMenuView: UIView {
         videoButton.addTarget(self, action: #selector(tapVideo), for: .touchUpInside)
         fileButton.setImage(AmityIconSet.iconAttach, for: .normal)
         fileButton.addTarget(self, action: #selector(tapFile), for: .touchUpInside)
+        mapsButton.setImage(AmityIconSet.CreatePost.iconLocation, for: .normal)
+        mapsButton.addTarget(self, action: #selector(tapMaps), for: .touchUpInside)
         expandButton.setImage(AmityIconSet.iconDownChevron, for: .normal)
         expandButton.addTarget(self, action: #selector(tapExpand), for: .touchUpInside)
         
         // Setup arrangedSubview in stackview
         
-        let buttonsToAdd = [cameraButton, albumButton, videoButton, fileButton, expandButton]
+        let buttonsToAdd = [cameraButton, albumButton, videoButton, fileButton, mapsButton, expandButton]
         for button in buttonsToAdd {
             button.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
@@ -111,6 +119,9 @@ class AmityPostTextEditorMenuView: UIView {
         videoButton.isHidden = allowPostAttachments.isDisjoint(with: [.video])
         fileButton.isHidden = allowPostAttachments.isDisjoint(with: [.file])
         
+        let isEnableMenu = AmityUIKitManagerInternal.shared.isEnableSocialLocation
+        mapsButton.isHidden = !isEnableMenu
+
         // At empty view, at beginning, and the end of the stackview.
         // This logic works together with stackView.distribution = .equalCentering
         // To create buttons position arrangment, and also create negative space at left and right side.
@@ -143,21 +154,33 @@ class AmityPostTextEditorMenuView: UIView {
             albumButton.isEnabled = true
             videoButton.isEnabled = false
             fileButton.isEnabled = false
+            mapsButton.isEnabled = true
         case .video:
             cameraButton.isEnabled = true
             albumButton.isEnabled = false
             videoButton.isEnabled = true
             fileButton.isEnabled = false
+            mapsButton.isEnabled = true
         case .file:
             cameraButton.isEnabled = false
             albumButton.isEnabled = false
             videoButton.isEnabled = false
             fileButton.isEnabled = true
+            mapsButton.isEnabled = true
         case .none:
             cameraButton.isEnabled = true
             albumButton.isEnabled = true
             videoButton.isEnabled = true
             fileButton.isEnabled = true
+            mapsButton.isEnabled = true
+        case .comment:
+            stackView.alignment = .leading
+            cameraButton.isHidden = true
+            albumButton.isHidden = false
+            videoButton.isHidden = true
+            fileButton.isHidden = true
+            mapsButton.isHidden = true
+            expandButton.isHidden = true
         }
     }
     
@@ -183,4 +206,7 @@ class AmityPostTextEditorMenuView: UIView {
         delegate?.postMenuView(self, didTap: .expand)
     }
 
+    @objc private func tapMaps() {
+        delegate?.postMenuView(self, didTap: .maps)
+    }
 }

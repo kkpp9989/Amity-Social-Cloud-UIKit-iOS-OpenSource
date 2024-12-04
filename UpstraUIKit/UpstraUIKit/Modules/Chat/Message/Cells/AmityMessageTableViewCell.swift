@@ -21,22 +21,32 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     @IBOutlet var containerView: AmityResponsiveView!
     @IBOutlet var displayNameLabel: UILabel!
     @IBOutlet var metadataLabel: UILabel!
+    @IBOutlet var readCountLabel: UILabel!
     @IBOutlet var messageImageView: UIImageView!
     @IBOutlet var statusMetadataImageView: UIImageView!
     @IBOutlet var errorButton: UIButton!
-    
+    @IBOutlet var reportIconImageView: UIImageView!
+
     // MARK: Container
     @IBOutlet var containerMessageView: UIView!
     @IBOutlet var containerMetadataView: UIView!
+    var editMessageMenuView: AmityEditMenuView = AmityEditMenuView()
     
     // MARK: - Properties
     var screenViewModel: AmityMessageListScreenViewModelType!
     var message: AmityMessageModel!
+    var channel: AmityChannelModel?
+    var channelType: AmityChannelType?
+    var tableBoundingWidth: CGFloat?
+    var shouldShowTypingTab: Bool = false
     
     var indexPath: IndexPath!
     let editMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.edit.localizedString, action: #selector(editTap))
-    let deleteMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.delete.localizedString, action: #selector(deleteTap))
+    let deleteMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.unsend.localizedString, action: #selector(deleteTap))
     let reportMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.report.localizedString, action: #selector(reportTap))
+    let forwardMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.forward.localizedString, action: #selector(forwardTap))
+    let replyMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.reply.localizedString, action: #selector(replyTap))
+    let copyMenuItem = UIMenuItem(title: AmityLocalizedStringSet.General.copy.localizedString, action: #selector(copyTap))
     
     override var canBecomeFirstResponder: Bool {
         return true
@@ -46,13 +56,30 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         if message.isOwner {
             switch message.messageType {
             case .text:
-                return action == #selector(editTap) || action == #selector(deleteTap)
+                return action == #selector(editTap) || action == #selector(deleteTap) || action == #selector(forwardTap) || action == #selector(replyTap) || action == #selector(copyTap)
             default:
-                return action == #selector(deleteTap)
+                return action == #selector(deleteTap) || action == #selector(forwardTap) || action == #selector(replyTap)
             }
         } else {
-            return action == #selector(reportTap)
+            switch message.messageType {
+            case .text:
+                return action == #selector(replyTap) || action == #selector(forwardTap) || action == #selector(copyTap) || action == #selector(reportTap)
+            default:
+                return action == #selector(forwardTap) || action == #selector(replyTap) || action == #selector(reportTap)
+            }
         }
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .clear
+        selectedBackgroundView = backgroundView
+    }
+    
+    func setChannel(with _channel: AmityChannelModel) {
+        channel = _channel
     }
     
     override func awakeFromNib() {
@@ -67,6 +94,8 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         metadataLabel?.isHidden = false
         errorButton?.isHidden = true
         avatarView?.image = nil
+        readCountLabel?.isHidden = false
+        reportIconImageView?.isHidden = true
     }
     
     class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
@@ -93,46 +122,48 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         
         self.message = message
         
+        reportIconImageView?.isHidden = message.flagCount > 0 ? false : true
+
         if message.isOwner {
             
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
+//            switch message.messageType {
+//            case .text, .audio, .file:
+//                containerView.backgroundColor = AmityColorSet.messageBubble
+//            case .image:
+//                containerView.backgroundColor = AmityColorSet.messageBubbleInverse
+//            default:
+//                containerView.backgroundColor = AmityColorSet.backgroundColor
+//            }
             
-            switch message.messageType {
-            case .text, .audio:
-                containerView.backgroundColor = AmityColorSet.messageBubble
-            case .image:
-                containerView.backgroundColor = AmityColorSet.messageBubbleInverse
-            default:
-                containerView.backgroundColor = AmityColorSet.backgroundColor
-            }
+            setReadmoreText()
         } else {
             avatarView.placeholder = AmityIconSet.defaultAvatar
             setAvatarImage(message)
             containerView.layer.maskedCorners = setRoundCorner(isOwner: message.isOwner)
             
-            switch message.messageType {
-            case .text, .audio:
-                containerView.backgroundColor = AmityColorSet.messageBubbleInverse
-            default:
-                containerView.backgroundColor = AmityColorSet.backgroundColor
-            }
+//            switch message.messageType {
+//            case .text, .audio, .file:
+//                containerView.backgroundColor = AmityColorSet.messageBubbleInverse
+//            default:
+//                containerView.backgroundColor = AmityColorSet.backgroundColor
+//            }
             
             displayNameLabel.font = AmityFontSet.body
             displayNameLabel.textColor = AmityColorSet.base.blend(.shade1)
             
             setDisplayName(for: message)
+            
+            readCountLabel?.isHidden = true
         }
+        
+        containerView.menuItems = editMessageMenuView.generateMenuItems(message: message, indexPath: indexPath, shouldShowTypingTab: shouldShowTypingTab)
         
         setMetadata(message: message)
-        
-        if message.flagCount > 0 {
-            containerView.layer.borderColor = UIColor.red.cgColor
-            containerView.layer.borderWidth = 1
-        } else {
-            containerView.layer.borderColor = UIColor.clear.cgColor
-            containerView.layer.borderWidth = 0
-        }
-        
+    }
+    
+    func displaySelected(isSelected: Bool) {
+        self.isSelected = isSelected
     }
     
     func setMetadata(message: AmityMessageModel) {
@@ -140,9 +171,18 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
         let style: [NSAttributedString.Key : Any]? = [.foregroundColor: AmityColorSet.base.blend(.shade2),
                                                       .font: AmityFontSet.caption]
         if message.isDeleted {
+            readCountLabel?.isHidden = true
             containerMessageView.isHidden = true
-            statusMetadataImageView.isHidden = false
-            let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.deleteMessage.localizedString, message.time)
+            statusMetadataImageView.isHidden = true // Use unsent icon that attached in string instead
+            
+            // Add your image to the attributed string
+            let attachment = NSTextAttachment()
+            attachment.bounds = CGRect(x: -3, y: -3, width: 15, height: 15)
+            attachment.image = AmityIconSet.Chat.iconMessageUnsent
+            let imageString = NSAttributedString(attachment: attachment)
+            fullString.append(imageString)
+            
+            let deleteMessage =  String.localizedStringWithFormat(AmityLocalizedStringSet.MessageList.unsentMessage.localizedString, message.time)
             fullString.append(NSAttributedString(string: deleteMessage, attributes: style))
             statusMetadataImageView.image = AmityIconSet.iconDeleteMessage
         } else if message.isEdited {
@@ -153,11 +193,14 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
                 switch message.syncState {
                 case .error:
                     errorButton.isHidden = false
+                    readCountLabel?.isHidden = true
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
                 case .syncing:
                     fullString.append(NSAttributedString(string: AmityLocalizedStringSet.MessageList.sending.localizedString, attributes: style))
+                    readCountLabel?.isHidden = true
                 case .synced:
                     fullString.append(NSAttributedString(string: message.time, attributes: style))
+                    readCountLabel?.isHidden = false
                 default:
                     break
                 }
@@ -166,19 +209,36 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
             }
         }
         metadataLabel?.attributedText = fullString
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(readTap))
+        readCountLabel.isUserInteractionEnabled = true
+        readCountLabel.addGestureRecognizer(tapGesture)
+    }
+    
+    func setChannelType(channelType: AmityChannelType) {
+        self.channelType = channelType
     }
     
     // MARK: - Setup View
     private func setupView() {
-        selectionStyle = .none
+        selectionStyle = .default
+        tintColor = AmityColorSet.primary
         
         statusMetadataImageView?.isHidden = true
         containerView?.backgroundColor = UIColor.gray.withAlphaComponent(0.25)
         containerView?.layer.cornerRadius = 4
-        containerView?.menuItems = [editMenuItem, deleteMenuItem, reportMenuItem]
+//        containerView?.menuItems = [replyMenuItem, editMenuItem, copyMenuItem, forwardMenuItem, deleteMenuItem, reportMenuItem]
+        editMessageMenuView.editMessageListActionDelegate = self
+        containerView.delegate = self
         errorButton?.isHidden = true
         
-        contentView.backgroundColor = AmityColorSet.backgroundColor
+        readCountLabel.font =  AmityFontSet.caption
+        readCountLabel.textColor = AmityColorSet.base.blend(.shade2)
+        
+        contentView.superview?.backgroundColor = .clear
+        
+        reportIconImageView?.image = AmityIconSet.Chat.iconReport
+        isSelected = false
     }
     
     private func setDisplayName(for message: AmityMessageModel) {
@@ -186,17 +246,48 @@ class AmityMessageTableViewCell: UITableViewCell, AmityMessageCellProtocol {
     }
     
     private func setDisplayName(_ name: String?) {
-        displayNameLabel.text = name
+        // Create an image attachment
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.image = AmityIconSet.Chat.iconBroadcast
+        
+        // Set the image size as per your requirement
+        let imageSize = CGSize(width: 16, height: 16) // Change the size as needed
+        imageAttachment.bounds = CGRect(origin: .init(x: 0, y: -(AmityFontSet.body.pointSize * 0.25)), size: imageSize) // Set bounds to center of display name label
+        
+        // Create an attributed string with both text and the image attachment
+        let attributedString = NSMutableAttributedString(string: "\(name ?? "") ")
+        let imageString = NSAttributedString(attachment: imageAttachment)
+        if channelType == .broadcast {
+            attributedString.append(imageString)
+        }
+        
+        // Set the attributed string to the label
+        displayNameLabel.attributedText = attributedString
     }
     
     private func setAvatarImage(_ messageModel: AmityMessageModel) {
         let url = messageModel.object.user?.getAvatarInfo()?.fileURL
         avatarView.setImage(withImageURL: url, placeholder: AmityIconSet.defaultAvatar)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(avatarTap))
+        avatarView.addGestureRecognizer(tapGesture)
     }
-
+    
+    private func setReadmoreText() {
+        if let channelType = self.channelType {
+            switch channelType {
+            case .conversation:
+                readCountLabel?.text = message.object.readCount > 0 ? "• Read" : "• Sent"
+            default:
+                readCountLabel?.text = message.object.readCount > 0 ? "• Read \(message.object.readCount)" : "• Sent"
+            }
+        } else {
+            readCountLabel?.text = message.object.readCount > 0 ? "• Read" : "• Sent"
+        }
+    }
 }
 
-// MARK: - Action
+// MARK: - Action (Deprecated because use AmityEditMenuView instead)
 private extension AmityMessageTableViewCell {
     @objc
     func editTap() {
@@ -219,8 +310,45 @@ private extension AmityMessageTableViewCell {
         screenViewModel.action.performCellEvent(for: .report(indexPath: indexPath))
     }
     
-    @IBAction func errorTap() {
-        screenViewModel.action.performCellEvent(for: .deleteErrorMessage(indexPath: indexPath))
+    @objc
+    func forwardTap() {
+        screenViewModel.action.performCellEvent(for: .forward(indexPath: indexPath))
     }
     
+    @IBAction func errorTap() {
+        containerView.showOverlayView()
+        screenViewModel.action.performCellEvent(for: .openEditMenu(indexPath: indexPath, sourceView: containerView, sourceTableViewCell: self, options: containerView.menuItems))
+    }
+    
+    @objc
+    func copyTap() {
+        screenViewModel.action.performCellEvent(for: .copy(indexPath: indexPath))
+    }
+    
+    @objc
+    func replyTap() {
+        screenViewModel.action.performCellEvent(for: .reply(indexPath: indexPath))
+    }
+            
+    @objc func avatarTap() {
+        screenViewModel.action.performCellEvent(for: .avatar(indexPath: indexPath))
+    }
+    
+    @objc func readTap() {
+        screenViewModel.action.performCellEvent(for: .openReadViewer(indexPath: indexPath))
+    }
+}
+
+extension AmityMessageTableViewCell: AmityResponsiveViewDelegate {
+    
+    func didLongtapPressed(sourceView: UIView) {
+        screenViewModel.action.performCellEvent(for: .openEditMenu(indexPath: indexPath, sourceView: sourceView, sourceTableViewCell: self, options: containerView.menuItems))
+    }
+    
+}
+
+extension AmityMessageTableViewCell: AmityEditMessageListMenuViewDelegate {
+    func didTapEditMenu(event: AmityMessageListScreenViewModel.CellEvents, indexPath: IndexPath) {
+        screenViewModel.action.performCellEvent(for: event)
+    }
 }

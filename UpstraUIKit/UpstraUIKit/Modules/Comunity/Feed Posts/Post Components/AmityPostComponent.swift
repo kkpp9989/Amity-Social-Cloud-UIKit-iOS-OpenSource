@@ -33,4 +33,8 @@ struct AmityPostComponent {
     func getComponentHeight(indexPath: IndexPath) -> CGFloat {
         return _composable.getComponentHeight(indexPath: indexPath)
     }
+    
+    func disableTopPadding(cell: AmityPostHeaderProtocol){
+        cell.disableTopPadding()
+    }
 }

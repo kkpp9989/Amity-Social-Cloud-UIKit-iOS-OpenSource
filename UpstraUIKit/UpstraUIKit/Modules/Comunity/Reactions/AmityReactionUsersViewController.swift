@@ -31,15 +31,23 @@ public final class AmityReactionUsersViewController: AmityViewController {
     
     @IBOutlet private weak var tableView: UITableView!
     
+    // MARK: - Custom Theme Properties [Additional]
+//    private var theme: ONEKrungthaiCustomTheme?
+    
     let reactionsInfo: AmityReactionInfo
     let viewModel: AmityReactionUsersScreenViewModel
-    
+        
     let emptyState = AmityEmptyView()
     let refreshControl = UIRefreshControl()
     
-    required init(info: AmityReactionInfo) {
+    let reactionType: String
+    let reactionCount: Int
+
+    required init(info: AmityReactionInfo, reactionType: String, reactionCount: Int) {
         self.reactionsInfo = info
         self.viewModel = AmityReactionUsersScreenViewModel(info: reactionsInfo)
+        self.reactionType = reactionType
+        self.reactionCount = reactionCount
         super.init(nibName: AmityReactionUsersViewController.identifier, bundle: AmityUIKitManager.bundle)
     }
     
@@ -53,6 +61,16 @@ public final class AmityReactionUsersViewController: AmityViewController {
         setupViews()
         
         setupScreenViewModel()
+        
+        // Initial ONE Krungthai Custom theme
+//        theme = ONEKrungthaiCustomTheme(viewController: self)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Set color navigation bar by custom theme
+//        theme?.setBackgroundNavigationBar()
     }
     
     func setupScreenViewModel() {
@@ -94,7 +112,7 @@ public final class AmityReactionUsersViewController: AmityViewController {
         }
         
         // Fetch list of users
-        viewModel.fetchUserList()
+        viewModel.fetchUserList(reactionType: reactionType)
     }
 
     private func setupViews() {
@@ -126,12 +144,12 @@ public final class AmityReactionUsersViewController: AmityViewController {
     }
     
     @objc private func refreshData() {
-        viewModel.fetchUserList()
+        viewModel.fetchUserList(reactionType: reactionType)
     }
     
     /// Ininitializes instance of AmityReactionUsersViewController.
-    public class func make(with info: AmityReactionInfo) -> Self {
-        return self.init(info: info)
+    public class func make(with info: AmityReactionInfo, reactionType: String, reactionCount: Int) -> Self {
+        return self.init(info: info, reactionType: reactionType, reactionCount: reactionCount)
     }
     
     private func showUserProfileScreen(for userId: String) {
@@ -143,15 +161,31 @@ public final class AmityReactionUsersViewController: AmityViewController {
 extension AmityReactionUsersViewController: IndicatorInfoProvider {
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
-        // Default tab title
-        var tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString
-        
+        // Default tab properties
+		var icon: UIImage?
+		var tabTitle: String = reactionCount.formatUsingAbbrevationWithEmpty()
+		
         // Tab title if there is any reactions.
-        if reactionsInfo.reactionsCount > 0 {
-            tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionsInfo.reactionsCount.formatUsingAbbrevation()
+        switch reactionType {
+        case "create":
+			icon = AmityIconSet.iconBadgeDNASangsun
+        case "honest":
+			icon = AmityIconSet.iconBadgeDNASatsue
+        case "harmony":
+			icon = AmityIconSet.iconBadgeDNASamakki
+        case "success":
+			icon = AmityIconSet.iconBadgeDNASumrej
+        case "society":
+			icon = AmityIconSet.iconBadgeDNASangkom
+        case "like":
+			icon = AmityIconSet.iconBadgeDNALike
+        case "love":
+			icon = AmityIconSet.iconBadgeDNALove
+        default:
+            tabTitle = AmityLocalizedStringSet.General.generalAll.localizedString + " " +  reactionCount.formatUsingAbbrevationWithEmpty()
         }
-        
-        return IndicatorInfo(title: tabTitle)
+		
+        return IndicatorInfo(title: tabTitle, image: icon)
     }
 }
 
@@ -162,7 +196,7 @@ extension AmityReactionUsersViewController: UITableViewDataSource, UITableViewDe
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.reactionList.count
+        return viewModel.reactionListCount()
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -18,7 +18,8 @@ final class AmityFetchUserController {
     private var token: AmityNotificationToken?
     
     private var users: [AmitySelectMemberModel] = []
-    var storeUsers: [AmitySelectMemberModel] = []
+    var newSelectedUsers: [AmitySelectMemberModel] = []
+    var currentUsers: [AmitySelectMemberModel] = []
     
     init(repository: AmityUserRepository?) {
         self.repository = repository
@@ -28,16 +29,23 @@ final class AmityFetchUserController {
         collection = repository?.getUsers(.displayName)
         
         token = collection?.observe { [weak self] (userCollection, change, error) in
-            guard let strongSelf = self else { return }
+            guard let strongSelf = self, userCollection.dataStatus == .fresh else { return }
             if let error = error {
                 completion(.failure(error))
             } else {
                 for index in 0..<userCollection.count() {
                     guard let object = userCollection.object(at: index) else { continue }
                     let model = AmitySelectMemberModel(object: object)
-                    model.isSelected = strongSelf.storeUsers.contains { $0.userId == object.userId }
-                    if !strongSelf.users.contains(where: { $0.userId == object.userId }) {
-                        strongSelf.users.append(model)
+                    model.isSelected = strongSelf.newSelectedUsers.contains { $0.userId == object.userId }
+                    if !strongSelf.users.contains(where: { $0.userId == object.userId }) && !strongSelf.currentUsers.contains(where: { $0.userId == object.userId }) && !model.isCurrnetUser {
+                        if !object.isDeleted {
+                            if !object.isGlobalBanned {
+                                let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+                                if object.userId.rangeOfCharacter(from: specialCharacterSet) == nil {
+                                    strongSelf.users.append(model)
+                                }
+                            }
+                        }
                     }
                 }
                 

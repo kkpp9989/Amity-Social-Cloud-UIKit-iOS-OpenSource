@@ -14,16 +14,17 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
     enum Constant {
         static let maximumLines: Int = 8
         static let textMessageFont = AmityFontSet.body
+        static let spaceOfStackWithinContainerMessageView = 4.0
     }
     
-    @IBOutlet private var textMessageView: AmityExpandableLabel!
+    @IBOutlet var textMessageView: AmityExpandableLabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupView()
     }
 
-    private func setupView() {
+    func setupView() {
         textMessageView.text = ""
         textMessageView.textAlignment = .left
         textMessageView.numberOfLines = Constant.maximumLines
@@ -35,23 +36,83 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         
     override func display(message: AmityMessageModel) {
         super.display(message: message)
+        var textColor = AmityColorSet.base
+        var highlightColor = AmityColorSet.primary
+        var readMoreColor = AmityColorSet.highlight
+        var hyperLinkColor = AmityColorSet.highlight
+        var backgroundColor = AmityColorSet.messageBubble
         if message.isOwner {
-            textMessageView.textColor = AmityColorSet.baseInverse
-            textMessageView.readMoreColor = AmityColorSet.baseInverse
-            textMessageView.hyperLinkColor = .white
+            if AmityColorSet.messageBubble == (UIColor(hex: "B2EAFF", alpha: 1.0)) {
+                // [Custom for ONE Krungthai] Change color style for color "B2EAFF" of message bubble
+                textColor = AmityColorSet.base
+                readMoreColor = AmityColorSet.highlight
+                hyperLinkColor = AmityColorSet.highlight
+            } else {
+                // [Original]
+                textColor = AmityColorSet.baseInverse
+                readMoreColor = AmityColorSet.baseInverse
+                hyperLinkColor = AmityColorSet.highlight
+            }
+            highlightColor = AmityColorSet.highlight
         } else {
-            textMessageView.textColor = AmityColorSet.base
-            textMessageView.readMoreColor = AmityColorSet.highlight
-            textMessageView.hyperLinkColor = AmityColorSet.highlight
+            textColor = AmityColorSet.base
+            readMoreColor = AmityColorSet.highlight
+            hyperLinkColor = AmityColorSet.highlight
+            highlightColor = AmityColorSet.primary
         }
         
-        textMessageView.text = message.text
+        // Set boardcast message bubble style if channel type is boardcast
+        if channelType == .broadcast {
+            backgroundColor = AmityColorSet.messageBubbleBoardcast
+            // Change text color
+            textColor = AmityColorSet.baseInverse
+            readMoreColor = AmityColorSet.highlightMessageBoardcast
+            hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+            highlightColor = AmityColorSet.highlightMessageBoardcast
+        } else if channelType == .community {
+            if let channel = channel, channel.isMuted && !channel.object.isPublic {
+                backgroundColor = AmityColorSet.messageBubbleBoardcast
+                // Change text color
+                textColor = AmityColorSet.baseInverse
+                readMoreColor = AmityColorSet.highlightMessageBoardcast
+                hyperLinkColor = AmityColorSet.highlightMessageBoardcast
+                highlightColor = AmityColorSet.highlightMessageBoardcast
+            }
+        }
+        
+        containerView.backgroundColor = backgroundColor
+        textMessageView.textColor = textColor
+        textMessageView.readMoreColor = readMoreColor
+        textMessageView.hyperLinkColor = hyperLinkColor
+		
+		let mentionees = message.mentionees ?? []
+		if let metadata = message.metadata,
+		   let text = message.text {
+            if let tableBoundingWidth = tableBoundingWidth {
+                textMessageView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+            }
+			textMessageView.setText(
+				text,
+				withAttributes: AmityMentionManager.getAttributes(
+					fromText: text,
+					withMetadata: metadata,
+					mentionees: mentionees,
+                    highlightColor: highlightColor
+				)
+			)
+		} else {
+            if let tableBoundingWidth = tableBoundingWidth {
+                textMessageView.preferredMaxLayoutWidth = actualWidth(for: message, boundingWidth: tableBoundingWidth)
+            }
+			textMessageView.text = message.text
+		}
+        
         textMessageView.isExpanded = message.appearance.isExpanding
     }
     
     override class func height(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
         if message.isDeleted {
-            let displaynameHeight: CGFloat = message.isOwner ? 0 : 22
+            let displaynameHeight: CGFloat = message.isOwner ? 0 : 46
             return AmityMessageTableViewCell.deletedMessageCellHeight + displaynameHeight
         }
         
@@ -83,14 +144,31 @@ class AmityMessageTextTableViewCell: AmityMessageTableViewCell {
         
     }
     
+    private func actualWidth(for message: AmityMessageModel, boundingWidth: CGFloat) -> CGFloat {
+        var actualWidth: CGFloat = 0
+        
+        // for cell layout and calculation, please go check this pull request https://github.com/EkoCommunications/EkoMessagingSDKUIKitIOS/pull/713
+        if message.isOwner {
+            let horizontalPadding: CGFloat = 112
+            actualWidth = boundingWidth - horizontalPadding
+        } else {
+            let horizontalPadding: CGFloat = 164
+            actualWidth = boundingWidth - horizontalPadding
+        }
+        
+        return actualWidth
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         textMessageView.isExpanded = false
     }
-    
 }
 
 extension AmityMessageTextTableViewCell: AmityExpandableLabelDelegate {
+    func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        delegate?.performEvent(self, labelEvents: .didTapOnPostIdLink(label: label, postId: postId))
+    }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
         delegate?.performEvent(self, labelEvents: .tapExpandableLabel(label: label))
@@ -113,8 +191,9 @@ extension AmityMessageTextTableViewCell: AmityExpandableLabelDelegate {
     }
     
     func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
-        // Intentionally left empty
+		delegate?.performEvent(self, labelEvents: .didTapOnMention(label: label, userId: userId))
     }
     
-    
+    func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+    }
 }

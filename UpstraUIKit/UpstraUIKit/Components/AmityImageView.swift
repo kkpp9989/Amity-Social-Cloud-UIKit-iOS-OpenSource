@@ -23,6 +23,9 @@ public class AmityImageView: AmityView {
     
     private var session = UUID().uuidString
     
+    private var activeDownloads: [URL: URLSessionDataTask] = [:]
+    private var imageCache: NSCache<NSURL, UIImage> = NSCache()
+
     public var actionHandler: (() -> Void)?
     public var state: AmityImageViewState = .idle {
         didSet {
@@ -94,8 +97,8 @@ public class AmityImageView: AmityView {
     }
     
     private func setupOverlayView() {
-//        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.4)
-        overlayView.backgroundColor = .red
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+//        overlayView.backgroundColor = .red
         overlayView.isHidden = true
         activityIndicator.style = .medium
     }
@@ -122,10 +125,16 @@ public class AmityImageView: AmityView {
         image = nil
         self.placeholder = placeholder
         session = UUID().uuidString
-
+        
         guard let imageURL = imageURL, !imageURL.isEmpty else { return }
         let _session = session
-
+        
+        if let cachedImage = imageCache.object(forKey: NSURL(string: imageURL)!) {
+            image = cachedImage
+            completion?()
+            return
+        }
+        
         // Wrap our request in a work item
         AmityUIKitManagerInternal.shared.fileService.loadImage(imageURL: imageURL, size: size) { [weak self] result in
             switch result {
@@ -136,6 +145,7 @@ public class AmityImageView: AmityView {
                     return
                 }
                 self?.image = image
+                self?.imageCache.setObject(image, forKey: NSURL(string: imageURL)!)
                 completion?()
             case .failure:
                 self?.image = nil
@@ -143,5 +153,4 @@ public class AmityImageView: AmityView {
             }
         }
     }
-
 }

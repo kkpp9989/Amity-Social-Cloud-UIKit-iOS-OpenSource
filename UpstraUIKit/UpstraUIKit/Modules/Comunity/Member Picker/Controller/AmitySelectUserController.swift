@@ -10,7 +10,7 @@ import UIKit
 
 final class AmitySelectUserController {
     
-    func selectUser(searchUsers: [AmitySelectMemberModel], users: inout AmityFetchUserController.GroupUser, storeUsers: inout [AmitySelectMemberModel], at indexPath: IndexPath, isSearch: Bool) {
+    func selectUser(searchUsers: [AmitySelectMemberModel], users: inout AmityFetchUserController.GroupUser, newSelectedUsers: inout [AmitySelectMemberModel], at indexPath: IndexPath, isSearch: Bool) {
 
         var selectedUser: AmitySelectMemberModel!
         
@@ -25,21 +25,29 @@ final class AmitySelectUserController {
             selectedUser = users[indexPath.section].value[indexPath.row]
         }
         
-        if let user = storeUsers.first(where: { $0 == selectedUser}), let index = storeUsers.firstIndex(of: user) {
-            storeUsers.remove(at: index)
+        if let user = newSelectedUsers.first(where: { $0 == selectedUser}), let index = newSelectedUsers.firstIndex(of: user) {
+            newSelectedUsers.remove(at: index)
         } else {
-            storeUsers.append(selectedUser)
+            
+            newSelectedUsers.append(selectedUser)
         }
         selectedUser.isSelected.toggle()
     }
     
-    func deselect(users: inout AmityFetchUserController.GroupUser, storeUsers: inout [AmitySelectMemberModel], at indexPath: IndexPath) {
-        let selectedUser = storeUsers[indexPath.item]
+    func deselect(searchUsers: inout [AmitySelectMemberModel], users: inout AmityFetchUserController.GroupUser, newSelectedUsers: inout [AmitySelectMemberModel], at indexPath: IndexPath) {
+        let selectedUser = newSelectedUsers[indexPath.item]
+        // Deselect in users list
         users.forEach {
             if let index = $0.value.firstIndex(where: { $0 == selectedUser }) {
                 $0.value[index].isSelected = false
             }
         }
-        storeUsers.remove(at: indexPath.item)
+        
+        // Deselect in search users list
+        if let index = searchUsers.firstIndex(where: { $0 == selectedUser }) {
+            searchUsers[index].isSelected = false
+        }
+        
+        newSelectedUsers.remove(at: indexPath.item)
     }
 }

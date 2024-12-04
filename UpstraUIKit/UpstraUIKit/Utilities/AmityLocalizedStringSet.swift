@@ -30,15 +30,26 @@ public struct AmityLocalizedStringSet {
         static let decline = "general_decline"
         static let close = "general_close"
         static let save = "general_save"
+        static let send = "general_send"
         static let saved = "general_saved"
         static let cancel = "general_cancel"
         static let delete = "general_delete"
         static let edit = "general_edit"
         public static let done = "general_done"
         static let post = "general_post"
+        static let broadcast = "general_broadcast"
         static let discard = "general_discard"
         static let leave = "general_leave"
+        static let next = "general_next"
+        static let error = "general_error"
+        static let share = "general_share"
+        static let sangsun = "general_sangsun"
+        static let satsue = "general_satsue"
+        static let samakki = "general_samakki"
+        static let sumrej = "general_sumrej"
+        static let sangkom = "general_sangkom"
         static let like = "general_like"
+        static let love = "general_love"
         static let liked = "general_liked"
         static let reply = "general_reply"
         static let viewReply = "general_view_reply"
@@ -50,6 +61,7 @@ public struct AmityLocalizedStringSet {
         static let on = "general_on"
         static let off = "general_off"
         static let file = "general_file"
+        static let content = "general_content"
         static let location = "general_location"
         static let album = "general_album"
         static let anonymous = "general_anonymous"
@@ -67,6 +79,24 @@ public struct AmityLocalizedStringSet {
         static let generalPhoto = "general_photo";
         static let generalAttachment = "general_attachment";
         static let generalAll = "general_all";
+        static let generalCreate = "general_create";
+        static let generalHonest = "general_honest";
+        static let generalHarmony = "general_harmony";
+        static let generalSuccess = "general_success";
+        static let generalSociety = "general_society";
+        static let generalLike = "general_like";
+        static let generalLove = "general_love";
+        static let pinpost = "general_pinpost"
+        static let unPinpost = "general_unpinpost"
+        static let forward = "general_forward"
+        static let unsend = "general_unsend"
+        static let resend = "general_resend"
+        static let copy = "general_copy"
+        static let selectedImages = "general_selected_images"
+        static let selectedVideos = "general_selected_videos"
+        static let openSettings = "general_open_settings"
+        static let fullImage = "general_full_image"
+        static let compressImage = "general_compress_image"
     }
     
     static let communitySettings = "community_settings"
@@ -100,21 +130,31 @@ public struct AmityLocalizedStringSet {
     static let editMessageTitle = "edit_message_title"
     static let viewAllCommentsTitle = "view_all_comments_title"
     static let viewAllFilesTitle = "view_all_files_title"
-    
+    static let followingTitle = "following_title"
+    static let followersTitle = "followers_title"
+
     static let textMessagePlaceholder = "text_message_placeholder"
+    static let textMessagePlaceholderMuted = "text_message_placeholder_muted"
+    static let textBroadcastMessagePlaceholder = "text_broadcast_message_placeholder"
     static let messageReadmore = "message_readmore"
     static let noUserFound = "no_user_found"
     static let searchResults = "search_results"
     static let searchResultNotFound = "search_result_not_found"
     static let communities = "communities"
     static let accounts = "accounts"
-    
+    static let hashtags = "hashtags"
+    static let messages = "messages"
+    static let groups = "groups"
+    static let recent = "recent"
+    static let posts = "posts"
+
     static let somethingWentWrongWithTryAgain = "something_went_wrong_with_try_again"
     static let noInternetConnection = "no_internet_connection"
     
     // MARK: - Message List
     enum MessageList {
         static let holdToRecord = "message_list_hold_to_record"
+        static let tapToRecord = "message_list_tap_to_record" // [Custom for ONE Krungthai] Add tap to record localized string for use in chat detail refer design in ONE KTB figma
         static let releaseToSend = "message_list_release_to_send"
         static let alertErrorMessageTitle = "message_list_alert_error_message_title"
         static let alertErrorMessageDesc = "message_list_alert_error_message_desc"
@@ -123,8 +163,19 @@ public struct AmityLocalizedStringSet {
         static let alertDeleteDesc = "message_list_alert_delete_desc"
         static let sending = "message_list_sending"
         static let deleteMessage = "message_delete"
+        static let unsentMessage = "message_unsent"
         static let editMessage = "message_edit"
+        static let cannotDownloadImageInChat = "message_list_cannot_download_image_in_chat"
+        static let cannotDownloadVideoInChat = "message_list_cannot_download_video_in_chat"
+        static let alertMicrophoneDisabledTitle = "message_list_alert_microphone_disabled_title"
+        static let alertMicrophoneDisabledDesc = "message_list_alert_microphone_disabled_desc"
+        static let alertSharedMessageSuccessfully = "message_list_alert_shared_message_successfully"
+        static let alertSelectImageFull = "message_list_alert_select_image_full"
     }
+    
+    // MARK: - Empty Community in category
+    static let emptyCommunityInCategoryTitle = "It’s empty here..."
+    static let emptyCommunityInCategorySubtitle = "No community found in this category"
     
     // MARK: - Empty Newsfeed
     static let emptyNewsfeedTitle = "empty_newsfeed_title"
@@ -245,6 +296,7 @@ public struct AmityLocalizedStringSet {
         static let deletePostMessage = "post_detail_delete_post_message"
         static let postDetailCommentEdit = "post_detail_comment_edited"
         static let banndedCommentErrorMessage = "post_detail_banned_comment_error_message"
+        static let linkNotAllowedErrorMessage = "post_detail_link_not_allowed_error_message"
     }
     
     // MARK: - Post to
@@ -316,6 +368,9 @@ public struct AmityLocalizedStringSet {
         static let itemReportUser = "user_settings_item_report_user"
         static let itemUnreportUser = "user_settings_item_unreport_user"
         static let itemEditProfile = "user_settings_item_edit_profile"
+        static let itemNotifications = "user_settings_item_notifications" // [Custom for ONE Krungthai][Improvement] Set title for notification settings in user settings
+        static let itemInviteViaQRAndLinkfriend = "user_settings_item_inviteviaqrandlink_friend"
+        
         
         enum UserSettingsMessages {
             static let unfollowMessage = "user_settings_unfollow_message"
@@ -326,6 +381,13 @@ public struct AmityLocalizedStringSet {
             static let removeUser = "user_settings_remove_user"
             static let removeUserTitle = "user_settings_remove_user_title"
             static let removeUserDescription = "user_settings_remove_user_description"
+        }
+        
+        // [Custom for ONE Krungthai][Improvement] Add localize of UserNotificationsSettings group
+        enum UserNotificationsSettings {
+            static let titleNavigationbar = "user_notifications_settings_title_navigation_bar"
+            static let titleNotifications = "user_notifications_settings_title_notifications"
+            static let descriptionNotifications = "user_notifications_settings_description_notifications"
         }
     }
     
@@ -370,7 +432,11 @@ public struct AmityLocalizedStringSet {
         static let successfullyUpdated = "hud_successfully_updated"
         static let reportSent = "hud_report_sent"
         static let unreportSent = "hud_unreport_sent"
-        static let delete = "hud_delete"
+        static let muted = "hud_muted"
+        static let unmuted = "hud_unmuted"
+        static let deleted = "hud_deleted"
+        static let hudBroadcastMessageSuccess = "hud_broadcast_message_success"
+        static let hudBroadcastMessageFail = "hud_broadcast_message_fail"
     }
     
     enum PopoverText {
@@ -410,14 +476,27 @@ public struct AmityLocalizedStringSet {
     // MARK: - Chat setting
     enum ChatSettings {
         static let leaveChannel = "chat_setting_leave_channel"
+        static let deleteChannel = "chat_setting_delete_channel"
+        static let deleteChannelDescription = "chat_setting_delete_channel_description" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let member = "chat_setting_member"
         static let groupProfile = "chat_setting_group_profile"
         static let reportUser = "chat_setting_report_user"
         static let unReportUser = "chat_setting_unreport_user"
         static let title = "chat_setting_title"
         static let reportSent = "chat_setting_report_sent"
-        static let leaveChatTitle = "chat_setting_leave_chat_title"
-        static let leaveChatMessage = "chat_setting_leave_chat_message"
+        static let unreportSent = "chat_setting_unreport_sent" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatTitle = "chat_setting_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatMemberRoleGroupChatMessage = "chat_setting_leave_chat_member_role_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatConversationChatMessage = "chat_setting_leave_chat_conversation_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatModeratorRoleWithOneMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_one_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let leaveChatModeratorRoleWithManyMemberGroupChatMessage = "chat_setting_leave_chat_moderator_role_with_many_member_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableLeaveChatTitle = "chat_setting_unable_leave_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableLeaveChatMessage = "chat_setting_unable_leave_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteChatTitle = "chat_setting_delete_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteConversationChatMessage = "chat_setting_delete_conversation_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let deleteGroupChatMessage = "chat_setting_delete_group_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableDeleteChatTitle = "chat_setting_unable_delete_chat_title" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
+        static let unableDeleteChatMessage = "chat_setting_unable_delete_chat_message" // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting added
         static let promoteToModerator = "chat_setting_promote_to_moderator"
         static let dismissFromModerator = "chat_setting_dimiss_to_moderator"
         static let removeFromGroupChat = "chat_setting_remove_from_group_chat"
@@ -427,6 +506,28 @@ public struct AmityLocalizedStringSet {
         static let navigationTitle = "chat_setting_member_detail_title"
         static let removeMemberAlertTitle = "chat_setting_remove_member_alert_title"
         static let removeMemberAlertBody = "chat_setting_remove_member_alert_body"
+        static let inviteUser = "chat_setting_invite_user"
+        static let muteNotification = "chat_setting_mute_notification"
+        static let unmuteNotification = "chat_setting_unmute_notification"
+        static let inviteViaQRAndLink = "chat_setting_invite_via_qr_and_link"
+    }
+    
+    // MARK: - Edit group chat profile
+    // [Custom for ONE Krungthai][Chat Settings] Add localizable of some setting
+    static let editGroupChatProfileDisplayNameTitle = "edit_group_chat_profile_display_name_title"
+    static let editGroupChatProfileDisplayNamePlaceholder = "edit_group_chat_profile_display_name_placeholder"
+    
+    // MARK: - Chat status
+    /* [Custom for ONE Krungthai] Localized string of chat status */
+    enum ChatStatus {
+        static let available = "chat_status_available"
+        static let offline = "chat_status_offline"
+        static let doNotDisturb = "chat_status_do_not_disturb"
+        static let inTheOffice = "chat_status_in_the_office"
+        static let workFromHome = "chat_status_work_from_home"
+        static let inAMeeting = "chat_status_in_a_meeting"
+        static let onLeave = "chat_status_on_leave"
+        static let outSick = "chat_status_out_sick"
     }
     
     enum CommunityChannelCreation {
@@ -448,6 +549,7 @@ public struct AmityLocalizedStringSet {
         static let title = "pending_posts_title"
         static let statusTitle = "pending_posts_status_title"
         static let statusAdminDesc = "pending_posts_status_admin_desc"
+        static let statusAdminDescOnePost = "pending_one_post_status_admin_desc"
         static let statusMemberDesc = "pending_posts_status_member_desc"
         static let headerTitle = "pending_posts_header_title"
         static let emptyTitle = "pending_posts_empty_title"
@@ -510,5 +612,19 @@ public struct AmityLocalizedStringSet {
         public static let reactionTitle = "reaction_screen_title";
         public static let emptyStateTitle = "reaction_empty_state_title";
         public static let emptyStateSubtitle = "reaction_empty_state_subtitle";
+    }
+    
+    // MARK: - Chat
+    public enum Chat {
+        public static let chatUnableToChatTitle = "chat_unable_to_chat_title";
+        public static let chatUnableToChatDescription = "chat_unable_to_chat_description";
+        public static let messageCreationDiscardMessageTitle = "message_creation_discard_message_title";
+        public static let messageCreationDiscardMessageDescription = "message_creation_discard_message_description";
+        public static let messageUnableToCreateMessageTitle = "message_unable_to_create_message_title";
+        public static let messageUnableToCreateMessageDescription = "message_unable_to_create_message_description";
+        public static let messageCreationUploadIncompleteTitle = "message_creation_file_upload_incomplete_title";
+        public static let messageCreationUploadIncompleteDescription = "message_creation_file_upload_incomplete_description";
+        public static let broadcastMessageCreationTextPlaceholder = "broadcast_message_creation_text_placeholder";
+        public static let broadcastMessageCreationFileTypeOnlyPlaceholder = "broadcast_message_creation_file_type_only_placeholder";
     }
 }

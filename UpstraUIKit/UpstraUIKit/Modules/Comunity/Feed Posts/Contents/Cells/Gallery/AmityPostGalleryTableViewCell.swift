@@ -112,6 +112,7 @@ extension AmityPostGalleryTableViewCell: AmityPhotoViewerControllerDelegate {
     public func photoViewerController(_ photoViewerController: AmityPhotoViewerController, didScrollToPhotoAt index: Int) {
         galleryCollectionView.selectedImageIndex = index
         photoViewerController.titleLabel.text = "\(index + 1)/\(galleryCollectionView.medias.count)"
+        photoViewerController.imageURL = galleryCollectionView.medias[index].image?.fileURL
     }
     
     public func photoViewerControllerDidReceiveTapGesture(_ photoViewerController: AmityPhotoViewerController) {
@@ -191,6 +192,9 @@ extension AmityPostGalleryTableViewCell: AmityPhotoViewerControllerDataSource {
 }
 
 extension AmityPostGalleryTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        performAction(action: .tapOnPostIdLink(postId: postId))
+    }
     
     public func willExpandLabel(_ label: AmityExpandableLabel) {
         performAction(action: .willExpandExpandableLabel(label: label))
@@ -214,5 +218,9 @@ extension AmityPostGalleryTableViewCell: AmityExpandableLabelDelegate {
     
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
     }
 }

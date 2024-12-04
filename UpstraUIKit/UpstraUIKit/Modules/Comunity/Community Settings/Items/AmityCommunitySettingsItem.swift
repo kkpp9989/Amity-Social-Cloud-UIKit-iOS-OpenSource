@@ -17,6 +17,7 @@ enum AmityCommunitySettingsItem: String {
     case postReview
     case leaveCommunity
     case closeCommunity
+    case inviteViaQRAndLink
     
     var identifier: String {
         return self.rawValue
@@ -40,6 +41,8 @@ enum AmityCommunitySettingsItem: String {
             return AmityLocalizedStringSet.CommunitySettings.itemTitleLeaveCommunity.localizedString
         case .closeCommunity:
             return AmityLocalizedStringSet.CommunitySettings.itemTitleCloseCommunity.localizedString
+        case .inviteViaQRAndLink:
+            return AmityLocalizedStringSet.ChatSettings.inviteViaQRAndLink.localizedString
         }
     }
     
@@ -62,6 +65,8 @@ enum AmityCommunitySettingsItem: String {
             return AmityIconSet.CommunitySettings.iconItemNotification
         case .postReview:
             return AmityIconSet.CommunitySettings.iconItemPostReview
+        case .inviteViaQRAndLink:
+            return AmityIconSet.ChatSettings.iconInviteViaQRAndLink
         default:
             return nil
         }

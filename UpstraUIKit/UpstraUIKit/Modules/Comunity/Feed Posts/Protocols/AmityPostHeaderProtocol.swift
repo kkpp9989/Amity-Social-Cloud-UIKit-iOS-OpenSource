@@ -14,6 +14,7 @@ public protocol AmityPostHeaderProtocol: UITableViewCell, AmityCellIdentifiable 
     var post: AmityPostModel? { get }
     
     func display(post: AmityPostModel)
+    func disableTopPadding()
 }
 
 /// A default delegate of header post

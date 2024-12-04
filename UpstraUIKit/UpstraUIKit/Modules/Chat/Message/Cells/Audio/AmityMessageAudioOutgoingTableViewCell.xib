@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -97,16 +97,22 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XZc-hQ-1Cz">
-                                <rect key="frame" x="130" y="61" width="94" height="50"/>
+                                <rect key="frame" x="82.5" y="61" width="141.5" height="50"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="lAd-Ua-qvU">
-                                        <rect key="frame" x="10" y="0.0" width="84" height="50"/>
+                                        <rect key="frame" x="2" y="0.0" width="139.5" height="50"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_delete_message" translatesAutoresizingMaskIntoConstraints="NO" id="BSS-Vg-e7i">
-                                                <rect key="frame" x="0.0" y="17" width="16" height="16"/>
+                                                <rect key="frame" x="0.0" y="17" width="14" height="16"/>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7:24 AM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMO-19-Yua">
-                                                <rect key="frame" x="20" y="15" width="64" height="20.5"/>
+                                                <rect key="frame" x="18" y="15" width="64" height="20.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 Read" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WBn-xg-qvj">
+                                                <rect key="frame" x="86" y="15" width="53.5" height="20.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -144,13 +150,14 @@
                 <outlet property="durationLabel" destination="lyS-UZ-k9q" id="x8T-Qb-xJC"/>
                 <outlet property="errorButton" destination="YjU-oQ-Shp" id="9R3-mC-2ib"/>
                 <outlet property="metadataLabel" destination="wMO-19-Yua" id="29W-QK-L3O"/>
+                <outlet property="readCountLabel" destination="WBn-xg-qvj" id="WDZ-iS-Vwf"/>
                 <outlet property="statusMetadataImageView" destination="BSS-Vg-e7i" id="7bE-86-FkX"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="250.78125"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="icon_delete_message" width="16" height="16"/>
+        <image name="icon_delete_message" width="14" height="16"/>
         <image name="icon_message_failed" width="16" height="16"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

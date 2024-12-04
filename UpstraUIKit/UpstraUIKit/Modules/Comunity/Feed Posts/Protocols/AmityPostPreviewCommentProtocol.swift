@@ -11,8 +11,7 @@ import UIKit
 public protocol AmityPostPreviewCommentProtocol: UITableViewCell, AmityCellIdentifiable {
     var delegate: AmityPostPreviewCommentDelegate? { get set }
     var post: AmityPostModel? { get }
-    
-    func display(post: AmityPostModel, comment: AmityCommentModel?)
+    func display(post: AmityPostModel, comment: AmityCommentModel?, indexPath: IndexPath)
 }
 
 public protocol AmityPostPreviewCommentDelegate: AnyObject {
@@ -24,6 +23,7 @@ public enum AmityPostPreviewCommentAction {
     case tapLike(comment: AmityCommentModel)
     case tapOption(comment: AmityCommentModel)
     case tapReply(comment: AmityCommentModel)
+    case tapCommunityName(post: AmityPostModel) // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
     case tapExpandableLabel(label: AmityExpandableLabel)
     case willExpandExpandableLabel(label: AmityExpandableLabel)
     case didExpandExpandableLabel(label: AmityExpandableLabel)
@@ -31,4 +31,7 @@ public enum AmityPostPreviewCommentAction {
     case didCollapseExpandableLabel(label: AmityExpandableLabel)
     case tapOnMention(userId: String)
     case tapOnReactionDetail
+    case tapOnHashtag(keyword: String, count: Int)
+    case tapOnPostIdLink(postId: String)
+    case tapOnCommentImage(imageView: UIImageView, fileURL: String)
 }

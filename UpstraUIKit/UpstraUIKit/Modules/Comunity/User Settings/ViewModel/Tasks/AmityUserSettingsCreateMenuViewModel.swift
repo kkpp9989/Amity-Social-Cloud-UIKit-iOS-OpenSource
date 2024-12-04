@@ -27,6 +27,25 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
             
             settingsItems.append(.navigationContent(content: editProfileItem))
             
+            // ktb kk custom add menu Invite Via QR And Link
+            // MARK: Invite Via QR And Link
+            let iteminviteViaQRAndLink = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.inviteViaQRAndLink.identifier, icon: AmityUserSettingsItem.inviteViaQRAndLink.icon, title: AmityUserSettingsItem.inviteViaQRAndLink.title, description: nil)
+            
+            settingsItems.append(.navigationContent(content: iteminviteViaQRAndLink))
+            
+            
+            // MARK: Create notification item
+            // [Custom for ONE Krungthai][Improvement] Add create notification setting item
+            if shouldNotificationItemShow {
+                let itemNotificationDesc = isNotificationEnabled ? AmityLocalizedStringSet.General.on : AmityLocalizedStringSet.General.off
+                let itemNotificationContent = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.notification.identifier,
+                                                                                icon: AmityUserSettingsItem.notification.icon,
+                                                                                title: AmityUserSettingsItem.notification.title,
+                                                                                description: itemNotificationDesc.localizedString)
+//                settingsItems.append(.navigationContent(content: itemNotificationContent))
+            }
+            
+            // add separator
             settingsItems.append(.separator)
             
             completion?(settingsItems)
@@ -43,6 +62,14 @@ final class AmityUserSettingsCreateMenuViewModel: AmityUserSettingsCreateMenuVie
             let unfollowItem = AmitySettingsItem.TextContent(identifier: unfollow.identifier, icon: unfollow.icon, title: unfollow.title, description: nil)
             settingsItems.append(.textContent(content: unfollowItem))
         }
+        
+        
+        
+        // ktb kk custom add menu Invite Via QR And Link Friend
+        // MARK: Invite Via QR And Link
+        let iteminviteViaQRAndLinkFriend = AmitySettingsItem.NavigationContent(identifier: AmityUserSettingsItem.inviteViaQRAndLinkFriend.identifier, icon: AmityUserSettingsItem.inviteViaQRAndLinkFriend.icon, title: AmityUserSettingsItem.inviteViaQRAndLinkFriend.title, description: nil)
+        
+        settingsItems.append(.navigationContent(content: iteminviteViaQRAndLinkFriend))
         
         let report = isReported ? AmityUserSettingsItem.unreport : AmityUserSettingsItem.report
         let reportItem = AmitySettingsItem.TextContent(identifier: report.identifier, icon: report.icon, title: report.title, description: nil)

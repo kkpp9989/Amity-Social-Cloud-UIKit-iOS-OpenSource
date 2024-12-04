@@ -8,6 +8,15 @@
 
 import UIKit
 
+protocol AmityMessageListComposeBarDelegate: AnyObject {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView)
+    func composeViewDidCancelForwardMessage()
+    func composeViewDidSelectForwardMessage()
+    func composeViewDidSelectJoinChannel()
+	func sendMessageTap()
+}
+
 final class AmityMessageListComposeBarViewController: UIViewController {
 
     // MARK: - IBOutlet Properties
@@ -18,10 +27,30 @@ final class AmityMessageListComposeBarViewController: UIViewController {
     @IBOutlet private var showDefaultKeyboardButton: UIButton!
     @IBOutlet var recordButton: AmityRecordingButton!
     @IBOutlet private var trailingStackView: UIStackView!
+    @IBOutlet var separatorView: UIView!
+    @IBOutlet var inputMenuView: UIStackView!
+    
+    // Forward menu view
+    @IBOutlet var forwardMenuView: UIStackView!
+    @IBOutlet private var cancelForwardButton: UIButton!
+    @IBOutlet private var forwardButton: UIButton!
+    
+    // Join menu view
+    @IBOutlet var joinMenuView: UIStackView!
+    @IBOutlet private var joinButton: UIButton!
+    
+    // Open editor view
+    @IBOutlet var openEditorMenuView: UIStackView!
+    @IBOutlet var textTypeActionButton: UIButton!
+    @IBOutlet private var otherTypeActionButton: UIButton!
     
     // MARK: - Properties
+	weak var delegate: AmityMessageListComposeBarDelegate?
     private var screenViewModel: AmityMessageListScreenViewModelType!
     let composeBarView = AmityKeyboardComposeBarViewController.make()
+    var amountForwardMessage: Int = 0
+    var isReplying: Bool = false
+    var isGetChannelSuccess: Bool = false
     
     // MARK: - Settings
     private var setting = AmityMessageListViewController.Settings()
@@ -31,23 +60,46 @@ final class AmityMessageListComposeBarViewController: UIViewController {
         setupView()
     }
     
-    static func make(viewModel: AmityMessageListScreenViewModelType, setting: AmityMessageListViewController.Settings) -> AmityMessageListComposeBarViewController {
+	static func make(viewModel: AmityMessageListScreenViewModelType,
+					 setting: AmityMessageListViewController.Settings,
+					 delegate: AmityMessageListComposeBarDelegate?) -> AmityMessageListComposeBarViewController {
         let vc = AmityMessageListComposeBarViewController(
             nibName: AmityMessageListComposeBarViewController.identifier,
             bundle: AmityUIKitManager.bundle)
         vc.screenViewModel = viewModel
         vc.setting = setting
+		vc.delegate = delegate
         return vc
     }
     
+    // MARK: - Forward Message Action
+    @IBAction func forwardTap(_ sender: UIButton) {
+        delegate?.composeViewDidSelectForwardMessage()
+    }
+    
+    @IBAction func cancelForwardTap(_ sender: UIButton) {
+        showForwardMenuButton(show: false)
+        delegate?.composeViewDidCancelForwardMessage()
+    }
+    
+    @IBAction func joinChannelTap(_ sender: UIButton) {
+        delegate?.composeViewDidSelectJoinChannel()
+    }
 }
 
 // MARK: - Action
 private extension AmityMessageListComposeBarViewController {
     
     @IBAction func sendMessageTap() {
-        screenViewModel.action.send(withText: textComposeBarView.text)
-        clearText()
+        if textComposeBarView.textView.text.count <= 10000 {
+            delegate?.sendMessageTap()
+            clearText()
+        } else {
+            let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
+        }
     }
     
     @IBAction func showKeyboardComposeBarTap() {
@@ -60,9 +112,48 @@ private extension AmityMessageListComposeBarViewController {
         screenViewModel.action.toggleShowDefaultKeyboardAndAudioKeyboard(sender)
     }
     
+    @IBAction func textTypeActionButtonTap() {
+        let channelType = screenViewModel.dataSource.getChannelType()
+        switch channelType {
+        case .broadcast:
+            screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .content)
+        case .community:
+            if let channel = screenViewModel.dataSource.getChannelModel(), channel.isMuted {
+                if !channel.object.isPublic {
+                    screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .content)
+                }
+            }
+        default:
+            break
+        }
+    }
+    
+    @IBAction func otherTypeActionButtonTap() {
+        let channelType = screenViewModel.dataSource.getChannelType()
+        switch channelType {
+        case .broadcast:
+            screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .file)
+        case .community:
+            if let channel = screenViewModel.dataSource.getChannelModel(), channel.isMuted {
+                if !channel.object.isPublic {
+                    screenViewModel.action.toggleOpenCreateBroadcastMessageEditor(type: .file)
+                }
+            }
+        default:
+            break
+        }
+    }
+    
     // MARK: - Audio Recording
     @IBAction func touchDown(sender: AmityRecordingButton) {
-        screenViewModel.action.performAudioRecordingEvents(for: .show)
+        AmityAudioRecorder.shared.checkPermission { [weak self] isAllowed, error in
+            guard let isAllowed = isAllowed else { return }
+            if isAllowed {
+                self?.screenViewModel.action.performAudioRecordingEvents(for: .show)
+            } else {
+                self?.screenViewModel.action.performAudioRecordingEvents(for: .permissionDenied)
+            }
+        }
     }
 }
 
@@ -75,18 +166,94 @@ private extension AmityMessageListComposeBarViewController {
         setupShowKeyboardComposeBarButton()
         setupLeftItems()
         setupRecordButton()
+        setupForwardMenuView()
+        setupJoinChannelButton()
+        setupOpenEditorMenuView()
     }
     
     func setupTextComposeBarView() {
+		textComposeBarView.delegate = self
         textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
         textComposeBarView.textViewDidChanged = { [weak self] text in
-            self?.screenViewModel.action.setText(withText: text)
+            if text.count >= 10000 {
+                let alertController = UIAlertController(title: AmityLocalizedStringSet.Chat.chatUnableToChatTitle.localizedString, message: AmityLocalizedStringSet.Chat.chatUnableToChatDescription.localizedString, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: AmityLocalizedStringSet.General.ok.localizedString, style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                self?.present(alertController, animated: true, completion: nil)
+            } else {
+                self?.screenViewModel.action.setText(withText: text)
+            }
         }
         
         textComposeBarView.textViewShouldBeginEditing = { [weak self] textView in
             self?.screenViewModel.action.toggleKeyboardVisible(visible: true)
             self?.screenViewModel.action.inputSource(for: .default)
         }
+        
+        /* [Custom for ONE Krungthai] Set separator color refer to ONE KTB figma */
+        separatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+    }
+    
+    func setupOpenEditorMenuView() {
+        /** Setup view **/
+        openEditorMenuView.isHidden = false
+        
+        /** Setup text type action button **/
+        textTypeActionButton.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        textTypeActionButton.layer.borderWidth = 1
+        textTypeActionButton.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
+        textTypeActionButton.layer.cornerRadius = textTypeActionButton.frame.height / 2
+        textTypeActionButton.contentHorizontalAlignment = .left
+        textTypeActionButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.textBroadcastMessagePlaceholder.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.secondary.blend(.shade3),
+            .font: AmityFontSet.body
+        ]), for: .normal)
+        
+        /** Setup other type action button **/
+        otherTypeActionButton.setTitle(nil, for: .normal)
+        otherTypeActionButton.setImage(AmityIconSet.iconAttach, for: .normal)
+        otherTypeActionButton.tintColor = AmityColorSet.base.blend(.shade1)
+        otherTypeActionButton.isHidden = false
+    }
+    
+    func setupForwardMenuView() {
+        // Set view to hidden at start
+        forwardMenuView.isHidden = true
+        
+        // Set cancel button
+        cancelForwardButton.backgroundColor = AmityColorSet.baseInverse
+        cancelForwardButton.layer.borderColor = AmityColorSet.secondary.blend(.shade4).cgColor
+        cancelForwardButton.layer.borderWidth = 1
+        cancelForwardButton.layer.cornerRadius = 18 // Base on font size 15
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .disabled)
+        cancelForwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.cancel.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.base,
+            .font: AmityFontSet.bodyBold
+        ]), for: .selected)
+        
+        // Set forward button
+        forwardButton.backgroundColor = UIColor(hex: "B2EAFF")
+        forwardButton.layer.cornerRadius = 18 // Base on font size 15
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .disabled)
+        forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+            .foregroundColor: AmityColorSet.baseInverse,
+            .font: AmityFontSet.bodyBold
+        ]), for: .selected)
+        forwardButton.isEnabled = false
     }
     
     func setupSendMessageButton() {
@@ -94,6 +261,17 @@ private extension AmityMessageListComposeBarViewController {
         sendMessageButton.setImage(AmityIconSet.iconSendMessage, for: .normal)
         sendMessageButton.isEnabled = false
         sendMessageButton.isHidden = true
+    }
+    
+    func setupJoinChannelButton() {
+        joinButton.backgroundColor = AmityColorSet.primary
+        joinButton.layer.cornerRadius = 18
+        joinButton.setImage(AmityIconSet.iconAddWhite, for: .normal)
+        joinButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.communityDetailJoinButton.localizedString, attributes: [
+            .foregroundColor: UIColor.white,
+            .font: AmityFontSet.bodyBold
+        ]), for: .normal)
+        joinButton.clipsToBounds = true
     }
     
     func setupShowKeyboardComposeBarButton() {
@@ -119,7 +297,9 @@ private extension AmityMessageListComposeBarViewController {
         recordButton.titleLabel?.font = AmityFontSet.bodyBold
         recordButton.setTitleColor(AmityColorSet.base, for: .normal)
         recordButton.setImage(AmityIconSet.Chat.iconMic, for: .normal)
-        recordButton.setTitle(AmityLocalizedStringSet.MessageList.holdToRecord.localizedString, for: .normal)
+        /* [Custom for ONE Krungthai] Change wording of record button to "Tap to record" */
+//        recordButton.setTitle(AmityLocalizedStringSet.MessageList.holdToRecord.localizedString, for: .normal) // [Original]
+        recordButton.setTitle(AmityLocalizedStringSet.MessageList.tapToRecord.localizedString, for: .normal)
         recordButton.tintColor = AmityColorSet.base
         recordButton.isHidden = true
         
@@ -143,10 +323,130 @@ private extension AmityMessageListComposeBarViewController {
 
 extension AmityMessageListComposeBarViewController: AmityComposeBar {
     
+	var textView: AmityTextView {
+		get {
+			textComposeBarView.textView
+		}
+		set {
+			textComposeBarView.textView = newValue
+		}
+	}
+    
+    func updateViewDidReplyProcess(isReplying: Bool) {
+        self.isReplying = isReplying
+        
+        if isReplying {
+            showAudioButton.isHidden = true
+            showKeyboardComposeBarButton.isHidden = true
+        } else {
+            showAudioButton.isHidden = false
+            showKeyboardComposeBarButton.isHidden = sendMessageButton.isHidden ? false : true
+        }
+    }
+    
     func updateViewDidTextChanged(_ text: String) {
         sendMessageButton.isEnabled = !text.isEmpty
-        showKeyboardComposeBarButton.isHidden = !text.isEmpty
+        showKeyboardComposeBarButton.isHidden = !text.isEmpty || isReplying
         sendMessageButton.isHidden = text.isEmpty
+    }
+    
+    func updateViewDidMuteOrStopChannelStatusChanged(isCanInteract: Bool) {
+        if isCanInteract {
+            view.isUserInteractionEnabled = true
+            textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholder.localizedString
+        } else {
+            view.isUserInteractionEnabled = false
+            textComposeBarView.placeholder = AmityLocalizedStringSet.textMessagePlaceholderMuted.localizedString
+            textComposeBarView.text = nil
+        }
+    }
+    
+    func showForwardMenuButton(show: Bool) {
+        if show {
+            inputMenuView.isHidden = true
+            openEditorMenuView.isHidden = true
+            forwardMenuView.isHidden = false
+        } else {
+            inputMenuView.isHidden = screenViewModel.dataSource.getChannelType() == .broadcast
+            openEditorMenuView.isHidden = !(screenViewModel.dataSource.getChannelType() == .broadcast)
+            forwardMenuView.isHidden = true
+        }
+    }
+    
+    func updateViewDidSelectForwardMessage(amount: Int) {
+        if amount > 0 {
+            forwardButton.isEnabled = true
+            forwardButton.backgroundColor = AmityColorSet.primary
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .normal)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .disabled)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString + " (\(amount))", attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .selected)
+        } else {
+            forwardButton.isEnabled = false
+            forwardButton.backgroundColor = UIColor(hex: "B2EAFF")
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .normal)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .disabled)
+            forwardButton.setAttributedTitle(NSAttributedString(string: AmityLocalizedStringSet.General.share.localizedString, attributes: [
+                .foregroundColor: AmityColorSet.baseInverse,
+                .font: AmityFontSet.bodyBold
+            ]), for: .selected)
+        }
+    }
+    
+    func updateViewDidGetChannel(channel: AmityChannelModel) {
+        if !isGetChannelSuccess {
+            let channelType = screenViewModel.dataSource.getChannelType()
+            switch channelType {
+            case .broadcast:
+                inputMenuView.isHidden = true
+                openEditorMenuView.isHidden = false
+            case .community:
+                    //is member
+                    let isPublic = screenViewModel.dataSource.getChannelModel()?.object.isPublic ?? true
+                    let isMember = channel.object.currentUserMembership == .member
+                    if isPublic {
+                        inputMenuView.isHidden = false
+                        openEditorMenuView.isHidden = true
+                    } else {
+                        if channel.isMuted {
+                            if isMember {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = false
+                            } else {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = true
+                            }
+                        } else {
+                            if isMember {
+                                inputMenuView.isHidden = false
+                                openEditorMenuView.isHidden = true
+                            } else {
+                                inputMenuView.isHidden = true
+                                openEditorMenuView.isHidden = true
+                            }
+                        }
+                    }
+            default:
+                inputMenuView.isHidden = false
+                openEditorMenuView.isHidden = true
+            }
+            
+            isGetChannelSuccess = true
+        }
     }
     
     func showRecordButton(show: Bool) {
@@ -154,7 +454,7 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
             trailingStackView.isHidden = true
             textComposeBarView.isHidden = true
             recordButton.isHidden = false
-            showAudioButton.isHidden = setting.shouldHideAudioButton
+            showAudioButton.isHidden = true // [Custom for ONE Krungthai] Change record button to hidden when pressed record button refer to Figma
             showDefaultKeyboardButton.isHidden = false
             textComposeBarView.textView.resignFirstResponder()
         } else {
@@ -170,6 +470,20 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
                 showKeyboardComposeBarButton.isHidden = false
                 sendMessageButton.isHidden = true
             }
+        }
+    }
+    
+    func showJoinMenuButton(show: Bool) {
+        if show {
+            inputMenuView.alpha = 0
+            inputMenuView.isHidden = true
+            forwardMenuView.isHidden = true
+            joinMenuView.isHidden = false
+        } else {
+            inputMenuView.alpha = 1
+            inputMenuView.isHidden = false
+            forwardMenuView.isHidden = true
+            joinMenuView.isHidden = true
         }
     }
     
@@ -252,6 +566,10 @@ extension AmityMessageListComposeBarViewController: AmityComposeBar {
         present(vc, animated: true, completion: nil)
     }
     
+    func prepareTypingText() {
+        textComposeBarView.becomeFirstResponder()
+        textComposeBarView.textView.becomeFirstResponder()
+    }
 }
 
 extension AmityMessageListComposeBarViewController: UIPopoverPresentationControllerDelegate {
@@ -259,4 +577,14 @@ extension AmityMessageListComposeBarViewController: UIPopoverPresentationControl
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
+}
+
+extension AmityMessageListComposeBarViewController: AmityTextComposeBarViewDelegate {
+	func composeView(_ view: AmityTextComposeBarView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+		delegate?.composeView(view, shouldChangeTextIn: range, replacementText: text) ?? true
+	}
+	
+	func composeViewDidChangeSelection(_ view: AmityTextComposeBarView) {
+		delegate?.composeViewDidChangeSelection(view)
+	}
 }

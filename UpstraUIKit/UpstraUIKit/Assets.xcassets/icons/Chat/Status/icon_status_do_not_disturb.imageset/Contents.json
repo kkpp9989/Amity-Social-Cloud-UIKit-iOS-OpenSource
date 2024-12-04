@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon_status_do_not_disturb.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

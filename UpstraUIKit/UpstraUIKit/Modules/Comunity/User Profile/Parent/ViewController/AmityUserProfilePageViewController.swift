@@ -23,7 +23,11 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     private var header: AmityUserProfileHeaderViewController!
     private var bottom: AmityUserProfileBottomViewController!
     private let postButton: AmityFloatingButton = AmityFloatingButton()
+    private let scrollUpButton: AmityFloatingButton = AmityFloatingButton()
     private var screenViewModel: AmityUserProfileScreenViewModelType!
+    
+    // MARK: - Custom Theme Properties [Additional]
+    public var rightBarButtons: UIBarButtonItem = UIBarButtonItem()
     
     // MARK: - Initializer
     
@@ -42,13 +46,17 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
+        // [Custom for ONE Krungthai] Disable create post floating button
+//        setupView()
+        
         setupNavigationItem()
         setupViewModel()
+        setupScrollUpButton()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+		navigationController?.isNavigationBarHidden = false
         navigationController?.setBackgroundColor(with: .white)
     }
     
@@ -69,10 +77,62 @@ public final class AmityUserProfilePageViewController: AmityProfileViewControlle
         postButton.isHidden = !screenViewModel.isCurrentUser
     }
     
+    private func setupScrollUpButton() {
+        // setup button
+        scrollUpButton.isHidden = true
+        scrollUpButton.add(to: view, position: .bottomRight)
+        scrollUpButton.image = AmityIconSet.iconScrollUp
+        scrollUpButton.actionHandler = { _ in
+            //  Use notification center for trigger overlayScrollView on parent view
+            NotificationCenter.default.post(name: Notification.Name("ScrollToTop"), object: nil)
+        }
+        
+        bottom.timelineVC?.hideScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 0.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = true
+            }
+        }
+        
+        bottom.timelineVC?.showScrollUpButtonHandler = { [weak self] in
+            UIView.animate(withDuration: 0.5, animations: {
+                self?.scrollUpButton.alpha = 1.0
+            }) { _ in
+                self?.scrollUpButton.isHidden = false
+            }
+        }
+    }
+    
     private func setupNavigationItem() {
-        let item = UIBarButtonItem(image: AmityIconSet.iconOption, style: .plain, target: self, action: #selector(optionTap))
-        item.tintColor = AmityColorSet.base
-        navigationItem.rightBarButtonItem = item
+        /* Right items */
+        // [Improvement] Change set button solution to use custom stack view
+        var rightButtonItems: [UIButton] = []
+        
+        // Create post button
+        let createPostButton: UIButton = UIButton.init(type: .custom)
+        createPostButton.setImage(AmityIconSet.iconAddNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        createPostButton.addTarget(self, action: #selector(createPostTap), for: .touchUpInside)
+        createPostButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(createPostButton)
+        
+        // Option Button
+        let optionButton: UIButton = UIButton.init(type: .custom)
+        optionButton.setImage(AmityIconSet.iconOptionNavigationBar?.withRenderingMode(.alwaysOriginal), for: .normal)
+        optionButton.addTarget(self, action: #selector(optionTap), for: .touchUpInside)
+        optionButton.frame = CGRect(x: 0, y: 0, width: ONEKrungthaiCustomTheme.defaultIconBarItemWidth, height: ONEKrungthaiCustomTheme.defaultIconBarItemHeight)
+        rightButtonItems.append(optionButton)
+        
+        // Check is current login user profile
+        if !screenViewModel.isCurrentUser {
+            rightButtonItems.removeFirst() // Case : Isn't current login user profile -> remove create post button
+        }
+        
+        // Group all button to UIBarButtonItem
+        rightBarButtons = ONEKrungthaiCustomTheme.groupButtonsToUIBarButtonItem(buttons: rightButtonItems)
+        
+        // Set custom stack view to UIBarButtonItem
+        navigationItem.rightBarButtonItem = rightBarButtons
     }
     
     private func setupViewModel() {
@@ -98,6 +158,10 @@ private extension AmityUserProfilePageViewController {
         let vc = AmityUserSettingsViewController.make(withUserId: screenViewModel.dataSource.userId)
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @objc func createPostTap() {
+        AmityEventHandler.shared.createPostBeingPrepared(from: self, postTarget: .myFeed, menustyle: .pullDownMenuFromNavigationButton, selectItem: rightBarButtons)
+    }
 }
 
 extension AmityUserProfilePageViewController: AmityUserProfileScreenViewModelDelegate {
@@ -108,5 +172,11 @@ extension AmityUserProfilePageViewController: AmityUserProfileScreenViewModelDel
         default:
             break
         }
+    }
+}
+
+extension AmityUserProfilePageViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none // Show the popover on iPhone devices as well
     }
 }

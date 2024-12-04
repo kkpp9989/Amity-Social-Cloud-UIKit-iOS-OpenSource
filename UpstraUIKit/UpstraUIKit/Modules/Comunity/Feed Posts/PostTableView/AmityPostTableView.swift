@@ -17,6 +17,8 @@ protocol AmityPostTableViewDelegate: AnyObject {
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
     func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView?
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView)
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
 }
 extension AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, didSelectRowAt indexPath: IndexPath) { }
@@ -29,6 +31,8 @@ extension AmityPostTableViewDelegate {
     func tableView(_ tableView: AmityPostTableView, viewForFooterInSection section: Int) -> UIView? {
         return nil
     }
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView) { }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) { }
 }
 
 protocol AmityPostTableViewDataSource: AnyObject {
@@ -82,6 +86,7 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
         register(cell: AmityPostHeaderTableViewCell.self)
         register(cell: AmityPostFooterTableViewCell.self)
         register(cell: AmityPostPreviewCommentTableViewCell.self)
+        register(cell: AmityPostPreviewCommentWithURLPreviewTableViewCell.self)
         register(cell: AmityPostTextTableViewCell.self)
         register(cell: AmityPostGalleryTableViewCell.self)
         register(cell: AmityPostFileTableViewCell.self)
@@ -89,6 +94,7 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
         register(cell: AmityPostPlaceHolderTableViewCell.self)
         register(cell: AmityPostViewAllCommentsTableViewCell.self)
         register(cell: AmityPostPollTableViewCell.self)
+        register(cell: AmityPreviewLinkCell.self)
     }
     
     
@@ -123,6 +129,14 @@ final class AmityPostTableView: UITableView, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return postDelegate?.tableView(self, viewForFooterInSection: section)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        postDelegate?.tableViewWillBeginDragging(self)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        postDelegate?.scrollViewDidScroll(scrollView)
     }
     
     // MARK: - DatSource

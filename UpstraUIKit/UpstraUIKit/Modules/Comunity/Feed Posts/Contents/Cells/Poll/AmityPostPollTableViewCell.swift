@@ -12,8 +12,8 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     
     private struct Constant {
         static let pollTitleContentMaxLines = 8
-        static let maxPollOptionRowCountInNormalFeed = 2
-        static let maxRowCountInNormalFeed = 3
+        static let maxPollOptionRowCountInNormalFeed = 6 // [Custom for ONE Krungthai] Change value from 2 to 6 refer to requirement
+        static let maxRowCountInNormalFeed = 7 // [Custom for ONE Krungthai] Change value from 3 to 7 refer to requirement
     }
     
     // MARK: - IBOutlet Properties
@@ -29,7 +29,8 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public var indexPath: IndexPath?
     
     private(set) var selectedAnswerIds: [String] = []
-    
+    public var selectedAnswer: [String: [String]] = [:]
+
     public override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
@@ -53,6 +54,24 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
     public func display(post: AmityPostModel, indexPath: IndexPath) {
         self.post = post
         self.indexPath = indexPath
+
+        // [Fix-defect] Set answers if user ever selected
+        if !post.pollAnswers.isEmpty {
+            if let selectedAnswerForPost = post.pollAnswers[post.postId] {
+                selectedAnswerIds = selectedAnswerForPost
+            }
+        } else {
+            if let selectedAnswerForPost = selectedAnswer[post.postId] {
+                selectedAnswerIds = selectedAnswerForPost
+            }
+        }
+        
+        /* [Fix-defect] Add check user joined in community for poll answering permission if poll from community post */
+        let isJoinedCommunity: Bool = post.targetCommunity?.isJoined ?? false
+        let isHasCommunityId: Bool = post.targetCommunity?.communityId.isEmpty ?? true
+        if !isHasCommunityId {
+            tableView.isUserInteractionEnabled = isJoinedCommunity
+        }
         
         guard let poll = post.poll else { return }
         if let metadata = post.metadata, let mentionees = post.mentionees {
@@ -69,7 +88,11 @@ final public class AmityPostPollTableViewCell: UITableViewCell, Nibbable, AmityP
         
         statusPollLabel.text = poll.isClosed ? AmityLocalizedStringSet.Poll.Option.finalResult.localizedString : pollStatus
         voteCountLabel.text = "\(poll.voteCount.formatUsingAbbrevation()) \(AmityLocalizedStringSet.Poll.Option.voteCountTitle.localizedString)"
-        submitVoteButton.isHidden = poll.isClosed || poll.isVoted || !(post.feedType == .published)
+        if isHasCommunityId {
+            submitVoteButton.isHidden = poll.isClosed || poll.isVoted || !(post.feedType == .published)
+        } else {
+            submitVoteButton.isHidden = poll.isClosed || poll.isVoted || !(post.feedType == .published) || !isJoinedCommunity // [Fix-defect] Add check user joined in community for poll answering permission if poll from community post
+        }
         
         poll.answers.forEach { answer in
             answer.isSelected = selectedAnswerIds.contains(where: { $0 == answer.id})
@@ -148,7 +171,7 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
             // If user taps on "x more options" button, we show
             // post detail page here.
             if row == Constant.maxPollOptionRowCountInNormalFeed {
-                delegate?.didPerformAction(self, action: .tapViewAll)
+                delegate?.didPerformAction(self, action: .tapViewAll(postId: post.postId, pollAnswers: selectedAnswer))
                 return
             }
         case .postDetail:
@@ -181,6 +204,10 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
                 }
             }
             
+            if let postId = post?.postId {
+                self.selectedAnswer.removeValue(forKey: postId)
+            }
+            
             selectedAnswerIds.removeAll()
             selectAnswer(poll: poll, answer: selectedAnswer, tableView: tableView)
         } else {
@@ -192,13 +219,36 @@ extension AmityPostPollTableViewCell: UITableViewDelegate {
         answer.isSelected = !answer.isSelected
         if answer.isSelected {
             selectedAnswerIds.append(answer.id)
+            
+            // [Fix-defect] Set answers if user ever selected
+            if let postId = post?.postId {
+                if var selectedIds = selectedAnswer[postId] {
+                    if !selectedIds.contains(answer.id) {
+                        selectedIds.append(answer.id)
+                        selectedAnswer[postId] = selectedIds
+                    }
+                } else {
+                    selectedAnswer[postId] = [answer.id]
+                }
+            }
         } else {
             if let index = selectedAnswerIds.firstIndex(of: answer.id) {
                 selectedAnswerIds.remove(at: index)
             }
+            
+            // [Fix-defect] Set answers if user ever selected
+            if let postId = post?.postId {
+                if var selectedIds = selectedAnswer[postId], let index = selectedIds.firstIndex(of: answer.id) {
+                    selectedAnswer[postId]?.remove(at: index)
+                }
+            }
         }
         submitVoteButton.isEnabled = poll.answers.contains(where: { $0.isSelected })
         tableView.reloadData()
+        
+        if let postId = post?.postId {
+            performAction(action: .tapPollAnswers(postId: postId, pollAnswers: selectedAnswer))
+        }
     }
 }
 
@@ -213,15 +263,14 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
         let answersCount = poll.answers.count
         switch post.appearance.displayType {
         case .feed:
-            return answersCount == Constant.maxPollOptionRowCountInNormalFeed ? answersCount : Constant.maxRowCountInNormalFeed
+            return answersCount <= Constant.maxPollOptionRowCountInNormalFeed ? answersCount : Constant.maxRowCountInNormalFeed
         case .postDetail:
             return answersCount
         }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let pollAnswer = post?.poll?.answers else { return }
-        tableView.frame.size.height = (cell.frame.height + 10.0) * CGFloat(pollAnswer.count) // Add 10 px to height for fix more option button disappear when user voted in 3 choices poll
+        tableView.frame.size.height += cell.frame.height // [Fix defect] Change set table view height
         tableView.layoutIfNeeded()
     }
     
@@ -254,6 +303,9 @@ extension AmityPostPollTableViewCell: UITableViewDataSource {
 
 // MARK: AmityExpandableLabelDelegate
 extension AmityPostPollTableViewCell: AmityExpandableLabelDelegate {
+    public func didTapOnPostIdLink(_ label: AmityExpandableLabel, withPostId postId: String) {
+        delegate?.didPerformAction(self, action: .tapOnPostIdLink(postId: postId))
+    }
     
     // MARK: - Perform Action
     private func performAction(action: AmityPostAction) {
@@ -277,10 +329,14 @@ extension AmityPostPollTableViewCell: AmityExpandableLabelDelegate {
     }
     
     public func expandableLabeldidTap(_ label: AmityExpandableLabel) {
-        performAction(action: .tapExpandableLabel(label: label))
+        performAction(action: .tapExpandableLabel(label: label, postId: post?.postId ?? "", pollAnswers: selectedAnswer))
     }
 
     public func didTapOnMention(_ label: AmityExpandableLabel, withUserId userId: String) {
         performAction(action: .tapOnMentionWithUserId(userId: userId))
+    }
+    
+    public func didTapOnHashtag(_ label: AmityExpandableLabel, withKeyword keyword: String, count: Int) {
+        performAction(action: .tapOnHashtagWithKeyword(keyword: keyword, count: count))
     }
 }

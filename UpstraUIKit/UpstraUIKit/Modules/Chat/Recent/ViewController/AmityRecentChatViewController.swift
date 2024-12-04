@@ -13,6 +13,7 @@ import AmitySDK
 public final class AmityRecentChatViewController: AmityViewController, IndicatorInfoProvider {
     
     var pageTitle: String?
+    let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
     
     func indicatorInfo(for pagerTabStripController: AmityPagerTabViewController) -> IndicatorInfo {
         return IndicatorInfo(title: pageTitle)
@@ -44,13 +45,54 @@ public final class AmityRecentChatViewController: AmityViewController, Indicator
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        setupScreenViewModel()
         setupView()
+        setupScreenViewModel()
+//        AmityUIKitManager.getUnreadCount()
+        AmityUIKitManager.getSyncAllChannelPresence()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupScreenViewModel()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startObserver()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        screenViewModel.action.viewWillDisappear()
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopObserver()
     }
     
     public static func make(channelType: AmityChannelType = .conversation) -> AmityRecentChatViewController {
         let viewModel: AmityRecentChatScreenViewModelType = AmityRecentChatScreenViewModel(channelType: channelType)
         return AmityRecentChatViewController(viewModel: viewModel)
+    }
+    
+    private func startObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(refreshPresence(notification:)),
+                                               name: Notification.Name("RefreshChannelPresence"),
+                                               object: nil)
+//        AmityUIKitManager.getUnreadCount()
+        AmityUIKitManager.getSyncAllChannelPresence()
+    }
+    
+    private func stopObserver() {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("RefreshChannelPresence"), object: nil)
+    }
+    
+    @objc func refreshPresence(notification: Notification) {
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
 
@@ -70,17 +112,19 @@ private extension AmityRecentChatViewController {
             let barButton = UIBarButtonItem(image: addImage, style: .plain, target: self, action: #selector(didClickAdd(_:)))
             navigationItem.rightBarButtonItem = barButton
         }
+        
         setupTableView()
     }
     
     func setupTableView() {
         view.backgroundColor = AmityColorSet.backgroundColor
         tableView.register(AmityRecentChatTableViewCell.nib, forCellReuseIdentifier: AmityRecentChatTableViewCell.identifier)
+        tableView.register(AmityOwnerChatTableViewCell.nib, forCellReuseIdentifier: AmityOwnerChatTableViewCell.identifier)
         tableView.backgroundColor = AmityColorSet.backgroundColor
         tableView.separatorInset.left = 64
         tableView.showsVerticalScrollIndicator = false
         tableView.tableFooterView = UIView()
-        tableView.backgroundView = emptyView
+        tableView.backgroundView = nil
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -91,39 +135,103 @@ private extension AmityRecentChatViewController {
             completionHandler: { [weak self] storeUsers in
                 guard let weakSelf = self else { return }
                 weakSelf.screenViewModel.action.createChannel(users: storeUsers)
-        })
+            })
     }
 }
 
 // MARK: - UITableView Delegate
 extension AmityRecentChatViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        screenViewModel.action.join(at: indexPath)
+        if indexPath.section != 0 {
+            screenViewModel.action.join(at: indexPath)
+        } else {
+            let userStatusVC = UserStatusViewController(nibName: UserStatusViewController.identifier, bundle: AmityUIKitManager.bundle)
+            userStatusVC.delegate = self
+            userStatusVC.view.tag = 1
+            userStatusVC.modalPresentationStyle = .overFullScreen // Set the modal presentation style to full screen
+            present(userStatusVC, animated: true, completion: nil)
+        }
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
         }
+        
+        if let cell = cell as? AmityRecentChatTableViewCell {
+            if let channel = screenViewModel.dataSource.channel(at: indexPath) {
+                if channel.channelType == .conversation {
+                    AmityUIKitManager.syncChannelPresence(channel.channelId)
+                }
+
+                let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
+                
+                cell.display(with: channel, isOnline: isOnline)
+            }
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let cell = cell as? AmityRecentChatTableViewCell {
+            guard let channel = cell.channel else { return }
+            if channel.channelType == .conversation {
+                AmityUIKitManager.unsyncChannelPresence(channel.channelId)
+            }
+        }
     }
 }
 
 // MARK: - UITableView DataSource
 extension AmityRecentChatViewController: UITableViewDataSource {
+    
+    public func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return screenViewModel.dataSource.numberOfRow(in: section)
+        if section == 0 {
+            return 1
+        } else {
+            return screenViewModel.dataSource.numberOfRow(in: section)
+        }
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return 72
+        } else {
+            return UITableView.automaticDimension
+        }
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath)
-            configure(for: cell, at: indexPath)
-        return cell
+        
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: AmityOwnerChatTableViewCell.identifier, for: indexPath)
+            configureOwner(for: cell)
+            return cell
+        } else {
+            let cell: AmityRecentChatTableViewCell = tableView.dequeueReusableCell(withIdentifier: AmityRecentChatTableViewCell.identifier, for: indexPath) as! AmityRecentChatTableViewCell
+            return cell
+        }
+        
+    }
+    
+    private func configureOwner(for cell: UITableViewCell) {
+        if let cell = cell as? AmityOwnerChatTableViewCell {
+            cell.setupDisplay()
+            cell.delegate = self
+        }
     }
     
     private func configure(for cell: UITableViewCell, at indexPath: IndexPath) {
         if let cell = cell as? AmityRecentChatTableViewCell {
-            let channel = screenViewModel.dataSource.channel(at: indexPath)
-            cell.display(with: channel)
+            if let channel = screenViewModel.dataSource.channel(at: indexPath) {
+                let onlinePresences = AmityUIKitManager.getOnlinePresencesList()
+                let isOnline = onlinePresences.contains { $0.channelId == channel.channelId }
+                cell.display(with: channel, isOnline: isOnline)
+            }
         }
     }
 }
@@ -161,5 +269,40 @@ extension AmityRecentChatViewController: AmityRecentChatScreenViewModelDelegate 
     
     func screenViewModelEmptyView(isEmpty: Bool) {
         tableView.backgroundView = isEmpty ? emptyView : nil
+    }
+}
+
+extension AmityRecentChatViewController: UserStatusDelegate {
+    func didClose() {
+        self.dismiss(animated: true) { [self] in
+            screenViewModel?.action.update { [self] result in
+                switch result {
+                case .success:
+                    reloadData()
+                    
+                    switch AmityUIKitManagerInternal.shared.userStatus {
+                    case .DO_NOT_DISTURB, .OUT_SICK:
+                        AmityUIKitManagerInternal.shared.disableChatNotificationSetting()
+                    default:
+                        AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
+                    }
+                case .failure(let error):
+                    print("Update failed with error: \(error)")
+                }
+            }
+        }
+    }
+    
+    private func reloadData() {
+        DispatchQueue.main.async { [self] in
+            tableView.reloadData()
+        }
+    }
+    
+}
+
+extension AmityRecentChatViewController: AmityOwnerChatTableViewCellDelegate {
+    public func didTapAvatar() {
+        AmityEventHandler.shared.userDidTap(from: self, userId: AmityUIKitManagerInternal.shared.currentUserId)
     }
 }

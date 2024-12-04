@@ -77,22 +77,24 @@ extension AmityCommunityMemberScreenViewModel {
         switch viewType {
         case .member:
             fetchMemberController.fetch(roles: []) { [weak self] (result) in
+                guard let strongSelf = self else { return }
                 switch result {
                 case .success(let members):
-                    self?.members = members
-                    self?.delegate?.screenViewModelDidGetMember()
+                    strongSelf.members = members
+                    strongSelf.delegate?.screenViewModelDidGetMember()
                 case .failure:
-                    break
+                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loading)
                 }
             }
         case .moderator:
             fetchMemberController.fetch(roles: [AmityCommunityRole.moderator.rawValue, AmityCommunityRole.communityModerator.rawValue]) { [weak self] (result) in
+                guard let strongSelf = self else { return }
                 switch result {
                 case .success(let members):
-                    self?.members = members
-                    self?.delegate?.screenViewModelDidGetMember()
+                    strongSelf.members = members
+                    strongSelf.delegate?.screenViewModelDidGetMember()
                 case .failure:
-                    break
+                    strongSelf.delegate?.screenViewModel(strongSelf, loadingState: .loading)
                 }
             }
         }

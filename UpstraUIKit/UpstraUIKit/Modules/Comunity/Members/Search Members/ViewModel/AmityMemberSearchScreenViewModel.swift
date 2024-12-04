@@ -15,8 +15,10 @@ final class AmityMemberSearchScreenViewModel: AmityMemberSearchScreenViewModelTy
     private let memberListRepositoryManager: AmityMemberListRepositoryManagerProtocol
     
     // MARK: - Properties
-    private let debouncer = Debouncer(delay: 0.3)
+    private let debouncer = Debouncer(delay: 0.5)
     private var memberList: [AmityUserModel] = []
+    private var isEndingResult: Bool = false
+    private let size: Int = 20
     
     init(memberListRepositoryManager: AmityMemberListRepositoryManagerProtocol) {
         self.memberListRepositoryManager = memberListRepositoryManager
@@ -40,31 +42,63 @@ extension AmityMemberSearchScreenViewModel {
     
     func search(withText text: String?) {
         memberList = []
+        isEndingResult = false
         guard let text = text, !text.isEmpty else {
             delegate?.screenViewModelDidClearText(self)
-            delegate?.screenViewModel(self, loadingState: .loaded)
+            AmityEventHandler.shared.hideKTBLoading()
             return
         }
 
-        delegate?.screenViewModel(self, loadingState: .loading)
-        memberListRepositoryManager.search(withText: text, sortyBy: .displayName) { [weak self] (memberList) in
+        AmityEventHandler.shared.hideKTBLoading() // Hide old loading if need
+        AmityEventHandler.shared.showKTBLoading()
+        memberListRepositoryManager.search(withText: text, sortyBy: .displayName) { [weak self] (updatedMemberList) in
+            /* Set is ending result static value to true if result is not more than 20 */
+            guard let strongSelf = self else { return }
+            if updatedMemberList.count < strongSelf.size {
+                strongSelf.isEndingResult = true
+            }
+
             self?.debouncer.run {
-                self?.prepareData(memberList: memberList)
+                self?.prepareData(memberList: updatedMemberList)
             }
         }
     }
     
     private func prepareData(memberList: [AmityUserModel]) {
-        self.memberList = memberList
+        let notDeletedList = memberList.filter({ $0.object.isDeleted == false })
+        let notGlobalBannedList = notDeletedList.filter({ $0.object.isGlobalBanned == false })
+        let specialCharacterSet = CharacterSet(charactersIn: "!@#$%&*()_+=|<>?{}[]~-")
+        let filteredList = notGlobalBannedList.filter { user in
+            return user.userId.rangeOfCharacter(from: specialCharacterSet) == nil
+        }
+        
+        self.memberList = filteredList
         if memberList.isEmpty {
             delegate?.screenViewModelDidSearchNotFound(self)
         } else {
             delegate?.screenViewModelDidSearch(self)
         }
-        delegate?.screenViewModel(self, loadingState: .loaded)
+        AmityEventHandler.shared.hideKTBLoading()
     }
     
     func loadMore() {
-        memberListRepositoryManager.loadMore()
+        /* Check is ending result or result not found for ignore load more */
+        if isEndingResult || memberList.isEmpty { return }
+        
+        /* Get data next section */
+        AmityEventHandler.shared.hideKTBLoading() // Delete load loading if need
+        AmityEventHandler.shared.showKTBLoading()
+        debouncer.run { [self] in
+            let isEndPage = memberListRepositoryManager.loadMore()
+            if isEndPage {
+                isEndingResult = true
+            }
+            AmityEventHandler.shared.hideKTBLoading()
+        }
+    }
+    
+    func clearData() {
+        memberList.removeAll()
+        delegate?.screenViewModelDidSearch(self)
     }
 }

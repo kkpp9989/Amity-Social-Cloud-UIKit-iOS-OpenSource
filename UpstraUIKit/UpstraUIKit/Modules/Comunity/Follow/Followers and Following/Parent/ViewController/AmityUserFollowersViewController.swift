@@ -22,8 +22,11 @@ public final class AmityUserFollowersViewController: AmityPageViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupViewModel()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     public static func make(withUserId userId: String, isFollowersSelected: Bool = false) -> AmityUserFollowersViewController {

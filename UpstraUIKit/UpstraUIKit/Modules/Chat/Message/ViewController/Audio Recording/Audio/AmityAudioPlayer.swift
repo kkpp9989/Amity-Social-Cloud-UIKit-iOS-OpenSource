@@ -21,6 +21,11 @@ final class AmityAudioPlayer: NSObject {
     static let shared = AmityAudioPlayer()
     weak var delegate: AmityAudioPlayerDelegate?
     
+    let playerAudio = AVQueuePlayer()
+    var timeObserverToken: Any?
+    var durationTime: Double = 0.0
+    var isPlayFinish: Bool = false
+    
     var fileName: String?
     var path: URL?
     private var _fileName: String?
@@ -32,10 +37,19 @@ final class AmityAudioPlayer: NSObject {
         }
     }
     func isPlaying() -> Bool {
-        if player == nil {
-            return false
+        if playerAudio.rate == 1 {
+            if _fileName == fileName {
+                return false
+            } else {
+                return true
+            }
+        } else {
+            if _fileName == fileName {
+                return false
+            } else {
+                return true
+            }
         }
-        return player.isPlaying
     }
     
     func play() {
@@ -72,6 +86,105 @@ final class AmityAudioPlayer: NSObject {
         prepare()
     }
     
+    func setObserver() {
+        NotificationCenter.default
+            .addObserver(self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: playerAudio.currentItem
+        )
+    }
+    
+    func startAudio() {
+        do {
+            // Add audio session
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            
+            // Process play or pause audio
+            if playerAudio.rate == 1 {
+                if _fileName == fileName {
+                    if isPlayFinish {
+                        delegate?.playing()
+                        playerAudio.pause()
+                        getPlayAudio()
+                        playerAudio.play()
+                        isPlayFinish = false
+                    } else {
+                        delegate?.stopPlaying()
+                        playerAudio.pause()
+                    }
+                } else {
+                    delegate?.stopPlaying()
+                    playerAudio.pause()
+                    getPlayAudio()
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
+                }
+            } else {
+                if _fileName != fileName {
+                    playerAudio.pause()
+                    getPlayAudio()
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
+                } else {
+                    delegate?.playing()
+                    playerAudio.play()
+                    _fileName = fileName
+                }
+            }
+        } catch {
+            Log.add("Error while preparing audio session [playing audio in chat]: \(error.localizedDescription)")
+        }
+    }
+    
+    func stopAudio() {
+        playerAudio.pause()
+        delegate?.stopPlaying()
+    }
+    
+    @objc func playerDidFinishPlaying() {
+        isPlayFinish = true
+        stopAudio()
+        getPlayAudio()
+        delegate?.finishPlaying()
+    }
+    
+    func getPlayAudio() {
+        if playerAudio.rate != 1 {
+            guard let audioURL = path else {
+                Log.add("Audio file not found")
+                return
+            }
+            playerAudio.removeAllItems()
+            playerAudio.insert(AVPlayerItem(url: audioURL), after: nil)
+        }
+    }
+    
+    func startObservingTime() {
+        let timeInterval = CMTimeMake(value: 1, timescale: 1)
+        timeObserverToken = playerAudio.addPeriodicTimeObserver(forInterval: timeInterval, queue: DispatchQueue.main) { [weak self] time in
+            if let currentItem = self?.playerAudio.currentItem {
+                let duration = currentItem.duration
+                let remainingTime = duration.seconds - time.seconds.magnitude
+                if remainingTime >= 0 {
+                    let time = Int(remainingTime)
+                    let minutes = Int(time) / 60 % 60
+                    let seconds = Int(time) % 60
+                    let display = String(format:"%02i:%02i", minutes, seconds)
+                    self?.delegate?.displayDuration(display)
+                    if time == 0 {
+                        self?.isPlayFinish = true
+                        self?.delegate?.finishPlaying()
+                    }
+                } else {
+                    self?.timeObserverToken = nil
+                }
+            }
+        }
+    }
+    
     private func prepare() {
         guard let url = path else { return }
         do {
@@ -83,6 +196,7 @@ final class AmityAudioPlayer: NSObject {
             player.play()
             timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self] (timer) in
                 self?.duration += timer.timeInterval
+                self?.displayDuration()
             })
             timer?.tolerance = 0.2
             guard let timer = timer else { return }
@@ -98,7 +212,7 @@ final class AmityAudioPlayer: NSObject {
         let time = Int(duration)
         let minutes = Int(time) / 60 % 60
         let seconds = Int(time) % 60
-        let display = String(format:"%01i:%02i", minutes, seconds)
+        let display = String(format:"%02i:%02i", minutes, seconds)
         delegate?.displayDuration(display)
     }
     

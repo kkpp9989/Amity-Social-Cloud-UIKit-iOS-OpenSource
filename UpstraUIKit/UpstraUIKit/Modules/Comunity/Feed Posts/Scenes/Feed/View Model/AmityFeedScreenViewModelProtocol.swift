@@ -10,18 +10,20 @@ import UIKit
 import AmitySDK
 
 protocol AmityFeedScreenViewModelDelegate: AnyObject {
+    func screenViewModelDidClearDataSuccess(_ viewModel: AmityFeedScreenViewModelType) // [Improvement] add did clear data success function for fetch post when scroll refresh from feed have post with URL Preview
     func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelLoadingState(_ viewModel: AmityFeedScreenViewModelType, for loadingState: AmityLoadingState)
     func screenViewModelScrollToTop(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelDidSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String)
     func screenViewModelDidFail(_ viewModel: AmityFeedScreenViewModelType, failure error: AmityError)
     func screenViewModelLoadingStatusDidChange(_ viewModel: AmityFeedScreenViewModelType, isLoading: Bool)
+    func screenViewModelRouteToPostDetail(_ postId: String, viewModel: AmityFeedScreenViewModelType)
     
     // MARK: Post
     func screenViewModelDidLikePostSuccess(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelDidUnLikePostSuccess(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelDidGetReportStatusPost(isReported: Bool)
-    
+
     // MARK: Comment
     func screenViewModelDidLikeCommentSuccess(_ viewModel: AmityFeedScreenViewModelType)
     func screenViewModelDidUnLikeCommentSuccess(_ viewModel: AmityFeedScreenViewModelType)
@@ -30,6 +32,10 @@ protocol AmityFeedScreenViewModelDelegate: AnyObject {
     
     // MARK: User
     func screenViewModelDidGetUserSettings(_ viewModel: AmityFeedScreenViewModelType)
+    
+    // MARK: Pin Post
+    func screenViewModelDidUpdatePinSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String)
+    func screenViewModelDidUpdatePinUnsuccess(_ viewModel: AmityFeedScreenViewModelType, message: String)
 }
 
 protocol AmityFeedScreenViewModelDataSource {
@@ -46,10 +52,15 @@ protocol AmityFeedScreenViewModelAction {
     // MARK: Fetch data
     func fetchPosts()
     func loadMore()
-    
+    func clearOldPosts()
+
     // MARK: PostId / CommentId
     func like(id: String, referenceType: AmityReactionReferenceType)
     func unlike(id: String, referenceType: AmityReactionReferenceType)
+    
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool)
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool)
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType, isPinPost: Bool)
     
     // MARK: Post
     func delete(withPostId postId: String)
@@ -59,7 +70,7 @@ protocol AmityFeedScreenViewModelAction {
     
     // MARK: Comment
     func delete(withCommentId commentId: String)
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?)
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia])
     func report(withCommentId commentId: String)
     func unreport(withCommentId commentId: String)
     func getReportStatus(withCommendId commendId: String, completion: ((Bool) -> Void)?)
@@ -74,6 +85,14 @@ protocol AmityFeedScreenViewModelAction {
     
     // MARK: User Settings
     func fetchUserSettings()
+    
+    // MARK: Pin Post
+    func pinpost(withpostId postId: String)
+    func unpinpost(withpostId postId: String)
+    
+    // MARK: Share
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel)
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel)
 }
 
 protocol AmityFeedScreenViewModelType: AmityFeedScreenViewModelAction, AmityFeedScreenViewModelDataSource {

@@ -28,8 +28,42 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     }
     
     // MARK: - Action
+    func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any]) {
+        AmityEventHandler.shared.showKTBLoading()
+        // [URL Preview] Add get URL metadata for cache in post metadata to show URL preview
+        if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
+            // Get URL metadata
+            Task { @MainActor in
+                var updatedMetadata = metadata ?? [:]
+                if let newURLMetadata = await AmityPreviewLinkWizard.shared.getMetadata(url: urlData) {
+                    updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                    updatedMetadata["url_preview_cache_url"] = urlData.absoluteString
+                    updatedMetadata["is_show_url_preview"] = true
+                } else {
+                    updatedMetadata["url_preview_cache_title"] = ""
+                    updatedMetadata["url_preview_cache_url"] = ""
+                    updatedMetadata["is_show_url_preview"] = false
+                }
+                if let updateLocation = location["location"] {
+                    updatedMetadata["location"] = updateLocation
+                }
+                doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
+            }
+        } else {
+            var updatedMetadata = metadata ?? [:]
+            updatedMetadata["url_preview_cache_title"] = ""
+            updatedMetadata["url_preview_cache_url"] = ""
+            updatedMetadata["is_show_url_preview"] = false
+            
+            if let updateLocation = location["location"] {
+                updatedMetadata["location"] = updateLocation
+            }
+            doCreatePost(text: text, medias: medias, files: files, communityId: communityId, metadata: updatedMetadata, mentionees: mentionees)
+        }
+    }
     
-    func createPost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func doCreatePost(text: String, medias: [AmityMedia], files: [AmityFile], communityId: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+//        print("[Post][Create] text: \(text) | post metadata: \(metadata)")
         
         let targetType: AmityPostTargetType = communityId == nil ? .user : .community
         var postBuilder: AmityPostBuilder
@@ -74,10 +108,17 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         
         if let mentionees = mentionees {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
+                self?.createPostResponseHandler(forPost: post, error: error)
+            }
+        } else if let metadata = metadata {
+            postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
         } else {
             postrepository.createPost(postBuilder, targetId: communityId, targetType: targetType) { [weak self] (post, error) in
+                AmityEventHandler.shared.hideKTBLoading()
                 self?.createPostResponseHandler(forPost: post, error: error)
             }
         }
@@ -91,14 +132,69 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
      - You cannot add extra images/files or replace images/files in image/file post
      */
     
-    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+    func updatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, location: [String:Any]) {
+        AmityEventHandler.shared.showKTBLoading()
+        
+        // [URL Preview] Add get URL metadata for cache in post metadata to show URL preview
+        if let urlInString = AmityPreviewLinkWizard.shared.detectURLStringWithURLEncoding(text: text), let urlData = URL(string: urlInString) {
+            // Get URL metadata
+            Task { @MainActor in
+                var updatedMetadata = metadata ?? [:]
+                if let newURLMetadata = await AmityPreviewLinkWizard.shared.getMetadata(url: urlData) {
+                    updatedMetadata["url_preview_cache_title"] = newURLMetadata.title
+                    updatedMetadata["url_preview_cache_url"] = urlData.absoluteString
+                    updatedMetadata["is_show_url_preview"] = true
+                } else {
+                    updatedMetadata["url_preview_cache_title"] = ""
+                    updatedMetadata["url_preview_cache_url"] = ""
+                    updatedMetadata["is_show_url_preview"] = false
+                }
+                
+                if location.keys.contains("location") {
+                    updatedMetadata["location"] = location["location"]
+                } else if !location.isEmpty {
+                    updatedMetadata["location"] = location
+                }
+                
+                doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
+            }
+        } else {
+            var updatedMetadata = metadata ?? [:]
+            updatedMetadata["url_preview_cache_title"] = ""
+            updatedMetadata["url_preview_cache_url"] = ""
+            updatedMetadata["is_show_url_preview"] = false
+            
+            if location.keys.contains("location") {
+                updatedMetadata["location"] = location["location"]
+            } else if !location.isEmpty {
+                updatedMetadata["location"] = location
+            }
+            
+            doUpdatePost(oldPost: oldPost, text: text, medias: medias, files: files, metadata: updatedMetadata, mentionees: mentionees)
+        }
+    }
+    
+    func doUpdatePost(oldPost: AmityPostModel, text: String, medias: [AmityMedia], files: [AmityFile], metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?) {
+//        print("[Post][Update] text: \(text) | post metadata: \(metadata)")
         
         var postBuilder: AmityPostBuilder
         
         let isMediaChanged = oldPost.medias != medias
         let isFileChanged = oldPost.files != files
         
-        if oldPost.dataTypeInternal == .image && isMediaChanged {
+        if oldPost.medias.isEmpty && isMediaChanged {
+            // Image Post
+            let imagePostBuilder = AmityImagePostBuilder()
+            imagePostBuilder.setText(text)
+            imagePostBuilder.setImages(getImagesData(from: medias))
+            postBuilder = imagePostBuilder
+        } else if oldPost.files.isEmpty && isFileChanged {
+            // File Post
+            let fileBuilder = AmityFilePostBuilder()
+            fileBuilder.setText(text)
+            fileBuilder.setFiles(getFilesData(from: files))
+            postBuilder = fileBuilder
+        } else if oldPost.dataTypeInternal == .image && isMediaChanged {
             // Image Post
             let imagePostBuilder = AmityImagePostBuilder()
             imagePostBuilder.setText(text)
@@ -126,15 +222,22 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
         if let mentionees = mentionees {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: mentionees) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
+                strongSelf.updatePostResponseHandler(forPost: post, error: error)
+            }
+        } else if let metadata = metadata {
+            postrepository.updatePost(withId: oldPost.postId, builder: postBuilder, metadata: metadata, mentionees: AmityMentioneesBuilder()) { [weak self] (post, error) in
+                guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         } else {
             postrepository.updatePost(withId: oldPost.postId, builder: postBuilder) { [weak self] (post, error) in
                 guard let strongSelf = self else { return }
+                AmityEventHandler.shared.hideKTBLoading()
                 strongSelf.updatePostResponseHandler(forPost: post, error: error)
             }
         }
-        
     }
     
     // MARK:- Private Helpers
@@ -183,12 +286,16 @@ class AmityPostTextEditorScreenViewModel: AmityPostTextEditorScreenViewModelType
     private func createPostResponseHandler(forPost post: AmityPost?, error: Error?) {
         Log.add("File Post Created: \(post != nil) Error: \(String(describing: error))")
         delegate?.screenViewModelDidCreatePost(self, post: post, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: nil)
+        if error == nil {
+            NotificationCenter.default.post(name: NSNotification.Name.Post.didCreate, object: post?.postId)
+        }
     }
     
     private func updatePostResponseHandler(forPost post: AmityPost?, error: Error?) {
         Log.add("File Post updated: \(post != nil) Error: \(String(describing: error))")
         delegate?.screenViewModelDidUpdatePost(self, error: error)
-        NotificationCenter.default.post(name: NSNotification.Name.Post.didUpdate, object: nil)
+        if error == nil {
+            NotificationCenter.default.post(name: NSNotification.Name.Post.didUpdate, object: nil)
+        }
     }
 }

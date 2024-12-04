@@ -13,7 +13,8 @@ final class AmityAttributedString {
     private var boldText: [String] = []
     private var boldFont: UIFont = UIFont.systemFont(ofSize: 14)
     private var normalFont: UIFont = UIFont.boldSystemFont(ofSize: 16)
-    private var color: UIColor = .black
+    private var normalColor: UIColor = .black
+    private var boldColor: UIColor = .black
     
     @discardableResult
     func setTitle(_ text: String) -> AmityAttributedString {
@@ -40,12 +41,18 @@ final class AmityAttributedString {
     }
     
     @discardableResult
-    func setColor(for color: UIColor) -> AmityAttributedString {
-        self.color = color
+    func setNormalColor(for color: UIColor) -> AmityAttributedString {
+        self.normalColor = color
+        return self
+    }
+    
+    @discardableResult
+    func setBoldColor(for color: UIColor) -> AmityAttributedString {
+        self.boldColor = color
         return self
     }
     
     func build() -> NSAttributedString {
-        return fullText.applyBold(with: boldText, color: color, font: (normalFont, boldFont))
+        return fullText.applyBold(with: boldText, boldColor: boldColor, normalColor: normalColor, font: (normalFont, boldFont))
     }
 }

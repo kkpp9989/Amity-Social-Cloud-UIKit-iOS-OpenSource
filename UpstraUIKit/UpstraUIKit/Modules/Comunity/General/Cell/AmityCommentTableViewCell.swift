@@ -13,13 +13,18 @@ protocol AmityCommentTableViewCellDelegate: AnyObject {
     func commentCellDidTapLike(_ cell: AmityCommentTableViewCell)
     func commentCellDidTapReply(_ cell: AmityCommentTableViewCell)
     func commentCellDidTapOption(_ cell: AmityCommentTableViewCell)
-    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String)
+    func commentCellDidTapAvatar(_ cell: AmityCommentTableViewCell, userId: String, communityId: String?)
     func commentCellDidTapReactionDetails(_ cell: AmityCommentTableViewCell)
+    func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?)
 }
 
 class AmityCommentTableViewCell: UITableViewCell, Nibbable {
 
     @IBOutlet private var commentView: AmityCommentView!
+    
+    public private(set) var post: AmityPostModel?
+    public private(set) var comment: AmityCommentModel?
+    public private(set) var indexPath: IndexPath?
     
     weak var actionDelegate: AmityCommentTableViewCellDelegate?
     
@@ -32,11 +37,15 @@ class AmityCommentTableViewCell: UITableViewCell, Nibbable {
         }
     }
     
-    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout) {
-        commentView.configure(with: comment, layout: layout)
+    func configure(with comment: AmityCommentModel, layout: AmityCommentView.Layout, indexPath: IndexPath, post: AmityPostModel? = nil) {
+        self.post = post
+        self.comment = comment
+        self.indexPath = indexPath
+        
+        commentView.configure(with: comment, layout: layout, post: post)
         commentView.delegate = self
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
@@ -57,7 +66,12 @@ extension AmityCommentTableViewCell: AmityCommentViewDelegate {
     func commentView(_ view: AmityCommentView, didTapAction action: AmityCommentViewAction) {
         switch action {
         case .avatar:
-            actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "")
+            // Check moderator user in official community for prepare tap displayname or avatar action
+            if let currentPost = post, view.isModeratorUserInOfficialCommunity && view.isOfficialCommunity  { // Case : Post is from official community and owner is moderator
+                actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "", communityId: currentPost.targetCommunity?.communityId)
+            } else { // Case : Post isn't from official community or owner isn'y moderator
+                actionDelegate?.commentCellDidTapAvatar(self, userId: commentView.comment?.userId ?? "", communityId: nil)
+            }
         case .like:
             actionDelegate?.commentCellDidTapLike(self)
         case .option:
@@ -68,6 +82,10 @@ extension AmityCommentTableViewCell: AmityCommentViewDelegate {
             actionDelegate?.commentCellDidTapReply(self)
         case .reactionDetails:
             actionDelegate?.commentCellDidTapReactionDetails(self)
+        case .status:
+            break
+        case .commentImage(let imageView, let fileURL):
+            actionDelegate?.commentCellDidTapCommentImage(self, imageView: imageView, fileURL: fileURL)
         }
     }
     

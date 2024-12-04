@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 class AmityGroupChatEditViewController: AmityViewController {
     
@@ -17,9 +18,12 @@ class AmityGroupChatEditViewController: AmityViewController {
     @IBOutlet private weak var uploadButton: UIButton!
     @IBOutlet private weak var cameraImageView: UIView!
     @IBOutlet private weak var groupNameTitleLabel: UILabel!
-    @IBOutlet private weak var nameTextField: AmityTextField!
+    @IBOutlet private var nameTextField: AmityTextView!
     @IBOutlet private weak var countLabel: UILabel!
     @IBOutlet private weak var avatarView: AmityAvatarView!
+    @IBOutlet private weak var groupNameSeparatorView: UIView!
+    @IBOutlet private weak var avatarUploadingProgressBar: UIProgressView!
+    @IBOutlet private weak var overlayView: UIView!
     
     private var screenViewModel: AmityGroupChatEditorScreenViewModelType?
     private var channelId = String()
@@ -34,7 +38,7 @@ class AmityGroupChatEditViewController: AmityViewController {
             return false
         }
         let isValueChanged = (nameTextField.text != channel.displayName) || (uploadingAvatarImage != nil)
-        let isValueExisted = !nameTextField.text!.isEmpty
+        let isValueExisted = !nameTextField.text!.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         return (isValueChanged && isValueExisted)
     }
     
@@ -54,7 +58,7 @@ class AmityGroupChatEditViewController: AmityViewController {
     private func updateView() {
         screenViewModel?.dataSource.getChannelEditUserPermission({ [weak self] hasPermission in
             guard let weakSelf = self else { return }
-            weakSelf.nameTextField.isEnabled = hasPermission
+            weakSelf.nameTextField.isEditable = hasPermission
             weakSelf.uploadButton.isEnabled = hasPermission
             
             if hasPermission {
@@ -66,14 +70,25 @@ class AmityGroupChatEditViewController: AmityViewController {
     private func setupNavigationBar() {
         saveBarButtonItem = UIBarButtonItem(title: AmityLocalizedStringSet.General.save.localizedString, style: .done, target: self, action: #selector(saveButtonTap))
         saveBarButtonItem.isEnabled = false
+        // [Improvement] Add set font style to label of save button
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body,
+                                                   NSAttributedString.Key.foregroundColor: AmityColorSet.primary], for: .normal)
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .disabled)
+        saveBarButtonItem?.setTitleTextAttributes([NSAttributedString.Key.font: AmityFontSet.body], for: .selected)
+        
         navigationItem.rightBarButtonItem = saveBarButtonItem
     }
     
     func setupView() {
-        title = AmityLocalizedStringSet.editUserProfileTitle.localizedString
+        title = AmityLocalizedStringSet.ChatSettings.groupProfile.localizedString
         screenViewModel = AmityGroupChatEditScreenViewModel(channelId: channelId)
         screenViewModel?.delegate = self
         avatarView.placeholder = AmityIconSet.defaultGroupChat
+        avatarView.bringSubviewToFront(overlayView)
+        avatarUploadingProgressBar.tintColor = AmityColorSet.primary
+        avatarUploadingProgressBar.setProgress(0.0, animated: true)
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(0.7)
+        overlayView.isHidden = true
         cameraImageView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
         cameraImageView.layer.borderColor = AmityColorSet.backgroundColor.cgColor
         cameraImageView.layer.borderWidth = 1.0
@@ -81,15 +96,24 @@ class AmityGroupChatEditViewController: AmityViewController {
         cameraImageView.clipsToBounds = true
         
         // display name
-        groupNameTitleLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*"
-        groupNameTitleLabel.font = AmityFontSet.title
+//        groupNameTitleLabel.text = AmityLocalizedStringSet.editUserProfileDisplayNameTitle.localizedString + "*" // [Original]
+        groupNameTitleLabel.text = AmityLocalizedStringSet.editGroupChatProfileDisplayNameTitle.localizedString + "*" // [Custom for ONE Krungthai] Change label of displayname refer to ONE KTB figma
+        groupNameTitleLabel.font = AmityFontSet.bodyBold
         groupNameTitleLabel.textColor = AmityColorSet.base
         countLabel.font = AmityFontSet.caption
         countLabel.textColor = AmityColorSet.base.blend(.shade1)
-        nameTextField.delegate = self
-        nameTextField.borderStyle = .none
-        nameTextField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
+        nameTextField.customTextViewDelegate = self
+        nameTextField.layer.borderWidth = 0
+        nameTextField.isScrollEnabled = false
+        nameTextField.textContainer.lineBreakMode = .byWordWrapping
+        nameTextField.padding = .zero
+        nameTextField.maxCharacters = Constant.maxCharactor
         nameTextField.maxLength = Constant.maxCharactor
+        nameTextField.font = AmityFontSet.body // [Improvement] Set font style of text field
+        
+        // [Improvement] Set separator background
+        // separator
+        groupNameSeparatorView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
     }
     
     @objc private func textFieldEditingChanged(_ textView: AmityTextView) {
@@ -120,13 +144,34 @@ class AmityGroupChatEditViewController: AmityViewController {
         // Show image picker
         var galleryOption = TextItemOption(title: AmityLocalizedStringSet.General.imageGallery.localizedString)
         galleryOption.completion = { [weak self] in
-            let imagePicker = AmityImagePickerController(selectedAssets: [])
+            let imagePicker = NewImagePickerController(selectedAssets: [])
             imagePicker.settings.theme.selectionStyle = .checked
             imagePicker.settings.fetch.assets.supportedMediaTypes = [.image]
             imagePicker.settings.selection.max = 1
             imagePicker.settings.selection.unselectOnReachingMax = true
             
-            self?.presentAmityUIKitImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil, finish: { assets in
+            let options = imagePicker.settings.fetch.album.options
+            // Fetching user library and other smart albums
+            let userLibraryCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: options)
+            let favoritesCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumFavorites, options: options)
+            let selfPortraitsCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumSelfPortraits, options: options)
+            let panoramasCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumPanoramas, options: options)
+            let videosCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumVideos, options: options)
+            
+            // Fetching regular albums
+            let regularAlbumsCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumRegular, options: options)
+            
+            imagePicker.settings.fetch.album.fetchResults = [
+                userLibraryCollection,
+                favoritesCollection,
+                regularAlbumsCollection,
+                selfPortraitsCollection,
+                panoramasCollection,
+                videosCollection
+            ]
+                        
+            imagePicker.modalPresentationStyle = .overFullScreen
+            self?.presentNewImagePicker(imagePicker, select: nil, deselect: nil, cancel: nil) { assets in
                 guard let asset = assets.first else { return }
                 asset.getImage { result in
                     switch result {
@@ -136,7 +181,7 @@ class AmityGroupChatEditViewController: AmityViewController {
                         break
                     }
                 }
-            })
+            }
         }
         
         let bottomSheet = BottomSheetViewController()
@@ -154,26 +199,48 @@ class AmityGroupChatEditViewController: AmityViewController {
     
     @objc private func saveButtonTap() {
         AmityHUD.show(.loading)
-        // Update user avatar
-        if let avatar = uploadingAvatarImage {
-            avatarView.state = .loading
-            screenViewModel?.action.update(avatar: avatar, completion: {[weak self] result in
-                guard let weakSelf = self else { return }
-                weakSelf.avatarView.state = .idle
-                if result {
-                    weakSelf.uploadingAvatarImage = nil
-                    if weakSelf.isValueChanged {
-                        weakSelf.screenViewModel?.action.update(displayName: weakSelf.nameTextField.text ?? "")
-                    } else {
-                        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-                        AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: weakSelf)
-                    }
+        
+        Task { @MainActor in
+            // Update display name data
+            let newDisplayName = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isUpdateTextSuccess = await screenViewModel?.action.update(displayName: newDisplayName)
+            
+            // Check is display name data update fail for show error
+            if let isUpdateTextSuccess, !isUpdateTextSuccess {
+                AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+                return
+            }
+            
+            // Update user avatar if need
+            if let avatar = uploadingAvatarImage {
+                // Show overlay view and progress bar
+                avatarUploadingProgressBar.setProgress(0.0, animated: true)
+                overlayView.isHidden = false // Custom overlay for this view controller only
+                
+                // Start update group chat avatar
+                let isUpdateAvatarSuccess = await screenViewModel?.action.update(avatar: avatar)
+                
+                // Hide overlay view and progress bar
+                overlayView.isHidden = true // Custom overlay for this view controller only
+                avatarUploadingProgressBar.setProgress(0.0, animated: true) // Reset to 0 for next time
+                
+                // Reset cache image and update view state
+                uploadingAvatarImage = nil
+                updateViewState()
+                
+                // Check is avatar update success for show error or success
+                if let isUpdateAvatarSuccess, isUpdateAvatarSuccess {
+                    AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                    AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
                 } else {
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
                 }
-            })
-        } else if isValueChanged {
-            screenViewModel?.action.update(displayName: nameTextField.text ?? "")
+            } else {
+                // when there is no image update
+                // directly show success message after updated
+                AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
+                AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
+            }
         }
     }
 }
@@ -189,26 +256,18 @@ extension AmityGroupChatEditViewController: UIImagePickerControllerDelegate & UI
     
 }
 
-extension AmityGroupChatEditViewController: UITextFieldDelegate {
+extension AmityGroupChatEditViewController: AmityTextViewDelegate {
     
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return nameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: string)
-        
+    func textView(_ textView: AmityTextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return nameTextField.verifyFields(shouldChangeCharactersIn: range, replacementString: text)
     }
     
+    func textViewDidChange(_ textView: AmityTextView) {
+        updateViewState()
+    }
 }
 
 extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelDelegate {
-    
-    func screenViewModelDidUpdateFailed(_ viewModel: AmityGroupChatEditorScreenViewModelType, withError error: String) {
-        AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
-        updateViewState()
-    }
-    
-    func screenViewModelDidUpdateSuccess(_ viewModel: AmityGroupChatEditorScreenViewModelType) {
-        AmityHUD.show(.success(message: AmityLocalizedStringSet.HUD.successfullyUpdated.localizedString))
-        AmityChannelEventHandler.shared.channelGroupChatUpdateDidComplete(from: self)
-    }
     
     func screenViewModelDidUpdate(_ viewModel: AmityGroupChatEditorScreenViewModelType) {
         guard let channel = viewModel.dataSource.channel else { return }
@@ -224,5 +283,10 @@ extension AmityGroupChatEditViewController: AmityGroupChatEditorScreenViewModelD
                                 placeholder: AmityIconSet.defaultGroupChat)
         }
         updateViewState()
+    }
+    
+    func screenViewModelDidUpdateAvatarUploadingProgress(_ viewModel: AmityGroupChatEditorScreenViewModelType, progressing: Double) {
+//        print("[Avatar] Upload progressing number | double: \(progressing) | float: \(Float(progressing))")
+        avatarUploadingProgressBar.setProgress(Float(progressing), animated: true)
     }
 }

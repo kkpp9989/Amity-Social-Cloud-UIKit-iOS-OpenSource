@@ -29,7 +29,8 @@ class ButtonBarViewCell: UICollectionViewCell {
 
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var label: UILabel!
-
+	@IBOutlet weak var imageViewWidth: NSLayoutConstraint!
+	
     var width: CGFloat {
         return label!.intrinsicContentSize.width
     }

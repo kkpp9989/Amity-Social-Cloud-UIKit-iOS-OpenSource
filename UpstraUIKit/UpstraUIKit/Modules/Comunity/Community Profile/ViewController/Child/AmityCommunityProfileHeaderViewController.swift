@@ -23,6 +23,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var actionButton: AmityButton!
     @IBOutlet private var actionStackView: UIStackView!
+    @IBOutlet private var gradientView: UIView!
     
     @IBOutlet private var pendingPostsStatusView: UIView!
     @IBOutlet private var pendingPostsContainerView: UIView!
@@ -35,6 +36,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
     private let gradient = CAGradientLayer()
     private var channelToken: AmityNotificationToken?
     var isUpdateInProgress = false
+    var isAlreadyUpdate = false
     
     // MARK: - Custom Theme Properties [Additional]
     private var theme: ONEKrungthaiCustomTheme?
@@ -79,7 +81,7 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
         avatarView.contentMode = .scaleAspectFill
         gradient.colors = [UIColor.clear.cgColor, AmityColorSet.base.withAlphaComponent(0.8).cgColor]
         gradient.locations = [0, 1]
-        avatarView.layer.addSublayer(gradient)
+        gradientView.layer.addSublayer(gradient)
         
         displayNameLabel.text = ""
         displayNameLabel.font = AmityFontSet.headerLine
@@ -202,7 +204,8 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
             actionButton.backgroundColor = AmityColorSet.primary
             actionButton.layer.cornerRadius = 4
             actionButton.tag = 0
-            actionButton.isHidden = false
+            let isPublic = screenViewModel.dataSource.community?.isPublic ?? false
+            actionButton.isHidden = !isPublic
         case .member:
             actionButton.setTitle(AmityLocalizedStringSet.communityDetailMessageButton.localizedString, for: .normal)
             actionButton.setImage(AmityIconSet.iconChat, position: .left)
@@ -227,7 +230,6 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
         actionStackView.isHidden = actionButton.isHidden
     }
     
-    
     private func shouldShowPendingsPostBanner() {
         switch screenViewModel.dataSource.memberStatusCommunity {
         case .guest:
@@ -235,17 +237,25 @@ final class AmityCommunityProfileHeaderViewController: UIViewController {
             self.isUpdateInProgress = false
         case .member:
             screenViewModel.action.getPendingPostCount { [weak self] pendingPostsCount in
-                self?.pendingPostsContainerView.isHidden = pendingPostsCount == 0
-                self?.pendingPostsDescriptionLabel.text = AmityLocalizedStringSet.PendingPosts.statusMemberDesc.localizedString
-                self?.didUpdatePostBanner?()
-                self?.isUpdateInProgress = false
+                guard let strongSelf = self else { return }
+                strongSelf.pendingPostsContainerView.isHidden = true
+                strongSelf.pendingPostsDescriptionLabel.text = AmityLocalizedStringSet.PendingPosts.statusMemberDesc.localizedString
+                if !strongSelf.isAlreadyUpdate {
+                    strongSelf.isAlreadyUpdate = true
+                    strongSelf.didUpdatePostBanner?()
+                }
+                strongSelf.isUpdateInProgress = false
             }
         case .admin:
             screenViewModel.action.getPendingPostCount { [weak self] pendingPostsCount in
-                self?.pendingPostsContainerView.isHidden = pendingPostsCount == 0
-                self?.pendingPostsDescriptionLabel.text = String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDesc.localizedString, pendingPostsCount)
-                self?.didUpdatePostBanner?()
-                self?.isUpdateInProgress = false
+                guard let strongSelf = self else { return }
+                strongSelf.pendingPostsContainerView.isHidden = pendingPostsCount == 0
+                strongSelf.pendingPostsDescriptionLabel.text = pendingPostsCount == 1 ? String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDescOnePost.localizedString, pendingPostsCount) : String.localizedStringWithFormat(AmityLocalizedStringSet.PendingPosts.statusAdminDesc.localizedString, pendingPostsCount)
+                if !strongSelf.isAlreadyUpdate {
+                    strongSelf.isAlreadyUpdate = true
+                    strongSelf.didUpdatePostBanner?()
+                }
+                strongSelf.isUpdateInProgress = false
             }
         }
     }

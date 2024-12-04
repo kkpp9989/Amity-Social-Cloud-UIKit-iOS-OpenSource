@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AmitySDK
 
 enum AmityPostProtocolHeaderHandlerAction {
     case tapOption
@@ -14,6 +15,7 @@ enum AmityPostProtocolHeaderHandlerAction {
     case tapReport
     case tapUnreport
     case tapClosePoll
+    case TapPinpost
 }
 
 protocol AmityPostHeaderProtocolHandlerDelegate: AnyObject {
@@ -82,6 +84,14 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
             strongSelf.delegate?.headerProtocolHandlerDidPerformAction(strongSelf, action: .tapReport, withPost: post)
         }
         
+        let pinpostOption = TextItemOption(title: post.isPinPost ? AmityLocalizedStringSet.General.unPinpost.localizedString : AmityLocalizedStringSet.General.pinpost.localizedString) { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.delegate?.headerProtocolHandlerDidPerformAction(strongSelf, action: .TapPinpost, withPost: post)
+        }
+        
+        let role = AmityUIKitManagerInternal.shared.client.user?.snapshot?.roles
+        let isGlobalModerator = role?.contains("moderator") ?? false
+
         if post.isOwner {
             switch post.dataTypeInternal {
             case .poll:
@@ -103,29 +113,101 @@ final class AmityPostHeaderProtocolHandler: AmityPostHeaderDelegate {
                     AmityAlertController.present(title: AmityLocalizedStringSet.Poll.Option.alertDeleteTitle.localizedString, message: AmityLocalizedStringSet.Poll.Option.alertDeleteDesc.localizedString, actions: [cancel, delete], from: viewController)
                 }
                 
-                let items = (post.poll?.isClosed ?? false) ? [deletePoll] : [closePoll, deletePoll]
-                contentView.configure(items: items, selectedItem: nil)
+                var items = (post.poll?.isClosed ?? false) ? [deletePoll] : [closePoll, deletePoll]
                 
+                // check permission pinpost
+                switch post.appearance.amitySocialPostDisplayStyle  {
+                case .community, .postDetailFromCommunityProfile:
+                    if post.isModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                default:
+                    if isGlobalModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                }
+                
+                contentView.configure(items: items, selectedItem: nil)
             case .file, .image, .text, .video, .unknown:
-                contentView.configure(items: [editOption, deleteOption], selectedItem: nil)
+                var items = [editOption, deleteOption]
+                // check permission pinpost
+                switch post.appearance.amitySocialPostDisplayStyle  {
+                case .community, .postDetailFromCommunityProfile:
+                    if post.isModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                default:
+                    if isGlobalModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                }
+                contentView.configure(items: items, selectedItem: nil)
             case .liveStream:
+                var items = [deleteOption]
+                // check permission pinpost
+                switch post.appearance.amitySocialPostDisplayStyle  {
+                case .community, .postDetailFromCommunityProfile:
+                    if post.isModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                default:
+                    if isGlobalModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                }
+                
                 // Currently we don't support edit live stream post.
-                contentView.configure(items: [deleteOption], selectedItem: nil)
+                contentView.configure(items: items, selectedItem: nil)
             }
             viewController.present(bottomSheet, animated: false, completion: nil)
         } else {
             // if it is in community feed, check permission before options
             if let communityId = post.targetCommunity?.communityId {
                 var items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                
                 AmityUIKitManagerInternal.shared.client.hasPermission(.editCommunity, forCommunity: communityId) { [weak self] (hasPermission) in
                     if hasPermission {
                         items.insert(deleteOption, at: 0)
+                    }
+                    
+                    // check permission pinpost
+                    switch post.appearance.amitySocialPostDisplayStyle  {
+                    case .community, .postDetailFromCommunityProfile:
+                        if let communityId = post.targetCommunity?.communityId {
+                            let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                            let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
+                            
+                            if isGlobalModerator || isModerator {
+                                items.insert(pinpostOption, at: 0)
+                            }
+                        }
+                    default:
+                        if isGlobalModerator {
+                            items.insert(pinpostOption, at: 0)
+                        }
                     }
                     contentView.configure(items: items, selectedItem: nil)
                     self?.viewController?.present(bottomSheet, animated: false, completion: nil)
                 }
             } else {
-                let items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                var items: [TextItemOption] = isReported ? [unreportOption] : [reportOption]
+                
+                // check permission pinpost
+                switch post.appearance.amitySocialPostDisplayStyle  {
+                case .community, .postDetailFromCommunityProfile:
+                    if let communityId = post.targetCommunity?.communityId {
+                        let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                        let isModerator = participation.getMember(withId: AmityUIKitManagerInternal.shared.currentUserId)?.hasModeratorRole ?? false
+                        
+                        if isGlobalModerator || isModerator {
+                            items.insert(pinpostOption, at: 0)
+                        }
+                    }
+                default:
+                    if isGlobalModerator {
+                        items.insert(pinpostOption, at: 0)
+                    }
+                }
                 contentView.configure(items: items, selectedItem: nil)
                 viewController.present(bottomSheet, animated: false, completion: nil)
             }

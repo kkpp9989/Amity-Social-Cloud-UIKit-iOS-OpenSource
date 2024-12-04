@@ -42,14 +42,45 @@ struct AmityDateFormatter {
             return dateFormatter
         }()
         
-        static func getDate(date: Date) -> String {
+        static func getDate(date: Date, is24HourFormat: Bool = true) -> String {
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .short
-            dateFormatter.dateFormat = "M/dd/yy, hh:mm a"
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            
+            if is24HourFormat {
+                dateFormatter.dateFormat = "M/dd/yy, HH:mm"
+            } else {
+                dateFormatter.dateFormat = "M/dd/yy, hh:mm a"
+            }
+            
             let dateString = dateFormatter.string(from: date)
             guard let _date = dateFormatter.date(from: dateString) else { return "" }
-            dateFormatter.dateFormat = _date.isToday ? "h:mm a" : "dd/MM/yy"
+            
+            if _date.isInYesterday {
+                return "Yesterday"
+            }
+            
+            dateFormatter.dateFormat = _date.isToday ? (is24HourFormat ? "HH:mm" : "h:mm a") : "dd/MM/yy"
             return dateFormatter.string(from: _date)
+        }
+        
+        static func getDate(from dateString: String, is24HourFormat: Bool = true) -> String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+            dateFormatter.timeZone = TimeZone(identifier: "UTC")
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            
+            guard let date = dateFormatter.date(from: dateString) else {
+                return ""
+            }
+            
+            // Set the desired time zone (Thailand)
+            dateFormatter.timeZone = TimeZone(identifier: "Asia/Bangkok")
+            dateFormatter.dateStyle = .short
+            dateFormatter.timeStyle = .short
+            dateFormatter.dateFormat = date.isToday ? (is24HourFormat ? "HH:mm" : "h:mm a") : "dd/MM/yy"
+            
+            return dateFormatter.string(from: date)
         }
     }
     
@@ -60,25 +91,38 @@ struct AmityDateFormatter {
             return dateFormatter
         }()
         
-        static func getDate(date: Date) -> String {
+        static func getDate(date: Date, is24HourFormat: Bool = false) -> String {
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
             dateFormatter.dateFormat = "M/dd/yy"
             let dateString = dateFormatter.string(from: date)
             guard let _date = dateFormatter.date(from: dateString) else { return "" }
-            if _date.message == "" {
-                dateFormatter.dateFormat = "MMMM dd, yyyy"
+            
+            if _date.isToday {
+                return "Today"
+            }
+            
+            if _date.message.isEmpty {
+//                dateFormatter.dateFormat = "MMMM dd, yyyy" // [Backup]
+                dateFormatter.dateFormat = "d MMMM yyyy"
                 return dateFormatter.string(from: _date)
             }
+            
             return _date.message
         }
         
-        static func getTime(date: Date) -> String {
+        static func getTime(date: Date, is24HourFormat: Bool = true) -> String {
             dateFormatter.dateStyle = .none
             dateFormatter.timeStyle = .short
-            dateFormatter.dateFormat = "h:mm a"
+            
+            if is24HourFormat {
+                dateFormatter.locale = Locale(identifier: "en_US_POSIX") // Set a specific locale using the 24-hour clock format
+                dateFormatter.dateFormat = "HH:mm"
+            } else {
+                dateFormatter.dateFormat = "h:mm a"
+            }
+            
             return dateFormatter.string(from: date)
         }
     }
-    
 }

@@ -5,300 +5,283 @@
 //  Created by min khant on 06/05/2021.
 //  Copyright © 2021 Amity. All rights reserved.
 //
+/* [Custom for ONE Krungthai][Improvement] Change processing same as AmityCommunitySettingsScreenViewModel */
 
 import UIKit
 import AmitySDK
 
-enum OptionsList: Equatable {
-    case report(Bool)
-    case leave
-    case members
-    case groupProfile
-    var text: String {
-        switch self {
-        case .report(let isReported):
-            if isReported {
-                return AmityLocalizedStringSet.ChatSettings.unReportUser.localizedString
-            }
-            return AmityLocalizedStringSet.ChatSettings.reportUser.localizedString
-        case .leave:
-            return AmityLocalizedStringSet.ChatSettings.leaveChannel.localizedString
-        case .members:
-            return AmityLocalizedStringSet.ChatSettings.member.localizedString
-        case .groupProfile:
-            return AmityLocalizedStringSet.ChatSettings.groupProfile.localizedString
-        }
-    }
-    var textColor: UIColor {
-        switch self {
-        case .report:
-            return UIColor(hex: "#292B32")
-        case .leave:
-            return UIColor(hex: "#FA4D30")
-        case .members:
-            return UIColor(hex: "#292B32")
-        case .groupProfile:
-            return UIColor(hex: "#292B32")
-        }
-    }
-    
-    var image: UIImage? {
-        switch self {
-        case .groupProfile:
-            return AmityIconSet.CommunitySettings.iconItemEditProfile
-        case .members:
-            return AmityIconSet.CommunitySettings.iconItemMembers
-        default:
-            return nil
-        }
-    }
-}
-
-protocol AmityChatSettingsScreenViewModelDelegate: AnyObject {
-    func screenViewModelDidFinishReport(error: String?)
-    func screenViewModelDidFinishLeaveChat(error: String?)
-    func screenViewModelDidPresentMember(channel: AmityChannelModel)
-    func screenViewmodelDidPresentGroupDetail(channelId: String)
-    func screenViewModelDidUpdate(viewModel: AmityChatSettingsScreenViewModel)
-}
-
-protocol AmityChatSettingsScreenViewModelDataSource {
-    func title() -> String
-    func getNumberOfItems() -> Int
-    func getOption(with index: Int) -> OptionsList
-    func getOptionTitle(with index: Int) -> String
-    func getOptionTextColor(with index: Int) -> UIColor
-    func getOptionImage(with index: Int) -> UIImage?
-    func getMemberCount() -> String
-}
-
-protocol AmityChatSettingsScreenViewModelAction {
-    func leaveChat()
-    func presentMember()
-    func didClickCell(index: Int)
-    func changeReportStatus()
-}
-
-protocol AmityChatSettingsScreenViewModelType: AmityChatSettingsScreenViewModelAction, AmityChatSettingsScreenViewModelDataSource {
-    var action: AmityChatSettingsScreenViewModelAction { get }
-    var dataSource: AmityChatSettingsScreenViewModelDataSource { get }
-    var delegate: AmityChatSettingsScreenViewModelDelegate? { get set }
-}
-
-extension AmityChatSettingsScreenViewModelType {
-    var action: AmityChatSettingsScreenViewModelAction { return self }
-    var dataSource: AmityChatSettingsScreenViewModelDataSource { return self }
-}
-
 final class AmityChatSettingsScreenViewModel: AmityChatSettingsScreenViewModelType {
-
+    
     weak var delegate: AmityChatSettingsScreenViewModelDelegate?
-    private var channelNotificationToken: AmityNotificationToken?
-    private var userToken: AmityNotificationToken?
     
-    // MARK: - Repository
-    private var channelRepository: AmityChannelRepository?
-    private var communityRepository: AmityCommunityRepository?
-    private var userRepository: AmityUserRepository?
+    // MARK: - Controller
+    private let chatNotificationController: AmityChatNotificationSettingsControllerProtocol
+    private let channelController: AmityChannelControllerProtocol
+    private let channelMemberController: AmityChannelFetchMemberControllerProtocol
+    private let userController: AmityChatUserControllerProtocol
+    private var customMessageController: AmityCustomMessageController
     
-    private var flagger: AmityUserFlagger?
+    // MARK: - SubViewModel
+    private var menuViewModel: AmityChatSettingsCreateMenuViewModelProtocol?
     
-    private var channelId = String()
-    var channelModel: AmityChannelModel?
-    var otherUser: AmityUser?
-    var isUserReported: Bool = false {
-        didSet {
-            directChatSetting = [.report(isUserReported), .leave]
-        }
-    }
+    // MARK: - Properties
+    private(set) var channel: AmityChannelModel?
+    var title: String?
+    let channelId: String
+    private var isNotificationEnabled: Bool?
+    private let dispatchGroup = DispatchGroup()
     
-    private let groupChatSetting: [OptionsList] = [ .groupProfile, .members, .leave]
-    private var directChatSetting: [OptionsList] = []
-    private var memberCount = String()
+    // For 1:1 chat only
+    var otherUser: AmityUserModel?
+    private var isReportedOtherUser: Bool?
     
-    init(channelId: String) {
-        communityRepository = AmityCommunityRepository(client: AmityUIKitManagerInternal.shared.client)
-        channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
-        userRepository = AmityUserRepository(client: AmityUIKitManagerInternal.shared.client)
-        
-        directChatSetting = [.report(isUserReported)]
-        
+    // For Group chat only
+    private(set) var isCanEditGroupChannel: Bool?
+    
+    init(channelId: String,
+         chatNotificationController: AmityChatNotificationSettingsControllerProtocol,
+         channelController: AmityChannelControllerProtocol,
+         userController: AmityChatUserControllerProtocol) {
+        self.chatNotificationController = chatNotificationController
+        self.channelController = channelController
+        self.userController = userController
         self.channelId = channelId
-        
-        AmityHUD.show(.loading)
-        
-        channelNotificationToken = channelRepository?.getChannel(channelId).observe { [weak self] (channel, error) in
-            guard let weakSelf = self,
-                  let model = channel.object else { return }
-            let channelModel = AmityChannelModel(object: model)
-            weakSelf.channelModel = channelModel
-            weakSelf.memberCount = "\(model.memberCount)"
-            if channelModel.isConversationChannel {
-                weakSelf.getReportUserStatus()
-            }
-            weakSelf.delegate?.screenViewModelDidUpdate(viewModel: weakSelf)
-            AmityHUD.hide()
-        }
+        customMessageController = AmityCustomMessageController(channelId: channelId)
+        channelMemberController = AmityChannelFetchMemberController(channelId: channelId)
     }
 }
 
 // MARK: - DataSource
 extension AmityChatSettingsScreenViewModel {
-    func title() -> String {
-        return AmityLocalizedStringSet.ChatSettings.title.localizedString
-    }
-    
-    func getNumberOfItems() -> Int {
-        guard let model = channelModel else {
-            return 1
-        }
-        if model.isConversationChannel {
-            return directChatSetting.count
-        }
-        return groupChatSetting.count
-    }
-    
-    func getOptionTitle(with index: Int) -> String {
-        guard let model = channelModel else {
-            return OptionsList.leave.text
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].text
-        }
-        return groupChatSetting[index].text
-    }
-    
-    func getOptionTextColor(with index: Int) -> UIColor {
-        guard let model = channelModel else {
-            return OptionsList.leave.textColor
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].textColor
-        }
-        return groupChatSetting[index].textColor
-    }
-    
-    func getOptionImage(with index: Int) -> UIImage? {
-        guard let model = channelModel else {
-            return OptionsList.leave.image
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index].image
-        }
-        return groupChatSetting[index].image
-    }
-    
-    func getOption(with index: Int) -> OptionsList {
-        guard let model = channelModel else {
-            return OptionsList.leave
-        }
-        if model.isConversationChannel {
-            return directChatSetting[index]
-        }
-        return groupChatSetting[index]
-    }
-    
-    func getMemberCount() -> String {
-        return memberCount
-    }
-    
-    private func getReportStatus() {
-        guard let user = otherUser else {
-            isUserReported = false
-            return
-        }
-        flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-        flagger?.isFlaggedByMe {
-            self.isUserReported = $0
-        }
-    }
-    
-    private func getReportUserStatus() {
-        guard let channel = channelModel else { return }
-        userToken?.invalidate()
-        if !channel.getOtherUserId().isEmpty {
-            userToken = userRepository?.getUser(channel.getOtherUserId()).observeOnce({ [weak self] user, error in
-                guard let weakSelf = self else { return }
-                if error == nil {
-                    if let userObject = user.object {
-                        weakSelf.otherUser = userObject
-                        weakSelf.getReportStatus()
-                    }
-
-                }
-            })
-        }
-    }
-    
+    // Not used
 }
 
 // MARK: - Action
 extension AmityChatSettingsScreenViewModel {
-    
-    func changeReportStatus() {
-        isUserReported ? unreportUser() : reportUser()
-    }
-    
-    private func reportUser() {
-        if let user = otherUser {
-            flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-            flagger?.flag { [weak self] (success, error) in
-                guard let weakSelf = self else { return }
-                weakSelf.isUserReported = success
-                weakSelf.delegate?.screenViewModelDidFinishReport(error: error?.localizedDescription)
+    // MARK: - Get Action - Channel, other user info and status report user of him (For 1:1 Chat only)
+    func retrieveChannel() {
+        // Get channel
+        if channel == nil { AmityEventHandler.shared.showKTBLoading() }
+        channelController.getChannel { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let channel):
+                strongSelf.channel = channel
+                // Get title
+                if channel.channelType == .conversation { // Case: Conversation type (1:1 Chat) -> Get other member displayname for set title
+                    let otherUserId = channel.getOtherUserId()
+                    strongSelf.userController.getOtherUserInConversationChatByOtherUserId(otherUserId: otherUserId) { user in
+                        if let otheruser = user {
+                            strongSelf.otherUser = otheruser
+                            strongSelf.title = otheruser.displayName
+                            strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+                            strongSelf.userController.getStatusReportUser(with: otheruser.userId) { result, error in
+                                if let statusReportUser = result {
+                                    strongSelf.isReportedOtherUser = statusReportUser
+                                    strongSelf.retrieveNotificationSettings()
+                                }
+                            }
+                        } else {
+                            strongSelf.title = channel.displayName
+                            strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+                            strongSelf.retrieveNotificationSettings()
+                        }
+                    }
+                } else { // Case: Other type (Group Chat) -> Get displayname from channel object for set title
+                    strongSelf.title = channel.displayName
+                    strongSelf.delegate?.screenViewModel(strongSelf, didGetChannelSuccess: channel)
+                    
+                    DispatchQueue.main.async {
+                        strongSelf.userController.getEditGroupChannelPermission { result in
+                            strongSelf.isCanEditGroupChannel = result
+                            strongSelf.retrieveNotificationSettings()
+                        }
+                    }
+                }
+            case .failure(_):
+                break
             }
         }
     }
     
-    private func unreportUser() {
-        if let user = otherUser {
-            flagger = AmityUserFlagger(client: AmityUIKitManagerInternal.shared.client, userId: user.userId)
-            flagger?.unflag { [weak self] (success, error) in
-                guard let weakSelf = self else { return }
-                /// we have to take the opposite value of success
-                weakSelf.isUserReported = !success
-                weakSelf.delegate?.screenViewModelDidFinishReport(error: error?.localizedDescription)
+    // MARK: - Get Action - Notification
+    func retrieveNotificationSettings() {
+        // Get channel notification settings
+        chatNotificationController.retrieveNotificationSettings { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let notification):
+                strongSelf.isNotificationEnabled = notification.isEnabled
+            case .failure(_):
+                break
+            }
+            strongSelf.retrieveSettingsMenu()
+        }
+    }
+    
+    // MARK: - Get Action - Setting menu
+    func retrieveSettingsMenu() {
+        // Get channel
+        guard let channel = channel else { return }
+        // Init creator
+        menuViewModel = AmityChatSettingsCreateMenuViewModel(channel: channel)
+        // Start create setting menu
+        menuViewModel?.createSettingsItems(isNotificationEnabled: isNotificationEnabled,
+                                           isReportedUserByMe: isReportedOtherUser,
+                                           isCanEditGroupChannel: isCanEditGroupChannel) { [weak self] (items) in
+            guard let strongSelf = self else { return }
+            DispatchQueue.main.async {
+                AmityEventHandler.shared.hideKTBLoading()
+                strongSelf.delegate?.screenViewModel(strongSelf, didGetSettingMenu: items)
             }
         }
     }
     
+    // MARK: Update Action - Notification
+    func changeNotificationSettings() {
+        if let isNotificationEnabled = self.isNotificationEnabled, !isNotificationEnabled { // Case : Will enable notification
+            chatNotificationController.enableNotificationSettings { [weak self] success, error in
+                guard let strongSelf = self else { return }
+                if success {
+                    strongSelf.isNotificationEnabled = true
+                    strongSelf.retrieveSettingsMenu()
+                    strongSelf.delegate?.screenViewModelDidUpdateNotificationSettings(strongSelf, isNotificationEnabled: true)
+                } else if let error = error {
+                       strongSelf.delegate?.screenViewModelDidUpdateNotificationSettingsFail(strongSelf, error: error)
+                }
+            }
+        } else { // Case : Will disable notification
+            chatNotificationController.disableNotificationSettings { [weak self] success, error in
+                guard let strongSelf = self else { return }
+                if success {
+                    strongSelf.isNotificationEnabled = false
+                    strongSelf.retrieveSettingsMenu()
+                    strongSelf.delegate?.screenViewModelDidUpdateNotificationSettings(strongSelf, isNotificationEnabled: false)
+                } else if let error = error {
+                    strongSelf.delegate?.screenViewModelDidUpdateNotificationSettingsFail(strongSelf, error: error)
+                }
+            }
+        }
+    }
+    
+    // MARK: Update Action - Report user status
+    func changeReportUserStatus() {
+        guard let otherUserId = otherUser?.userId else { return }
+        if let isReportedOtherUser = isReportedOtherUser, !isReportedOtherUser { // Case : Will report user
+            userController.reportUser(with: otherUserId) { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let _ = result {
+                        strongSelf.isReportedOtherUser = true
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: true)
+                        strongSelf.retrieveSettingsMenu()
+                    } else if let error = error {
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
+                    }
+                }
+            }
+        } else { // Case : Will unreport user
+            userController.unreportUser(with: otherUserId) { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let _ = result {
+                        strongSelf.isReportedOtherUser = false
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUser(strongSelf, isReported: false)
+                        strongSelf.retrieveSettingsMenu()
+                    } else if let error = error {
+                        strongSelf.delegate?.screenViewModelDidUpdateReportUserFail(strongSelf, error: error)
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: Update Action - Delete chat (1:1 Chat and Group Chat with moderator roles)
+    func deleteChat() {
+        channelController.deleteChannel { [weak self] result, error in
+            guard let strongSelf = self else { return }
+            DispatchQueue.main.async {
+                if let isSuccess = result, isSuccess {
+                    strongSelf.delegate?.screenViewModelDidDeleteChannel(strongSelf)
+                } else if let error = error {
+                    strongSelf.delegate?.screenViewModelDidDeleteChannelFail(strongSelf, error: error)
+                }
+            }
+        }
+    }
+
+    // MARK: Update Action - Leave chat (Group Chat)
     func leaveChat() {
-        AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository?.leaveChannel, parameters: channelId) { [weak self] success,error in
-            guard let weakSelf = self else { return }
-            weakSelf.delegate?.screenViewModelDidFinishLeaveChat(error: error?.localizedDescription)
-        }
-    }
-    
-    func presentMember() {
-        if let channelObject = channelRepository?.getChannel(channelId).object {
-            let model = AmityChannelModel(object: channelObject)
-            delegate?.screenViewModelDidPresentMember(channel: model)
-        }
-    }
-    
-    func presentGroupProfile() {
-        delegate?.screenViewmodelDidPresentGroupDetail(channelId: channelId)
+        // Start concurrency processing
+        var isDispatchGroupLeave = false
+        dispatchGroup.enter()
         
-    }
-    
-    func didClickCell(index: Int) {
-        var optionSetting: [OptionsList] = [.leave]
-        if let model = channelModel {
-            if model.isConversationChannel {
-                optionSetting =  directChatSetting
-            } else {
-                optionSetting = groupChatSetting
+        // Check is can leave chat : Current user is moderator and have moderator more than one in group chat
+        if let checkIsCanEditGroupChannel = isCanEditGroupChannel, checkIsCanEditGroupChannel { // Case : Is moderator -> Check amount of moderator before
+            channelMemberController.fetchOnce(roles: [AmityChannelRole.moderator.rawValue, AmityChannelRole.channelModerator.rawValue]) { [weak self] (result) in
+                switch result {
+                case .success(let members):
+                    if members.count > 1 { // Case : Is moderator and have moderator more than one -> Send custom message and leave channel
+                        // Send custom message with leave chat scenario (!!! Must to send before leave channel !!!)
+                        let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+                        self?.customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                            switch result {
+                            case .success(_):
+//                                print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                                break
+                            case .failure(_):
+//                                print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                                break
+                            }
+                            if !isDispatchGroupLeave {
+                                isDispatchGroupLeave = true
+                                self?.dispatchGroup.leave() // Go to leave channel processing
+                            }
+                        }
+                    } else { // Case : Is moderator and have one moderator only -> Force leave channel with receive error
+                        if !isDispatchGroupLeave {
+                            isDispatchGroupLeave = true
+                            self?.dispatchGroup.leave() // Go to leave channel processing
+                        }
+                    }
+                case .failure: // Case : Is moderator but can't get moderator member -> Try leave channel
+                    if !isDispatchGroupLeave {
+                        isDispatchGroupLeave = true
+                        self?.dispatchGroup.leave() // Go to leave channel processing
+                    }
+                }
+            }
+        } else { // Case : Isn't moderator -> Send custom message and leave channel
+            // Send custom message with leave chat scenario (!!! Must to send before leave channel !!!)
+            let subjectDisplayName = AmityUIKitManagerInternal.shared.client.user?.snapshot?.displayName ?? AmityUIKitManager.displayName
+            customMessageController.send(event: .leavedChat, subjectUserName: subjectDisplayName, objectUserName: "") { result in
+                switch result {
+                case .success(_):
+//                    print(#"[Custom message] send message success : "\#(subjectDisplayName) left this chat"#)
+                    break
+                case .failure(_):
+//                    print(#"[Custom message] send message fail : "\#(subjectDisplayName) left this chat"#)
+                    break
+                }
+                if !isDispatchGroupLeave {
+                    isDispatchGroupLeave = true
+                    self.dispatchGroup.leave() // Go to leave channel processing
+                }
             }
         }
-        switch optionSetting[index] {
-        case .leave:
-            leaveChat()
-        case .report:
-            changeReportStatus()
-        case .members:
-            presentMember()
-        case .groupProfile:
-            presentGroupProfile()
+        
+        // Leave chat when check condition and send custom message complete
+        dispatchGroup.notify(queue: .main) {
+            self.channelController.leaveChannel { [weak self] result, error in
+                guard let strongSelf = self else { return }
+                DispatchQueue.main.async {
+                    if let error = error {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannelFail(strongSelf, error: error)
+                    } else {
+                        strongSelf.delegate?.screenViewModelDidLeaveChannel(strongSelf)
+                    }
+                }
+            }
         }
     }
 }

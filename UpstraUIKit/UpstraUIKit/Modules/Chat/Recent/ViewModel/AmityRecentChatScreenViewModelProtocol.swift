@@ -20,16 +20,19 @@ protocol AmityRecentChatScreenViewModelDelegate: AnyObject {
 
 protocol AmityRecentChatScreenViewModelDataSource {
     
-    func channel(at indexPath: IndexPath) -> AmityChannelModel
+    func getChannelArray() -> [AmityChannelModel]
+    func channel(at indexPath: IndexPath) -> AmityChannelModel?
     func numberOfRow(in section: Int) -> Int
     func isAddMemberBarButtonEnabled() -> Bool
 }
 
 protocol AmityRecentChatScreenViewModelAction {
     func viewDidLoad()
+    func viewWillDisappear()
     func join(at indexPath: IndexPath)
     func createChannel(users: [AmitySelectMemberModel])
     func loadMore()
+    func update(completion: @escaping (Result<Void, Error>) -> Void)
 }
 
 protocol AmityRecentChatScreenViewModelType: AmityRecentChatScreenViewModelAction, AmityRecentChatScreenViewModelDataSource {

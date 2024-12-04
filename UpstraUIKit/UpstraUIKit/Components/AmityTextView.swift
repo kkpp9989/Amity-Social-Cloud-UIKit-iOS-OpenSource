@@ -62,7 +62,10 @@ open class AmityTextView: UITextView {
     private func resizePlaceholder() {
         let leftMargin = padding == .zero ? 0 : textContainer.lineFragmentPadding + padding.left
         let labelX = leftMargin
-        let labelY = textContainerInset.top - 2
+        /* [Fix-defect] Delete decrease 2 px when resize place holder */
+        let labelY = textContainerInset.top
+        // [Original]
+//        let labelY = textContainerInset.top - 2
         let labelWidth = frame.width - (labelX * 2)
         let labelHeight = placeholderLabel.frame.height
         placeholderLabel.frame = CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight)
@@ -71,7 +74,8 @@ open class AmityTextView: UITextView {
     /// Adds a placeholder UILabel to this UITextView
     private func setupPlaceholder() {
         placeholderLabel.sizeToFit()
-        placeholderLabel.font = font
+        // [Fix defect] Set font of placeholder label refer to AmityFontSet
+        placeholderLabel.font = AmityFontSet.body
         placeholderLabel.textColor = placeholderColor
         placeholderLabel.isHidden = !text.isEmpty
         addSubview(placeholderLabel)
@@ -118,6 +122,9 @@ open class AmityTextView: UITextView {
         delegate = self
         backgroundColor = AmityColorSet.backgroundColor
         textColor = AmityColorSet.base
+        autocorrectionType = .no
+        spellCheckingType = .no
+//        inputAccessoryView = UIView()
         setupPlaceholder()
     }
     
@@ -191,6 +198,19 @@ open class AmityTextView: UITextView {
         }
         
         return true
+    }
+    
+    open class func height(for text: String, font: UIFont, boundingWidth: CGFloat, maximumLines: Int) -> CGFloat {
+        let attributedString = NSAttributedString(string: text, attributes: [NSAttributedString.Key.font: font])
+        let linesCount = attributedString.lines(for: boundingWidth).count
+        let actualHeight = attributedString.boundingRect(for: boundingWidth).height
+        
+        if maximumLines == 0 || linesCount <= maximumLines {
+            return ceil(actualHeight)
+        } else {
+            let oneLineHeight = actualHeight / CGFloat(linesCount)
+            return ceil(oneLineHeight * CGFloat(maximumLines))
+        }
     }
 }
 

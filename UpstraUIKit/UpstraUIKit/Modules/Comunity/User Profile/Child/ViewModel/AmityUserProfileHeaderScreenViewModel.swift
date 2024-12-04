@@ -46,7 +46,7 @@ extension AmityUserProfileHeaderScreenViewModel {
             // So, this is a workaround to execute code specifically for fresh data status.
             switch object.dataStatus {
             case .fresh:
-                if let user = object.object {
+                if let user = object.snapshot {
                     strongSelf.prepareUserData(user: user)
                 }
                 strongSelf.userToken?.invalidate()
@@ -54,7 +54,7 @@ extension AmityUserProfileHeaderScreenViewModel {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
                 strongSelf.userToken?.invalidate()
             case .local:
-                if let user = object.object {
+                if let user = object.snapshot {
                     strongSelf.prepareUserData(user: user)
                 }
             case .notExist:
@@ -69,10 +69,11 @@ extension AmityUserProfileHeaderScreenViewModel {
         followToken?.invalidate()
         
         if userId == AmityUIKitManagerInternal.shared.client.currentUserId {
-            followToken = followManager.getMyFollowInfo().observe { [weak self] liveObject, error in
+            let userRepository = userRepository.userRelationship
+            followToken = userRepository.getMyFollowInfo().observe { [weak self] liveObject, error in
                 guard let strongSelf = self else { return }
                 
-                if let object = liveObject.object {
+                if let object = liveObject.snapshot {
                     strongSelf.handleFollowInfo(followInfo: AmityFollowInfo(followInfo: object))
                 } else {
                     strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
@@ -82,11 +83,14 @@ extension AmityUserProfileHeaderScreenViewModel {
             return
         }
         
-        followToken = followManager.getUserFollowInfo(withUserId: userId).observe { [weak self] liveObject, error in
-            
+        let userRepository = userRepository.userRelationship
+        followToken = userRepository.getFollowInfo(withUserId: userId).observe { [weak self] liveObject, error in
             guard let strongSelf = self else { return }
             
-            if let result = liveObject.object {
+            print("[followInfo] userId: \(strongSelf.userId)")
+            
+            if let result = liveObject.snapshot {
+                print("[followInfo] result: \(result.model)")
                 strongSelf.handleFollowInfo(followInfo: AmityFollowInfo(followInfo: result))
             } else {
                 strongSelf.delegate?.screenViewModel(strongSelf, failure: AmityError(error: error) ?? .unknown)
@@ -95,9 +99,11 @@ extension AmityUserProfileHeaderScreenViewModel {
     }
     
     func createChannel() {
+        let userIds: [String] = [userId, AmityUIKitManagerInternal.shared.currentUserId]
         let builder = AmityConversationChannelBuilder()
         builder.setUserId(userId)
         builder.setDisplayName(user?.displayName ?? "")
+        builder.setMetadata(["user_id_member": userIds])
         
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepository.createChannel, parameters: builder) { [weak self] channelObject, _ in
             guard let strongSelf = self else { return }

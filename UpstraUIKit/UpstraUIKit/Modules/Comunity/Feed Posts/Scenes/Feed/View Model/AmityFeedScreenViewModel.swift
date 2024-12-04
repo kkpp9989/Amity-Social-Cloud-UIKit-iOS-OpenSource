@@ -11,6 +11,10 @@ import AmitySDK
 
 final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     
+    // MARK: - KTB FOR FEED HOME
+    /// for check userNotFound and screen empty
+    var isKTBFeed = false
+    
     // MARK: - Delegate
     weak var delegate: AmityFeedScreenViewModelDelegate?
     
@@ -19,6 +23,8 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
     private let commentController: AmityCommentControllerProtocol
     private let reactionController: AmityReactionControllerProtocol
     private let pollRepository: AmityPollRepository
+    private let postRepository: AmityPostRepository
+    private var messageRepository: AmityMessageRepository
     
     // MARK: - Properties
     private let debouncer = Debouncer(delay: 0.3)
@@ -32,6 +38,14 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
         }
     }
     
+    private var pinPostData: [AmityPostModel] = []
+    private var dummyList: [String] = []
+    private var tokenArray: [AmityNotificationToken?] = []
+    private let dispatchGroup = DispatchGroup()
+
+    private var isReactionLoading: Bool = false
+    private var isReactionChanging: Bool = false // [Custom for ONE Krungthai] [Improvement] Add static value for check process reaction changing for ignore update post until add new reaction complete
+    
     init(withFeedType feedType: AmityPostFeedType,
         postController: AmityPostControllerProtocol,
         commentController: AmityCommentControllerProtocol,
@@ -43,6 +57,8 @@ final class AmityFeedScreenViewModel: AmityFeedScreenViewModelType {
         self.isPrivate = false
         self.isLoading = false
         self.pollRepository = AmityPollRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.postRepository = AmityPostRepository(client: AmityUIKitManagerInternal.shared.client)
+        self.messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
 }
@@ -66,8 +82,37 @@ extension AmityFeedScreenViewModel {
     
     private func prepareComponents(posts: [AmityPostModel]) {
         postComponents = []
-        for post in posts {
+        var postsData = pinPostData
+        postsData += posts
+        
+        // Create a set to store unique post IDs
+        var uniquePostIds = Set<String>()  // Assuming postId is of type String, change it to the appropriate type
+        
+        for post in postsData {
+            // Check if the post's ID is already in the set
+            if uniquePostIds.contains(post.postId) {
+                continue  // Skip this post if it's a duplicate
+            }
+            
+            // Add the post's ID to the set to mark it as seen
+            uniquePostIds.insert(post.postId)
+            
             post.appearance.displayType = .feed
+
+            // [Custom for ONE Krungthai] Assign custom source post display type for use in moderator user in official community condition to outputing and prepare action
+            switch feedType {
+            case .communityFeed(_):
+                post.appearance.amitySocialPostDisplayStyle = .community
+                break
+            default:
+                post.appearance.amitySocialPostDisplayStyle = .feed
+            }
+            
+            if let communityId = post.targetCommunity?.communityId {
+                let participation = AmityCommunityMembership(client: AmityUIKitManagerInternal.shared.client, andCommunityId: communityId)
+                post.isModerator = participation.getMember(withId: post.postedUserId)?.hasModeratorRole ?? false
+            }
+                        
             switch post.dataTypeInternal {
             case .text:
                 addComponent(component: AmityPostTextComponent(post: post))
@@ -97,29 +142,108 @@ extension AmityFeedScreenViewModel {
 extension AmityFeedScreenViewModel {
     
     func fetchPosts() {
+        pinPostData = []
+        dummyList = []
         isLoading = true
-        postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestGetPinPost(feedType) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
-            case .success(let posts):
-                strongSelf.debouncer.run {
-                    strongSelf.prepareComponents(posts: posts)
-                }
+            case .success(let data):
+                let uniqueStrings = Array(Set(data.pinposts))
+                strongSelf.getPostId(withpostIds: uniqueStrings.filter({ pinPostId in
+                    let postIdsCannotGetSnapshot = AmityUIKitManagerInternal.shared.getPostIdsCannotGetSnapshot()
+                    return !postIdsCannotGetSnapshot.contains(where: { $0 == pinPostId } )
+                }))
             case .failure(let error):
-                strongSelf.debouncer.run {
-                    strongSelf.prepareComponents(posts: [])
-                }
-                if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
-                    switch strongSelf.feedType {
-                    case .userFeed:
-                        strongSelf.isPrivate = true
-                    default:
-                        strongSelf.isPrivate = false
+                print(error)
+                strongSelf.fetchFeedPosts()
+            }
+        }
+    }
+    
+    private func getPostId(withpostIds postIds: [String]) {
+        dummyList += postIds
+        DispatchQueue.main.async { [self] in
+            var postIdLeaveMap: [String: Bool] = [:] // Dictionary to keep track of whether leave has been called for a specific postId
+            for postId in postIds {
+                dispatchGroup.enter()
+                postIdLeaveMap[postId] = false
+                let postCollection = postRepository.getPost(withId: postId)
+                let token = postCollection.observe { [weak self] (_, error) in
+                    guard let strongSelf = self else { return }
+                    if let error = AmityError(error: error) {
+                        print("[Amity Log] Get post data \(postId) fail with error \(error.localizedDescription)")
+                        strongSelf.nextData()
+                    } else {
+                        if let model = strongSelf.prepareData(amityObject: postCollection) {
+                            if !model.isDelete {
+                                strongSelf.appendData(post: model)
+                            }
+                        } else {
+                            AmityUIKitManagerInternal.shared.addPostIdCannotGetSnapshot(postId: postId)
+                            print("[Amity Log] Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
+                            strongSelf.nextData()
+                        }
                     }
-                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
-                } else {
-                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                    // Check if leave has already been called for this postId
+                    if let leaveCalled = postIdLeaveMap[postId], !leaveCalled {
+                        postIdLeaveMap[postId] = true
+                        strongSelf.dispatchGroup.leave()
+                    }
                 }
+                tokenArray.append(token)
+            }
+            
+            // Move the dispatchGroup.notify block here, outside of the loop
+            dispatchGroup.notify(queue: .main) {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
+                self.pinPostData = sortedArray
+                self.tokenArray.removeAll()
+                self.fetchFeedPosts()
+            }
+            
+            if dummyList.isEmpty {
+                let sortedArray = self.sortArrayPositions(array1: self.dummyList, array2: self.pinPostData)
+                self.pinPostData = sortedArray
+                self.fetchFeedPosts()
+            }
+        }
+    }
+
+    
+    private func fetchFeedPosts() {
+        DispatchQueue.main.async { [self] in
+            postController.retrieveFeed(withFeedType: feedType) { [weak self] (result) in
+                guard let strongSelf = self else { return }
+                /* [Custom for ONE Krungthai] [Improvement] Check is process reaction changing for ignore update post until add new reaction complete */
+                if !strongSelf.isReactionChanging {
+                    switch result {
+                    case .success(let posts):
+                        strongSelf.debouncer.run {
+                            strongSelf.prepareComponents(posts: posts)
+                        }
+                    case .failure(let error):
+                        strongSelf.debouncer.run {
+                            // ktb kk for feed home check userNotFound
+                            if let isKTBFeed = self?.isKTBFeed, !isKTBFeed{
+                                strongSelf.prepareComponents(posts: [])
+                            }
+                        }
+                        if let amityError = AmityError(error: error), amityError == .noUserAccessPermission {
+                            switch strongSelf.feedType {
+                            case .userFeed:
+                                strongSelf.isPrivate = true
+                            default:
+                                strongSelf.isPrivate = false
+                            }
+                            strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: amityError)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                        }
+                    }
+                }
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Force set static value for check process reaction changing to false if reaction changing have problem
             }
         }
     }
@@ -128,11 +252,79 @@ extension AmityFeedScreenViewModel {
         postController.loadMore()
     }
     
+    func clearOldPosts() {
+        postComponents = []
+        delegate?.screenViewModelDidClearDataSuccess(self)
+    }
+    
+    private func prepareData(amityObject: AmityObject<AmityPost>) -> AmityPostModel? {
+        guard let _post = amityObject.snapshot else { return nil }
+        let post = AmityPostModel(post: _post)
+        post.isPinPost = true
+        return post
+    }
+    
+    func appendData(post: AmityPostModel) {
+        let containsPostId = pinPostData.contains { dataArray in
+            dataArray.postId == post.postId
+        }
+        
+        if !containsPostId {
+            pinPostData.append(post)
+        }
+    }
+    
+    func nextData() {
+//        dispatchGroup.leave()
+    }
+    
+    //  Sort function by list from fetchPosts
+    func sortArrayPositions(array1: [String], array2: [AmityPostModel]) -> [AmityPostModel] {
+        var sortedArray: [AmityPostModel] = []
+        
+        for postId in array1 {
+            if let index = array2.firstIndex(where: { $0.postId == postId }) {
+                sortedArray.append(array2[index])
+            }
+        }
+        
+        return sortedArray
+    }
+    
+    func fetchByPost(postId: String) {
+        //Get Post data
+        self.postController.getPinPostForPostId(withPostId: postId) { [weak self] (result) in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let post):
+                guard let index = strongSelf.postComponents.firstIndex(where: { $0._composable.post.postId == postId }) else { return }
+                post.isPinPost = true
+                switch post.dataTypeInternal {
+                case .text:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostTextComponent(post: post))
+                case .image, .video:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostMediaComponent(post: post))
+                case .file:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostFileComponent(post: post))
+                case .poll:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostPollComponent(post: post))
+                case .liveStream:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostLiveStreamComponent(post: post))
+                case .unknown:
+                    strongSelf.postComponents[index] = AmityPostComponent(component: AmityPostTextComponent(post: post))
+                }
+                strongSelf.delegate?.screenViewModelDidUpdateDataSuccess(strongSelf)
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
 // MARK: Observer
 extension AmityFeedScreenViewModel {
     func startObserveFeedUpdate() {
+        if isKTBFeed { return }
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didCreate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didUpdate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(feedNeedsUpdate(_:)), name: Notification.Name.Post.didDelete, object: nil)
@@ -150,6 +342,14 @@ extension AmityFeedScreenViewModel {
         fetchPosts()
         if notification.name == Notification.Name.Post.didCreate {
             delegate?.screenViewModelScrollToTop(self)
+            
+            if let postId = notification.object as? String {
+                if feedType == .globalFeed {
+                    delegate?.screenViewModelRouteToPostDetail(postId, viewModel: self)
+                }
+            }
+        } else if notification.name == Notification.Name.NotificationTray.didUpdate {
+            
         }
     }
 }
@@ -192,6 +392,78 @@ extension AmityFeedScreenViewModel {
         }
     }
     
+    func addReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool) {
+        if !isReactionLoading {
+            isReactionLoading = true
+            reactionController.addReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                if success {
+                    // ktb kk save coin when react
+                    AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: id, reactType: reaction.rawValue)
+
+                    strongSelf.isReactionLoading = false
+                    switch referenceType {
+                    case .post:
+                        if isPinPost {
+                            strongSelf.fetchByPost(postId: id)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidLikePostSuccess(strongSelf)
+                        }
+                    case .comment:
+                        strongSelf.delegate?.screenViewModelDidLikeCommentSuccess(strongSelf)
+                    default:
+                        break
+                    }
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                }
+            }
+        }
+    }
+    
+    func removeReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, isPinPost: Bool) {
+        if !isReactionLoading {
+            isReactionLoading = true
+            reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                if success {
+                    switch referenceType {
+                    case .post:
+                        if isPinPost {
+                            strongSelf.fetchByPost(postId: id)
+                        } else {
+                            strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                        }
+                    case .comment:
+                        strongSelf.delegate?.screenViewModelDidUnLikeCommentSuccess(strongSelf)
+                    default:
+                        break
+                    }
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                }
+            }
+        }
+    }
+    
+    func removeHoldReaction(id: String, reaction: AmityReactionType, referenceType: AmityReactionReferenceType, reactionSelect: AmityReactionType, isPinPost: Bool) {
+        if !isReactionLoading {
+            isReactionLoading = true
+            isReactionChanging = true // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to true for start reaction changing
+            reactionController.removeReaction(withReaction: reaction, referanceId: id, referenceType: referenceType) { [weak self] (success, error) in
+                guard let strongSelf = self else { return }
+                strongSelf.isReactionLoading = false
+                strongSelf.isReactionChanging = false // [Custom for ONE Krungthai] [Improvement] Set static value for check process reaction changing to false for don't ignore update post next time
+                if success {
+                    strongSelf.delegate?.screenViewModelDidUnLikePostSuccess(strongSelf)
+                    self?.addReaction(id: id, reaction: reactionSelect, referenceType: referenceType, isPinPost: isPinPost)
+                } else {
+                    strongSelf.delegate?.screenViewModelDidFail(strongSelf, failure: AmityError(error: error) ?? .unknown)
+                }
+            }
+        }
+    }
 }
 
 // MARK: Post
@@ -239,8 +511,8 @@ extension AmityFeedScreenViewModel {
         }
     }
     
-    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?) {
-        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees) { [weak self] (success, error) in
+    func edit(withComment comment: AmityCommentModel, text: String, metadata: [String : Any]?, mentionees: AmityMentioneesBuilder?, medias: [AmityMedia]) {
+        commentController.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias) { [weak self] (success, error) in
             guard let strongSelf = self else { return }
             if success {
                 strongSelf.delegate?.screenViewModelDidEditCommentSuccess(strongSelf)
@@ -331,4 +603,95 @@ extension AmityFeedScreenViewModel {
         }
     }
     
+}
+
+// MARK: Pin Post
+extension AmityFeedScreenViewModel {
+    
+    func pinpost(withpostId postId: String) {
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestPinPost(postId, type: feedType, isPinned: true) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success():
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Pin send success")
+            case .failure(let error):
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: error as! HandleError == HandleError.anotherError ? "Maximum limit has been reached" : "Pin send failed")
+            }
+        }
+    }
+    
+    func unpinpost(withpostId postId: String) {
+        let serviceRequest = RequestGetPinPost()
+        serviceRequest.requestPinPost(postId, type: feedType, isPinned: false) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success():
+                strongSelf.delegate?.screenViewModelDidUpdatePinSuccess(strongSelf, message: "Unpin send success")
+            case .failure(_):
+                strongSelf.delegate?.screenViewModelDidUpdatePinUnsuccess(strongSelf, message: "Unpin send failed")
+            }
+        }
+    }
+}
+
+// MARK: - Share to Chat
+extension AmityFeedScreenViewModel {
+    
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel], post: AmityPostModel) {
+        var channelIdList: [String] = []
+        AmityEventHandler.shared.showKTBLoading()
+        for user in selectChannel {
+            dispatchGroup.enter()
+            switch user.type {
+            case .user:
+                let userIds: [String] = [user.userId, AmityUIKitManagerInternal.shared.currentUserId]
+                let builder = AmityConversationChannelBuilder()
+                builder.setUserId(user.userId)
+                builder.setDisplayName(user.displayName ?? "")
+                builder.setMetadata(["user_id_member": userIds])
+                
+                let channelRepo = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+                AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: channelRepo.createChannel, parameters: builder) { [self] channelObject, _ in
+                    if let channel = channelObject {
+                        channelIdList.append(channel.channelId)
+                    }
+                    
+                    dispatchGroup.leave()
+                }
+            case .channel:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            case .community:
+                channelIdList.append(user.userId)
+                dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            stringSelf.forward(withChannelIdList: channelIdList, post: post)
+        }
+    }
+    
+    func forward(withChannelIdList channelIdList: [String], post: AmityPostModel) {
+        let externalURL = AmityURLCustomManager.ExternalURL.generateExternalURLOfPost(post: post)
+        for channelId in channelIdList {
+            dispatchGroup.enter()
+            let createOptions = AmityTextMessageCreateOptions(subChannelId: channelId, text: externalURL)
+            AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: messageRepository.createTextMessage(options:), parameters: createOptions) { [weak self] message, error in
+                guard let stringSelf = self else { return }
+                stringSelf.dispatchGroup.leave()
+            }
+        }
+        
+        // Wait for all requests to complete
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let stringSelf = self else { return }
+            // All channels have been created
+            AmityEventHandler.shared.hideKTBLoading()
+            AmityHUD.show(.success(message: AmityLocalizedStringSet.MessageList.alertSharedMessageSuccessfully.localizedString))
+        }
+    }
 }

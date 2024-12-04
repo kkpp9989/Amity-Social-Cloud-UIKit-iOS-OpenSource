@@ -13,7 +13,10 @@ import AmitySDK
 protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     
     func screenViewModelRoute(route: AmityMessageListScreenViewModel.Route)
+    func screenViewModelToastPrivate()
     func screenViewModelDidGetChannel(channel: AmityChannelModel)
+    func screenViewModelDidGetShowSettingButtonAndSendingPermission(shouldShow: Bool)
+    func screenViewModelDidGetUser(channel: AmityChannelModel, user: AmityUserModel)
     func screenViewModelScrollToBottom(for indexPath: IndexPath)
     func screenViewModelDidTextChange(text: String)
     func screenViewModelLoadingState(for state: AmityLoadingState)
@@ -22,14 +25,21 @@ protocol AmityMessageListScreenViewModelDelegate: AnyObject {
     func screenViewModelKeyboardInputEvents(for events: AmityMessageListScreenViewModel.KeyboardInputEvents)
     func screenViewModelToggleDefaultKeyboardAndAudioKeyboard(for events: AmityMessageListScreenViewModel.KeyboardInputEvents)
     func screenViewModelAudioRecordingEvents(for events: AmityMessageListScreenViewModel.AudioRecordingEvents)
+    func screenViewModelToggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType)
     
     func screenViewModelShouldUpdateScrollPosition(to indexPath: IndexPath)
     
-    func screenViewModelDidReportMessage(at indexPath: IndexPath)
+    func screenViewModelDidReportMessage(at indexPath: IndexPath, isFlag: Bool)
     func screenViewModelDidFailToReportMessage(at indexPath: IndexPath, with error: Error?)
     
     func screenViewModelIsRefreshing(_ isRefreshing: Bool)
+	func screenViewModelDidTapOnMention(with userId: String)
+    func screenViewModelDidJumpToTarget(with messageId: String)
+    func screenViewModelDidTapOnPostIdLink(with postId: String)
+
+    func screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: Int)
     
+    func screenViewModelDidUpdateJoinChannelSuccess()
 }
 
 protocol AmityMessageListScreenViewModelDataSource {
@@ -41,23 +51,38 @@ protocol AmityMessageListScreenViewModelDataSource {
     func numberOfSection() -> Int
     func numberOfMessage(in section: Int) -> Int
     func getChannelId() -> String
+    func getChannelModel() -> AmityChannelModel?
     func getCommunityId() -> String
     func isKeyboardVisible() -> Bool
+    func findIndexPath(forMessageId messageId: String) -> IndexPath?
+    func getChannelType() -> AmityChannelType
+    func isMessageInForwardMessageList(messageId: String) -> Bool
+    func getNotification() -> Bool
 }
 
 protocol AmityMessageListScreenViewModelAction {
     func route(for route: AmityMessageListScreenViewModel.Route)
     func setText(withText text: String?)
     func getChannel()
+    func getShowSettingButtonAndSendingPermission()
+    func getSubChannel()
     func getMessage()
+    func scrollToLatestMessage()
     
-    func send(withText text: String?)
-    func send(withMedias medias: [AmityMedia])
+    func send(withText text: String?, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
+    func send(withMedias medias: [AmityMedia], type: AmityMediaType)
+    func send(withFiles files: [AmityFile])
     func sendAudio()
+    func sendAudio(tempAudioURL: URL)
+    func send(withMetadata metadata: [String: Any]?)
+    func resend(with message: AmityMessageModel, at indexPath: IndexPath)
+    func reply(withText text: String?, parentId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?, type: AmityMessageType)
+    func forward(withChannelIdList channelIdList: [String])
+    func checkChannelId(withSelectChannel selectChannel: [AmitySelectMemberModel])
     
-    func editText(with text: String, messageId: String)
+    func editText(with text: String, messageId: String, metadata: [String: Any]?, mentionees: AmityMentioneesBuilder?)
     func delete(withMessage message: AmityMessageModel, at indexPath: IndexPath)
-    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath)
+    func deleteErrorMessage(with messageId: String, at indexPath: IndexPath, isFromResend: Bool)
     func startReading()
     func stopReading()
     
@@ -70,6 +95,8 @@ protocol AmityMessageListScreenViewModelAction {
     func toggleInputSource()
     func toggleKeyboardVisible(visible: Bool)
     
+    func toggleOpenCreateBroadcastMessageEditor(type: AmityBroadcastCreatorType)
+    
     func performCellEvent(for event: AmityMessageListScreenViewModel.CellEvents)
     
     func loadMoreScrollUp(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
@@ -79,6 +106,35 @@ protocol AmityMessageListScreenViewModelAction {
     func performAudioRecordingEvents(for event: AmityMessageListScreenViewModel.AudioRecordingEvents)
     
     func reportMessage(at indexPath: IndexPath)
+	func tapOnMention(withUserId userId: String)
+    func tapOnPostIdLink(withPostId postId: String)
+
+    func updateForwardMessageInList(with message: AmityMessageModel)
+    func resetDataInForwardMessageList()
+
+    func jumpToMessageId(_ messageId: String)
+    
+    func startRealtimeSubscription()
+    func stopRealtimeSubscription()
+    
+    func startUserRealtimeSubscription()
+    func stopUserRealtimeSubscription()
+    
+    func stopObserveMessageNotificationToken()
+    
+    func syncChannelPresence()
+    func unsyncChannelPresence()
+    
+    func startMessageReceiptSync()
+    func stopMessageReceiptSync()
+    
+    func join()
+    
+    func getTotalUnreadCount()
+    
+    func stopObserve()
+    
+    func retrieveNotificationSettings()
 }
 
 protocol AmityMessageListScreenViewModelType: AmityMessageListScreenViewModelAction, AmityMessageListScreenViewModelDataSource {

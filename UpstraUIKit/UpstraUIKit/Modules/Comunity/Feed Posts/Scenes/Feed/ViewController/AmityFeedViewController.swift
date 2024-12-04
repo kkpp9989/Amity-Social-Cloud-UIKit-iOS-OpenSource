@@ -18,10 +18,15 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     var pageTitle: String?
     var pageIndex: Int = 0
     
+    // ktb kk return table height for set up feed in ktb home
+    var isKTBFeed = false
+    var rowSetLimitCount = 10
+    
     // MARK: - IBOutlet Properties
     @IBOutlet private var tableView: AmityPostTableView!
     private var expandedIds: Set<String> = []
-    
+    private var pollAnswers: [String: [String]] = [:]
+
     // MARK: - Properties
     private var screenViewModel: AmityFeedScreenViewModelType!
     
@@ -44,11 +49,23 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
             }
         }
     }
+    public var postTabHeaderView: FeedHeaderPresentable? {
+        didSet {
+            debouncer.run { [weak self] in
+                DispatchQueue.main.async { [weak self] in
+                    self?.tableView.reloadData()
+                }
+            }
+        }
+    }
+    
     var emptyView: UIView?
     var dataDidUpdateHandler: ((Int) -> Void)?
     var emptyViewHandler: ((UIView?) -> Void)?
     var pullRefreshHandler: (() -> Void)?
-    
+    var hideScrollUpButtonHandler: (() -> Void)?
+    var showScrollUpButtonHandler: (() -> Void)?
+
     // To determine if the vc is visible or not
     private var isVisible: Bool = true
     
@@ -56,6 +73,10 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     private var isDataSourceDirty: Bool = false
     
     private let debouncer = Debouncer(delay: 0.3)
+    var timer: Timer?
+
+    // Reaction Picker
+    private let reactionPickerView = AmityReactionPickerView()
     
     // MARK: - View lifecycle
     deinit {
@@ -66,7 +87,8 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         super.viewDidLoad()
         setupView()
         setupProtocolHandler()
-        setupScreenViewModel()   
+        setupScreenViewModel()
+        setupReactionPicker()
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +102,10 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         
         // this line solves issue where refresh control sticks to the top while switching tab
         resetRefreshControlStateIfNeeded()
+        
+        // Delete observer from other feed viewcontroller and set new of its
+        screenViewModel.action.stopObserveFeedUpdate()
+        screenViewModel.action.startObserveFeedUpdate()
     }
     
     public override func viewDidDisappear(_ animated: Bool) {
@@ -87,6 +113,7 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         isVisible = false
         refreshControl.endRefreshing()
     }
+ 
     
     private func resetRefreshControlStateIfNeeded() {
         if !refreshControl.isHidden {
@@ -119,13 +146,11 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         postPostProtocolHandler?.delegate = self
         postPostProtocolHandler?.viewController = self
         postPostProtocolHandler?.tableView = tableView
-        
     }
     
     // MARK: - Setup ViewModel
     private func setupScreenViewModel() {
         screenViewModel.delegate = self
-        screenViewModel.action.startObserveFeedUpdate()
         screenViewModel.action.fetchUserSettings()
         screenViewModel.action.fetchPosts()
     }
@@ -133,11 +158,14 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
     // MARK: - Setup Views
     private func setupView() {
         setupTableView()
-        setupRefreshControl()
+        if(!isKTBFeed){
+            setupRefreshControl()
+        }
     }
     
+ 
     private func setupTableView() {
-        tableView.backgroundColor = AmityColorSet.secondary.blend(.shade4)
+        tableView.backgroundColor = (isKTBFeed) ? .clear : AmityColorSet.secondary.blend(.shade4)
         tableView.tableFooterView = UIView()
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
@@ -147,12 +175,28 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         tableView.register(AmityEmptyStateHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: AmityEmptyStateHeaderFooterView.identifier)
         tableView.postDataSource = self
         tableView.postDelegate = self
+        
+        if(isKTBFeed){
+            tableView.isScrollEnabled = false
+        }
+ 
     }
     
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(handleRefreshingControl), for: .valueChanged)
         refreshControl.tintColor = AmityColorSet.base.blend(.shade3)
         tableView.refreshControl = refreshControl
+    }
+    
+    private func setupReactionPicker() {
+        
+        reactionPickerView.alpha = 0
+        view.addSubview(reactionPickerView)
+        
+        // Setup tap gesture recognizer
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissReactionPicker))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
     
     // MARK: SrollToTop
@@ -181,16 +225,78 @@ public final class AmityFeedViewController: AmityViewController, AmityRefreshabl
         }
         pullRefreshHandler?()
         screenViewModel.action.fetchPosts()
+//        screenViewModel.action.clearOldPosts()
+    }
+    
+    func setScrollUp() {
+        tableView.setContentOffset(.zero, animated: true)
     }
 }
+
+// MARK: - ReactionPickerView
+extension AmityFeedViewController {
+    
+    @objc private func dismissReactionPicker(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: view)
+        if !reactionPickerView.frame.contains(location) {
+            hideReactionPicker()
+        }
+    }
+    
+    private func showReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 1 // Fade in
+        }
+    }
+    
+    private func hideReactionPicker() {
+        UIView.animate(withDuration: 0.1) {
+            self.reactionPickerView.alpha = 0 // Fade out
+        }
+    }
+}
+
+// MARK: - AmityPostTableViewDelegate
+extension AmityFeedViewController: UIScrollViewDelegate {
+    
+    // UIScrollViewDelegate Methods
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.y > 50 { // Adjust this value as needed
+            showScrollUpButtonHandler?()
+        } else {
+            hideScrollUpButtonHandler?()
+        }
+        
+        // Reset the timer whenever the user scrolls
+        resetTimer()
+    }
+    
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        resetTimer()
+    }
+    
+    // Timer related methods
+    func resetTimer() {
+        timer?.invalidate() // Invalidate the existing timer
+        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else { return }
+            // Hide the button after 2 seconds of inactivity
+            if strongSelf.tableView.isDragging == false && strongSelf.tableView.isDecelerating == false {
+                strongSelf.hideScrollUpButtonHandler?()
+            }
+        }
+    }
+}
+
 
 // MARK: - AmityPostTableViewDelegate
 extension AmityFeedViewController: AmityPostTableViewDelegate {
     
     func tableView(_ tableView: AmityPostTableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
         switch cell.self {
         case is AmityFeedHeaderTableViewCell:
-            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView)
+            (cell as? AmityFeedHeaderTableViewCell)?.set(headerView: headerView?.headerView, postTabHeaderView: postTabHeaderView?.headerView)
             break
         default:
             (cell as? AmityPostHeaderProtocol)?.delegate = postHeaderProtocolHandler
@@ -203,16 +309,21 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
 
     func tableView(_ tableView: AmityPostTableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            guard let headerView = headerView else {
-                return 0
+            var height: CGFloat = 0
+            if let headerView = headerView {
+                height = headerView.height + 10
             }
-            return headerView.height
+            guard let postView = postTabHeaderView else {
+                return height
+            }
+            return postView.height + height
         } else {
             return UITableView.automaticDimension
         }
     }
     
     func tableView(_ tableView: AmityPostTableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
         if tableView.isBottomReached {
             screenViewModel.action.loadMore()
         }
@@ -224,11 +335,11 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
         
         let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
         let postId = singleComponent._composable.post.postId
-        AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     func tableView(_ tableView: AmityPostTableView, heightForFooterInSection section: Int) -> CGFloat {
-        let postComponentsCount = screenViewModel.dataSource.numberOfPostComponents() - (headerView == nil ? 1:0)
+        let postComponentsCount = screenViewModel.dataSource.numberOfPostComponents() - (postTabHeaderView == nil ? 1:0)
         return postComponentsCount > 0 ? 0 : tableView.frame.height
     }
 
@@ -266,17 +377,25 @@ extension AmityFeedViewController: AmityPostTableViewDelegate {
         emptyViewHandler?(bottomView)
         return bottomView
     }
+    
+    func tableViewWillBeginDragging(_ tableView: AmityPostTableView) {
+        hideReactionPicker()
+    }
 }
 
 // MARK: - AmityPostTableViewDataSource
 extension AmityFeedViewController: AmityPostTableViewDataSource {
     func numberOfSections(in tableView: AmityPostTableView) -> Int {
+        if(isKTBFeed && screenViewModel.dataSource.numberOfPostComponents() > rowSetLimitCount){
+            return rowSetLimitCount
+        }
+        //self.rowSetLimitCount = screenViewModel.dataSource.numberOfPostComponents()
         return screenViewModel.dataSource.numberOfPostComponents()
     }
     
     func tableView(_ tableView: AmityPostTableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return headerView == nil ? 0 : 1
+            return postTabHeaderView == nil ? 0 : 1
         } else {
             let singleComponent = screenViewModel.dataSource.postComponents(in: section)
             if let component = tableView.feedDataSource?.getUIComponentForPost(post: singleComponent._composable.post, at: section) {
@@ -293,20 +412,55 @@ extension AmityFeedViewController: AmityPostTableViewDataSource {
             return cell
         }
         
+        var isDisableTopPadding: Bool = false
+        if indexPath.section == 1 && indexPath.row == 0 {
+            let feedType = screenViewModel.dataSource.getFeedType()
+            switch feedType {
+            case .userFeed(_), .communityFeed(_), .myFeed:
+                isDisableTopPadding = true
+            default:
+                isDisableTopPadding = false
+            }
+        }
+        
+//        print("[Cell] Display cell indexpath: \(indexPath) | isDisableTopPadding: \(isDisableTopPadding)")
+        
         let singleComponent = screenViewModel.dataSource.postComponents(in: indexPath.section)
         
         if let clientComponent = tableView.feedDataSource?.getUIComponentForPost(post: singleComponent._composable.post, at: indexPath.section) {
-            return clientComponent.getComponentCell(tableView, at: indexPath)
+            let cell = clientComponent.getComponentCell(tableView, at: indexPath)
+            if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
+                headerCell.disableTopPadding()
+                return headerCell
+            } else {
+                return cell
+            }
         } else {
             // HACK: inject commentExpandedIds before configuring cell
             singleComponent._composable.post.commentExpandedIds = expandedIds
-            return singleComponent.getComponentCell(tableView, at: indexPath)
+            let cell = singleComponent.getComponentCell(tableView, at: indexPath)
+            if let headerCell = cell as? AmityPostHeaderProtocol, isDisableTopPadding {
+                headerCell.disableTopPadding()
+                return headerCell
+            } else {
+                cell.contentView.layer.cornerRadius = 10
+                cell.contentView.layer.masksToBounds = false
+                cell.contentView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+                return cell
+            }
         }
     }
 }
 
 // MARK: - AmityFeedScreenViewModelDelegate
 extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
+    // [Improvement] add did clear data success function for fetch post when scroll refresh from feed have post with URL Preview
+    func screenViewModelDidClearDataSuccess(_ viewModel: AmityFeedScreenViewModelType) {
+        debouncer.run { [weak self] in
+            self?.tableView.reloadData()
+        }
+        screenViewModel.action.fetchPosts()
+    }
     
     func screenViewModelDidUpdateDataSuccess(_ viewModel: AmityFeedScreenViewModelType) {
         // When view is invisible but data source request updates, mark it as a dirty data source.
@@ -318,7 +472,12 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         debouncer.run { [weak self] in
             self?.tableView.reloadData()
         }
-        dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        
+        if isKTBFeed {
+            dataDidUpdateHandler?(rowSetLimitCount)
+        }else{
+            dataDidUpdateHandler?(screenViewModel.dataSource.numberOfPostComponents())
+        }
         refreshControl.endRefreshing()
     }
     
@@ -344,14 +503,44 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
     func screenViewModelDidFail(_ viewModel: AmityFeedScreenViewModelType, failure error: AmityError) {
         switch error {
         case .unknown:
-            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            //  Remove alert for case spam button
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.HUD.somethingWentWrong.localizedString))
+            break
+        case .bannedWord:
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString)) // [Back up]
+            debouncer.run {
+                DispatchQueue.main.async {
+                    if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                        ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.banndedCommentErrorMessage.localizedString, in: window)
+                    }
+                }
+            }
+        case .linkNotAllowed:
+//            AmityHUD.show(.error(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString)) // [Back up]
+            debouncer.run {
+                DispatchQueue.main.async {
+                    if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                        ToastView.shared.showToast(message: AmityLocalizedStringSet.PostDetail.linkNotAllowedErrorMessage.localizedString, in: window)
+                    }
+                }
+            }
         case .noUserAccessPermission:
             debouncer.run { [weak self] in
                 self?.tableView.reloadData()
             }
+        case .userNotFound :
+            if(isKTBFeed){
+                debouncer.run { [weak self] in
+                    self?.screenViewModel.action.fetchPosts()
+                }
+            }
         default:
             break
         }
+    }
+    
+    func screenViewModelRouteToPostDetail(_ postId: String, viewModel: AmityFeedScreenViewModelType) {
+        AmityEventHandler.shared.postDidtap(from: self, postId: postId, pollAnswers: pollAnswers)
     }
     
     // MARK: - Post
@@ -394,6 +583,23 @@ extension AmityFeedViewController: AmityFeedScreenViewModelDelegate {
         tableView.reloadData()
     }
     
+    func screenViewModelDidUpdatePinSuccess(_ viewModel: AmityFeedScreenViewModelType, message: String) {
+        debouncer.run { [weak self] in
+            self?.scrollToTop()
+            self?.screenViewModel.action.fetchPosts()
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: message, in: window)
+            }
+        }
+    }
+
+    func screenViewModelDidUpdatePinUnsuccess(_ viewModel: AmityFeedScreenViewModelType, message: String) {
+        debouncer.run { [weak self] in
+            if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+                ToastView.shared.showToast(message: message, in: window)
+            }
+        }
+    }
 }
 
 // MARK: - AmityPostHeaderProtocolHandlerDelegate
@@ -411,6 +617,12 @@ extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
             screenViewModel.action.unreport(withPostId: postId)
         case .tapClosePoll:
             screenViewModel.action.close(withPollId: post.poll?.id)
+        case .TapPinpost:
+            if post.isPinPost {
+                screenViewModel.action.unpinpost(withpostId: postId)
+            } else {
+                screenViewModel.action.pinpost(withpostId: postId)
+            }
         }
     }
     
@@ -418,6 +630,10 @@ extension AmityFeedViewController: AmityPostHeaderProtocolHandlerDelegate {
 
 // MARK: - AmityPostProtocolHandlerDelegate
 extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
+    func amityPostProtocolHandlerDidTapPollAnswers(_ cell: AmityPostProtocol, postId: String, pollAnswers: [String : [String]]) {
+        self.pollAnswers = pollAnswers
+    }
+    
     func amityPostProtocolHandlerDidTapSubmit(_ cell: AmityPostProtocol) {
         if let cell = cell as? AmityPostPollTableViewCell {
             screenViewModel.action.vote(withPollId: cell.post?.poll?.id, answerIds: cell.selectedAnswerIds)
@@ -427,16 +643,60 @@ extension AmityFeedViewController: AmityPostProtocolHandlerDelegate {
 
 // MARK: - AmityPostFooterProtocolHandlerDelegate
 extension AmityFeedViewController: AmityPostFooterProtocolHandlerDelegate {
+    
+    func footerProtocolHandlerDidPerformView(_ handler: AmityPostFooterProtocolHandler, view: UIView) {
+        let likeButtonFrameInSuperview = view.convert(view.bounds, to: self.view)
+        reactionPickerView.frame.origin = CGPoint(x: 16, y: likeButtonFrameInSuperview.maxY - likeButtonFrameInSuperview.height - self.reactionPickerView.frame.height)
+    }
+    
     func footerProtocolHandlerDidPerformAction(_ handler: AmityPostFooterProtocolHandler, action: AmityPostFooterProtocolHandlerAction, withPost post: AmityPostModel) {
         switch action {
         case .tapLike:
-            if post.isLiked {
-                screenViewModel.action.unlike(id: post.postId, referenceType: .post)
+            if let reactionType = post.reacted {
+                screenViewModel.action.removeReaction(id: post.postId, reaction: reactionType, referenceType: .post, isPinPost: post.isPinPost)
             } else {
-                screenViewModel.action.like(id: post.postId, referenceType: .post)
+                screenViewModel.action.addReaction(id: post.postId, reaction: .create, referenceType: .post, isPinPost: post.isPinPost)
             }
         case .tapComment, .tapReactionDetails:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
+        case .tapHoldLike:
+            reactionPickerView.onSelect = { [weak self] reactionType in
+                self?.hideReactionPicker()
+                if let reacted = post.reacted, reactionType == reacted {
+                    return
+                } else {
+                    if let reacted = post.reacted, !reacted.rawValue.isEmpty {
+                        self?.screenViewModel.action.removeHoldReaction(id: post.postId, reaction: reacted, referenceType: .post, reactionSelect: reactionType, isPinPost: post.isPinPost)
+                    } else {
+                        self?.screenViewModel.action.addReaction(id: post.postId, reaction: reactionType, referenceType: .post, isPinPost: post.isPinPost)
+                    }
+                }
+            }
+            showReactionPicker()
+        case .tapShare:
+            let bottomSheet = BottomSheetViewController()
+            let contentView = ItemOptionView<TextItemOption>()
+            bottomSheet.sheetContentView = contentView
+            bottomSheet.isTitleHidden = true
+            bottomSheet.modalPresentationStyle = .overFullScreen
+            var options: [TextItemOption] = []
+            
+            let shareOption = TextItemOption(title: "Share to Chat") {
+                AmityChannelEventHandler.shared.channelOpenChannelListForForwardMessage(from: self) { selectedChannels in
+                    print(selectedChannels)
+                    self.screenViewModel.action.checkChannelId(withSelectChannel: selectedChannels, post: post)
+                }
+            }
+            options.append(shareOption)
+            
+            // ktb kk custom qr menu
+            let qrOption = TextItemOption(title: "Share content via QR code") {
+                AmityFeedEventHandler.shared.sharePostDidTap(from: self, post: post)
+            }
+            options.append(qrOption)
+            
+            contentView.configure(items: options, selectedItem: nil)
+            present(bottomSheet, animated: false, completion: nil)
         }
     }
 }
@@ -451,6 +711,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             AmityEventHandler.shared.userDidTap(from: self, userId: comment.userId)
         case .tapLike(let comment):
             if let comment = post.latestComments.first(where: { $0.id == comment.id}) {
+                //ktb kk save coin reaction
+                AmityEventHandler.shared.saveKTBCoin(v: nil, type: .react, id: post.postId , reactType: AmityReactionType.like.rawValue)
                 comment.isLiked ? screenViewModel.action.unlike(id: comment.id, referenceType: .comment) : screenViewModel.action.like(id: comment.id, referenceType: .comment)
             }
         case .tapOption(let comment):
@@ -458,9 +720,9 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                 handleCommentOption(comment: comment)
             }
         case .tapReply:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .tapExpandableLabel, .tapOnReactionDetail:
-            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId)
+            AmityEventHandler.shared.postDidtap(from: self, postId: post.postId, pollAnswers: pollAnswers)
         case .willExpandExpandableLabel:
             tableView.beginUpdates()
         case .didExpandExpandableLabel(let label):
@@ -468,6 +730,14 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             if let indexPath = tableView.indexPathForRow(at: point) as IndexPath? {
                 // expand label in comment preview cell
                 if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentTableViewCell,
+                   let comment = commentPreviewCell.comment {
+                    expandedIds.insert(comment.id)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in
+                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    }
+                }
+                // expand label in comment preview with url preview cell
+                if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentWithURLPreviewTableViewCell,
                    let comment = commentPreviewCell.comment {
                     expandedIds.insert(comment.id)
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in
@@ -489,10 +759,37 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                         self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                     }
                 }
+                // expand label in comment preview with url preview cell
+                if let commentPreviewCell = tableView.cellForRow(at: indexPath) as?  AmityPostPreviewCommentWithURLPreviewTableViewCell,
+                   let comment = commentPreviewCell.comment {
+                    expandedIds.remove(comment.id)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) { [weak self] in
+                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                    }
+                }
             }
             tableView.endUpdates()
         case .tapOnMention(let userId):
             AmityEventHandler.shared.userDidTap(from: self, userId: userId)
+        case .tapOnHashtag(keyword: let keyword, count: let count):
+            AmityEventHandler.shared.hashtagDidTap(from: self, keyword: keyword, count: count)
+        case .tapCommunityName(post: let post): // [Custom for ONE Krungthai] Add tap to community for moderator user in official community action
+            AmityEventHandler.shared.communityDidTap(from: self, communityId: post.targetCommunity?.communityId ?? "")
+        case .tapOnPostIdLink(postId: let postId):
+            AmityEventHandler.shared.postDidtap(from: self, postId: postId)
+        case .tapOnCommentImage(let imageView, let fileURL):
+            guard let image = imageView.image else {
+                print("Invalid image")
+                return
+            }
+            
+            guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
+                print("Invalid layer position: \(imageView.layer.position)")
+                return
+            }
+            
+            let photoViewerVC = AmityPhotoViewerController(referencedView: imageView, image: imageView.image, imageURL: fileURL)
+            self.present(photoViewerVC, animated: true, completion: nil)
         }
     }
    
@@ -514,8 +811,8 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
             }
             let editTextViewController = AmityCommentEditorViewController.make(comment: comment, communityId: commId)
             editTextViewController.title = AmityLocalizedStringSet.PostDetail.editComment.localizedString
-            editTextViewController.editHandler = { [weak self] text, metadata, mentionees in
-                self?.screenViewModel.action.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees)
+            editTextViewController.editHandler = { [weak self] text, metadata, mentionees, medias in
+                self?.screenViewModel.action.edit(withComment: comment, text: text, metadata: metadata, mentionees: mentionees, medias: medias ?? [])
                 editTextViewController.dismiss(animated: true, completion: nil)
             }
             editTextViewController.dismissHandler = {
@@ -566,9 +863,7 @@ extension AmityFeedViewController: AmityPostPreviewCommentDelegate {
                     self?.present(bottomSheet, animated: false, completion: nil)
                 }
             }
-            
         }
-        
     }
 }
 
@@ -578,4 +873,39 @@ extension AmityFeedViewController: IndicatorInfoProvider {
         return IndicatorInfo(title: pageTitle ?? "\(pageIndex)")
     }
     
+}
+
+
+// ktb kk custom feed for displa on ktb home
+extension AmityFeedViewController{
+
+    // ktb kk makeK for feed in ktb home
+    public static func makeKTBFeed(_ rows: Int = 10) -> AmityFeedViewController {
+        
+        let postController = AmityPostController()
+        let commentController = AmityCommentController()
+        let reaction = AmityReactionController()
+        let viewModel = AmityFeedScreenViewModel(withFeedType: .globalFeed,
+                                                      postController: postController,
+                                                      commentController: commentController,
+                                                      reactionController: reaction)
+        let vc = AmityFeedViewController(nibName: AmityFeedViewController.identifier, bundle: AmityUIKitManager.bundle)
+        vc.screenViewModel = viewModel
+        vc.isKTBFeed = true
+        vc.rowSetLimitCount = rows + 1
+        viewModel.isKTBFeed = true
+        //vc.tableView.isScrollEnabled = false
+        return vc
+    }
+    
+    public func setKTBFeedHome(){
+        //
+    }
+    
+    public func getTable()->UITableView?{
+        if let _t = self.tableView {
+            return _t
+        }
+        return nil
+    }
 }
