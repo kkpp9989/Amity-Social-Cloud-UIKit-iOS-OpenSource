@@ -38,7 +38,7 @@ extension AmityPhotoViewerController {
     func downloadImageAndSaveToGallery(from urlString: String, compressImage: Bool) {
         // Create a URL object from the string
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
+//            print("Invalid URL")
             return
         }
         
@@ -47,7 +47,7 @@ extension AmityPhotoViewerController {
             // Check for errors
             if let error = error {
                 DispatchQueue.main.async {
-                    print("Error downloading image: \(error.localizedDescription)")
+//                    print("Error downloading image: \(error.localizedDescription)")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
@@ -56,7 +56,7 @@ extension AmityPhotoViewerController {
             // Ensure there is data
             guard let imageData = data else {
                 DispatchQueue.main.async {
-                    print("No data received")
+//                    print("No data received")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
@@ -65,7 +65,7 @@ extension AmityPhotoViewerController {
             // Convert data to UIImage
             guard let image = UIImage(data: imageData) else {
                 DispatchQueue.main.async {
-                    print("Unable to create image from data")
+//                    print("Unable to create image from data")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                 }
                 return
@@ -77,7 +77,7 @@ extension AmityPhotoViewerController {
                 // Compress image
                 guard let compressedImageData = image.jpegData(compressionQuality: 0.7) else {
                     DispatchQueue.main.async {
-                        print("Unable to compress image")
+//                        print("Unable to compress image")
                         AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                     }
                     return
@@ -86,7 +86,7 @@ extension AmityPhotoViewerController {
                 // Convert compressed data back to UIImage
                 guard let compressedImage = UIImage(data: compressedImageData) else {
                     DispatchQueue.main.async {
-                        print("Unable to create image from compressed data")
+//                        print("Unable to create image from compressed data")
                         AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadImageInChat.localizedString))
                     }
                     return
@@ -105,7 +105,7 @@ extension AmityPhotoViewerController {
                 AmityEventHandler.shared.hideKTBLoading()
                 
                 // Notify user about successful save
-                print("Image saved to gallery successfully!")
+//                print("Image saved to gallery successfully!")
                 AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
             }
         }.resume()

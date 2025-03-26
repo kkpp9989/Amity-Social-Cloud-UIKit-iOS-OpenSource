@@ -120,7 +120,7 @@ struct RequestSearchingChat {
         do {
             let _ = try JSONDecoder().decode(AmitySearchMessagesModel.self, from: data)
         } catch {
-            print("Parsing Error : \(String(describing: error))")
+//            print("Parsing Error : \(String(describing: error))")
         }
     }
 }

@@ -790,7 +790,7 @@ extension AmityMessageListViewController: UIImagePickerControllerDelegate & UINa
             let imageRef = try assetImageGenerator.copyCGImage(at: time, actualTime: &actualTime)
             return UIImage(cgImage: imageRef)
         } catch {
-            print("Unable to generate thumbnail image for kUTTypeMovie.")
+//            print("Unable to generate thumbnail image for kUTTypeMovie.")
             return nil
         }
     }
@@ -1104,12 +1104,12 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                     let imageURL = message.object.getImageInfo()?.fileURL
                     
                     guard let image = imageView.image else {
-                        print("Invalid image")
+//                        print("Invalid image")
                         return
                     }
                     
                     guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
-                        print("Invalid layer position: \(imageView.layer.position)")
+//                        print("Invalid layer position: \(imageView.layer.position)")
                         return
                     }
                     
@@ -1128,7 +1128,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                     presentVideoPlayer(at: url)
                 }
             } else {
-                print("unable to find video url for message: \(message.messageId)")
+//                print("unable to find video url for message: \(message.messageId)")
             }
         case .fileDownloader(let indexPath):
             guard let message = screenViewModel.dataSource.message(at: indexPath) else { return }
@@ -1148,7 +1148,7 @@ extension AmityMessageListViewController: AmityMessageListScreenViewModelDelegat
                     }
                 }
             } else {
-                print("unable to find file for message: \(message.messageId)")
+//                print("unable to find file for message: \(message.messageId)")
             }
         case .forward(indexPath: let indexPath):
             messageViewController.updateEditMode(isEdit: true, indexPath: indexPath)

@@ -297,7 +297,7 @@ extension AmityRecentChatScreenViewModel {
                 completion(.success(()))
             } catch {
                 // Handle the error here
-                print("Update failed: \(error)")
+//                print("Update failed: \(error)")
                 completion(.failure(error))
             }
         }

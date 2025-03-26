@@ -254,7 +254,7 @@ open class AmityEventHandler {
         targetType: AmityPostTargetType,
         destinationToUnwindBackAfterFinish: UIViewController
     ) {
-        print("To present live stream post creator, please override \(AmityEventHandler.self).\(#function), see https://docs.amity.co for more details.")
+//        print("To present live stream post creator, please override \(AmityEventHandler.self).\(#function), see https://docs.amity.co for more details.")
     }
     
     /// Event for post editor
@@ -275,7 +275,7 @@ open class AmityEventHandler {
     ///   - postId: The post id to watch the live stream.
     ///   - streamId: The stream id to watch.
     open func openLiveStreamPlayer(from source: AmityViewController, postId: String, streamId: String, postModel: AmityPost) {
-        print("To present live stream, please override \(AmityEventHandler.self).\(#function), see https://docs.amity.co for more details.")
+//        print("To present live stream, please override \(AmityEventHandler.self).\(#function), see https://docs.amity.co for more details.")
     }
     
     open func openRecordedLiveStreamPlayer(

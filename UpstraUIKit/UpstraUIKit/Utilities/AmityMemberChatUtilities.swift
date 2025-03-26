@@ -15,7 +15,7 @@ struct AmityMemberChatUtilities {
         static func getOtherUserByMemberShip(channelId : String, completion: @escaping (_ user: AmityUser?) -> Void) {
             let membershipParticipation = AmityChannelMembership(client: AmityUIKitManager.client, andChannel: channelId)
             let currentMemberList = membershipParticipation.getMembers(filter: .all, sortBy: .firstCreated, roles: []).observe { collection, change, error in
-                print("------> error: \(error?.localizedDescription)")
+//                print("------> error: \(error?.localizedDescription)")
                 let object = collection.allObjects()
                 if object.count > 0 {
                     let currentLoginedUserId = AmityUIKitManagerInternal.shared.currentUserId

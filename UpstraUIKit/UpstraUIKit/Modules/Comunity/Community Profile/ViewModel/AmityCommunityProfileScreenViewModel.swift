@@ -80,16 +80,16 @@ extension AmityCommunityProfileScreenViewModel {
                 
                 /* [Custom for ONE Krungthai] Check and set disable all notification in user level if community not important */
                 if let isJoiningCommunity = self?.isJoiningCommunity, isJoiningCommunity {
-                    print("[Notification] Is joining community -> Check is important community")
+//                    print("[Notification] Is joining community -> Check is important community")
                     let isImportantCommunity = AmityMemberCommunityUtilities.isImportantCommunityByCommunityModel(community: community)
                     if !isImportantCommunity {
-                        print("[Notification] Is joining community and is not important community -> Disable community notification")
+//                        print("[Notification] Is joining community and is not important community -> Disable community notification")
                         self?.setDisableNotificationOfCommunity(community: community)
                     } else {
-                        print("[Notification] Is joining community but is important community -> Enable community notification")
+//                        print("[Notification] Is joining community but is important community -> Enable community notification")
                     }
                 } else {
-                    print("[Notification] Is not joining community -> Skip check or set disable community notification")
+//                    print("[Notification] Is not joining community -> Skip check or set disable community notification")
                 }
             case .failure:
                 self?.delegate?.screenViewModelToastPrivate()
@@ -138,9 +138,9 @@ extension AmityCommunityProfileScreenViewModel {
         let vc = AmityCommunityNotificationSettingsController(withCommunityId: communityId)
         vc.disableNotificationSettings { result, error in
             if let error = error {
-                print("[Notification] Disable community notification fail with error: \(error.localizedDescription)")
+//                print("[Notification] Disable community notification fail with error: \(error.localizedDescription)")
             } else {
-                print("[Notification] Disable community notification result: \(result)")
+//                print("[Notification] Disable community notification result: \(result)")
             }
         }
     }

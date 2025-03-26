@@ -35,7 +35,7 @@ extension LiveStreamBroadcastViewController {
             return
         }
         
-        print("durationText: \(durationText)")
+//        print("durationText: \(durationText)")
         if let convertedTimeString = convertTimeString(durationText) {
             switch broadcaster.state {
             case .connected:

@@ -39,24 +39,24 @@ struct RequestChat {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
-                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of permission denied (403)")
+//                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of permission denied (403)")
                 completion(.failure(HandleError.permissionDenied))
             case 404:
                 guard let dataModel = try? JSONDecoder().decode(ResponseDeleteChannelModel.self, from: data) else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
-                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of resource not found (404)")
+//                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of resource not found (404)")
                 completion(.failure(HandleError.notFound))
             case 429:
                 guard let dataModel = try? JSONDecoder().decode(ResponseDeleteChannelModel.self, from: data) else {
                     completion(.failure(HandleError.JsonDecodeError))
                     return
                 }
-                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of rate limit exceeded (429)")
+//                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of rate limit exceeded (429)")
                 completion(.failure(HandleError.rateLimitExceed))
             default:
-                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of connection or unexpected error")
+//                print("[Chat][Delete chat] Can't delete channelId \(channelId) because of connection or unexpected error")
                 completion(.failure(HandleError.connectionError))
             }
         }

@@ -91,7 +91,7 @@ extension UIViewController {
     }
     
     @objc func downloadButtonTapped() {
-        print("Custom button tapped")
+//        print("Custom button tapped")
         // Handle custom button action here
         let url = urlString
         AmityEventHandler.shared.showKTBLoading()
@@ -122,7 +122,7 @@ extension UIViewController {
     func downloadAndSaveVideoToGallery(from urlString: String) {
         // Create a URL object from the string
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
+//            print("Invalid URL")
             AmityEventHandler.shared.hideKTBLoading()
             return
         }
@@ -132,7 +132,7 @@ extension UIViewController {
             // Check for errors
             if let error = error {
                 DispatchQueue.main.async {
-                    print("Error downloading video: \(error.localizedDescription)")
+//                    print("Error downloading video: \(error.localizedDescription)")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadVideoInChat.localizedString))
                     AmityEventHandler.shared.hideKTBLoading()
                 }
@@ -142,7 +142,7 @@ extension UIViewController {
             // Ensure there is data
             guard let videoData = data else {
                 DispatchQueue.main.async {
-                    print("No data received")
+//                    print("No data received")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadVideoInChat.localizedString))
                     AmityEventHandler.shared.hideKTBLoading()
                 }
@@ -157,7 +157,7 @@ extension UIViewController {
                 try videoData.write(to: tempFileURL, options: .atomic)
             } catch {
                 DispatchQueue.main.async {
-                    print("Error writing video data to temporary file: \(error.localizedDescription)")
+//                    print("Error writing video data to temporary file: \(error.localizedDescription)")
                     AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadVideoInChat.localizedString))
                     AmityEventHandler.shared.hideKTBLoading()
                 }
@@ -170,13 +170,13 @@ extension UIViewController {
             }) { success, error in
                 DispatchQueue.main.async {
                     if let error = error {
-                        print("Error saving video to gallery: \(error.localizedDescription)")
+//                        print("Error saving video to gallery: \(error.localizedDescription)")
                         AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadVideoInChat.localizedString))
                     } else if success {
-                        print("Video saved to gallery successfully!")
+//                        print("Video saved to gallery successfully!")
                         AmityHUD.show(.success(message: AmityLocalizedStringSet.General.done.localizedString))
                     } else {
-                        print("Failed to save video to gallery")
+//                        print("Failed to save video to gallery")
                         AmityHUD.show(.error(message: AmityLocalizedStringSet.MessageList.cannotDownloadVideoInChat.localizedString))
                     }
                     

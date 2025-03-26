@@ -1110,12 +1110,12 @@ extension AmityPostDetailViewController: AmityExpandableLabelDelegate {
 extension AmityPostDetailViewController: AmityCommentTableViewCellDelegate {
     func commentCellDidTapCommentImage(_ cell: AmityCommentTableViewCell, imageView: UIImageView, fileURL: String?) {
         guard let image = imageView.image else {
-            print("Invalid image")
+//            print("Invalid image")
             return
         }
         
         guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
-            print("Invalid layer position: \(imageView.layer.position)")
+//            print("Invalid layer position: \(imageView.layer.position)")
             return
         }
         
@@ -1300,12 +1300,12 @@ extension AmityPostDetailViewController: AmityCommentWithURLPreviewTableViewCell
     
     func commentCellDidTapCommentImage(_ cell: AmityCommentWithURLPreviewTableViewCell, imageView: UIImageView, fileURL: String?) {
         guard let image = imageView.image else {
-            print("Invalid image")
+//            print("Invalid image")
             return
         }
         
         guard !imageView.layer.position.x.isNaN, !imageView.layer.position.y.isNaN else {
-            print("Invalid layer position: \(imageView.layer.position)")
+//            print("Invalid layer position: \(imageView.layer.position)")
             return
         }
         

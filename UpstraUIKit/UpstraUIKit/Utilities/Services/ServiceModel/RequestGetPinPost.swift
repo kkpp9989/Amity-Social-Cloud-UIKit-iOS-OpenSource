@@ -46,7 +46,7 @@ struct RequestGetPinPost {
             if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
                let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
                let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("-------> JSON Response: \(jsonString)")
+//                print("-------> JSON Response: \(jsonString)")
             }
             
             switch httpResponse.statusCode {
@@ -99,7 +99,7 @@ struct RequestGetPinPost {
             if let jsonResponse = try? JSONSerialization.jsonObject(with: data, options: []),
                let jsonData = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []),
                let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("-------> JSON Response: \(jsonString)")
+//                print("-------> JSON Response: \(jsonString)")
             }
             
             switch httpResponse.statusCode {

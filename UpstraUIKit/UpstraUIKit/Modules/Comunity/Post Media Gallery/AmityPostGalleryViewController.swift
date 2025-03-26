@@ -227,7 +227,7 @@ extension AmityPostGalleryViewController: UICollectionViewDelegateFlowLayout {
                         presentVideoPlayer(at: url)
                     }
                 } else {
-                    print("unable to find video url for post: \(postObject.postId)")
+//                    print("unable to find video url for post: \(postObject.postId)")
                 }
             case "image":
                 if let imageData = postObject.getImageInfo() {
@@ -240,11 +240,11 @@ extension AmityPostGalleryViewController: UICollectionViewDelegateFlowLayout {
                         media: media
                     )
                 } else {
-                    print("unable to find image url for post: \(postObject.postId)")
+//                    print("unable to find image url for post: \(postObject.postId)")
                 }
             case "liveStream":
                 guard let stream = postObject.getLiveStreamInfo() else {
-                    print("unable to find stream for post: \(postObject.postId)")
+//                    print("unable to find stream for post: \(postObject.postId)")
                     return
                 }
                 guard !stream.isDeleted else {

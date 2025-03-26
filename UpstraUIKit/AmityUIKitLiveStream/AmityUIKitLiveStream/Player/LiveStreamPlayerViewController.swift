@@ -478,7 +478,8 @@ public class LiveStreamPlayerViewController: UIViewController {
                 stopButton.isHidden = false
                 statusContainer.isHidden = false
             @unknown default:
-                print("Unexpected state")
+                    break
+//                print("Unexpected state")
 //                assertionFailure("Unexpected state")
             }
         }
@@ -522,7 +523,8 @@ public class LiveStreamPlayerViewController: UIViewController {
                 loadingActivityIndicator.stopAnimating()
             }
         default:
-            print("Unexpected state")
+                break
+//            print("Unexpected state")
 //            assertionFailure("Unexpected state")
         }
         

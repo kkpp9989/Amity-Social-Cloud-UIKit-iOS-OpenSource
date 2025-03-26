@@ -85,7 +85,7 @@ class AmityNotificationTrayScreenViewModel: AmityNotificationTrayScreenViewModel
             guard let strongSelf = self else {return }
             
             if let index = strongSelf.findIndexByTargetID(targetID: model.targetID, in: strongSelf.collectionData) {
-                print("Index found: \(index)")
+//                print("Index found: \(index)")
                 strongSelf.collectionData[index].hasRead = true
             }
             

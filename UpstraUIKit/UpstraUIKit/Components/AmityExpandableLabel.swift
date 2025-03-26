@@ -340,7 +340,7 @@ extension AmityExpandableLabel {
             }
             return nil
         } catch {
-            print("Error creating regular expression: \(error)")
+//            print("Error creating regular expression: \(error)")
             return nil
         }
     }
@@ -493,7 +493,7 @@ extension AmityExpandableLabel {
     
     private func check(touch: UITouch, isInRange targetRange: NSRange) -> Bool {
         let touchPoint = touch.location(in: self)
-        print("Amity Touch point: \(touchPoint)")
+//        print("Amity Touch point: \(touchPoint)")
 
         // if text is expandable and it doesn't expand yet, add a reserved range for "...Read More".
         // other cases mean text is showing at the full size and no need to a range.
@@ -766,7 +766,7 @@ extension AmityExpandableLabel {
                 attributedString.addAttributes(attribute.attributes, range: range)
                 hyperLinkTextRange.append(Hyperlink(range: range, type: .mention(userId: attribute.userId)))
             } else {
-                print("Range out of bounds: \(range)")
+//                print("Range out of bounds: \(range)")
             }
         }
 

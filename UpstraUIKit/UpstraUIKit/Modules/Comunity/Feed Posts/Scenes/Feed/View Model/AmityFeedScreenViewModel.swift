@@ -173,7 +173,7 @@ extension AmityFeedScreenViewModel {
                 let token = postCollection.observe { [weak self] (_, error) in
                     guard let strongSelf = self else { return }
                     if let error = AmityError(error: error) {
-                        print("[Amity Log] Get post data \(postId) fail with error \(error.localizedDescription)")
+//                        print("[Amity Log] Get post data \(postId) fail with error \(error.localizedDescription)")
                         strongSelf.nextData()
                     } else {
                         if let model = strongSelf.prepareData(amityObject: postCollection) {
@@ -182,7 +182,7 @@ extension AmityFeedScreenViewModel {
                             }
                         } else {
                             AmityUIKitManagerInternal.shared.addPostIdCannotGetSnapshot(postId: postId)
-                            print("[Amity Log] Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
+//                            print("[Amity Log] Get post data \(postId) fail with error can't get data from snapshot -> Set pin post id \(postId) to can't get snapshot group")
                             strongSelf.nextData()
                         }
                     }

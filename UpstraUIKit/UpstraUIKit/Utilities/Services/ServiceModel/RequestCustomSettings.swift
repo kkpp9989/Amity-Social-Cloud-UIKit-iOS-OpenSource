@@ -77,7 +77,7 @@ struct RequestCustomSettings {
         do {
             let _ = try JSONDecoder().decode(AmitySearchMessagesModel.self, from: data)
         } catch {
-            print("[RequestCustomSettings] Parsing Error : \(String(describing: error))")
+//            print("[RequestCustomSettings] Parsing Error : \(String(describing: error))")
         }
     }
 }

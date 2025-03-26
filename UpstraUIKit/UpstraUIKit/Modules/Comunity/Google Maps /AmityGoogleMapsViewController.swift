@@ -318,9 +318,11 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
             let accuracy = manager.accuracyAuthorization
             switch accuracy {
             case .fullAccuracy:
-                print("Location accuracy is precise.")
+                    break
+//                print("Location accuracy is precise.")
             case .reducedAccuracy:
-                print("Location accuracy is not precise.")
+                    break
+//                print("Location accuracy is not precise.")
             @unknown default:
                 fatalError()
             }
@@ -333,16 +335,19 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
         // Handle authorization status
         switch status {
         case .restricted:
-            print("Location access was restricted.")
+                break
+//            print("Location access was restricted.")
         case .denied:
-            print("User denied access to location.")
+//            print("User denied access to location.")
             // Display the map using the default location.
             mapView.isHidden = false
         case .notDetermined:
-            print("Location status not determined.")
+                break
+//            print("Location status not determined.")
         case .authorizedAlways: fallthrough
         case .authorizedWhenInUse:
-            print("Location status is OK.")
+                break
+//            print("Location status is OK.")
         @unknown default:
             fatalError()
         }
@@ -351,7 +356,7 @@ extension AmityGoogleMapsViewController: CLLocationManagerDelegate {
     // Handle location manager errors.
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         locationManager.stopUpdatingLocation()
-        print("Error: \(error)")
+//        print("Error: \(error)")
     }
 }
 

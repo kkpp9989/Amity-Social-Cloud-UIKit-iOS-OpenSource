@@ -562,7 +562,7 @@ extension AmityEditTextViewController: UIImagePickerControllerDelegate, UINaviga
                     let imageRef = try assetImageGenerator.copyCGImage(at: time, actualTime: &actualTime)
                     media.generatedThumbnailImage = UIImage(cgImage: imageRef)
                 } catch {
-                    print("Unable to generate thumbnail image for kUTTypeMovie.")
+//                    print("Unable to generate thumbnail image for kUTTypeMovie.")
                 }
                 selectedMedia = media
             }

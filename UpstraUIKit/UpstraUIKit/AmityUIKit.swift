@@ -236,7 +236,7 @@ public final class AmityUIKitManager {
         Task {
             do {
                 let isEnable = try await client.presence.isEnabled()
-                print("------> User presence \(isEnable)")
+//                print("------> User presence \(isEnable)")
             } catch let error {
                 print(error)
             }
@@ -564,7 +564,7 @@ final class AmityUIKitManagerInternal: NSObject {
         let userNotificationManager = client.notificationManager
         
         userNotificationManager.enable(for: [AmityUserNotificationModule(moduleType: .videoStreaming, isEnabled: false, roleFilter: nil)]) { result, error in
-            print("[Livestream-notification] Disable livestream user level notification result : \(result)")
+//            print("[Livestream-notification] Disable livestream user level notification result : \(result)")
         }
     }
     
@@ -575,9 +575,9 @@ final class AmityUIKitManagerInternal: NSObject {
         ]
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userNotificationManager.enable(for:), parameters: moduleSettings) { result, error in
             if let error = error {
-                print("[Notification] Enable chat user level notification fail with error : \(error.localizedDescription)")
+//                print("[Notification] Enable chat user level notification fail with error : \(error.localizedDescription)")
             } else if let result = result {
-                print("[Notification] Enable chat user level notification result : \(result)")
+//                print("[Notification] Enable chat user level notification result : \(result)")
             }
         }
     }
@@ -589,9 +589,9 @@ final class AmityUIKitManagerInternal: NSObject {
         ]
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: userNotificationManager.enable(for:), parameters: moduleSettings) { result, error in
             if let error = error {
-                print("[Notification] Disable chat user level notification fail with error : \(error.localizedDescription)")
+//                print("[Notification] Disable chat user level notification fail with error : \(error.localizedDescription)")
             } else if let result = result {
-                print("[Notification] Disable chat user level notification result : \(result)")
+//                print("[Notification] Disable chat user level notification result : \(result)")
             }
         }
     }
@@ -603,9 +603,9 @@ final class AmityUIKitManagerInternal: NSObject {
             switch result {
             case .success(let data):
                 weakSelf.limitFileSize = data.limitFileSize
-                print("[RequestCustomSettings] Get limit file size success with value: \(data.limitFileSize) mb")
+//                print("[RequestCustomSettings] Get limit file size success with value: \(data.limitFileSize) mb")
             case .failure(let error):
-                print("[RequestCustomSettings] Get limit file size fail with error: \(error.localizedDescription)")
+//                print("[RequestCustomSettings] Get limit file size fail with error: \(error.localizedDescription)")
                 break
             }
         }
@@ -707,11 +707,13 @@ final class AmityUIKitManagerInternal: NSObject {
                 // Handle completion
                 switch completion {
                 case .failure(let error):
+                        break
 //                    print("-------------------> [Status] Start getSyncAllChannelPresence fail with error: \(error.localizedDescription)")
-                    print("\(error.localizedDescription)")
+//                    print("\(error.localizedDescription)")
                 default:
+                        break
 //                    print("-------------------> [Status] Start getSyncAllChannelPresence success")
-                    print("[Amity SDK] getSyncingChannelPresence finish")
+//                    print("[Amity SDK] getSyncingChannelPresence finish")
                 }
             } receiveValue: { presences in
                 /// Channel presences where any other member is online

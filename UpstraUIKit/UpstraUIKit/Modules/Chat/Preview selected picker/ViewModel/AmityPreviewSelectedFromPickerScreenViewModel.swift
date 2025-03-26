@@ -110,7 +110,7 @@ extension AmityPreviewSelectedFromPickerScreenViewModel {
                             let imageURL = strongSelf.createTempImage(image: image)
                             strongSelf.createImageMessage(imageURL: imageURL, channelId: channelId, caption: caption)
                         case .failure:
-                            print("failure")
+//                            print("failure")
                             strongSelf.dispatchGroup.leave()
                         }
                     }
@@ -120,7 +120,7 @@ extension AmityPreviewSelectedFromPickerScreenViewModel {
                 case .uploadedImage(let imageData): // From send image message from editor
                     createImageMessage(fileId: imageData.fileId, channelId: channelId, caption: caption)
                 default:
-                    print("failure")
+//                    print("failure")
                     dispatchGroup.leave()
                 }
             } else { // Case : Other type

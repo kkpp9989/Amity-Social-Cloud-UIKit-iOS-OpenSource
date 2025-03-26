@@ -287,7 +287,8 @@ extension AmityRecentChatViewController: UserStatusDelegate {
                         AmityUIKitManagerInternal.shared.enableChatNotificationSetting()
                     }
                 case .failure(let error):
-                    print("Update failed with error: \(error)")
+                        break
+//                    print("Update failed with error: \(error)")
                 }
             }
         }

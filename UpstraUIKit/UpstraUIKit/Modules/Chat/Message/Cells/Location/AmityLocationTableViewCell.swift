@@ -70,7 +70,7 @@ class AmityLocationTableViewCell: AmityMessageTableViewCell {
         } else if let location  = message.data?["location"] as? [String: Any], let lat = location["lat"] as? Double, let long = location["lng"] as? Double {
             locationText = "\(lat), \(long)"
         }
-        print("Amity Log: locationText: \(locationText)")
+//        print("Amity Log: locationText: \(locationText)")
         addressLabel.text = locationText
     }
     

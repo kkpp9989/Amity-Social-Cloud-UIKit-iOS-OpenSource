@@ -82,7 +82,7 @@ struct RequestGetViewerCount {
                 completion(.success(dataModel))
                 
                 let responseDataString = String(data: data, encoding: .utf8)
-                print("[Livestream][getViewerCount] Response Data: \(responseDataString ?? "Unable to convert data to string")")
+//                print("[Livestream][getViewerCount] Response Data: \(responseDataString ?? "Unable to convert data to string")")
                 
             case 400...499:
                 completion(.failure(HandleError.notFound))

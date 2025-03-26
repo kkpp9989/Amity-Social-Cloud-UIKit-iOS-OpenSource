@@ -280,10 +280,10 @@ extension AmityMessageListScreenViewModel {
                     try await channelObject.markAsRead()
                 } catch {
                     // Handle the error here, e.g., log it or show an alert
-                    print("Failed to mark the channel as read: \(error.localizedDescription)")
+//                    print("Failed to mark the channel as read: \(error.localizedDescription)")
                 }
             } else {
-                print("Channel model or object is nil")
+//                print("Channel model or object is nil")
             }
         }
     }
@@ -704,10 +704,10 @@ extension AmityMessageListScreenViewModel {
     func updateForwardMessageInList(with message: AmityMessageModel) {
         if let foundedIndex = forwardMessageList.firstIndex(where: { $0.messageId == message.messageId }) {
             forwardMessageList.remove(at: foundedIndex)
-            print("[ForwardMessage] Found message in forward message list | Remove message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
+//            print("[ForwardMessage] Found message in forward message list | Remove message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
         } else {
             forwardMessageList.append(message)
-            print("[ForwardMessage] Not Found message in forward message list | Add message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
+//            print("[ForwardMessage] Not Found message in forward message list | Add message id: \(message.messageId) | Amount of forward message list: \(forwardMessageList.count)")
         }
         
         delegate?.screenViewModelDidUpdateForwardMessageList(amountForwardMessageList: forwardMessageList.count)
@@ -858,7 +858,7 @@ private extension AmityMessageListScreenViewModel {
         messagesNotificationToken?.invalidate()
         messagesNotificationToken = messagesCollection?.observe { (liveCollection, change, error) in
             if let error = error {
-                print("Error: \(error).")
+//                print("Error: \(error).")
                 AmityEventHandler.shared.hideKTBLoading()
                 return
             }
@@ -1077,7 +1077,7 @@ extension AmityMessageListScreenViewModel {
         let data = image.scalePreservingAspectRatio().jpegData(compressionQuality: 1.0)
         try? data?.write(to: imageUrl)
         
-        print("[Amity Log] cache temp: \(imageUrl)")
+//        print("[Amity Log] cache temp: \(imageUrl)")
 
         // Cached image file for resend message
         if let imageData = data {
@@ -1098,15 +1098,15 @@ extension AmityMessageListScreenViewModel {
             return
         }
                 
-        print("[Message][Image] Start send image message | imageURL: \(imageURL.lastPathComponent)")
+//        print("[Message][Image] Start send image message | imageURL: \(imageURL.lastPathComponent)")
         AmityAsyncAwaitTransformer.toCompletionHandler(asyncFunction: repository.createImageMessage(options:), parameters: createOptions) { [weak self] message, error in
-            print("[Amity Log] Image error \(error?.localizedDescription)")
+//            print("[Amity Log] Image error \(error?.localizedDescription)")
             guard error == nil, let message = message else {
-                print("[Message][Image] Send image message fail with error: \(error?.localizedDescription) | imageURL: \(imageURL.lastPathComponent)")
+//                print("[Message][Image] Send image message fail with error: \(error?.localizedDescription) | imageURL: \(imageURL.lastPathComponent)")
                 return
             }
             
-            print("[Message][Image] Send image message success | imageURL: \(imageURL.lastPathComponent)")
+//            print("[Message][Image] Send image message success | imageURL: \(imageURL.lastPathComponent)")
             
             // Delete cache if exists
             self?.deleteCacheImageFile(fileName: imageURL.lastPathComponent)
@@ -1243,9 +1243,9 @@ extension AmityMessageListScreenViewModel {
         Task {
             do {
                 try await subChannelRepository.startMessageReceiptSync(subChannelId: channelId)
-                print("[Channel] Start message receipt sync success")
+//                print("[Channel] Start message receipt sync success")
             } catch {
-                print("[Channel] Start message receipt sync fail with error: \(error.localizedDescription)")
+//                print("[Channel] Start message receipt sync fail with error: \(error.localizedDescription)")
             }
         }
     }
@@ -1255,9 +1255,9 @@ extension AmityMessageListScreenViewModel {
         Task {
             do {
                 try await subChannelRepository.stopMessageReceiptSync(subChannelId: channelId)
-                print("[Channel] Stop message receipt sync success")
+//                print("[Channel] Stop message receipt sync success")
             } catch {
-                print("[Channel] Stop message receipt sync fail with error: \(error.localizedDescription)")
+//                print("[Channel] Stop message receipt sync fail with error: \(error.localizedDescription)")
             }
         }
     }

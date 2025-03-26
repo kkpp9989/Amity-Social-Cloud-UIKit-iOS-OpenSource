@@ -85,7 +85,8 @@ class AmityChannelsSearchTableViewCell: UITableViewCell, Nibbable {
                 case .success(let imageURL):
                     self?.avatarView.setImage(withImageURL: imageURL, placeholder: AmityIconSet.defaultGroupChat)
                 case .failure(let error):
-                    print("[Search][Channel][Group][Avatar] Can't set avatar fileId \(fileId) with error: \(error.localizedDescription)")
+                        break
+//                    print("[Search][Channel][Group][Avatar] Can't set avatar fileId \(fileId) with error: \(error.localizedDescription)")
                 }
             }
         }
