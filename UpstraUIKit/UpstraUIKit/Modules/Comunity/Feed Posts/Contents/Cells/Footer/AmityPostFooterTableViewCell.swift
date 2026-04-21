@@ -23,7 +23,7 @@ public final class AmityPostFooterTableViewCell: UITableViewCell, Nibbable, Amit
     @IBOutlet private var likeButton: AmityButton!
     @IBOutlet private var commentButton: AmityButton!
     @IBOutlet private var shareButton: AmityButton!
-    @IBOutlet private var separatorView: [UIView]!
+    @IBOutlet private var separatorView: [UIView] = []
     @IBOutlet private var likeLabelIcon: UIImageView!
     @IBOutlet private var warningLabel: UILabel!
     @IBOutlet private var likeDetailButton: UIButton!

@@ -130,8 +130,12 @@ final public class AmityPostPollAnswerTableViewCell: UITableViewCell, Nibbable {
     private func setupVoteProgressView() {
         voteProgressView.layer.cornerRadius = 6
         voteProgressView.clipsToBounds = true
-        voteProgressView.layer.sublayers![1].cornerRadius = 6
-        voteProgressView.subviews[1].clipsToBounds = true
+        if let sublayers = voteProgressView.layer.sublayers, sublayers.count > 1 {
+            sublayers[1].cornerRadius = 6
+        }
+        if voteProgressView.subviews.count > 1 {
+            voteProgressView.subviews[1].clipsToBounds = true
+        }
     }
     
     private func setupVoteCountLabel() {
