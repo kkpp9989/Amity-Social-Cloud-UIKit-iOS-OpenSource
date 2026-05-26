@@ -30,7 +30,7 @@ extension GoLive {
     
     override func main() {
       let coverImageData = findOptionalCoverImageData()
-      streamRepository.createVideoStream(withTitle: title, description: streamDescription, thumbnailImage: coverImageData, meta: meta, isSecure: true) { [weak self] stream, error in
+      streamRepository.createVideoStream(withTitle: title, description: streamDescription, thumbnailImage: coverImageData, meta: meta) { [weak self] stream, error in
         if let error = error {
           self?.result = .failure(error)
           self?.finish()

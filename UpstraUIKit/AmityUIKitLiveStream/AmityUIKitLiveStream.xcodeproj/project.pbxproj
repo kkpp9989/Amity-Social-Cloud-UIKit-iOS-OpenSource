@@ -925,7 +925,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kkpp9989/amityuikit-frameworks-package.git";
 			requirement = {
-				branch = "amityuikit-frameworks";
+				branch = "release/3.19.2";
 				kind = branch;
 			};
 		};
